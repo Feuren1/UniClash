@@ -305,7 +305,7 @@ class MainActivity : ComponentActivity() {
                 icon = arena
             )
         }
-        //OpenActivityButton()
+        OpenActivityButton()
     }
 
     @Composable

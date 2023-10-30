@@ -44,7 +44,6 @@ class Battle : ComponentActivity() {
         val uniClashViewModel: UniClashViewModel by viewModels(factoryProducer = {
             UniClashViewModel.provideFactory(CritterService.getInstance(this))
         })
-
         setContent {
             MyMapTheme {
                 Surface(
@@ -58,9 +57,6 @@ class Battle : ComponentActivity() {
         }
     }
 }
-
-
-
 
 @Composable
 fun PokemonGame(uniClashViewModel: UniClashViewModel) {

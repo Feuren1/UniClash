@@ -26,4 +26,13 @@ data class Critter(
 
         return attackList
     }
+
+    fun reduceHealth(amount: Int){
+        hp.minus(amount)
+    }
+
+    fun increaseHealth(amount: Int){
+        hp.plus(amount)
+    }
+
 }

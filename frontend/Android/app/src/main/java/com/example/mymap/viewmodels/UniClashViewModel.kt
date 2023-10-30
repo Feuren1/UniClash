@@ -59,9 +59,12 @@ class UniClashViewModel(
         viewModelScope.launch {
             critters.update { it.copy(isLoading = true) }
             try {
+                println("Geht")
                 val response = critterService.getCritters().enqueue()
+                println("Geht2")
                 Log.d(TAG, "loadCritters: $response")
                 if (response.isSuccessful) {
+                    println("Gehtsuccessfull")
                     Log.d(TAG, "loadCritters: success")
                     val critters = response.body()!!
                     Log.d(TAG, "loadCritters: $critters")

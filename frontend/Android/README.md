@@ -1,1 +1,2 @@
-# prj3-phone-native-application
+# AndroidMap
+Das ist ein ReadME :)

@@ -81,7 +81,6 @@ class MainActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        //requestLocationPermissions()
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
 
         setContent {
@@ -157,24 +156,23 @@ class MainActivity : ComponentActivity() {
     }
     @Composable
     fun Map() {
-        val location = remember { mutableStateOf("Location: Loading...") }
         var gpsLocation = rememberMarkerState()
         val cameraState = rememberCameraState()
         LaunchedEffect(Unit) {
             while (true) {
                 val tolerance = 0.0001
-                delay(3000) //10000 = 10sec
                 if (Math.abs(mainLatitude - cameraState.geoPoint.latitude) > tolerance || Math.abs(mainLongitude - cameraState.geoPoint.longitude) > tolerance) {
-                    println("$mainLatitude and ${cameraState.geoPoint.latitude} ---- $mainLongitude and ${cameraState.geoPoint.longitude}")
+                    Log.d(LOCATION_TAG, "$mainLatitude and ${cameraState.geoPoint.latitude} ---- $mainLongitude and ${cameraState.geoPoint.longitude}")
                     cameraState.geoPoint = GeoPoint(mainLatitude, mainLongitude)
                     cameraState.zoom = 20.5
                     gpsLocation.geoPoint = GeoPoint(mainLatitude, mainLongitude)
                 }
+                delay(3000) //10000 = 10sec
             }
         }
-        gpsLocation = rememberMarkerState(
-            geoPoint = GeoPoint(mainLatitude, mainLongitude)
-        )
+        //gpsLocation = rememberMarkerState(
+        //    geoPoint = GeoPoint(mainLatitude, mainLongitude)
+        //)
         val fontys = rememberMarkerState(
             geoPoint = GeoPoint(51.353576, 6.154071)
         )

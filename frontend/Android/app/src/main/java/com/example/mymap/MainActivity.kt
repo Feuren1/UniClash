@@ -5,6 +5,8 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.graphics.Bitmap
+import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.Drawable
 import android.os.Bundle
 import android.os.Handler
@@ -12,6 +14,7 @@ import android.os.Looper
 import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.annotation.DrawableRes
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -48,6 +51,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import androidx.core.graphics.drawable.toBitmap
 import com.example.mymap.ui.theme.MyMapTheme
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationCallback
@@ -74,10 +78,6 @@ class MainActivity : ComponentActivity() {
     private var startMapRequested by mutableStateOf(false)
     private var mainLatitude : Double by mutableStateOf(0.0) //for gps location
     private var mainLongitude : Double by mutableStateOf(0.0)//"
-
-    private var lastLatitude : Double = 0.0
-    private var lastLongitude : Double = 0.0
-
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -141,7 +141,7 @@ class MainActivity : ComponentActivity() {
         val context = LocalContext.current
 
         val arrow: Drawable? by remember {
-            mutableStateOf(context.getDrawable(R.drawable.arrow))
+            mutableStateOf(context.getDrawable(R.drawable.location))
         }
         OpenStreetMap(
             modifier = Modifier.fillMaxSize(),
@@ -160,14 +160,14 @@ class MainActivity : ComponentActivity() {
         val cameraState = rememberCameraState()
         LaunchedEffect(Unit) {
             while (true) {
-                val tolerance = 0.0001
+                val tolerance = 0.001 //0.0001 before
                 if (Math.abs(mainLatitude - cameraState.geoPoint.latitude) > tolerance || Math.abs(mainLongitude - cameraState.geoPoint.longitude) > tolerance) {
                     Log.d(LOCATION_TAG, "$mainLatitude and ${cameraState.geoPoint.latitude} ---- $mainLongitude and ${cameraState.geoPoint.longitude}")
                     cameraState.geoPoint = GeoPoint(mainLatitude, mainLongitude)
                     cameraState.zoom = 20.5
                     gpsLocation.geoPoint = GeoPoint(mainLatitude, mainLongitude)
                 }
-                delay(3000) //10000 = 10sec
+                delay(3000) //3sec.
             }
         }
         //gpsLocation = rememberMarkerState(
@@ -194,18 +194,26 @@ class MainActivity : ComponentActivity() {
         val homeMarker = rememberMarkerState(
             geoPoint = GeoPoint(51.4959040534788, 6.294253058731556)
         )
+        val homeArena = rememberMarkerState(
+            geoPoint = GeoPoint(51.495723, 6.294844)
+        )
         val context = LocalContext.current
 
         // define marker icon
         val prc2duck: Drawable? by remember {
-            mutableStateOf(context.getDrawable(R.drawable.prc2duckicon))
+            mutableStateOf(resizeDrawableTo50x50(context, R.drawable.prc2duck))
         }
 
         val arrow: Drawable? by remember {
-            mutableStateOf(context.getDrawable(R.drawable.arrow))
+            mutableStateOf(resizeDrawableTo50x50(context, R.drawable.location))
         }
+
         val studentHub: Drawable? by remember {
-            mutableStateOf(context.getDrawable(R.drawable.hub))
+            mutableStateOf(resizeDrawableTo60x60(context, R.drawable.store))
+        }
+
+        val arena: Drawable? by remember {
+            mutableStateOf(resizeDrawableTo60x60(context, R.drawable.arena))
         }
 
         // Use camera state and location in your OpenStreetMap Composable
@@ -292,8 +300,12 @@ class MainActivity : ComponentActivity() {
                     )
                 }
             }
+            Marker(
+                state = homeArena,
+                icon = arena
+            )
         }
-        OpenActivityButton()
+        //OpenActivityButton()
     }
 
     @Composable
@@ -311,6 +323,42 @@ class MainActivity : ComponentActivity() {
         ) {
             Text("Open Another Activity")
         }
+    }
+
+    fun resizeDrawableTo50x50(context: Context, @DrawableRes drawableRes: Int): Drawable?{
+        val originalDrawable: Drawable? = context.getDrawable(drawableRes)
+
+        val originalBitmap = originalDrawable?.toBitmap()
+        val originalWidth = originalBitmap?.width ?: 1 // Verhindert Division durch Null
+        val originalHeight = originalBitmap?.height ?: 1
+
+        val scaleRatio = 50.0f / originalHeight.toFloat()
+
+        val scaledWidth = (originalWidth * scaleRatio).toInt()
+        val scaledHeight = 50
+
+        val scaledBitmap =
+            originalBitmap?.let { Bitmap.createScaledBitmap(it, scaledWidth, scaledHeight, true) }
+
+        return BitmapDrawable(context.resources, scaledBitmap)
+    }
+
+    fun resizeDrawableTo60x60(context: Context, @DrawableRes drawableRes: Int): Drawable?{
+        val originalDrawable: Drawable? = context.getDrawable(drawableRes)
+
+        val originalBitmap = originalDrawable?.toBitmap()
+        val originalWidth = originalBitmap?.width ?: 1 // Verhindert Division durch Null
+        val originalHeight = originalBitmap?.height ?: 1
+
+        val scaleRatio = 60.0f / originalHeight.toFloat()
+
+        val scaledWidth = (originalWidth * scaleRatio).toInt()
+        val scaledHeight = 60
+
+        val scaledBitmap =
+            originalBitmap?.let { Bitmap.createScaledBitmap(it, scaledWidth, scaledHeight, true) }
+
+        return BitmapDrawable(context.resources, scaledBitmap)
     }
 
 

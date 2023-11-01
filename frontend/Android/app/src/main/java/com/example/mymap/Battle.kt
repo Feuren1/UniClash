@@ -152,15 +152,15 @@ fun PokemonGame(uniClashViewModel: UniClashViewModel) {
                 items(uniClashUIState.critters.size) {
                         index ->
                     Column {
-                        Text(text = uniClashUIState.critters.get(index).name)
-                        Text(text = uniClashUIState.critters.get(index).hp.toString())
-                        Text(text = uniClashUIState.critters.get(index).atk.toString())
-                        Text(text = uniClashUIState.critters.get(index).def.toString())
-                        Text(text = uniClashUIState.critters.get(index).spd.toString())
-                        Text(text = uniClashUIState.critters.get(index).attack1.toString())
-                        Text(text = uniClashUIState.critters.get(index).attack2.toString())
-                        Text(text = uniClashUIState.critters.get(index).attack3.toString())
-                        Text(text = uniClashUIState.critters.get(index).attack4.toString())
+                        Text(text = uniClashUIState.critters[index].name)
+                        Text(text = uniClashUIState.critters[index].hp.toString())
+                        Text(text = uniClashUIState.critters[index].atk.toString())
+                        Text(text = uniClashUIState.critters[index].def.toString())
+                        Text(text = uniClashUIState.critters[index].spd.toString())
+                        Text(text = uniClashUIState.critters[index].attack1.toString())
+                        Text(text = uniClashUIState.critters[index].attack2.toString())
+                        Text(text = uniClashUIState.critters[index].attack3.toString())
+                        Text(text = uniClashUIState.critters[index].attack4.toString())
                         Divider() // Add a divider between items
                     }
                 }

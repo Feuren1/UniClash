@@ -82,20 +82,6 @@ class UniClashViewModel(
         }
     }
 
-    companion object {
-        fun provideFactory(
-            critterService: CritterService,
-        ): ViewModelProvider.Factory =
-            object : ViewModelProvider.Factory {
-                @Suppress("UNCHECKED_CAST")
-                override fun <T : ViewModel> create(modelClass: Class<T>): T {
-                    return UniClashViewModel(
-                        critterService
-                    ) as T
-                }
-            }
-    }
-
     fun loadCritter(id: Int) {
         viewModelScope.launch {
             critter.update { it.copy(isLoading = true) }
@@ -114,6 +100,22 @@ class UniClashViewModel(
             }
         }
     }
+
+    companion object {
+        fun provideFactory(
+            critterService: CritterService,
+        ): ViewModelProvider.Factory =
+            object : ViewModelProvider.Factory {
+                @Suppress("UNCHECKED_CAST")
+                override fun <T : ViewModel> create(modelClass: Class<T>): T {
+                    return UniClashViewModel(
+                        critterService
+                    ) as T
+                }
+            }
+    }
+
+
 /*
 
 

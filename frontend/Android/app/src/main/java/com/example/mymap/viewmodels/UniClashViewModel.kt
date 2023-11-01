@@ -32,7 +32,7 @@ sealed interface CritterUIState {
 class UniClashViewModel(
     private val critterService: CritterService,
 ) : ViewModel() {
-
+    //TAG for logging
     private val TAG = UniClashViewModel::class.java.simpleName
     val critters = MutableStateFlow(
         CrittersUIState.HasEntries(
@@ -49,25 +49,25 @@ class UniClashViewModel(
 
     init {
         viewModelScope.launch {
-            Log.d(TAG, "Fetching initial todo list data: ")
+            Log.d(TAG, "Fetching initial critters data: ")
             loadCritters()
         }
     }
 
     @SuppressLint("MissingPermission")
+    //loads all critters inside the database
     fun loadCritters() {
         viewModelScope.launch {
             critters.update { it.copy(isLoading = true) }
             try {
-                println("Geht")
                 val response = critterService.getCritters().enqueue()
-                println("Geht2")
                 Log.d(TAG, "loadCritters: $response")
                 if (response.isSuccessful) {
-                    println("Gehtsuccessfull")
                     Log.d(TAG, "loadCritters: success")
+                    //creates a critters list based on the fetched data
                     val critters = response.body()!!
                     Log.d(TAG, "loadCritters: $critters")
+                    //replaces the critters list inside the UI state with the fetched data
                     this@UniClashViewModel.critters.update {
                         it.copy(
                             critters = critters,

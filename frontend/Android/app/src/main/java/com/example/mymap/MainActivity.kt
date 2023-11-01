@@ -448,7 +448,6 @@ class MainActivity : ComponentActivity() {
                         .addOnFailureListener {
                             Log.e("Location_error", "${it.message}")
                         }
-
                 }
             }
             //2

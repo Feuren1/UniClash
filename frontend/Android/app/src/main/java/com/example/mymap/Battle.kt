@@ -41,6 +41,7 @@ import com.example.mymap.retrofit.CritterService
 class Battle : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        //initializes a viewmodel for further use. Uses the critterservice in order to talk to the backend
         val uniClashViewModel: UniClashViewModel by viewModels(factoryProducer = {
             UniClashViewModel.provideFactory(CritterService.getInstance(this))
         })
@@ -50,6 +51,7 @@ class Battle : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
+                    //creates the pokemongame composable (name should be critterBattle)
                     PokemonGame(uniClashViewModel)
                 }
 

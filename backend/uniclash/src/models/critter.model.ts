@@ -12,31 +12,26 @@ export class Critter extends Entity {
 
   @property({
     type: 'string',
-    required: true,
   })
   name: string;
 
   @property({
     type: 'number',
-    required: true,
   })
   baseHealth: number;
 
   @property({
     type: 'number',
-    required: true,
   })
   baseSpeed: number;
 
   @property({
     type: 'number',
-    required: true,
   })
   baseAttack: number;
 
   @property({
     type: 'number',
-    required: true,
   })
   baseDefend: number;
 

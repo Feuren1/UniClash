@@ -3,3 +3,8 @@ export * from './critter-copy.repository';
 export * from './critter.repository';
 export * from './item-copy.repository';
 export * from './item.repository';
+export * from './arena.repository';
+export * from './attack.repository';
+export * from './type.repository';
+export * from './student-hub.repository';
+export * from './wild-encounter.repository';

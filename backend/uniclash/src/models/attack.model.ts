@@ -1,7 +1,7 @@
 import {Entity, model, property} from '@loopback/repository';
 
 @model()
-export class Trainer extends Entity {
+export class Attack extends Entity {
   @property({
     type: 'number',
     id: true,
@@ -10,24 +10,24 @@ export class Trainer extends Entity {
   id?: number;
 
   @property({
-    type: 'number',
-    default: 0,
+    type: 'string',
   })
-  credits?: number;
+  name?: string;
 
   @property({
     type: 'number',
-    default: 0,
+    default: 100,
   })
-  playerGeoLocation?: number;
+  strength?: number;
 
-  constructor(data?: Partial<Trainer>) {
+
+  constructor(data?: Partial<Attack>) {
     super(data);
   }
 }
 
-export interface TrainerRelations {
+export interface AttackRelations {
   // describe navigational properties here
 }
 
-export type TrainerWithRelations = Trainer & TrainerRelations;
+export type AttackWithRelations = Attack & AttackRelations;

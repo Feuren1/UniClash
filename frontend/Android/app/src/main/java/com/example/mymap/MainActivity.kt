@@ -71,13 +71,14 @@ import kotlin.text.toDoubleOrNull
 
 class MainActivity : ComponentActivity() {
     private lateinit var fusedLocationClient: FusedLocationProviderClient
-    private val locationPermissions = arrayOf( //array ONLY for location Permissions!!!
+    private val locationPermissions = arrayOf(
+        //array ONLY for location Permissions!!!
         Manifest.permission.ACCESS_COARSE_LOCATION,
         Manifest.permission.ACCESS_FINE_LOCATION,
     )
     private var startMapRequested by mutableStateOf(false)
-    private var mainLatitude : Double by mutableStateOf(0.0) //for gps location
-    private var mainLongitude : Double by mutableStateOf(0.0)//"
+    private var mainLatitude: Double by mutableStateOf(0.0) //for gps location
+    private var mainLongitude: Double by mutableStateOf(0.0)//"
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -154,6 +155,7 @@ class MainActivity : ComponentActivity() {
             )
         }
     }
+
     @Composable
     fun Map() {
         var gpsLocation = rememberMarkerState()
@@ -161,8 +163,14 @@ class MainActivity : ComponentActivity() {
         LaunchedEffect(Unit) {
             while (true) {
                 val tolerance = 0.001 //0.0001 before
-                if (Math.abs(mainLatitude - cameraState.geoPoint.latitude) > tolerance || Math.abs(mainLongitude - cameraState.geoPoint.longitude) > tolerance) {
-                    Log.d(LOCATION_TAG, "$mainLatitude and ${cameraState.geoPoint.latitude} ---- $mainLongitude and ${cameraState.geoPoint.longitude}")
+                if (Math.abs(mainLatitude - cameraState.geoPoint.latitude) > tolerance || Math.abs(
+                        mainLongitude - cameraState.geoPoint.longitude
+                    ) > tolerance
+                ) {
+                    Log.d(
+                        LOCATION_TAG,
+                        "$mainLatitude and ${cameraState.geoPoint.latitude} ---- $mainLongitude and ${cameraState.geoPoint.longitude}"
+                    )
                     cameraState.geoPoint = GeoPoint(mainLatitude, mainLongitude)
                     cameraState.zoom = 20.5
                     gpsLocation.geoPoint = GeoPoint(mainLatitude, mainLongitude)
@@ -228,8 +236,28 @@ class MainActivity : ComponentActivity() {
             )
             Marker(
                 state = gpsLocation,
-                icon = arrow
-            )
+                icon = arrow,
+                title = "NamePlaceholder",
+                snippet = ":)"
+            ) {
+                Column(
+                    modifier = Modifier
+                        .size(250.dp)
+                        .background(
+                            color = Color.Black.copy(alpha = 0.75f),
+                            shape = RoundedCornerShape(7.dp)
+                        ),
+                    verticalArrangement = Arrangement.Center,
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    Text(text = it.title, fontSize = 20.sp, color = Color.White)
+                    Text(text = it.snippet, fontSize = 15.sp, color = Color.White)
+                    Spacer(modifier = Modifier.height(8.dp))
+
+                    OpenMenuActivityButton(context)
+                }
+            }
+
             Marker(
                 state = googleHeadQuarter,
                 icon = prc2duck
@@ -325,7 +353,24 @@ class MainActivity : ComponentActivity() {
         }
     }
 
-    fun resizeDrawableTo50x50(context: Context, @DrawableRes drawableRes: Int): Drawable?{
+    @Composable
+    fun OpenMenuActivityButton(context: Context) {
+        Button(
+            onClick = {
+                // Handle the button click to open the new activity here
+                val intent = Intent(context, MenuActivity::class.java)
+                this.startActivity(intent)
+            },
+            modifier = Modifier
+                .padding(2.dp)
+                .size(100.dp)
+
+        ) {
+            Text("Menu")
+        }
+    }
+
+    fun resizeDrawableTo50x50(context: Context, @DrawableRes drawableRes: Int): Drawable? {
         val originalDrawable: Drawable? = context.getDrawable(drawableRes)
 
         val originalBitmap = originalDrawable?.toBitmap()
@@ -343,7 +388,7 @@ class MainActivity : ComponentActivity() {
         return BitmapDrawable(context.resources, scaledBitmap)
     }
 
-    fun resizeDrawableTo60x60(context: Context, @DrawableRes drawableRes: Int): Drawable?{
+    fun resizeDrawableTo60x60(context: Context, @DrawableRes drawableRes: Int): Drawable? {
         val originalDrawable: Drawable? = context.getDrawable(drawableRes)
 
         val originalBitmap = originalDrawable?.toBitmap()
@@ -400,10 +445,11 @@ class MainActivity : ComponentActivity() {
 
 //A callback for receiving notifications from the FusedLocationProviderClient.
     lateinit var locationCallback: LocationCallback
+
     //The main entry point for interacting with the Fused Location Provider
     lateinit var locationProvider: FusedLocationProviderClient
 
-    companion object{
+    companion object {
         private const val LOCATION_TAG = "MyLocationTag"
     }
 

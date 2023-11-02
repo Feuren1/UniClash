@@ -69,7 +69,7 @@ import org.osmdroid.util.GeoPoint
 import java.util.concurrent.TimeUnit
 import kotlin.text.toDoubleOrNull
 
-class MainActivity : ComponentActivity() {
+class MenuActivity : ComponentActivity() {
     private lateinit var fusedLocationClient: FusedLocationProviderClient
     private val locationPermissions = arrayOf( //array ONLY for location Permissions!!!
         Manifest.permission.ACCESS_COARSE_LOCATION,
@@ -305,7 +305,7 @@ class MainActivity : ComponentActivity() {
                 icon = arena
             )
         }
-//        OpenActivityButton()
+        OpenActivityButton()
     }
 
     @Composable

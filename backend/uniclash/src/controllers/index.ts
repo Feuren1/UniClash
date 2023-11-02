@@ -8,3 +8,6 @@ export * from './critter.controller';
 export * from './critter-copy-attack.controller';
 export * from './attack-critter-copy.controller';
 export * from './critter-copy.controller';
+export * from './attack.controller';
+export * from './arena.controller';
+export * from './student-hub.controller';

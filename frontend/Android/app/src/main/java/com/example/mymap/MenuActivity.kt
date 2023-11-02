@@ -18,8 +18,10 @@ import androidx.activity.viewModels
 import androidx.annotation.DrawableRes
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -27,6 +29,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
@@ -46,6 +49,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
@@ -75,6 +79,8 @@ import kotlin.text.toDoubleOrNull
 
 class MenuActivity : ComponentActivity() {
 
+    private var buttonRequest by mutableStateOf(0)
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -98,14 +104,18 @@ class MenuActivity : ComponentActivity() {
             horizontalAlignment = Alignment.Start
         ) {
             MenuHeader()
-//            Button(onClick = ) {
-                Text(text = "Critters List", fontSize = menuFontSize)
-//            }
+            Text(text = "Critters List", fontSize = menuFontSize)
             Text(text = "Inventar", fontSize = menuFontSize)
             Text(text = "Pokedex", fontSize = menuFontSize)
             Text(text = "Fix Location Camera on/off", fontSize = menuFontSize)
             Text(text = "New Building", fontSize = menuFontSize)
+            Text(text = "Battle Activity", fontSize = menuFontSize, modifier = Modifier.clickable { buttonRequest = 6 })
             OpenBattleActivityButton()
+        }
+        if(buttonRequest == 6) {
+            val intent = Intent(this, Battle::class.java)
+            this.startActivity(intent)
+            buttonRequest = 0
         }
     }
 
@@ -121,6 +131,15 @@ class MenuActivity : ComponentActivity() {
         )
     }
 
+   /* @Composable
+    fun OpenBattleActivity() {
+        if(buttonRequest == 6) {
+            val intent = Intent(this, Battle::class.java)
+            this.startActivity(intent)
+            buttonRequest = 0
+        }
+    }*/
+
     @Composable
     fun OpenBattleActivityButton() {
         Button(
@@ -131,10 +150,19 @@ class MenuActivity : ComponentActivity() {
             },
             modifier = Modifier
                 .padding(2.dp)
-                .size(100.dp)
-
+                .width(200.dp)
+                .height(50.dp)
         ) {
-            Text("Open Another Activity")
+            Box(
+                modifier = Modifier.fillMaxSize(), // Füllt den gesamten Button-Bereich aus
+                contentAlignment = Alignment.CenterStart // Linksbündige Ausrichtung
+            ) {
+                Text(
+                    text = "Open Another Activity",
+                    color = Color.Black, // Schwarzer Text
+                    style = TextStyle(textAlign = TextAlign.Start)
+                )
+            }
         }
     }
 

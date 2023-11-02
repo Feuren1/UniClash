@@ -18,6 +18,7 @@ import androidx.activity.viewModels
 import androidx.annotation.DrawableRes
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -82,10 +83,66 @@ class MenuActivity : ComponentActivity() {
                 modifier = Modifier.fillMaxSize(),
                 color = MaterialTheme.colorScheme.background
             ) {
-                Text(
-                    text = "Text"
-                )
+                MenuCategories()
             }
+        }
+    }
+
+    @Composable
+    fun MenuCategories() {
+        val menuFontSize = 20.sp // Define a single font size
+
+        Column(
+            modifier = Modifier.fillMaxSize(),
+            verticalArrangement = Arrangement.Top,
+            horizontalAlignment = Alignment.Start
+        ) {
+            MenuHeader()
+//            Button(onClick = ) {
+                Text(text = "Critters List", fontSize = menuFontSize)
+//            }
+            Text(text = "Inventar", fontSize = menuFontSize)
+            Text(text = "Pokedex", fontSize = menuFontSize)
+            Text(text = "Fix Location Camera on/off", fontSize = menuFontSize)
+            Text(text = "New Building", fontSize = menuFontSize)
+            OpenBattleActivityButton()
+        }
+    }
+
+
+    @Composable
+    fun MenuHeader() {
+        Text(
+            text = "Menu",
+            fontSize = 50.sp, // Adjust the font size as needed
+            fontWeight = FontWeight.Bold, // Use FontWeight.Bold for bold text
+            textAlign = TextAlign.Start,
+            modifier = Modifier.padding(vertical = 16.dp) // Add vertical padding
+        )
+    }
+
+    @Composable
+    fun OpenBattleActivityButton() {
+        Button(
+            onClick = {
+                // Handle the button click to open the new activity here
+                val intent = Intent(this, Battle::class.java)
+                this.startActivity(intent)
+            },
+            modifier = Modifier
+                .padding(2.dp)
+                .size(100.dp)
+
+        ) {
+            Text("Open Another Activity")
+        }
+    }
+
+    @Preview(showBackground = true)
+    @Composable
+    fun MenuActivityPreview() {
+        MyMapTheme {
+            MenuCategories()
         }
     }
 }

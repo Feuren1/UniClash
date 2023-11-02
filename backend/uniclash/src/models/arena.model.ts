@@ -22,9 +22,14 @@ export class Arena extends Entity {
   description?: string;
 
   @property({
-    type: 'geopoint',
+    type: 'number',
   })
-  arenaGeoLocation?: string;
+  lat?: number;
+
+  @property({
+    type: 'number',
+  })
+  lon?: number;
 
   constructor(data?: Partial<Arena>) {
     super(data);

@@ -26,9 +26,9 @@ class BattleLogic(private val playerCritter: Critter, private val cpuCritter: Cr
     }
 
     fun checkWinner() {
-        if (playerCritter.hp <= 0) {
+        if (playerCritter.baseHealth <= 0) {
             playerWinner = true
-        } else if (cpuCritter.hp <= 0) {
+        } else if (cpuCritter.baseHealth <= 0) {
             cpuWinner = true
         }
     }

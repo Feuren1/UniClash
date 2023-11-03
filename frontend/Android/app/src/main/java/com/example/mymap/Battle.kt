@@ -39,6 +39,7 @@ import com.example.mymap.viewmodels.UniClashViewModel
 import com.example.mymap.retrofit.CritterService
 
 class Battle : ComponentActivity() {
+    //TODO Rename into BattleActivity
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         //initializes a viewmodel for further use. Uses the critterservice in order to talk to the backend

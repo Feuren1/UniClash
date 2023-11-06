@@ -53,6 +53,7 @@ import androidx.compose.ui.unit.sp
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.graphics.drawable.toBitmap
+import com.example.mymap.datatypes.CritterPic
 import com.example.mymap.ui.theme.MyMapTheme
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationCallback
@@ -160,6 +161,30 @@ class MapActivity : ComponentActivity() {
         val fontys = rememberMarkerState(
             geoPoint = GeoPoint(51.353576, 6.154071)
         )
+        val fontys2 = rememberMarkerState(
+            geoPoint = GeoPoint(51.353202, 6.155364)
+        )
+        val fontys3 = rememberMarkerState(
+            geoPoint = GeoPoint(51.353874, 6.154997)
+        )
+        val fontys4 = rememberMarkerState(
+            geoPoint = GeoPoint(51.353957, 6.155411)
+        )
+        val fontys5 = rememberMarkerState(
+            geoPoint = GeoPoint(51.353664, 6.153355)
+        )
+        val fontys6 = rememberMarkerState(
+            geoPoint = GeoPoint(51.354525, 6.154630)
+        )
+        val fontys7 = rememberMarkerState(
+            geoPoint = GeoPoint(51.354498, 6.155258)
+        )
+        val fontys8 = rememberMarkerState(
+            geoPoint = GeoPoint(51.352961, 6.153919)
+        )
+        val fontys9 = rememberMarkerState(
+            geoPoint = GeoPoint(51.354002, 6.152986)
+        )
         val googleHeadQuarter = rememberMarkerState(
             geoPoint = GeoPoint(37.421304, -122.085330)
         )
@@ -185,7 +210,40 @@ class MapActivity : ComponentActivity() {
 
         // define marker icon
         val prc2duck: Drawable? by remember {
-            mutableStateOf(resizeDrawableTo50x50(context, R.drawable.prc2duck))
+            val drawableOne = CritterPic.PRC2DUCK.getDrawable()
+            mutableStateOf(resizeDrawableTo50x50(context, CritterPic.PRC2DUCK.getDrawable()))
+        }
+        val knifeDuck: Drawable? by remember {
+            val drawableOne = CritterPic.PRC2DUCK.getDrawable()
+            mutableStateOf(resizeDrawableTo50x50(context, CritterPic.KNIFEDUCK.getDrawable()))
+        }
+        val demoMusk: Drawable? by remember {
+            val drawableOne = CritterPic.PRC2DUCK.getDrawable()
+            mutableStateOf(resizeDrawableTo50x50(context, CritterPic.DEMOMUSK.getDrawable()))
+        }
+        val musk: Drawable? by remember {
+            val drawableOne = CritterPic.PRC2DUCK.getDrawable()
+            mutableStateOf(resizeDrawableTo50x50(context, CritterPic.MUSK.getDrawable()))
+        }
+        val mockito: Drawable? by remember {
+            val drawableOne = CritterPic.PRC2DUCK.getDrawable()
+            mutableStateOf(resizeDrawableTo50x50(context, CritterPic.MOCKITO.getDrawable()))
+        }
+        val quizizzdragon: Drawable? by remember {
+            val drawableOne = CritterPic.PRC2DUCK.getDrawable()
+            mutableStateOf(resizeDrawableTo50x50(context, CritterPic.QUIZIZZDRAGON.getDrawable()))
+        }
+        val fontysCritter: Drawable? by remember {
+            val drawableOne = CritterPic.PRC2DUCK.getDrawable()
+            mutableStateOf(resizeDrawableTo50x50(context, CritterPic.FONTYS.getDrawable()))
+        }
+        val linuxPingiun: Drawable? by remember {
+            val drawableOne = CritterPic.PRC2DUCK.getDrawable()
+            mutableStateOf(resizeDrawableTo50x50(context, CritterPic.LinuyPINGIUN.getDrawable()))
+        }
+        val pikatchu: Drawable? by remember {
+            val drawableOne = CritterPic.PRC2DUCK.getDrawable()
+            mutableStateOf(resizeDrawableTo50x50(context, CritterPic.PIKATCHU.getDrawable()))
         }
 
         val arrow: Drawable? by remember {
@@ -209,6 +267,38 @@ class MapActivity : ComponentActivity() {
             Marker(
                 state = fontys,
                 icon = prc2duck
+            )
+            Marker(
+                state = fontys2,
+                icon = knifeDuck
+            )
+            Marker(
+                state = fontys3,
+                icon = demoMusk
+            )
+            Marker(
+                state = fontys4,
+                icon = musk
+            )
+            Marker(
+                state = fontys5,
+                icon = mockito
+            )
+            Marker(
+                state = fontys6,
+                icon = quizizzdragon
+            )
+            Marker(
+                state = fontys7,
+                icon = fontysCritter
+            )
+            Marker(
+                state = fontys8,
+                icon = linuxPingiun
+            )
+            Marker(
+                state = fontys9,
+                icon = pikatchu
             )
             Marker(
                 state = gpsLocation,

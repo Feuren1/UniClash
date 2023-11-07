@@ -219,7 +219,7 @@ class MapActivity : ComponentActivity() {
             geoPoint = GeoPoint(51.4959040534788, 6.294253058731556)
         )
         val homeArena = rememberMarkerState(
-            geoPoint = GeoPoint(51.496723, 6.294844)
+            geoPoint = GeoPoint(51.495723, 6.294844)
         )
         val context = LocalContext.current
 

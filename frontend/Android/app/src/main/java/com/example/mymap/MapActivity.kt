@@ -194,6 +194,12 @@ class MapActivity : ComponentActivity() {
         val fontys12 = rememberMarkerState(
             geoPoint = GeoPoint(51.353980, 6.153360)
         )
+        val fontysArena = rememberMarkerState(
+            geoPoint = GeoPoint(51.353980, 6.153360)
+        )
+        val fontysShop = rememberMarkerState(
+            geoPoint = GeoPoint(51.353670, 6.154974)
+        )
         val googleHeadQuarter = rememberMarkerState(
             geoPoint = GeoPoint(37.421304, -122.085330)
         )
@@ -219,51 +225,39 @@ class MapActivity : ComponentActivity() {
 
         // define marker icon
         val prc2duck: Drawable? by remember {
-            val drawableOne = CritterPic.PRC2DUCK.getDrawable()
             mutableStateOf(resizeDrawableTo50x50(context, CritterPic.PRC2DUCK.getDrawable()))
         }
         val knifeDuck: Drawable? by remember {
-            val drawableOne = CritterPic.PRC2DUCK.getDrawable()
             mutableStateOf(resizeDrawableTo50x50(context, CritterPic.KNIFEDUCK.getDrawable()))
         }
         val demoMusk: Drawable? by remember {
-            val drawableOne = CritterPic.PRC2DUCK.getDrawable()
             mutableStateOf(resizeDrawableTo50x50(context, CritterPic.DEMOMUSK.getDrawable()))
         }
         val musk: Drawable? by remember {
-            val drawableOne = CritterPic.PRC2DUCK.getDrawable()
             mutableStateOf(resizeDrawableTo50x50(context, CritterPic.MUSK.getDrawable()))
         }
         val mockito: Drawable? by remember {
-            val drawableOne = CritterPic.PRC2DUCK.getDrawable()
             mutableStateOf(resizeDrawableTo50x50(context, CritterPic.MOCKITO.getDrawable()))
         }
         val quizizzdragon: Drawable? by remember {
-            val drawableOne = CritterPic.PRC2DUCK.getDrawable()
             mutableStateOf(resizeDrawableTo50x50(context, CritterPic.QUIZIZZDRAGON.getDrawable()))
         }
         val fontysCritter: Drawable? by remember {
-            val drawableOne = CritterPic.PRC2DUCK.getDrawable()
             mutableStateOf(resizeDrawableTo50x50(context, CritterPic.FONTYS.getDrawable()))
         }
         val linuxPingiun: Drawable? by remember {
-            val drawableOne = CritterPic.PRC2DUCK.getDrawable()
             mutableStateOf(resizeDrawableTo50x50(context, CritterPic.LinuyPINGIUN.getDrawable()))
         }
         val pikatchu: Drawable? by remember {
-            val drawableOne = CritterPic.PRC2DUCK.getDrawable()
             mutableStateOf(resizeDrawableTo50x50(context, CritterPic.PIKATCHU.getDrawable()))
         }
         val borzoi: Drawable? by remember {
-            val drawableOne = CritterPic.PRC2DUCK.getDrawable()
             mutableStateOf(resizeDrawableTo50x50(context, CritterPic.BORZOI.getDrawable()))
         }
         val coolDuck: Drawable? by remember {
-            val drawableOne = CritterPic.PRC2DUCK.getDrawable()
             mutableStateOf(resizeDrawableTo50x50(context, CritterPic.COOLDUCK.getDrawable()))
         }
         val knifeTurtle: Drawable? by remember {
-            val drawableOne = CritterPic.PRC2DUCK.getDrawable()
             mutableStateOf(resizeDrawableTo50x50(context, CritterPic.KNIFETURTLE.getDrawable()))
         }
 
@@ -398,6 +392,62 @@ class MapActivity : ComponentActivity() {
                         contentDescription = null, // Provide a proper content description if needed
                         modifier = Modifier.size(240.dp) // Adjust size as needed
                     )
+                }
+            }
+            Marker(
+                state = fontysShop,
+                icon = studentHub,
+                title = "Fontys Shop",
+                snippet = "Free Coffe coups"
+            ) {
+                Column(
+                    modifier = Modifier
+                        .size(350.dp)
+                        .background(
+                            color = Color.Black.copy(alpha = 0.75f),
+                            shape = RoundedCornerShape(7.dp)
+                        ),
+                    verticalArrangement = Arrangement.Center,
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    Text(text = it.title, fontSize = 20.sp, color = Color.White)
+                    Text(text = it.snippet, fontSize = 15.sp, color = Color.White)
+                    Spacer(modifier = Modifier.height(8.dp))
+                    val drawableImage = painterResource(id = R.drawable.googleheadquarter)
+                    Image(
+                        painter = drawableImage,
+                        contentDescription = null, // Provide a proper content description if needed
+                        modifier = Modifier.size(240.dp) // Adjust size as needed
+                    )
+                    OpenMenuActivityButton(context)
+                }
+            }
+            Marker(
+                state = fontysArena,
+                icon = arena,
+                title = "Fontys Arena",
+                snippet = "fight!"
+            ) {
+                Column(
+                    modifier = Modifier
+                        .size(350.dp)
+                        .background(
+                            color = Color.Black.copy(alpha = 0.75f),
+                            shape = RoundedCornerShape(7.dp)
+                        ),
+                    verticalArrangement = Arrangement.Center,
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    Text(text = it.title, fontSize = 20.sp, color = Color.White)
+                    Text(text = it.snippet, fontSize = 15.sp, color = Color.White)
+                    Spacer(modifier = Modifier.height(8.dp))
+                    val drawableImage = painterResource(id = R.drawable.googleheadquarter)
+                    Image(
+                        painter = drawableImage,
+                        contentDescription = null, // Provide a proper content description if needed
+                        modifier = Modifier.size(240.dp) // Adjust size as needed
+                    )
+                    OpenMenuActivityButton(context)
                 }
             }
             Marker(

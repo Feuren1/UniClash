@@ -61,7 +61,6 @@ export class CritterCopyAttackController {
           schema: getModelSchemaRef(Attack, {
             title: 'NewAttackInCritterCopy',
             exclude: ['id'],
-            optional: ['critterCopyId']
           }),
         },
       },

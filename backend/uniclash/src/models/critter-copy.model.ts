@@ -37,11 +37,6 @@ export class CritterCopy extends Entity {
   @hasMany(() => Attack)
   attacks: Attack[];
 
-  @property({
-    type: 'number',
-  })
-  attackId?: number;
-
   constructor(data?: Partial<CritterCopy>) {
     super(data);
   }

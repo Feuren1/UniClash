@@ -9,3 +9,6 @@ export * from './type.model';
 export * from './arena.model';
 export * from './student-hub.model';
 export * from './wild-encounter.model';
+export * from './user.model';
+export * from './user-credentials.model';
+export * from './refresh-token.model';

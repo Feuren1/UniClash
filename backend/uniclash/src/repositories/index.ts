@@ -8,3 +8,6 @@ export * from './attack.repository';
 export * from './type.repository';
 export * from './student-hub.repository';
 export * from './wild-encounter.repository';
+export * from './user.repository';
+export * from './refresh-token.repository';
+export * from './user-credentials.repository';

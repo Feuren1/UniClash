@@ -16,6 +16,8 @@ import {
   UserServiceBindings,
 } from '@loopback/authentication-jwt';
 import {DbDataSource} from './datasources';
+import { MyUserService } from './services/user.service';
+import { UserRepository } from './repositories';
 export {ApplicationConfig};
 
 export class UniclashApplication extends BootMixin(
@@ -51,5 +53,12 @@ export class UniclashApplication extends BootMixin(
     this.component(JWTAuthenticationComponent);
     // Bind datasource
     this.dataSource(DbDataSource, UserServiceBindings.DATASOURCE_NAME);
+
+    this.bind(UserServiceBindings.USER_SERVICE).toClass(
+      MyUserService
+      ),
+    this.bind(UserServiceBindings.USER_REPOSITORY).toClass(
+      UserRepository
+    )
   }
 }

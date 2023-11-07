@@ -14,6 +14,9 @@ enum class CritterPic(private val drawableResId: Int) {
     QUIZIZZDRAGON(R.drawable.quizizzdragon),
     FONTYS(R.drawable.fontys),
     LinuyPINGIUN(R.drawable.linuxpingiun),
+    KNIFETURTLE(R.drawable.knifeturtle),
+    COOLDUCK(R.drawable.coolduck),
+    BORZOI(R.drawable.borzoi),
     PIKATCHU(R.drawable.pikatchu);
 
     fun getDrawable(): Int {

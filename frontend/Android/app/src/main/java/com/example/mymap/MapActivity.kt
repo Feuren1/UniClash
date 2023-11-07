@@ -185,6 +185,15 @@ class MapActivity : ComponentActivity() {
         val fontys9 = rememberMarkerState(
             geoPoint = GeoPoint(51.354002, 6.152986)
         )
+        val fontys10 = rememberMarkerState(
+            geoPoint = GeoPoint(51.354084, 6.153883)
+        )
+        val fontys11 = rememberMarkerState(
+            geoPoint = GeoPoint(51.354285, 6.154766)
+        )
+        val fontys12 = rememberMarkerState(
+            geoPoint = GeoPoint(51.353980, 6.153360)
+        )
         val googleHeadQuarter = rememberMarkerState(
             geoPoint = GeoPoint(37.421304, -122.085330)
         )
@@ -245,6 +254,18 @@ class MapActivity : ComponentActivity() {
             val drawableOne = CritterPic.PRC2DUCK.getDrawable()
             mutableStateOf(resizeDrawableTo50x50(context, CritterPic.PIKATCHU.getDrawable()))
         }
+        val borzoi: Drawable? by remember {
+            val drawableOne = CritterPic.PRC2DUCK.getDrawable()
+            mutableStateOf(resizeDrawableTo50x50(context, CritterPic.BORZOI.getDrawable()))
+        }
+        val coolDuck: Drawable? by remember {
+            val drawableOne = CritterPic.PRC2DUCK.getDrawable()
+            mutableStateOf(resizeDrawableTo50x50(context, CritterPic.COOLDUCK.getDrawable()))
+        }
+        val knifeTurtle: Drawable? by remember {
+            val drawableOne = CritterPic.PRC2DUCK.getDrawable()
+            mutableStateOf(resizeDrawableTo50x50(context, CritterPic.KNIFETURTLE.getDrawable()))
+        }
 
         val arrow: Drawable? by remember {
             mutableStateOf(resizeDrawableTo50x50(context, R.drawable.location))
@@ -299,6 +320,18 @@ class MapActivity : ComponentActivity() {
             Marker(
                 state = fontys9,
                 icon = pikatchu
+            )
+            Marker(
+                state = fontys10,
+                icon = borzoi
+            )
+            Marker(
+                state = fontys11,
+                icon = coolDuck
+            )
+            Marker(
+                state = fontys12,
+                icon = knifeTurtle
             )
             Marker(
                 state = gpsLocation,

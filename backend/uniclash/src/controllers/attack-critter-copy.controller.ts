@@ -16,21 +16,20 @@ import {
   requestBody,
 } from '@loopback/rest';
 import {
-  Critter,
+  Attack,
   CritterCopy,
 } from '../models';
-import {CritterRepository} from '../repositories';
-import {authenticate} from '@loopback/authentication';
-//@authenticate('jwt')
-export class CritterCritterCopyController {
+import {AttackRepository} from '../repositories';
+
+export class AttackCritterCopyController {
   constructor(
-    @repository(CritterRepository) protected critterRepository: CritterRepository,
+    @repository(AttackRepository) protected attackRepository: AttackRepository,
   ) { }
 
-  @get('/critters/{id}/critter-copies', {
+  @get('/attacks/{id}/critter-copies', {
     responses: {
       '200': {
-        description: 'Array of Critter has many CritterCopy',
+        description: 'Array of Attack has many CritterCopy',
         content: {
           'application/json': {
             schema: {type: 'array', items: getModelSchemaRef(CritterCopy)},
@@ -43,38 +42,38 @@ export class CritterCritterCopyController {
     @param.path.number('id') id: number,
     @param.query.object('filter') filter?: Filter<CritterCopy>,
   ): Promise<CritterCopy[]> {
-    return this.critterRepository.critterCopies(id).find(filter);
+    return this.attackRepository.critterCopies(id).find(filter);
   }
 
-  @post('/critters/{id}/critter-copies', {
+  @post('/attacks/{id}/critter-copies', {
     responses: {
       '200': {
-        description: 'Critter model instance',
+        description: 'Attack model instance',
         content: {'application/json': {schema: getModelSchemaRef(CritterCopy)}},
       },
     },
   })
   async create(
-    @param.path.number('id') id: typeof Critter.prototype.id,
+    @param.path.number('id') id: typeof Attack.prototype.id,
     @requestBody({
       content: {
         'application/json': {
           schema: getModelSchemaRef(CritterCopy, {
-            title: 'NewCritterCopyInCritter',
+            title: 'NewCritterCopyInAttack',
             exclude: ['id'],
-            optional: ['critterId']
+            optional: ['attackId']
           }),
         },
       },
     }) critterCopy: Omit<CritterCopy, 'id'>,
   ): Promise<CritterCopy> {
-    return this.critterRepository.critterCopies(id).create(critterCopy);
+    return this.attackRepository.critterCopies(id).create(critterCopy);
   }
 
-  @patch('/critters/{id}/critter-copies', {
+  @patch('/attacks/{id}/critter-copies', {
     responses: {
       '200': {
-        description: 'Critter.CritterCopy PATCH success count',
+        description: 'Attack.CritterCopy PATCH success count',
         content: {'application/json': {schema: CountSchema}},
       },
     },
@@ -91,13 +90,13 @@ export class CritterCritterCopyController {
     critterCopy: Partial<CritterCopy>,
     @param.query.object('where', getWhereSchemaFor(CritterCopy)) where?: Where<CritterCopy>,
   ): Promise<Count> {
-    return this.critterRepository.critterCopies(id).patch(critterCopy, where);
+    return this.attackRepository.critterCopies(id).patch(critterCopy, where);
   }
 
-  @del('/critters/{id}/critter-copies', {
+  @del('/attacks/{id}/critter-copies', {
     responses: {
       '200': {
-        description: 'Critter.CritterCopy DELETE success count',
+        description: 'Attack.CritterCopy DELETE success count',
         content: {'application/json': {schema: CountSchema}},
       },
     },
@@ -106,6 +105,7 @@ export class CritterCritterCopyController {
     @param.path.number('id') id: number,
     @param.query.object('where', getWhereSchemaFor(CritterCopy)) where?: Where<CritterCopy>,
   ): Promise<Count> {
-    return this.critterRepository.critterCopies(id).delete(where);
+    return this.attackRepository.critterCopies(id).delete(where);
   }
+
 }

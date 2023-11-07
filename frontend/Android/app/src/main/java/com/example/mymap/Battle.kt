@@ -1,6 +1,5 @@
 package com.example.mymap
 
-import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -53,7 +52,7 @@ class Battle : ComponentActivity() {
                     color = MaterialTheme.colorScheme.background
                 ) {
                     //creates the pokemongame composable (name should be critterBattle)
-                    PokemonGame(uniClashViewModel)
+                    CritterBattle(uniClashViewModel)
                 }
 
             }
@@ -62,11 +61,10 @@ class Battle : ComponentActivity() {
 }
 
 @Composable
-fun PokemonGame(uniClashViewModel: UniClashViewModel) {
+fun CritterBattle(uniClashViewModel: UniClashViewModel) {
     val uniClashUIState by uniClashViewModel.critters.collectAsState()
     val uniClashUIStateCritter by uniClashViewModel.critter.collectAsState()
     uniClashViewModel.loadCritters()
-    uniClashViewModel.loadCritter(1)
     var critterList = uniClashUIState.critters
     var critter = uniClashUIStateCritter.critter
     
@@ -92,7 +90,7 @@ fun PokemonGame(uniClashViewModel: UniClashViewModel) {
             Column() {
                 HealthBar(
                     currentHealth = playerHealth,
-                    maxHealth = playerCritter.hp,
+                    maxHealth = playerCritter.baseHealth,
                     barColor = Color.Green
                 )
                 Text(playerCritter.name)
@@ -107,7 +105,7 @@ fun PokemonGame(uniClashViewModel: UniClashViewModel) {
             Column() {
                 HealthBar(
                     currentHealth = cpuHealth,
-                    maxHealth = cpuCritter.hp,
+                    maxHealth = cpuCritter.baseHealth,
                     barColor = Color.Red
                 )
                 Text(cpuCritter.name)
@@ -133,11 +131,8 @@ fun PokemonGame(uniClashViewModel: UniClashViewModel) {
         Button(
             
             onClick = {
-                println(uniClashViewModel.loadCritter(1).toString())
-                println("uniClashViewModel.critters:" + uniClashViewModel.critters.value.critters)
-                println("uniClashViewModel.critter:" + uniClashViewModel.critter.value.critter)
+                println("Critters: $critterList")
                 println("Critter:$critter")
-
                       },
             modifier = Modifier
                 .padding(2.dp)
@@ -154,10 +149,10 @@ fun PokemonGame(uniClashViewModel: UniClashViewModel) {
                         index ->
                     Column {
                         Text(text = uniClashUIState.critters[index].name)
-                        Text(text = uniClashUIState.critters[index].hp.toString())
-                        Text(text = uniClashUIState.critters[index].atk.toString())
-                        Text(text = uniClashUIState.critters[index].def.toString())
-                        Text(text = uniClashUIState.critters[index].spd.toString())
+                        Text(text = uniClashUIState.critters[index].baseHealth.toString())
+                        Text(text = uniClashUIState.critters[index].baseAttack.toString())
+                        Text(text = uniClashUIState.critters[index].baseDefend.toString())
+                        Text(text = uniClashUIState.critters[index].baseSpeed.toString())
                         Text(text = uniClashUIState.critters[index].attack1.toString())
                         Text(text = uniClashUIState.critters[index].attack2.toString())
                         Text(text = uniClashUIState.critters[index].attack3.toString())

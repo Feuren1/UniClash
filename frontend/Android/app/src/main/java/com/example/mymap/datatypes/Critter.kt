@@ -1,19 +1,19 @@
 package com.example.mymap.datatypes
 
 data class Critter(
-   var hp: Int,
-   var atk: Int,
-   var def: Int,
-   var spd: Int,
-   val attack1: Attack?,
-   val attack2: Attack?,
-   val attack3: Attack?,
-   val attack4: Attack?,
-   val name: String
+    var baseHealth: Int,
+    var baseAttack: Int,
+    var baseDefend: Int,
+    var baseSpeed: Int,
+    val attack1: Attack?,
+    val attack2: Attack?,
+    val attack3: Attack?,
+    val attack4: Attack?,
+    val name: String
 
 ) {
     override fun toString(): String {
-        return ("$name stats: $hp $atk $def $spd")
+        return ("$name stats: $baseHealth $baseAttack $baseDefend $baseSpeed")
     }
 
     fun getAttacks(): List<Attack> {
@@ -28,11 +28,11 @@ data class Critter(
     }
 
     fun reduceHealth(amount: Int){
-        hp.minus(amount)
+        baseHealth.minus(amount)
     }
 
     fun increaseHealth(amount: Int){
-        hp.plus(amount)
+        baseHealth.plus(amount)
     }
 
 }

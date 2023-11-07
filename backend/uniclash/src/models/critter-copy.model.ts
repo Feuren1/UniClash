@@ -1,5 +1,6 @@
-import {Entity, model, property, belongsTo} from '@loopback/repository';
+import {Entity, model, property, belongsTo, hasMany} from '@loopback/repository';
 import {Critter} from './critter.model';
+import {Attack} from './attack.model';
 
 @model()
 export class CritterCopy extends Entity {
@@ -22,8 +23,24 @@ export class CritterCopy extends Entity {
   })
   expToNextLevel?: number;
 
+  @property({
+    type: 'string',
+    default: 0,
+  })
+  nature?: string;
+
+  
+
   @belongsTo(() => Critter)
   critterId: number;
+
+  @hasMany(() => Attack)
+  attacks: Attack[];
+
+  @property({
+    type: 'number',
+  })
+  attackId?: number;
 
   constructor(data?: Partial<CritterCopy>) {
     super(data);

@@ -16,9 +16,14 @@ export class StudentHub extends Entity {
   name?: string;
 
   @property({
-    type: 'geopoint',
+    type: 'number',
   })
-  studentHubGeoLocation?: string;
+  lat?: number;
+
+  @property({
+    type: 'number',
+  })
+  lon?: number;
 
   @property({
     type: 'string',

@@ -12,7 +12,7 @@ import {
 } from '../models';
 import {ItemCopyRepository} from '../repositories';
 import {authenticate} from '@loopback/authentication';
-@authenticate('jwt')
+//@authenticate('jwt')
 export class ItemCopyItemController {
   constructor(
     @repository(ItemCopyRepository)

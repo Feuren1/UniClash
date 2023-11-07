@@ -20,7 +20,7 @@ import {
 import {Critter} from '../models';
 import {CritterRepository} from '../repositories';
 import {authenticate} from '@loopback/authentication';
-@authenticate('jwt')
+//@authenticate('jwt')
 export class CritterController {
   constructor(
     @repository(CritterRepository)

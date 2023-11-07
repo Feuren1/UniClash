@@ -21,7 +21,7 @@ import {
 } from '../models';
 import {ItemRepository} from '../repositories';
 import {authenticate} from '@loopback/authentication';
-@authenticate('jwt')
+//@authenticate('jwt')
 export class ItemItemCopyController {
   constructor(
     @repository(ItemRepository) protected itemRepository: ItemRepository,

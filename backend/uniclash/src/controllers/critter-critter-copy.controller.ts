@@ -21,7 +21,7 @@ import {
 } from '../models';
 import {CritterRepository} from '../repositories';
 import {authenticate} from '@loopback/authentication';
-@authenticate('jwt')
+//@authenticate('jwt')
 export class CritterCritterCopyController {
   constructor(
     @repository(CritterRepository) protected critterRepository: CritterRepository,

@@ -29,7 +29,11 @@ export class CritterCopy extends Entity {
   })
   nature?: string;
 
-  
+  @property({
+    type: 'boolean',
+    default: 0,
+  })
+  isWild?: boolean;
 
   @belongsTo(() => Critter)
   critterId: number;

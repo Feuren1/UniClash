@@ -1,29 +1,21 @@
 // Uncomment these imports to begin using these cool features!
 
-import {authenticate, TokenService, UserService} from '@loopback/authentication';
-import {
-  Credentials,
-  MyUserService,
-  RefreshTokenService,
-  RefreshTokenServiceBindings,
-  TokenObject,
-  TokenServiceBindings,
-  User,
-  UserRepository,
-  UserServiceBindings,
-} from '@loopback/authentication-jwt';
+import {TokenService, UserService} from '@loopback/authentication';
 import {inject} from '@loopback/core';
-import {model, property, repository} from '@loopback/repository';
+import {model, property} from '@loopback/repository';
 import {
   get,
-  getModelSchemaRef,
   post,
   requestBody,
-  SchemaObject,
+  SchemaObject
 } from '@loopback/rest';
 import {SecurityBindings, securityId, UserProfile} from '@loopback/security';
 import {genSalt, hash} from 'bcryptjs';
-import _ from 'lodash';
+import {RefreshTokenServiceBindings, TokenServiceBindings, UserServiceBindings} from '../keys';
+import {User} from '../models';
+import {UserRepository} from '../repositories';
+import {Credentials} from '../services/user.service';
+import {RefreshTokenService, TokenObject} from '../types';
 
 // Describes the type of grant object taken in by method "refresh"
 type RefreshGrant = {
@@ -95,7 +87,7 @@ export class UserController {
     public userRepository: UserRepository,
     @inject(RefreshTokenServiceBindings.REFRESH_TOKEN_SERVICE)
     public refreshService: RefreshTokenService,
-  ) {}
+  ) { }
 
   @post('/users/signup', {
     responses: {

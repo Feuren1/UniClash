@@ -17,7 +17,6 @@ export class CritterStatsService {
     const critter: Critter = await this.critterRepository.findById(copy.critterId);
     const attacks: Attack[] = await this.getAttacks(copy.critterCopyAttacks);
     const actualStats: number[] = this.calculateStats(critter, copy);
-    //create instance of CritterUsable model here and change return type
 
     // Check if the attacks array is empty
     if (attacks.length === 0) {
@@ -52,7 +51,7 @@ export class CritterStatsService {
 
   async getAttacks(attacks: CritterCopyAttack[]): Promise<Attack[]> {
     const attackArray: Attack[] = [];
-
+    console.log('Received attacks: in get attacks method critterservice', attacks);
     for (const element of attacks) {
       const attack = await this.attackRepository.findById(element.attackId);
       attackArray.push(attack);

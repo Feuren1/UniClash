@@ -18,9 +18,27 @@ export class CritterStatsService {
     const attacks: Attack[] = await this.getAttacks(copy.critterCopyAttacks);
     const actualStats: number[] = this.calculateStats(critter, copy);
     //create instance of CritterUsable model here and change return type
+
+    // Check if the attacks array is empty
+    if (attacks.length === 0) {
+      // Handle the case when there are no attacks (provide a default or handle accordingly)
+      // For example, set a default name and empty attacks array:
+      const critterUsable = new CritterUsable({
+        level: copy.level,
+        name: 'No Attacks Available', // Set a default name
+        hp: actualStats[0], // Set the actual HP
+        atk: actualStats[1], // Set the actual attack
+        def: actualStats[2], // Set the actual defense
+        spd: actualStats[3], // Set the actual speed
+        attacks: [], // Set an empty array of attacks
+      });
+      return critterUsable;
+    }
+
+    // Create an instance of CritterUsable with valid attacks
     const critterUsable = new CritterUsable({
       level: copy.level,
-      name: critter.name, // Set a name as needed
+      name: critter.name, // Use the critter's name
       hp: actualStats[0], // Set the actual HP
       atk: actualStats[1], // Set the actual attack
       def: actualStats[2], // Set the actual defense

@@ -15,6 +15,7 @@ export class CritterStatsService {
   async createCritterUsable(critterCopyId: number): Promise<CritterUsable> {
     const copy: CritterCopy = await this.critterCopyRepository.findById(critterCopyId);
     const critter: Critter = await this.critterRepository.findById(copy.critterId);
+    console.log('Received attacks: createcritterusable method', copy.critterCopyAttacks);
     const attacks: Attack[] = await this.getAttacks(copy.critterCopyAttacks);
     const actualStats: number[] = this.calculateStats(critter, copy);
 
@@ -51,7 +52,7 @@ export class CritterStatsService {
 
   async getAttacks(attacks: CritterCopyAttack[]): Promise<Attack[]> {
     const attackArray: Attack[] = [];
-    console.log('Received attacks: in get attacks method critterservice', attacks);
+    console.log('Received attacks: in get attacks method c', attacks);
     for (const element of attacks) {
       const attack = await this.attackRepository.findById(element.attackId);
       attackArray.push(attack);

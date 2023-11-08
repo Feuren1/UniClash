@@ -70,7 +70,7 @@ export namespace RefreshTokenServiceBindings {
   /**
    * The backend datasource for refresh token's persistency.
    */
-  export const DATASOURCE_NAME = 'refreshdb';
+  export const DATASOURCE_NAME = 'db';
   /**
    * Key for the repository that stores the refresh token and its bound user
    * information

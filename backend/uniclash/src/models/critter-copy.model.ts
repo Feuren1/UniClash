@@ -1,6 +1,6 @@
-import {Entity, model, property, belongsTo, hasMany} from '@loopback/repository';
-import {Critter} from './critter.model';
+import {Entity, belongsTo, hasMany, model, property} from '@loopback/repository';
 import {Attack} from './attack.model';
+import {Critter} from './critter.model';
 
 @model()
 export class CritterCopy extends Entity {
@@ -14,8 +14,9 @@ export class CritterCopy extends Entity {
   @property({
     type: 'number',
     default: 1,
+    required: true,
   })
-  level?: number;
+  level: number;
 
   @property({
     type: 'number',

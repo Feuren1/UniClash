@@ -1,23 +1,23 @@
+import {AuthenticationComponent} from '@loopback/authentication';
+import {
+  JWTAuthenticationComponent,
+  UserServiceBindings
+} from '@loopback/authentication-jwt';
 import {BootMixin} from '@loopback/boot';
 import {ApplicationConfig} from '@loopback/core';
+import {RepositoryMixin} from '@loopback/repository';
+import {RestApplication} from '@loopback/rest';
 import {
   RestExplorerBindings,
   RestExplorerComponent,
 } from '@loopback/rest-explorer';
-import {RepositoryMixin} from '@loopback/repository';
-import {RestApplication} from '@loopback/rest';
 import {ServiceMixin} from '@loopback/service-proxy';
 import path from 'path';
-import {MySequence} from './sequence';
-import {AuthenticationComponent} from '@loopback/authentication';
-import {
-  JWTAuthenticationComponent,
-  SECURITY_SCHEME_SPEC,
-  UserServiceBindings,
-} from '@loopback/authentication-jwt';
 import {DbDataSource} from './datasources';
-import { MyUserService } from './services/user.service';
-import { UserRepository } from './repositories';
+import {UserRepository} from './repositories';
+import {MySequence} from './sequence';
+import {CritterStatsService} from './services/critter-stats.service';
+import {MyUserService} from './services/user.service';
 export {ApplicationConfig};
 
 export class UniclashApplication extends BootMixin(
@@ -25,7 +25,7 @@ export class UniclashApplication extends BootMixin(
 ) {
   constructor(options: ApplicationConfig = {}) {
     super(options);
-
+    this.service(CritterStatsService);
     // Set up the custom sequence
     this.sequence(MySequence);
 
@@ -56,9 +56,9 @@ export class UniclashApplication extends BootMixin(
 
     this.bind(UserServiceBindings.USER_SERVICE).toClass(
       MyUserService
-      ),
-    this.bind(UserServiceBindings.USER_REPOSITORY).toClass(
-      UserRepository
-    )
+    ),
+      this.bind(UserServiceBindings.USER_REPOSITORY).toClass(
+        UserRepository
+      )
   }
 }

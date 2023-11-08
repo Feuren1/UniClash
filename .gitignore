@@ -296,3 +296,4 @@ xcuserdata/
 ## Xcode 8 and earlier
 *.xcscmblueprint
 *.xccheckout
+backend/uniclash/src/datasources/db.datasource.ts

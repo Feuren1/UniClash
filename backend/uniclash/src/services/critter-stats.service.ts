@@ -16,7 +16,10 @@ export class CritterStatsService {
     const copy: CritterCopy = await this.critterCopyRepository.findById(critterCopyId);
     const critter: Critter = await this.critterRepository.findById(copy.critterId);
     console.log('Received attacks: createcritterusable method', copy.critterCopyAttacks);
-    const attacks: Attack[] = await this.getAttacks(copy.critterCopyAttacks);
+    const critterAttacksToRetrieveActual: CritterCopyAttack[] = await this.critterCopyAttackRepository.find({
+      where: {critterCopyId: critterCopyId} // Apply any additional filters provided
+    });
+    const attacks: Attack[] = await this.getAttacks(critterAttacksToRetrieveActual);
     const actualStats: number[] = this.calculateStats(critter, copy);
 
     // Check if the attacks array is empty
@@ -51,6 +54,8 @@ export class CritterStatsService {
 
 
   async getAttacks(attacks: CritterCopyAttack[]): Promise<Attack[]> {
+
+
     const attackArray: Attack[] = [];
     console.log('Received attacks: in get attacks method c', attacks);
     for (const element of attacks) {

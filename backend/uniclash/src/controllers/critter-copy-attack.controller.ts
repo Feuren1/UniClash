@@ -7,13 +7,13 @@ import {
   Where,
 } from '@loopback/repository';
 import {
-  post,
-  param,
+  del,
   get,
   getModelSchemaRef,
+  param,
   patch,
+  post,
   put,
-  del,
   requestBody,
   response,
 } from '@loopback/rest';
@@ -23,8 +23,8 @@ import {CritterCopyAttackRepository} from '../repositories';
 export class CritterCopyAttackController {
   constructor(
     @repository(CritterCopyAttackRepository)
-    public critterCopyAttackRepository : CritterCopyAttackRepository,
-  ) {}
+    public critterCopyAttackRepository: CritterCopyAttackRepository,
+  ) { }
 
   @post('/critter-copy-attacks')
   @response(200, {
@@ -127,6 +127,27 @@ export class CritterCopyAttackController {
     critterCopyAttack: CritterCopyAttack,
   ): Promise<void> {
     await this.critterCopyAttackRepository.updateById(id, critterCopyAttack);
+  }
+  @get('/critter-copy-attacks/critter-copy/{critterCopyId}')
+  @response(200, {
+    description: 'Array of CritterCopyAttack model instances for a specific CritterCopyID',
+    content: {
+      'application/json': {
+        schema: {
+          type: 'array',
+          items: getModelSchemaRef(CritterCopyAttack, {includeRelations: true}),
+        },
+      },
+    },
+  })
+  async findByCritterCopyId(
+    @param.path.number('critterCopyId') critterCopyId: number,
+    @param.filter(CritterCopyAttack) filter?: Filter<CritterCopyAttack>,
+  ): Promise<CritterCopyAttack[]> {
+    return this.critterCopyAttackRepository.find({
+      where: {critterCopyId: critterCopyId}, // Filter by critterCopyId
+      ...filter, // Apply any additional filters provided
+    });
   }
 
   @put('/critter-copy-attacks/{id}')

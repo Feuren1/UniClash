@@ -2,6 +2,7 @@
 export * from './arena.model';
 export * from './attack.model';
 export * from './critter-copy.model';
+export * from './critter-usable.model';
 export * from './critter.model';
 export * from './item-copy.model';
 export * from './item.model';
@@ -13,3 +14,4 @@ export * from './user-credentials.model';
 export * from './user.model';
 
 export * from './critter-copy-attack.model';
+

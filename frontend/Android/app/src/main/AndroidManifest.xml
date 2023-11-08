@@ -16,21 +16,21 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.MyMap"
         tools:targetApi="31">
-        <activity
-            android:name=".Battle"
-            android:exported="false"
-            android:label="@string/title_activity_battle"
-            android:theme="@style/Theme.MyMap" />
-        <activity
-            android:name=".MenuActivity"
-            android:exported="false"
-            android:label="@string/title_activity_menu"
-            android:theme="@style/Theme.MyMap" />
-        <activity
-            android:name=".MapActivity"
-            android:exported="false"
-            android:label="@string/title_activity_menu"
-            android:theme="@style/Theme.MyMap" />
+<!--        <activity-->
+<!--            android:name=".ui.battle.Battle"-->
+<!--            android:exported="false"-->
+<!--            android:label="@string/title_activity_battle"-->
+<!--            android:theme="@style/Theme.MyMap" />-->
+<!--        <activity-->
+<!--            android:name=".ui.menu.MenuScreen"-->
+<!--            android:exported="false"-->
+<!--            android:label="@string/title_activity_menu"-->
+<!--            android:theme="@style/Theme.MyMap" />-->
+<!--        <activity-->
+<!--            android:name=".ui.map.MapActivity"-->
+<!--            android:exported="false"-->
+<!--            android:label="@string/title_activity_menu"-->
+<!--            android:theme="@style/Theme.MyMap" />-->
         <activity
             android:name=".MainActivity"
             android:exported="true"

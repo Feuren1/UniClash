@@ -1,4 +1,4 @@
-package com.example.mymap
+package com.example.mymap.ui.battle
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity

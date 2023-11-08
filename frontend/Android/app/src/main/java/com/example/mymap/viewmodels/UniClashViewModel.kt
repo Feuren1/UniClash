@@ -6,6 +6,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.example.mymap.datatypes.Critter
+import com.example.mymap.datatypes.CritterUsable
 import com.example.mymap.retrofit.CritterService
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.update
@@ -28,6 +29,13 @@ sealed interface CritterUIState {
     ) : CritterUIState
 }
 
+sealed interface CritterUsableUIState {
+    data class HasEntries(
+        val critterUsable: CritterUsable?,
+        val isLoading: Boolean,
+    ) : CritterUsableUIState
+}
+
 
 class UniClashViewModel(
     private val critterService: CritterService,
@@ -46,11 +54,35 @@ class UniClashViewModel(
             critter = null
         )
     )
+    val critterUsable = MutableStateFlow(
+        CritterUsableUIState.HasEntries(
+            critterUsable = null,
+            isLoading = false
+        )
+    )
 
     init {
         viewModelScope.launch {
             Log.d(TAG, "Fetching initial critters data: ")
             loadCritters()
+        }
+    }
+
+    fun loadCritterUsable(id: Int) {
+        viewModelScope.launch {
+            critterUsable.update { it.copy(isLoading = true) }
+            try {
+                val response = critterService.getCritterUsable(id).enqueue()
+                if (response.isSuccessful) {
+                    response.body()?.let {
+                        critterUsable.update { state ->
+                            state.copy(critterUsable = it, isLoading = false)
+                        }
+                    }
+                }
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
         }
     }
 

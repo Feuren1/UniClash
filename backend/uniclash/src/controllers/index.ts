@@ -11,3 +11,4 @@ export * from './student-hub.controller';
 export * from './trainer.controller';
 export * from './user.controller';
 
+export * from './critter-copy-attack.controller';

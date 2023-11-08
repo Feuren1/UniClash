@@ -1,9 +1,9 @@
-import {inject, Getter} from '@loopback/core';
-import {DefaultCrudRepository, repository, BelongsToAccessor, HasManyRepositoryFactory} from '@loopback/repository';
+import {Getter, inject} from '@loopback/core';
+import {BelongsToAccessor, DefaultCrudRepository, HasManyRepositoryFactory, repository} from '@loopback/repository';
+import {CritterCopyAttackRepository} from '.';
 import {DbDataSource} from '../datasources';
-import {CritterCopy, CritterCopyRelations, Critter, Attack} from '../models';
+import {Critter, CritterCopy, CritterCopyAttack, CritterCopyRelations} from '../models';
 import {CritterRepository} from './critter.repository';
-import {AttackRepository} from './attack.repository';
 
 export class CritterCopyRepository extends DefaultCrudRepository<
   CritterCopy,
@@ -13,13 +13,13 @@ export class CritterCopyRepository extends DefaultCrudRepository<
 
   public readonly critter: BelongsToAccessor<Critter, typeof CritterCopy.prototype.id>;
 
-  public readonly attacks: HasManyRepositoryFactory<Attack, typeof CritterCopy.prototype.id>;
+  public readonly attacks: HasManyRepositoryFactory<CritterCopyAttack, typeof CritterCopy.prototype.id>;
 
   constructor(
-    @inject('datasources.db') dataSource: DbDataSource, @repository.getter('CritterRepository') protected critterRepositoryGetter: Getter<CritterRepository>, @repository.getter('AttackRepository') protected attackRepositoryGetter: Getter<AttackRepository>,
+    @inject('datasources.db') dataSource: DbDataSource, @repository.getter('CritterRepository') protected critterRepositoryGetter: Getter<CritterRepository>, @repository.getter('AttackRepository') protected critterCopyAttackRepositoryGetter: Getter<CritterCopyAttackRepository>,
   ) {
     super(CritterCopy, dataSource);
-    this.attacks = this.createHasManyRepositoryFactoryFor('attacks', attackRepositoryGetter,);
+    this.attacks = this.createHasManyRepositoryFactoryFor('critterCopyAttacks', critterCopyAttackRepositoryGetter,);
     this.registerInclusionResolver('attacks', this.attacks.inclusionResolver);
     this.critter = this.createBelongsToAccessorFor('critter', critterRepositoryGetter,);
     this.registerInclusionResolver('critter', this.critter.inclusionResolver);

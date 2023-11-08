@@ -1,8 +1,6 @@
+
 import {AuthenticationComponent} from '@loopback/authentication';
-import {
-  JWTAuthenticationComponent,
-  UserServiceBindings
-} from '@loopback/authentication-jwt';
+import {JWTAuthenticationComponent} from '@loopback/authentication-jwt';
 import {BootMixin} from '@loopback/boot';
 import {ApplicationConfig} from '@loopback/core';
 import {RepositoryMixin} from '@loopback/repository';
@@ -14,9 +12,11 @@ import {
 import {ServiceMixin} from '@loopback/service-proxy';
 import path from 'path';
 import {DbDataSource} from './datasources';
-import {UserRepository} from './repositories';
+import {UserCredentialsRepository, UserRepository} from './repositories';
 import {MySequence} from './sequence';
 import {CritterStatsService} from './services/critter-stats.service';
+
+import {UserServiceBindings} from './keys';
 import {MyUserService} from './services/user.service';
 export {ApplicationConfig};
 
@@ -59,6 +59,9 @@ export class UniclashApplication extends BootMixin(
     ),
       this.bind(UserServiceBindings.USER_REPOSITORY).toClass(
         UserRepository
+      ),
+      this.bind(UserServiceBindings.USER_CREDENTIALS_REPOSITORY).toClass(
+        UserCredentialsRepository
       )
   }
 }

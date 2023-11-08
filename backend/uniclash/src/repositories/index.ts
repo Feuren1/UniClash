@@ -11,3 +11,4 @@ export * from './type.repository';
 export * from './user-credentials.repository';
 export * from './user.repository';
 
+export * from './critter-copy-attack.repository';

@@ -2,6 +2,7 @@ package com.example.mymap.retrofit
 
 import android.content.Context
 import com.example.mymap.datatypes.Critter
+import com.example.mymap.datatypes.CritterUsable
 import retrofit2.Call
 import retrofit2.create
 import retrofit2.http.GET
@@ -13,6 +14,9 @@ interface CritterService {
 
     @GET("/critters/{id}")
     fun getCritters(@Path("id") id: Int): Call<Critter>
+
+    @GET("/critters/{id}/usable")
+    fun getCritterUsable(@Path("id") id: Int): Call<CritterUsable>
     /*
     @POST("/todo-lists")
     fun createTodoList(@Body todoListCreateRequest: TodoListCreateRequest): Call<TodoList>

@@ -38,6 +38,7 @@ import com.example.mymap.viewmodels.UniClashViewModel
 import com.example.mymap.retrofit.CritterService
 
 class Battle : ComponentActivity() {
+    //TODO Rename into BattleActivity
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         //initializes a viewmodel for further use. Uses the critterservice in order to talk to the backend
@@ -63,15 +64,19 @@ class Battle : ComponentActivity() {
 fun CritterBattle(uniClashViewModel: UniClashViewModel) {
     val uniClashUIState by uniClashViewModel.critters.collectAsState()
     val uniClashUIStateCritter by uniClashViewModel.critter.collectAsState()
+    val uniClashUiStateCritterUsable by uniClashViewModel.critterUsable.collectAsState()
     uniClashViewModel.loadCritters()
+    uniClashViewModel.loadCritter(1)
+    uniClashViewModel.loadCritterUsable(1)
     var critterList = uniClashUIState.critters
     var critter = uniClashUIStateCritter.critter
+    var critterUsable = uniClashUiStateCritterUsable.critterUsable
     
 
-    val attack1: Attack = Attack(30, "Tackle")
-    val attack2: Attack = Attack(50, "QuickAttack")
-    val attack3: Attack = Attack(80, "Thunder")
-    val attack4: Attack = Attack(90, "Fly")
+    val attack1: Attack = Attack(30, "Tackle", 12)
+    val attack2: Attack = Attack(50, "QuickAttack", 12)
+    val attack3: Attack = Attack(80, "Thunder", 12)
+    val attack4: Attack = Attack(90, "Fly", 12)
     val playerCritter: Critter = Critter(100, 50, 50, 70, attack1, attack2, attack3, attack4, "Ente")
     val cpuCritter: Critter = Critter(100, 50, 50, 70, attack1, attack2, attack3, attack4, "BöseEnte")
 
@@ -132,6 +137,7 @@ fun CritterBattle(uniClashViewModel: UniClashViewModel) {
             onClick = {
                 println("Critters: $critterList")
                 println("Critter:$critter")
+                println("CritterUsable:$critterUsable")
                       },
             modifier = Modifier
                 .padding(2.dp)

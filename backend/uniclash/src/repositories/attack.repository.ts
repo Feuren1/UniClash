@@ -1,8 +1,8 @@
 import {Getter, inject} from '@loopback/core';
 import {DefaultCrudRepository, HasManyRepositoryFactory, repository} from '@loopback/repository';
+import {CritterCopyAttackRepository} from '.';
 import {DbDataSource} from '../datasources';
-import {Attack, AttackRelations, CritterCopy} from '../models';
-import {CritterCopyRepository} from './critter-copy.repository';
+import {Attack, AttackRelations, CritterCopyAttack} from '../models';
 
 export class AttackRepository extends DefaultCrudRepository<
   Attack,
@@ -10,13 +10,13 @@ export class AttackRepository extends DefaultCrudRepository<
   AttackRelations
 > {
 
-  public readonly critterCopies: HasManyRepositoryFactory<CritterCopy, typeof Attack.prototype.id>;
+  public readonly critterCopyAttacks: HasManyRepositoryFactory<CritterCopyAttack, typeof Attack.prototype.id>;
 
   constructor(
-    @inject('datasources.db') dataSource: DbDataSource, @repository.getter('CritterCopyRepository') protected critterCopyRepositoryGetter: Getter<CritterCopyRepository>,
+    @inject('datasources.db') dataSource: DbDataSource, @repository.getter('CritterCopyRepository') protected critterCopyAttackRepositoryGetter: Getter<CritterCopyAttackRepository>,
   ) {
     super(Attack, dataSource);
-    this.critterCopies = this.createHasManyRepositoryFactoryFor('critterCopies', critterCopyRepositoryGetter,);
-    this.registerInclusionResolver('critterCopies', this.critterCopies.inclusionResolver);
+    this.critterCopyAttacks = this.createHasManyRepositoryFactoryFor('critterCopyAttacks', critterCopyAttackRepositoryGetter,);
+    this.registerInclusionResolver('critterCopies', this.critterCopyAttacks.inclusionResolver);
   }
 }

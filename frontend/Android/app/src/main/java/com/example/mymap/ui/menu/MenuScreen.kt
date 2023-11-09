@@ -1,6 +1,5 @@
 package com.example.mymap.ui.menu
 
-import android.content.Context
 import android.content.Intent
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
@@ -49,7 +48,7 @@ fun MenuScreen() {
 //    }
 //}
 
-    val context: Context = LocalContext.current
+    val context = LocalContext.current
 
     var buttonRequest by rememberSaveable { mutableStateOf(0) }
     Column {
@@ -83,7 +82,7 @@ fun MenuCard(category: Category, onButtonRequestChange: () -> Unit) {
             painter = category.picture,
             contentDescription = null,
             modifier = Modifier
-                .clickable { onButtonRequestChange }
+                .clickable { onButtonRequestChange() }
                 .size(60.dp) //40
             //.clip(CircleShape)
             //.border(1.5.dp, MaterialTheme.colorScheme.primary, CircleShape)
@@ -94,7 +93,7 @@ fun MenuCard(category: Category, onButtonRequestChange: () -> Unit) {
             Text(
                 text = category.title,
                 fontSize = 18.sp,
-                modifier = Modifier.clickable { onButtonRequestChange },
+                modifier = Modifier.clickable { onButtonRequestChange() },
                 color = MaterialTheme.colorScheme.secondary,
                 style = MaterialTheme.typography.titleSmall
 

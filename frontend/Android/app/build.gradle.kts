@@ -4,11 +4,11 @@ plugins {
 }
 
 android {
-    namespace = "com.example.mymap"
+    namespace = "project.main.uniclash"
     compileSdk = 34
 
     defaultConfig {
-        applicationId = "com.example.mymap"
+        applicationId = "project.main.uniclash"
         minSdk = 29
         targetSdk = 33
         versionCode = 1

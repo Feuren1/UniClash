@@ -35,21 +35,27 @@ import java.lang.Math.sqrt
      @Composable
     fun initMarkers() : ArrayList<MyMarker> {
         // Hier kannst du deine Marker initialisieren und zur markerList hinzufügen
-        val state = rememberMarkerState(
-            geoPoint = GeoPoint(51.353576, 6.154071),
-        )
-        var myMarker = MyMarker(
-            id = "1",
-            state = state,
-            icon = resizeDrawableTo50x50(context, CritterPic.LinuyPINGIUN.getDrawable()),
-            visible = true,
-            title = "frist automatic marker",
-            snippet = "this is a discription",
-            pic = CritterPic.LinuyPINGIUN.getDrawable(),
-            button = "BattleActivity"
-        )
-
-        markerList.add(myMarker)
+         var i = 0
+         while(i < 500) {
+             userLocation = GeoPoint(51.353576, 6.154071)
+             var randomLocation = generateRandomGeoPoint(userLocation, 2.0)
+             val state = rememberMarkerState(
+                 geoPoint = GeoPoint(randomLocation.latitude, randomLocation.longitude),
+             )
+             var myMarker = MyMarker(
+                 id = "1",
+                 state = state,
+                 icon = resizeDrawableTo50x50(context, CritterPic.LINUXPINGIUNM.getDrawable()),
+                 visible = true,
+                 title = "frist automatic marker",
+                 snippet = "this is a discription",
+                 pic = CritterPic.LINUXPINGIUN.getDrawable(),
+                 button = "BattleActivity"
+             )
+             markerList.add(myMarker)
+             println("initlasated new Marker")
+             i++
+         }
 
         // add more markers
         return markerList
@@ -70,24 +76,6 @@ import java.lang.Math.sqrt
 
         val scaledWidth = (originalWidth * scaleRatio).toInt()
         val scaledHeight = 50
-
-        val scaledBitmap =
-            originalBitmap?.let { Bitmap.createScaledBitmap(it, scaledWidth, scaledHeight, true) }
-
-        return BitmapDrawable(context.resources, scaledBitmap)
-    }
-
-    fun resizeDrawableTo60x60(context: Context, @DrawableRes drawableRes: Int): Drawable? {
-        val originalDrawable: Drawable? = context.getDrawable(drawableRes)
-
-        val originalBitmap = originalDrawable?.toBitmap()
-        val originalWidth = originalBitmap?.width ?: 1 // Verhindert Division durch Null
-        val originalHeight = originalBitmap?.height ?: 1
-
-        val scaleRatio = 60.0f / originalHeight.toFloat()
-
-        val scaledWidth = (originalWidth * scaleRatio).toInt()
-        val scaledHeight = 60
 
         val scaledBitmap =
             originalBitmap?.let { Bitmap.createScaledBitmap(it, scaledWidth, scaledHeight, true) }

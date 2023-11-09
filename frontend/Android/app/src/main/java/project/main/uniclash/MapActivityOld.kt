@@ -248,7 +248,7 @@ class MapActivityOld : ComponentActivity() {
             mutableStateOf(resizeDrawableTo50x50(context, CritterPic.FONTYS.getDrawable()))
         }
         val linuxPingiun: Drawable? by remember {
-            mutableStateOf(resizeDrawableTo50x50(context, CritterPic.LinuyPINGIUN.getDrawable()))
+            mutableStateOf(resizeDrawableTo50x50(context, CritterPic.LINUXPINGIUN.getDrawable()))
         }
         val pikatchu: Drawable? by remember {
             mutableStateOf(resizeDrawableTo50x50(context, CritterPic.PIKATCHU.getDrawable()))

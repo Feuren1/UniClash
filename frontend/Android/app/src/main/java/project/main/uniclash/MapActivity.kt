@@ -79,7 +79,8 @@ class MapActivity : ComponentActivity() {
     private var mainLongitude: Double by mutableStateOf(0.0)//"
 
     private var markerList = ArrayList<MyMarker>()
-    private var markersLoadded by mutableStateOf(false)
+    private var markersLoadded : Boolean ? = false
+    //private var markersLoadded by mutableStateOf(false)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
@@ -136,7 +137,7 @@ class MapActivity : ComponentActivity() {
 
     @Composable
     fun Map() {
-        someMethode()
+        LoadMarkers()
 
         var gpsLocation = rememberMarkerState()
         val cameraState = rememberCameraState()
@@ -173,6 +174,7 @@ class MapActivity : ComponentActivity() {
         ) {
             // Add markers and other map components here
             for (marker in markerList) {
+                println("added new Marker")
                 Marker(
                     state = marker.state,
                     icon = marker.icon,
@@ -235,7 +237,7 @@ class MapActivity : ComponentActivity() {
         Button(
             onClick = {
                 // Handle the button click to open the new activity here
-                val intent = Intent(context, Class.forName(activity))
+                val intent = Intent(context,MainActivity::class.java)
                 this.startActivity(intent)
             },
             modifier = Modifier
@@ -251,7 +253,25 @@ class MapActivity : ComponentActivity() {
     private val wildEncounterLogic = WildEncounterLogic(context = this)
 
     @Composable
-    fun someMethode(){
+    fun LoadMarkers(){
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(16.dp),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            val drawableImage = painterResource(id = R.drawable.icon)
+            Image(
+                painter = drawableImage,
+                contentDescription = null,
+                modifier = Modifier.size(240.dp)
+            )
+            Text(
+                text = "\nMap is loading",
+                color = Color.Red,
+                fontWeight = FontWeight.Bold
+            )
+        }
         addListOfMarkers(wildEncounterLogic.initMarkers())
     }
 
@@ -263,12 +283,9 @@ class MapActivity : ComponentActivity() {
     }
 
     fun addListOfMarkers(markers: ArrayList<MyMarker>) {
-        if(!markersLoadded) {
-            Log.d(LOCATION_TAG, "addListOf Markers")
-            Log.d(LOCATION_TAG, "${markers.size} Size der List makers")
+        if(!markersLoadded!!) {
             for (marker in markers) {
                 markerList.add(marker)
-                Log.d(LOCATION_TAG, "$markerList.size Size der markerList")
             }
             markersLoadded = true
         }

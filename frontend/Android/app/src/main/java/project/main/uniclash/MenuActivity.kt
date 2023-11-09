@@ -48,7 +48,7 @@ class MenuActivity : ComponentActivity() {
             Column {
                 MenuHeader()
                 MenuCard(Category("Critters List", painterResource(R.drawable.prc2duck),1))
-                MenuCard(Category("Inventar", painterResource(R.drawable.energy_drink),2))
+                MenuCard(Category("Inventar", painterResource(R.drawable.energydrink),2))
                 MenuCard(Category("Pokedex", painterResource(R.drawable.prc2duck),3))
                 MenuCard(Category("Fix Location Camera on/off", painterResource(R.drawable.location),4))
                 MenuCard(Category("New Building", painterResource(R.drawable.store),5))

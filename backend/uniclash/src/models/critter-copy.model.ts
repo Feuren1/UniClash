@@ -1,6 +1,7 @@
 import {Entity, belongsTo, hasMany, model, property} from '@loopback/repository';
 import {CritterCopyAttack} from '.';
 import {Critter} from './critter.model';
+import {Trainer} from './trainer.model';
 
 @model()
 export class CritterCopy extends Entity {
@@ -41,6 +42,9 @@ export class CritterCopy extends Entity {
 
   @hasMany(() => CritterCopyAttack)
   critterCopyAttacks: CritterCopyAttack[];
+
+  @belongsTo(() => Trainer)
+  trainerId: number;
 
   constructor(data?: Partial<CritterCopy>) {
     super(data);

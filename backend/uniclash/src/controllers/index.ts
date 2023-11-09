@@ -12,3 +12,5 @@ export * from './trainer.controller';
 export * from './user.controller';
 
 export * from './critter-copy-attack.controller';
+export * from './critter-copy-trainer.controller';
+export * from './trainer-critter-copy.controller';

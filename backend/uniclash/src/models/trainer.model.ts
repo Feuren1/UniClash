@@ -1,4 +1,5 @@
-import {Entity, model, property} from '@loopback/repository';
+import {Entity, model, property, hasMany} from '@loopback/repository';
+import {CritterCopy} from './critter-copy.model';
 
 @model()
 export class Trainer extends Entity {
@@ -23,6 +24,9 @@ export class Trainer extends Entity {
     type: 'number',
   })
   lon?: number;
+
+  @hasMany(() => CritterCopy)
+  critterCopies: CritterCopy[];
 
   constructor(data?: Partial<Trainer>) {
     super(data);

@@ -56,7 +56,6 @@ import com.google.android.gms.location.LocationRequest
 import com.google.android.gms.location.LocationResult
 import com.google.android.gms.location.LocationServices
 import com.utsman.osmandcompose.Marker
-import com.utsman.osmandcompose.MarkerState
 import com.utsman.osmandcompose.OpenStreetMap
 import com.utsman.osmandcompose.rememberCameraState
 import com.utsman.osmandcompose.rememberMarkerState
@@ -65,7 +64,7 @@ import org.osmdroid.util.GeoPoint
 import project.main.uniclash.wildencounter.WildEncounterLogic
 import java.util.concurrent.TimeUnit
 
-class MapActivity : ComponentActivity() {
+class MapActivityOld : ComponentActivity() {
     private lateinit var fusedLocationClient: FusedLocationProviderClient
     private val locationPermissions = arrayOf(
         //array ONLY for location Permissions!!!
@@ -76,8 +75,8 @@ class MapActivity : ComponentActivity() {
     private var mainLatitude: Double by mutableStateOf(0.0) //for gps location
     private var mainLongitude: Double by mutableStateOf(0.0)//"
 
-    private var markerList = ArrayList<MarkerState>()
-    private var markersLoadded by mutableStateOf(false)
+    private lateinit var map : Unit
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
@@ -134,8 +133,6 @@ class MapActivity : ComponentActivity() {
 
     @Composable
     fun Map() {
-        someMethode()
-
         var gpsLocation = rememberMarkerState()
         val cameraState = rememberCameraState()
         LaunchedEffect(Unit) {
@@ -157,26 +154,182 @@ class MapActivity : ComponentActivity() {
             }
         }
 
+        var wildEncounter = WildEncounterLogic(
+            context = this,
+            //cameraState = rememberCameraState(),
+            //map
+        )
+
+        val fontys = rememberMarkerState(
+            geoPoint = GeoPoint(51.353576, 6.154071)
+        )
+        val fontys2 = rememberMarkerState(
+            geoPoint = GeoPoint(51.353202, 6.155364)
+        )
+        val fontys3 = rememberMarkerState(
+            geoPoint = GeoPoint(51.353874, 6.154997)
+        )
+        val fontys4 = rememberMarkerState(
+            geoPoint = GeoPoint(51.353957, 6.155411)
+        )
+        val fontys5 = rememberMarkerState(
+            geoPoint = GeoPoint(51.353664, 6.153355)
+        )
+        val fontys6 = rememberMarkerState(
+            geoPoint = GeoPoint(51.354525, 6.154630)
+        )
+        val fontys7 = rememberMarkerState(
+            geoPoint = GeoPoint(51.354498, 6.155258)
+        )
+        val fontys8 = rememberMarkerState(
+            geoPoint = GeoPoint(51.352961, 6.153919)
+        )
+        val fontys9 = rememberMarkerState(
+            geoPoint = GeoPoint(51.354002, 6.152986)
+        )
+        val fontys10 = rememberMarkerState(
+            geoPoint = GeoPoint(51.354084, 6.153883)
+        )
+        val fontys11 = rememberMarkerState(
+            geoPoint = GeoPoint(51.354285, 6.154766)
+        )
+        val fontys12 = rememberMarkerState(
+            geoPoint = GeoPoint(51.353980, 6.153360)
+        )
+        val fontysArena = rememberMarkerState(
+            geoPoint = GeoPoint(51.353480, 6.153360)
+        )
+        val fontysShop = rememberMarkerState(
+            geoPoint = GeoPoint(51.353670, 6.154974)
+        )
+        val googleHeadQuarter = rememberMarkerState(
+            geoPoint = GeoPoint(37.421304, -122.085330)
+        )
+        val googleHeadQuarter2 = rememberMarkerState(
+            geoPoint = GeoPoint(37.421881, -122.083825)
+        )
+        val googleHeadQuarter3 = rememberMarkerState(
+            geoPoint = GeoPoint(37.423214, -122.085024)
+        )
+        val googleHeadQuarter4 = rememberMarkerState(
+            geoPoint = GeoPoint(37.421988, -122.085094)
+        )
+        val marker = rememberMarkerState(
+            geoPoint = GeoPoint(37.422069, -122.084853)
+        )
+        val homeMarker = rememberMarkerState(
+            geoPoint = GeoPoint(51.4959040534788, 6.294253058731556)
+        )
+        val homeArena = rememberMarkerState(
+            geoPoint = GeoPoint(51.495723, 6.294844)
+        )
         val context = LocalContext.current
 
         // define marker icon
+        val prc2duck: Drawable? by remember {
+            mutableStateOf(resizeDrawableTo50x50(context, CritterPic.PRC2DUCK.getDrawable()))
+        }
+        val knifeDuck: Drawable? by remember {
+            mutableStateOf(resizeDrawableTo50x50(context, CritterPic.KNIFEDUCK.getDrawable()))
+        }
+        val demoMusk: Drawable? by remember {
+            mutableStateOf(resizeDrawableTo50x50(context, CritterPic.DEMOMUSK.getDrawable()))
+        }
+        val musk: Drawable? by remember {
+            mutableStateOf(resizeDrawableTo50x50(context, CritterPic.MUSK.getDrawable()))
+        }
+        val mockito: Drawable? by remember {
+            mutableStateOf(resizeDrawableTo50x50(context, CritterPic.MOCKITO.getDrawable()))
+        }
+        val quizizzdragon: Drawable? by remember {
+            mutableStateOf(resizeDrawableTo50x50(context, CritterPic.QUIZIZZDRAGON.getDrawable()))
+        }
+        val fontysCritter: Drawable? by remember {
+            mutableStateOf(resizeDrawableTo50x50(context, CritterPic.FONTYS.getDrawable()))
+        }
+        val linuxPingiun: Drawable? by remember {
+            mutableStateOf(resizeDrawableTo50x50(context, CritterPic.LinuyPINGIUN.getDrawable()))
+        }
+        val pikatchu: Drawable? by remember {
+            mutableStateOf(resizeDrawableTo50x50(context, CritterPic.PIKATCHU.getDrawable()))
+        }
+        val borzoi: Drawable? by remember {
+            mutableStateOf(resizeDrawableTo50x50(context, CritterPic.BORZOI.getDrawable()))
+        }
+        val coolDuck: Drawable? by remember {
+            mutableStateOf(resizeDrawableTo50x50(context, CritterPic.COOLDUCK.getDrawable()))
+        }
+        val knifeTurtle: Drawable? by remember {
+            mutableStateOf(resizeDrawableTo50x50(context, CritterPic.KNIFETURTLE.getDrawable()))
+        }
+
         val arrow: Drawable? by remember {
             mutableStateOf(resizeDrawableTo50x50(context, R.drawable.location))
         }
 
+        val studentHub: Drawable? by remember {
+            mutableStateOf(resizeDrawableTo60x60(context, R.drawable.store))
+        }
+
+        val arena: Drawable? by remember {
+            mutableStateOf(resizeDrawableTo60x60(context, R.drawable.arena))
+        }
+
         // Use camera state and location in your OpenStreetMap Composable
-        OpenStreetMap(
+        map = OpenStreetMap(
             modifier = Modifier.fillMaxSize(),
             cameraState = cameraState
         ) {
             // Add markers and other map components here
-            for (marker in markerList) {
-                Marker(
-                    state = marker,
-                    // Weitere Eigenschaften des Markers
-                    icon = resizeDrawableTo50x50(context, CritterPic.FONTYS.getDrawable())
-                )
-            }
+            Marker(
+                    state = rememberMarkerState(geoPoint = GeoPoint(51.353576, 6.154071)),
+                    icon = resizeDrawableTo50x50(context, CritterPic.PRC2DUCK.getDrawable())
+            )
+
+            Marker(
+                state = fontys2,
+                icon = knifeDuck
+            )
+            Marker(
+                state = fontys3,
+                icon = demoMusk
+            )
+            Marker(
+                state = fontys4,
+                icon = musk
+            )
+            Marker(
+                state = fontys5,
+                icon = mockito
+            )
+            Marker(
+                state = fontys6,
+                icon = quizizzdragon
+            )
+            Marker(
+                state = fontys7,
+                icon = fontysCritter
+            )
+            Marker(
+                state = fontys8,
+                icon = linuxPingiun
+            )
+            Marker(
+                state = fontys9,
+                icon = pikatchu
+            )
+            Marker(
+                state = fontys10,
+                icon = borzoi
+            )
+            Marker(
+                state = fontys11,
+                icon = coolDuck
+            )
+            Marker(
+                state = fontys12,
+                icon = knifeTurtle
+            )
             Marker(
                 state = gpsLocation,
                 icon = arrow,
@@ -200,6 +353,137 @@ class MapActivity : ComponentActivity() {
                     OpenMenuActivityButton(context)
                 }
             }
+
+            Marker(
+                state = googleHeadQuarter,
+                icon = prc2duck
+            )
+            Marker(
+                state = googleHeadQuarter2,
+                icon = prc2duck
+            )
+            Marker(
+                state = googleHeadQuarter3,
+                icon = prc2duck
+            )
+            Marker(
+                state = googleHeadQuarter4,
+                icon = prc2duck
+            )
+            Marker(
+                state = marker,
+                icon = studentHub,
+                title = "Google Headquarter",
+                snippet = "Google Headquarter in California"
+            ) {
+                Column(
+                    modifier = Modifier
+                        .size(250.dp)
+                        .background(
+                            color = Color.Black.copy(alpha = 0.75f),
+                            shape = RoundedCornerShape(7.dp)
+                        ),
+                    verticalArrangement = Arrangement.Center,
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    Text(text = it.title, fontSize = 20.sp, color = Color.White)
+                    Text(text = it.snippet, fontSize = 15.sp, color = Color.White)
+                    Spacer(modifier = Modifier.height(8.dp))
+                    val drawableImage = painterResource(id = R.drawable.googleheadquarter)
+                    Image(
+                        painter = drawableImage,
+                        contentDescription = null, // Provide a proper content description if needed
+                        modifier = Modifier.size(240.dp) // Adjust size as needed
+                    )
+                }
+            }
+            Marker(
+                state = fontysShop,
+                icon = studentHub,
+                title = "Fontys Shop",
+                snippet = "Free Coffe coups"
+            ) {
+                Column(
+                    modifier = Modifier
+                        .size(350.dp)
+                        .background(
+                            color = Color.Black.copy(alpha = 0.75f),
+                            shape = RoundedCornerShape(7.dp)
+                        ),
+                    verticalArrangement = Arrangement.Center,
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    Text(text = it.title, fontSize = 20.sp, color = Color.White)
+                    Text(text = it.snippet, fontSize = 15.sp, color = Color.White)
+                    Spacer(modifier = Modifier.height(8.dp))
+                    val drawableImage = painterResource(id = R.drawable.googleheadquarter)
+                    Image(
+                        painter = drawableImage,
+                        contentDescription = null, // Provide a proper content description if needed
+                        modifier = Modifier.size(240.dp) // Adjust size as needed
+                    )
+                    OpenMenuActivityButton(context)
+                }
+            }
+            Marker(
+                state = fontysArena,
+                icon = arena,
+                title = "Fontys Arena",
+                snippet = "fight!"
+            ) {
+                Column(
+                    modifier = Modifier
+                        .size(350.dp)
+                        .background(
+                            color = Color.Black.copy(alpha = 0.75f),
+                            shape = RoundedCornerShape(7.dp)
+                        ),
+                    verticalArrangement = Arrangement.Center,
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    Text(text = it.title, fontSize = 20.sp, color = Color.White)
+                    Text(text = it.snippet, fontSize = 15.sp, color = Color.White)
+                    Spacer(modifier = Modifier.height(8.dp))
+                    val drawableImage = painterResource(id = R.drawable.googleheadquarter)
+                    Image(
+                        painter = drawableImage,
+                        contentDescription = null, // Provide a proper content description if needed
+                        modifier = Modifier.size(240.dp) // Adjust size as needed
+                    )
+                    OpenMenuActivityButton(context)
+                }
+            }
+            Marker(
+                state = homeMarker,
+                icon = studentHub,
+                title = "Home",
+                snippet = ":)"
+            ) {
+                Column(
+                    modifier = Modifier
+                        .size(250.dp)
+                        .background(
+                            color = Color.Black.copy(alpha = 0.75f),
+                            shape = RoundedCornerShape(7.dp)
+                        ),
+                    verticalArrangement = Arrangement.Center,
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    Text(text = it.title, fontSize = 20.sp, color = Color.White)
+                    Text(text = it.snippet, fontSize = 15.sp, color = Color.White)
+                    Spacer(modifier = Modifier.height(8.dp))
+                    val drawableImage = painterResource(id = R.drawable.home)
+                    Image(
+                        painter = drawableImage,
+                        contentDescription = null, // Provide a proper content description if needed
+                        modifier = Modifier.size(240.dp) // Adjust size as needed
+                    )
+                }
+            }
+            Marker(
+                state = homeArena,
+                icon = arena
+            )
         }
     }
 
@@ -219,43 +503,6 @@ class MapActivity : ComponentActivity() {
         ) {
             Text("Menu")
         }
-    }
-
-    private val wildEncounterLogic = WildEncounterLogic(context = this)
-
-    @Composable
-    fun someMethode(){
-        addListOfMarkers(wildEncounterLogic.initMarkers())
-    }
-
-    // Methode zum Hinzufügen eines Markers zur Liste und Aktualisieren der Karte
-    fun addMarker(marker: MarkerState) {
-        markerList.add(marker)
-        // Aktualisiere die Karte hier, um den neuen Marker anzuzeigen
-        updateMapMarkers()
-    }
-
-    fun addListOfMarkers(markers: ArrayList<MarkerState>) {
-        if(!markersLoadded) {
-            Log.d(LOCATION_TAG, "addListOf Markers")
-            Log.d(LOCATION_TAG, "${markers.size} Size der List makers")
-            for (marker in markers) {
-                markerList.add(marker)
-                Log.d(LOCATION_TAG, "$markerList.size Size der markerList")
-            }
-            markersLoadded = true
-        }
-    }
-
-    // Methode zum Entfernen eines Markers aus der Liste und Aktualisieren der Karte
-    fun removeMarker(marker: MarkerState) {
-        markerList.remove(marker)
-        updateMapMarkers()
-    }
-
-    // Methode zum Aktualisieren der Karte mit den Markern aus der Liste
-    private fun updateMapMarkers() {
-        markersLoadded = false;
     }
 
     fun resizeDrawableTo50x50(context: Context, @DrawableRes drawableRes: Int): Drawable? {

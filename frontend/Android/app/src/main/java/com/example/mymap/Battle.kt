@@ -34,8 +34,10 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import com.example.mymap.datatypes.Attack
 import com.example.mymap.datatypes.Critter
+import com.example.mymap.retrofit.ArenaService
 import com.example.mymap.viewmodels.UniClashViewModel
 import com.example.mymap.retrofit.CritterService
+import com.example.mymap.viewmodels.ArenaViewModel
 
 class Battle : ComponentActivity() {
     //TODO Rename into BattleActivity
@@ -45,14 +47,17 @@ class Battle : ComponentActivity() {
         val uniClashViewModel: UniClashViewModel by viewModels(factoryProducer = {
             UniClashViewModel.provideFactory(CritterService.getInstance(this))
         })
+        val arenaViewModel: ArenaViewModel by viewModels(factoryProducer = {
+            ArenaViewModel.provideFactory(ArenaService.getInstance(this))
+        })
         setContent {
             MyMapTheme {
                 Surface(
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    //creates the pokemongame composable (name should be critterBattle)
-                    CritterBattle(uniClashViewModel)
+                    //creates the pokemongame composable (name should be critterBattle) DONT DO IT LIKE THIS
+                    CritterBattle(uniClashViewModel,arenaViewModel)
                 }
 
             }
@@ -61,7 +66,10 @@ class Battle : ComponentActivity() {
 }
 
 @Composable
-fun CritterBattle(uniClashViewModel: UniClashViewModel) {
+fun CritterBattle(uniClashViewModel: UniClashViewModel, arenaViewModel: ArenaViewModel) {
+    val arenaUIState by arenaViewModel.arena.collectAsState()
+    arenaViewModel.loadArena(1);
+    var arena = arenaUIState.arena
     val uniClashUIState by uniClashViewModel.critters.collectAsState()
     val uniClashUIStateCritter by uniClashViewModel.critter.collectAsState()
     val uniClashUiStateCritterUsable by uniClashViewModel.critterUsable.collectAsState()
@@ -138,6 +146,7 @@ fun CritterBattle(uniClashViewModel: UniClashViewModel) {
                 println("Critters: $critterList")
                 println("Critter:$critter")
                 println("CritterUsable:$critterUsable")
+                println("arena: $arena")
                       },
             modifier = Modifier
                 .padding(2.dp)

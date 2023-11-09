@@ -13,8 +13,10 @@ import com.utsman.osmandcompose.Marker
 import com.utsman.osmandcompose.MarkerState
 import com.utsman.osmandcompose.rememberMarkerState
 import org.osmdroid.util.GeoPoint
+import project.main.uniclash.R
 import project.main.uniclash.datatypes.CritterPic
 import project.main.uniclash.datatypes.CritterUsable
+import project.main.uniclash.datatypes.MyMarker
 import java.lang.Math.PI
 import java.lang.Math.cos
 import java.lang.Math.sin
@@ -28,70 +30,34 @@ import java.lang.Math.sqrt
     //TODO set max amount of wildCritters
     var userLocation = GeoPoint(0.0, 0.0)
 
-    private val markerList = ArrayList<MarkerState>()
+    private val markerList = ArrayList<MyMarker>()
 
      @Composable
-    fun initMarkers() : ArrayList<MarkerState> {
+    fun initMarkers() : ArrayList<MyMarker> {
         // Hier kannst du deine Marker initialisieren und zur markerList hinzufügen
-        val prc2duckMarker = createMarker(
+        val state = rememberMarkerState(
             geoPoint = GeoPoint(51.353576, 6.154071),
-            icon = resizeDrawableTo50x50(context, CritterPic.PRC2DUCK.getDrawable()),
-            key = "1"
         )
-        markerList.add(prc2duckMarker)
+        var myMarker = MyMarker(
+            id = "1",
+            state = state,
+            icon = resizeDrawableTo50x50(context, CritterPic.LinuyPINGIUN.getDrawable()),
+            visible = true,
+            title = "frist automatic marker",
+            snippet = "this is a discription",
+            pic = CritterPic.LinuyPINGIUN.getDrawable(),
+            button = "BattleActivity"
+        )
+
+        markerList.add(myMarker)
 
         // add more markers
         return markerList
     }
 
-    @Composable
-    private fun createMarker(
-        geoPoint: GeoPoint,
-        key: String? = null,
-        icon: Drawable?,
-        title: String? = null,
-        snippet: String? = null
-    ): MarkerState {
-        return rememberMarkerState(
-            geoPoint = geoPoint,
-            key = key
-        )
-    }
-
-    fun getMarkerList(): ArrayList<MarkerState> {
+    fun getMarkerList(): ArrayList<MyMarker> {
         return markerList
     }
-
-    /*@Composable
-    fun addMarker(
-        geoPoint: GeoPoint,
-        icon: Drawable?,
-        title: String? = null,
-        snippet: String? = null
-    ) {
-        val newMarker = createMarker(geoPoint, icon, title, snippet)
-        markerList.add(newMarker)
-        map.Marker(
-            state = newMarker,
-            onClick = {
-                // Implementiere die Logik für Marker-Klicks, wenn nötig
-            }
-        )
-    }*/
-
-    //Marker(
-    //state = googleHeadQuarter4,
-    //icon = prc2duck
-    //)
-
-    //val fontys = rememberMarkerState(
-    //    geoPoint = GeoPoint(51.353576, 6.154071)
-    //)
-
-    /*Marker(
-    state = rememberMarkerState(geoPoint = GeoPoint(51.353576, 6.154071)),
-    icon = resizeDrawableTo50x50(context, CritterPic.PRC2DUCK.getDrawable())
-    )*/
 
     fun resizeDrawableTo50x50(context: Context, @DrawableRes drawableRes: Int): Drawable? {
         val originalDrawable: Drawable? = context.getDrawable(drawableRes)

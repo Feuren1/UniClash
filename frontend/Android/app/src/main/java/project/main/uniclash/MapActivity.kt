@@ -2,6 +2,7 @@ package project.main.uniclash
 
 import android.Manifest
 import android.annotation.SuppressLint
+import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
@@ -62,6 +63,7 @@ import com.utsman.osmandcompose.rememberCameraState
 import com.utsman.osmandcompose.rememberMarkerState
 import kotlinx.coroutines.delay
 import org.osmdroid.util.GeoPoint
+import project.main.uniclash.datatypes.MyMarker
 import project.main.uniclash.wildencounter.WildEncounterLogic
 import java.util.concurrent.TimeUnit
 
@@ -76,7 +78,7 @@ class MapActivity : ComponentActivity() {
     private var mainLatitude: Double by mutableStateOf(0.0) //for gps location
     private var mainLongitude: Double by mutableStateOf(0.0)//"
 
-    private var markerList = ArrayList<MarkerState>()
+    private var markerList = ArrayList<MyMarker>()
     private var markersLoadded by mutableStateOf(false)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -172,10 +174,35 @@ class MapActivity : ComponentActivity() {
             // Add markers and other map components here
             for (marker in markerList) {
                 Marker(
-                    state = marker,
-                    // Weitere Eigenschaften des Markers
-                    icon = resizeDrawableTo50x50(context, CritterPic.FONTYS.getDrawable())
-                )
+                    state = marker.state,
+                    icon = marker.icon,
+                    title = marker.title,
+                    snippet = marker.snippet,
+                    visible = marker.visible,
+                    id = marker.id,
+                ) {
+                    Column(
+                        modifier = Modifier
+                            .size(340.dp)
+                            .background(
+                                color = Color.Black.copy(alpha = 0.75f),
+                                shape = RoundedCornerShape(7.dp)
+                            ),
+                        verticalArrangement = Arrangement.Center,
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        Text(text = it.title, fontSize = 20.sp, color = Color.White)
+                        Text(text = it.snippet, fontSize = 15.sp, color = Color.White)
+                        Spacer(modifier = Modifier.height(8.dp))
+                        val drawableImage = painterResource(id = marker.pic)
+                        Image(
+                            painter = drawableImage,
+                            contentDescription = null, // Provide a proper content description if needed
+                            modifier = Modifier.size(220.dp) // Adjust size as needed
+                        )
+                        OpenActivityButton(context, marker.button)
+                    }
+                }
             }
             Marker(
                 state = gpsLocation,
@@ -197,18 +224,18 @@ class MapActivity : ComponentActivity() {
                     Text(text = it.snippet, fontSize = 15.sp, color = Color.White)
                     Spacer(modifier = Modifier.height(8.dp))
 
-                    OpenMenuActivityButton(context)
+                    OpenActivityButton(context, "MenuActivity")
                 }
             }
         }
     }
 
     @Composable
-    fun OpenMenuActivityButton(context: Context) {
+    fun OpenActivityButton(context: Context, activity: String? = "MenuActivity") {
         Button(
             onClick = {
                 // Handle the button click to open the new activity here
-                val intent = Intent(context, MenuActivity::class.java)
+                val intent = Intent(context, Class.forName(activity))
                 this.startActivity(intent)
             },
             modifier = Modifier
@@ -229,13 +256,13 @@ class MapActivity : ComponentActivity() {
     }
 
     // Methode zum Hinzufügen eines Markers zur Liste und Aktualisieren der Karte
-    fun addMarker(marker: MarkerState) {
+    fun addMarker(marker: MyMarker) {
         markerList.add(marker)
         // Aktualisiere die Karte hier, um den neuen Marker anzuzeigen
         updateMapMarkers()
     }
 
-    fun addListOfMarkers(markers: ArrayList<MarkerState>) {
+    fun addListOfMarkers(markers: ArrayList<MyMarker>) {
         if(!markersLoadded) {
             Log.d(LOCATION_TAG, "addListOf Markers")
             Log.d(LOCATION_TAG, "${markers.size} Size der List makers")
@@ -248,7 +275,7 @@ class MapActivity : ComponentActivity() {
     }
 
     // Methode zum Entfernen eines Markers aus der Liste und Aktualisieren der Karte
-    fun removeMarker(marker: MarkerState) {
+    fun removeMarker(marker: MyMarker) {
         markerList.remove(marker)
         updateMapMarkers()
     }

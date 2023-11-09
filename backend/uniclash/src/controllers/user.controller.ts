@@ -4,15 +4,15 @@ import {TokenService, UserService} from '@loopback/authentication';
 import {inject} from '@loopback/core';
 import {model, property} from '@loopback/repository';
 import {
+  SchemaObject,
   get,
   post,
-  requestBody,
-  SchemaObject
+  requestBody
 } from '@loopback/rest';
-import {SecurityBindings, securityId, UserProfile} from '@loopback/security';
+import {SecurityBindings, securityId} from '@loopback/security';
 import {genSalt, hash} from 'bcryptjs';
 import {RefreshTokenServiceBindings, TokenServiceBindings, UserServiceBindings} from '../keys';
-import {User} from '../models';
+import {MyUserProfile, User} from '../models';
 import {UserRepository} from '../repositories';
 import {Credentials} from '../services/user.service';
 import {RefreshTokenService, TokenObject} from '../types';
@@ -82,7 +82,7 @@ export class UserController {
     @inject(UserServiceBindings.USER_SERVICE)
     public userService: UserService<User, Credentials>,
     @inject(SecurityBindings.USER, {optional: true})
-    private user: UserProfile,
+    private user: MyUserProfile,
     @inject(UserServiceBindings.USER_REPOSITORY)
     public userRepository: UserRepository,
     @inject(RefreshTokenServiceBindings.REFRESH_TOKEN_SERVICE)
@@ -207,7 +207,7 @@ export class UserController {
     // ensure the user exists, and the password is correct
     const user = await this.userService.verifyCredentials(credentials);
     // convert a User object into a UserProfile object (reduced set of properties)
-    const userProfile: UserProfile =
+    const userProfile: MyUserProfile =
       this.userService.convertToUserProfile(user);
     const accessToken = await this.jwtService.generateToken(userProfile);
     const tokens = await this.refreshService.generateToken(

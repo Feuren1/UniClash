@@ -3,9 +3,9 @@ import {juggler} from '@loopback/repository';
 
 const config = {
   name: 'db',
-  connector: 'postgresql',
-  url: 'postgres://prj3db_user:451qopxqyan4lQSYvueqCcf8jXifenzv@dpg-ck4objt8ggls738s08u0-a.frankfurt-postgres.render.com/prj3db?ssl=true'
-
+  connector: 'memory',
+  localStorage: '',
+  file: './data/db.json'
 };
 
 // Observe application's life cycle to disconnect the datasource when

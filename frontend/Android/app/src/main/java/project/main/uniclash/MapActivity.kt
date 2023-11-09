@@ -272,8 +272,8 @@ class MapActivity : ComponentActivity() {
         ) {
             // Add markers and other map components here
             Marker(
-                state = fontys,
-                icon = prc2duck
+                state = rememberMarkerState(geoPoint = GeoPoint(51.353576, 6.154071)),
+                icon = resizeDrawableTo50x50(context, CritterPic.PRC2DUCK.getDrawable())
             )
             Marker(
                 state = fontys2,

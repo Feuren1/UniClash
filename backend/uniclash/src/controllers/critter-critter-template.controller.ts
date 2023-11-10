@@ -8,41 +8,34 @@ import {
 } from '@loopback/rest';
 import {
   Critter,
-  CritterCopy,
+  CritterTemplate,
   CritterUsable,
 } from '../models';
-import {AttackRepository, CritterCopyAttackRepository, CritterCopyRepository, CritterRepository} from '../repositories';
-import {CritterStatsService} from '../services/critter-stats.service';
-//@authenticate('jwt')
-export class CritterCopyCritterController {
-  critterStatsService: CritterStatsService = new CritterStatsService(this.critterRepository, this.critterCopyRepository, this.critterCopyAttackRepository, this.attackRepository);
+import {CritterRepository} from '../repositories';
+
+export class CritterCritterTemplateController {
+  critterStatsService: any;
   constructor(
-    @repository(CritterCopyRepository)
-    public critterCopyRepository: CritterCopyRepository,
     @repository(CritterRepository)
     public critterRepository: CritterRepository,
-    @repository(CritterCopyAttackRepository)
-    public critterCopyAttackRepository: CritterCopyAttackRepository,
-    @repository(AttackRepository)
-    public attackRepository: AttackRepository
   ) { }
 
-  @get('/critter-copies/{id}/critter', {
+  @get('/critters/{id}/critter-template', {
     responses: {
       '200': {
-        description: 'Critter belonging to CritterCopy',
+        description: 'CritterTemplate belonging to Critter',
         content: {
           'application/json': {
-            schema: getModelSchemaRef(Critter),
+            schema: getModelSchemaRef(CritterTemplate),
           },
         },
       },
     },
   })
-  async getCritter(
-    @param.path.number('id') id: typeof CritterCopy.prototype.id,
-  ): Promise<Critter> {
-    return this.critterCopyRepository.critter(id);
+  async getCritterTemplate(
+    @param.path.number('id') id: typeof Critter.prototype.id,
+  ): Promise<CritterTemplate> {
+    return this.critterRepository.critterTemplate(id);
   }
   @get('/critters/{id}/actual-stats', {
     responses: {
@@ -81,3 +74,4 @@ export class CritterCopyCritterController {
     return this.critterStatsService.createCritterUsable(id);
   }
 }
+

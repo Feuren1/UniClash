@@ -11,5 +11,7 @@ data class MyMarker(
     var title :String? = "marker",
     var snippet : String? = null,
     var pic : Int = 0,
-    var button : String ? = "MenuActivity"
+    var button : String ? = "MenuActivity",
+    var critterUsable: CritterUsable ? = null
+    //var building : Building ? = null
     )

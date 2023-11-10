@@ -16,6 +16,7 @@ import org.osmdroid.util.GeoPoint
 import project.main.uniclash.R
 import project.main.uniclash.datatypes.CritterPic
 import project.main.uniclash.datatypes.CritterUsable
+import project.main.uniclash.datatypes.MapSettings
 import project.main.uniclash.datatypes.MyMarker
 import java.lang.Math.PI
 import java.lang.Math.cos
@@ -28,35 +29,35 @@ import java.lang.Math.sqrt
 
     val wildEncounters: ArrayList<CritterUsable> = ArrayList()
     //TODO set max amount of wildCritters
-    var userLocation = GeoPoint(0.0, 0.0)
+    var userLocation = GeoPoint(51.353576, 6.154071)
+     //TODO GeoLocation kann über Enum bekommen werden
 
-    private val markerList = ArrayList<MyMarker>()
+    private var markerList = ArrayList<MyMarker>()
 
      @Composable
     fun initMarkers() : ArrayList<MyMarker> {
-        // Hier kannst du deine Marker initialisieren und zur markerList hinzufügen
-         var i = 0
-         while(i < 500) {
-             userLocation = GeoPoint(51.353576, 6.154071)
-             var randomLocation = generateRandomGeoPoint(userLocation, 2.0)
-             val state = rememberMarkerState(
-                 geoPoint = GeoPoint(randomLocation.latitude, randomLocation.longitude),
+             // Hier kannst du deine Marker initialisieren und zur markerList hinzufügen
+             var randomLocation = generateRandomGeoPoint(userLocation, 2.0, 500
              )
-             var myMarker = MyMarker(
-                 id = "1",
-                 state = state,
-                 icon = resizeDrawableTo50x50(context, CritterPic.LINUXPINGIUNM.getDrawable()),
-                 visible = true,
-                 title = "frist automatic marker",
-                 snippet = "this is a discription",
-                 pic = CritterPic.LINUXPINGIUN.getDrawable(),
-                 button = "BattleActivity"
-             )
-             markerList.add(myMarker)
-             println("initlasated new Marker")
-             i++
-         }
-
+             var i = 0
+             while (i < 500) {
+                 val state = rememberMarkerState(
+                     geoPoint = GeoPoint(randomLocation.get(i).latitude, randomLocation.get(i).longitude),
+                 )
+                 var myMarker = MyMarker(
+                     id = "1",
+                     state = state,
+                     icon = resizeDrawableTo50x50(context, CritterPic.LINUXPINGIUNM.getDrawable()),
+                     visible = true,
+                     title = "frist automatic marker",
+                     snippet = "this is a discription",
+                     pic = CritterPic.LINUXPINGIUN.getDrawable(),
+                     button = "BattleActivity"
+                 )
+                 markerList.add(myMarker)
+                 println("initlasated new Marker")
+                 i++
+             }
         // add more markers
         return markerList
     }
@@ -83,26 +84,35 @@ import java.lang.Math.sqrt
         return BitmapDrawable(context.resources, scaledBitmap)
     }
 
-    fun generateRandomGeoPoint(center: GeoPoint, radiusInKm: Double): GeoPoint {
-        val random = java.util.Random()
+    fun generateRandomGeoPoint(center: GeoPoint, radiusInKm: Double, times : Int): ArrayList<GeoPoint> {
+        if(MapSettings.WILDENCOUNTER.getMarker() == null) {
+            val random = java.util.Random()
+            var counter = times
+            var geoLocations = ArrayList<GeoPoint>()
+            while (counter > 0) {
+                // Convert radius from kilometers to degrees
+                val radiusInDegrees = radiusInKm / 111.32
 
-        // Convert radius from kilometers to degrees
-        val radiusInDegrees = radiusInKm / 111.32
+                val u = random.nextDouble()
+                val v = random.nextDouble()
+                val w = radiusInDegrees * sqrt(u)
+                val t = 2.0 * PI * v
+                val x = w * cos(t)
+                val y = w * sin(t)
 
-        val u = random.nextDouble()
-        val v = random.nextDouble()
-        val w = radiusInDegrees * sqrt(u)
-        val t = 2.0 * PI * v
-        val x = w * cos(t)
-        val y = w * sin(t)
+                // Adjust the x-coordinate for the shrinking of the east-west distances
+                val new_x = x / cos(Math.toRadians(center.latitude))
 
-        // Adjust the x-coordinate for the shrinking of the east-west distances
-        val new_x = x / cos(Math.toRadians(center.latitude))
-
-        val newLongitude = new_x + center.longitude
-        val newLatitude = y + center.latitude
-
-        return GeoPoint(newLatitude, newLongitude)
+                val newLongitude = new_x + center.longitude
+                val newLatitude = y + center.latitude
+                geoLocations.add(GeoPoint(newLatitude, newLongitude))
+                counter--
+            }
+            MapSettings.WILDENCOUNTER.setMarker(geoLocations)
+            return geoLocations
+        } else {
+            return MapSettings.WILDENCOUNTER.getMarker()!!
+        }
     }
 
 }

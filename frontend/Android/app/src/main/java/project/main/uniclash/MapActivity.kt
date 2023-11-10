@@ -173,8 +173,7 @@ class MapActivity : ComponentActivity() {
             cameraState = cameraState
         ) {
             // Add markers and other map components here
-            for (marker in markerList) {
-                println("added new Marker")
+            markerList.forEach { marker ->
                 Marker(
                     state = marker.state,
                     icon = marker.icon,
@@ -193,8 +192,8 @@ class MapActivity : ComponentActivity() {
                         verticalArrangement = Arrangement.Center,
                         horizontalAlignment = Alignment.CenterHorizontally
                     ) {
-                        Text(text = it.title, fontSize = 20.sp, color = Color.White)
-                        Text(text = it.snippet, fontSize = 15.sp, color = Color.White)
+                        Text(text = marker.title!!, fontSize = 20.sp, color = Color.White)
+                        Text(text = marker.snippet!!, fontSize = 15.sp, color = Color.White)
                         Spacer(modifier = Modifier.height(8.dp))
                         val drawableImage = painterResource(id = marker.pic)
                         Image(

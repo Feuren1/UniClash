@@ -4,6 +4,7 @@ import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.Drawable
+import android.util.Log
 import androidx.annotation.DrawableRes
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.LocalContext
@@ -14,11 +15,14 @@ import com.utsman.osmandcompose.MarkerState
 import com.utsman.osmandcompose.rememberMarkerState
 import org.osmdroid.util.GeoPoint
 import project.main.uniclash.Battle
+import project.main.uniclash.MapActivity
 import project.main.uniclash.MenuActivity
 import project.main.uniclash.R
 import project.main.uniclash.datatypes.CritterPic
 import project.main.uniclash.datatypes.CritterUsable
+import project.main.uniclash.datatypes.Locations
 import project.main.uniclash.datatypes.MapSaver
+import project.main.uniclash.datatypes.MapSettings
 import project.main.uniclash.datatypes.MyMarker
 import java.lang.Math.PI
 import java.lang.Math.cos
@@ -31,16 +35,18 @@ import java.lang.Math.sqrt
 
     val wildEncounters: ArrayList<CritterUsable> = ArrayList()
     //TODO set max amount of wildCritters
-    var userLocation = GeoPoint(51.353576, 6.154071)
-     //TODO GeoLocation kann über Enum bekommen werden
-
+    var userLocation = Locations.USERLOCATION.getLocation()
     private var markerList = ArrayList<MyMarker>()
+
+     companion object {
+         private const val LOCATION_TAG = "MyLocationTag"
+     }
 
      @Composable
     fun initMarkers() : ArrayList<MyMarker> {
+         userLocation = Locations.USERLOCATION.getLocation()
              // Hier kannst du deine Marker initialisieren und zur markerList hinzufügen
-             var randomLocation = generateRandomGeoPoint(userLocation, 1.0, 375
-             )
+             var randomLocation = generateRandomGeoPoint(userLocation, 2.0, 750)
              var i = 0
              while (i < 375) {
                  val state = rememberMarkerState(
@@ -49,11 +55,11 @@ import java.lang.Math.sqrt
                  var myMarker = MyMarker(
                      id = "1",
                      state = state,
-                     icon = resizeDrawableTo50x50(context, CritterPic.MOCKITOM.getDrawable()),
+                     icon = resizeDrawableTo50x50(context, CritterPic.QUIZIZZDRAGONM.getDrawable()),
                      visible = true,
                      title = "frist automatic marker",
                      snippet = "this is a discription",
-                     pic = CritterPic.MOCKITO.getDrawable(),
+                     pic = CritterPic.QUIZIZZDRAGON.getDrawable(),
                      button = Battle::class.java,
                      buttonText = "catch Critter"
                  )
@@ -92,6 +98,7 @@ import java.lang.Math.sqrt
             var counter = times
             var geoLocations = ArrayList<GeoPoint>()
             while (counter > 0) {
+                Log.d(WildEncounterLogic.LOCATION_TAG, "new Random Location")
                 // Convert radius from kilometers to degrees
                 val radiusInDegrees = radiusInKm / 111.32
 

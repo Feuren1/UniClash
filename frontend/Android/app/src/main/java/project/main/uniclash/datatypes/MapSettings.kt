@@ -35,6 +35,31 @@ enum class Locations(private var location : GeoPoint){
     }
 
     fun setLocation(setLocation: GeoPoint){
-        location = setLocation
+        if(setLocation.latitude != 0.0 || setLocation.longitude != 0.0) {
+            location = setLocation
+        }
+    }
+}
+
+enum class Counter(private var count : Int){
+    FIRSTSPAWN(5),
+    WILDENCOUNTERREFRESHER(20);
+
+    fun getCounter():Int{
+        return count
+    }
+
+    fun setCounter(newCounter : Int){
+        count = newCounter
+    }
+
+    fun minusCounter(minusCounter : Int){
+        if(count > 0) {
+            count -= minusCounter
+        }
+    }
+
+    fun plusCounter(plusCounter : Int){
+        count += plusCounter
     }
 }

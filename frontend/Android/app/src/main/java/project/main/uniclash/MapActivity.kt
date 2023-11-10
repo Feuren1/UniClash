@@ -63,7 +63,9 @@ import com.utsman.osmandcompose.rememberCameraState
 import com.utsman.osmandcompose.rememberMarkerState
 import kotlinx.coroutines.delay
 import org.osmdroid.util.GeoPoint
+import project.main.uniclash.datatypes.Counter
 import project.main.uniclash.datatypes.Locations
+import project.main.uniclash.datatypes.MapSaver
 import project.main.uniclash.datatypes.MapSettings
 import project.main.uniclash.datatypes.MyMarker
 import project.main.uniclash.wildencounter.WildEncounterLogic
@@ -77,12 +79,15 @@ class MapActivity : ComponentActivity() {
         Manifest.permission.ACCESS_FINE_LOCATION,
     )
     private var startMapRequested by mutableStateOf(false)
-    private var mainLatitude: Double by mutableStateOf(0.0) //for gps location
-    private var mainLongitude: Double by mutableStateOf(0.0)//"
+    private var mainLatitude: Double by mutableStateOf(Locations.USERLOCATION.getLocation().latitude) //for gps location
+    private var mainLongitude: Double by mutableStateOf(Locations.USERLOCATION.getLocation().longitude)//"
 
     private var markerList = ArrayList<MyMarker>()
-    private var markersLoadded : Boolean ? = false
+    private var markersLoadded by mutableStateOf(false)
     private var movingCamera : Boolean ? = true
+
+    private var shouldLoadFirstWildEncounter by mutableStateOf(false)
+    private var shouldLoadWildEncounter by mutableStateOf(false)
     //private var markersLoadded by mutableStateOf(false)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -97,8 +102,11 @@ class MapActivity : ComponentActivity() {
                 ) {
                     if (hasPermissions() || startMapRequested) {
                         val currentUserLocation = getUserLocation(context = LocalContext.current)
-                        mainLatitude = currentUserLocation.latitude
-                        mainLongitude = currentUserLocation.longitude
+                        if(currentUserLocation.latitude != 0.0 && currentUserLocation.longitude != 0.0) {
+                            mainLatitude = currentUserLocation.latitude
+                            mainLongitude = currentUserLocation.longitude
+                            Locations.USERLOCATION.setLocation(GeoPoint(currentUserLocation.latitude, currentUserLocation.longitude))
+                        }
                         Map()
                     } else {
                         Column(
@@ -142,7 +150,8 @@ class MapActivity : ComponentActivity() {
     @Composable
     fun Map() {
         LoadMarkers()
-
+        LoadFirstWildEncounter()
+        LoadWildEncounter()
         var gpsLocation = rememberMarkerState()
         val cameraState = rememberCameraState()
         LaunchedEffect(Unit) {
@@ -157,16 +166,28 @@ class MapActivity : ComponentActivity() {
                         "$mainLatitude and ${cameraState.geoPoint.latitude} ---- $mainLongitude and ${cameraState.geoPoint.longitude}"
                     )
                     gpsLocation.geoPoint = GeoPoint(mainLatitude, mainLongitude)
-                    if(MapSettings.MOVINGCAMERA.getMapSetting() == true) {
+                    if (MapSettings.MOVINGCAMERA.getMapSetting() == true) {
                         cameraState.geoPoint = GeoPoint(mainLatitude, mainLongitude)
                         cameraState.zoom = 20.5
-                    } else if (movingCamera == true){
+                    } else if (movingCamera == true) {
                         cameraState.geoPoint = GeoPoint(mainLatitude, mainLongitude)
                         cameraState.zoom = 20.5
                         movingCamera = false
                     }
                 }
                 delay(3000) //3sec.
+                Counter.FIRSTSPAWN.minusCounter(1)
+                Counter.WILDENCOUNTERREFRESHER.minusCounter(1)
+
+                if (Counter.FIRSTSPAWN.getCounter() < 1) {
+                    shouldLoadFirstWildEncounter = true
+                }
+
+                if(Counter.WILDENCOUNTERREFRESHER.getCounter() <1){
+                    MapSaver.WILDENCOUNTER.setMarker(null)
+                    shouldLoadWildEncounter = true
+                    Counter.WILDENCOUNTERREFRESHER.setCounter(20)
+                }
             }
         }
 
@@ -178,23 +199,57 @@ class MapActivity : ComponentActivity() {
         }
 
         // Use camera state and location in your OpenStreetMap Composable
-        OpenStreetMap(
-            modifier = Modifier.fillMaxSize(),
-            cameraState = cameraState
-        ) {
-            // Add markers and other map components here
-            markerList.forEach { marker ->
+        if (!markersLoadded) {
+            OpenStreetMap(
+                modifier = Modifier.fillMaxSize(),
+                cameraState = cameraState
+            ) {
+                // Add markers and other map components here
+                markerList.forEach { marker ->
+                    Log.d(
+                        LOCATION_TAG,
+                        "set marker"
+                    )
+                    Marker(
+                        state = marker.state,
+                        icon = marker.icon,
+                        title = marker.title,
+                        snippet = marker.snippet,
+                        visible = marker.visible,
+                        id = marker.id,
+                    ) {
+                        Column(
+                            modifier = Modifier
+                                .size(340.dp)
+                                .background(
+                                    color = Color.Black.copy(alpha = 0.75f),
+                                    shape = RoundedCornerShape(7.dp)
+                                ),
+                            verticalArrangement = Arrangement.Center,
+                            horizontalAlignment = Alignment.CenterHorizontally
+                        ) {
+                            Text(text = marker.title!!, fontSize = 20.sp, color = Color.White)
+                            Text(text = marker.snippet!!, fontSize = 15.sp, color = Color.White)
+                            Spacer(modifier = Modifier.height(8.dp))
+                            val drawableImage = painterResource(id = marker.pic)
+                            Image(
+                                painter = drawableImage,
+                                contentDescription = null, // Provide a proper content description if needed
+                                modifier = Modifier.size(220.dp) // Adjust size as needed
+                            )
+                            OpenActivityButton(marker.button, marker.buttonText!!)
+                        }
+                    }
+                }
                 Marker(
-                    state = marker.state,
-                    icon = marker.icon,
-                    title = marker.title,
-                    snippet = marker.snippet,
-                    visible = marker.visible,
-                    id = marker.id,
+                    state = gpsLocation,
+                    icon = arrow,
+                    title = "NamePlaceholder",
+                    snippet = ":)"
                 ) {
                     Column(
                         modifier = Modifier
-                            .size(340.dp)
+                            .size(250.dp)
                             .background(
                                 color = Color.Black.copy(alpha = 0.75f),
                                 shape = RoundedCornerShape(7.dp)
@@ -202,40 +257,12 @@ class MapActivity : ComponentActivity() {
                         verticalArrangement = Arrangement.Center,
                         horizontalAlignment = Alignment.CenterHorizontally
                     ) {
-                        Text(text = marker.title!!, fontSize = 20.sp, color = Color.White)
-                        Text(text = marker.snippet!!, fontSize = 15.sp, color = Color.White)
+                        Text(text = it.title, fontSize = 20.sp, color = Color.White)
+                        Text(text = it.snippet, fontSize = 15.sp, color = Color.White)
                         Spacer(modifier = Modifier.height(8.dp))
-                        val drawableImage = painterResource(id = marker.pic)
-                        Image(
-                            painter = drawableImage,
-                            contentDescription = null, // Provide a proper content description if needed
-                            modifier = Modifier.size(220.dp) // Adjust size as needed
-                        )
-                        OpenActivityButton(marker.button, marker.buttonText!!)
-                    }
-                }
-            }
-            Marker(
-                state = gpsLocation,
-                icon = arrow,
-                title = "NamePlaceholder",
-                snippet = ":)"
-            ) {
-                Column(
-                    modifier = Modifier
-                        .size(250.dp)
-                        .background(
-                            color = Color.Black.copy(alpha = 0.75f),
-                            shape = RoundedCornerShape(7.dp)
-                        ),
-                    verticalArrangement = Arrangement.Center,
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ) {
-                    Text(text = it.title, fontSize = 20.sp, color = Color.White)
-                    Text(text = it.snippet, fontSize = 15.sp, color = Color.White)
-                    Spacer(modifier = Modifier.height(8.dp))
 
-                    OpenActivityButton(MenuActivity::class.java, "User Menu")
+                        OpenActivityButton(MenuActivity::class.java, "User Menu")
+                    }
                 }
             }
         }
@@ -282,7 +309,30 @@ class MapActivity : ComponentActivity() {
                 fontWeight = FontWeight.Bold
             )
         }
-        addListOfMarkers(wildEncounterLogic.initMarkers())
+    }
+
+    var alreadyLoaded = false //for LoadWildEncounter firstLoad
+    @Composable
+    fun LoadFirstWildEncounter(){
+        if(shouldLoadFirstWildEncounter) {
+            if(alreadyLoaded == false) {
+                Log.d(LOCATION_TAG, "Excecuted first loadwildencounter")
+                addListOfMarkers(wildEncounterLogic.initMarkers())
+                shouldLoadFirstWildEncounter = false
+                alreadyLoaded = true
+            }
+        }
+    }
+
+    @Composable
+    fun LoadWildEncounter(){
+        if(shouldLoadWildEncounter) {
+                Log.d(LOCATION_TAG, "Excecuted second loadwildencounter")
+                //addListOfMarkers(wildEncounterLogic.initMarkers())
+                //shouldLoadWildEncounter = false
+            val intent = Intent(this,MapActivity::class.java)
+            this.startActivity(intent, null)
+        }
     }
 
     // Methode zum Hinzufügen eines Markers zur Liste und Aktualisieren der Karte
@@ -299,6 +349,7 @@ class MapActivity : ComponentActivity() {
             }
             markersLoadded = true
         }
+        updateMapMarkers()
     }
 
     // Methode zum Entfernen eines Markers aus der Liste und Aktualisieren der Karte
@@ -414,8 +465,9 @@ class MapActivity : ComponentActivity() {
                      * */
                     for (location in result.locations) {
                         // Update data class with location data
-                        currentUserLocation = LatandLong(location.latitude, location.longitude)
-                        Log.d(LOCATION_TAG, "${location.latitude},${location.longitude}")
+                            currentUserLocation = LatandLong(location.latitude, location.longitude)
+
+                            Log.d(LOCATION_TAG, "${location.latitude},${location.longitude}")
                     }
 
 
@@ -430,8 +482,8 @@ class MapActivity : ComponentActivity() {
                                 val lat = location.latitude
                                 val long = location.longitude
                                 // Update data class with location data
-                                currentUserLocation = LatandLong(latitude = lat, longitude = long)
-                                Locations.USERLOCATION.setLocation(GeoPoint(lat,long))
+                                    currentUserLocation =
+                                        LatandLong(latitude = lat, longitude = long)
                             }
                         }
                         .addOnFailureListener {
@@ -455,7 +507,7 @@ class MapActivity : ComponentActivity() {
     }
 
     //data class to store the user Latitude and longitude
-    data class LatandLong(
+    data class LatandLong( //set the first maker
         val latitude: Double = 0.0,
         val longitude: Double = 0.0
     )

@@ -13,10 +13,12 @@ import com.utsman.osmandcompose.Marker
 import com.utsman.osmandcompose.MarkerState
 import com.utsman.osmandcompose.rememberMarkerState
 import org.osmdroid.util.GeoPoint
+import project.main.uniclash.Battle
+import project.main.uniclash.MenuActivity
 import project.main.uniclash.R
 import project.main.uniclash.datatypes.CritterPic
 import project.main.uniclash.datatypes.CritterUsable
-import project.main.uniclash.datatypes.MapSettings
+import project.main.uniclash.datatypes.MapSaver
 import project.main.uniclash.datatypes.MyMarker
 import java.lang.Math.PI
 import java.lang.Math.cos
@@ -37,25 +39,25 @@ import java.lang.Math.sqrt
      @Composable
     fun initMarkers() : ArrayList<MyMarker> {
              // Hier kannst du deine Marker initialisieren und zur markerList hinzufügen
-             var randomLocation = generateRandomGeoPoint(userLocation, 2.0, 500
+             var randomLocation = generateRandomGeoPoint(userLocation, 1.0, 375
              )
              var i = 0
-             while (i < 500) {
+             while (i < 375) {
                  val state = rememberMarkerState(
                      geoPoint = GeoPoint(randomLocation.get(i).latitude, randomLocation.get(i).longitude),
                  )
                  var myMarker = MyMarker(
                      id = "1",
                      state = state,
-                     icon = resizeDrawableTo50x50(context, CritterPic.LINUXPINGIUNM.getDrawable()),
+                     icon = resizeDrawableTo50x50(context, CritterPic.MOCKITOM.getDrawable()),
                      visible = true,
                      title = "frist automatic marker",
                      snippet = "this is a discription",
-                     pic = CritterPic.LINUXPINGIUN.getDrawable(),
-                     button = "BattleActivity"
+                     pic = CritterPic.MOCKITO.getDrawable(),
+                     button = Battle::class.java,
+                     buttonText = "catch Critter"
                  )
                  markerList.add(myMarker)
-                 println("initlasated new Marker")
                  i++
              }
         // add more markers
@@ -85,7 +87,7 @@ import java.lang.Math.sqrt
     }
 
     fun generateRandomGeoPoint(center: GeoPoint, radiusInKm: Double, times : Int): ArrayList<GeoPoint> {
-        if(MapSettings.WILDENCOUNTER.getMarker() == null) {
+        if(MapSaver.WILDENCOUNTER.getMarker() == null) {
             val random = java.util.Random()
             var counter = times
             var geoLocations = ArrayList<GeoPoint>()
@@ -108,10 +110,10 @@ import java.lang.Math.sqrt
                 geoLocations.add(GeoPoint(newLatitude, newLongitude))
                 counter--
             }
-            MapSettings.WILDENCOUNTER.setMarker(geoLocations)
+            MapSaver.WILDENCOUNTER.setMarker(geoLocations)
             return geoLocations
         } else {
-            return MapSettings.WILDENCOUNTER.getMarker()!!
+            return MapSaver.WILDENCOUNTER.getMarker()!!
         }
     }
 

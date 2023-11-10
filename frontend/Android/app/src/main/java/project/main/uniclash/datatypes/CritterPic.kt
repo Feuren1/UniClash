@@ -12,7 +12,7 @@ enum class CritterPic(private val drawableResId: Int) {
     MUSK(R.drawable.musk),
     MUSKM(R.drawable.muskm),
     MOCKITO(R.drawable.mockitodrink),
-    MOCKITOM(R.drawable.knifeduckm),
+    MOCKITOM(R.drawable.mockitodrinkm),
     QUIZIZZDRAGON(R.drawable.quizizzdragon),
     QUIZIZZDRAGONM(R.drawable.quizizzdragonm),
     FONTYS(R.drawable.fontys),

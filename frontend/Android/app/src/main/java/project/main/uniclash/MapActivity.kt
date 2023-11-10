@@ -63,6 +63,8 @@ import com.utsman.osmandcompose.rememberCameraState
 import com.utsman.osmandcompose.rememberMarkerState
 import kotlinx.coroutines.delay
 import org.osmdroid.util.GeoPoint
+import project.main.uniclash.datatypes.Locations
+import project.main.uniclash.datatypes.MapSettings
 import project.main.uniclash.datatypes.MyMarker
 import project.main.uniclash.wildencounter.WildEncounterLogic
 import java.util.concurrent.TimeUnit
@@ -80,10 +82,12 @@ class MapActivity : ComponentActivity() {
 
     private var markerList = ArrayList<MyMarker>()
     private var markersLoadded : Boolean ? = false
+    private var movingCamera : Boolean ? = true
     //private var markersLoadded by mutableStateOf(false)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
+
 
         setContent {
             UniClashTheme {
@@ -152,9 +156,15 @@ class MapActivity : ComponentActivity() {
                         LOCATION_TAG,
                         "$mainLatitude and ${cameraState.geoPoint.latitude} ---- $mainLongitude and ${cameraState.geoPoint.longitude}"
                     )
-                    cameraState.geoPoint = GeoPoint(mainLatitude, mainLongitude)
-                    cameraState.zoom = 20.5
                     gpsLocation.geoPoint = GeoPoint(mainLatitude, mainLongitude)
+                    if(MapSettings.MOVINGCAMERA.getMapSetting() == true) {
+                        cameraState.geoPoint = GeoPoint(mainLatitude, mainLongitude)
+                        cameraState.zoom = 20.5
+                    } else if (movingCamera == true){
+                        cameraState.geoPoint = GeoPoint(mainLatitude, mainLongitude)
+                        cameraState.zoom = 20.5
+                        movingCamera = false
+                    }
                 }
                 delay(3000) //3sec.
             }
@@ -201,7 +211,7 @@ class MapActivity : ComponentActivity() {
                             contentDescription = null, // Provide a proper content description if needed
                             modifier = Modifier.size(220.dp) // Adjust size as needed
                         )
-                        OpenActivityButton(context, marker.button)
+                        OpenActivityButton(marker.button, marker.buttonText!!)
                     }
                 }
             }
@@ -225,19 +235,20 @@ class MapActivity : ComponentActivity() {
                     Text(text = it.snippet, fontSize = 15.sp, color = Color.White)
                     Spacer(modifier = Modifier.height(8.dp))
 
-                    OpenActivityButton(context, "MenuActivity")
+                    OpenActivityButton(MenuActivity::class.java, "User Menu")
                 }
             }
         }
     }
 
     @Composable
-    fun OpenActivityButton(context: Context, activity: String? = "MenuActivity") {
+    fun OpenActivityButton(activity: Class<out Activity> = MenuActivity::class.java, text  : String) {
+        val context = LocalContext.current
         Button(
             onClick = {
                 // Handle the button click to open the new activity here
-                val intent = Intent(context,MainActivity::class.java)
-                this.startActivity(intent)
+                val intent = Intent(context,activity)
+                this.startActivity(intent, null)
             },
             modifier = Modifier
                 .padding(2.dp)
@@ -245,7 +256,7 @@ class MapActivity : ComponentActivity() {
                 .height(50.dp)
 
         ) {
-            Text("Menu")
+            Text("$text")
         }
     }
 
@@ -420,6 +431,7 @@ class MapActivity : ComponentActivity() {
                                 val long = location.longitude
                                 // Update data class with location data
                                 currentUserLocation = LatandLong(latitude = lat, longitude = long)
+                                Locations.USERLOCATION.setLocation(GeoPoint(lat,long))
                             }
                         }
                         .addOnFailureListener {

@@ -59,10 +59,9 @@ import java.lang.Math.sqrt
      @Composable
     fun initMarkers() : ArrayList<MyMarker> {
          userLocation = Locations.USERLOCATION.getLocation()
-             // Hier kannst du deine Marker initialisieren und zur markerList hinzufügen
-             var randomLocation = generateRandomGeoPoints(userLocation, 2.0, 750)
+             var randomLocation = generateRandomGeoPoints(userLocation, 3.0, 1200) //400 pro km
              var i = 0
-             while (i < 375) {
+             while (i < 1200) {
                  val state = rememberMarkerState(
                      geoPoint = GeoPoint(randomLocation.get(i).latitude, randomLocation.get(i).longitude),
                  )
@@ -89,7 +88,7 @@ import java.lang.Math.sqrt
         return markerList
     }
 
-    fun resizeDrawableTo50x50(context: Context, @DrawableRes drawableRes: Int): Drawable? {
+    private fun resizeDrawableTo50x50(context: Context, @DrawableRes drawableRes: Int): Drawable? {
         val originalDrawable: Drawable? = context.getDrawable(drawableRes)
 
         val originalBitmap = originalDrawable?.toBitmap()
@@ -107,7 +106,7 @@ import java.lang.Math.sqrt
         return BitmapDrawable(context.resources, scaledBitmap)
     }
 
-    fun generateRandomGeoPoints(center: GeoPoint, radiusInKm: Double, times : Int): ArrayList<GeoPoint> {
+    private fun generateRandomGeoPoints(center: GeoPoint, radiusInKm: Double, times : Int): ArrayList<GeoPoint> {
         if(MapSaver.WILDENCOUNTER.getMarker() == null) {
             val random = java.util.Random()
             var counter = times

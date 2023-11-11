@@ -71,7 +71,12 @@ import project.main.uniclash.datatypes.MapSettings
 import project.main.uniclash.datatypes.MyMarker
 import project.main.uniclash.datatypes.SelectedMarker
 import project.main.uniclash.wildencounter.WildEncounterLogic
+import java.lang.Math.atan2
+import java.lang.Math.cos
+import java.lang.Math.sin
+import java.lang.Math.sqrt
 import java.util.concurrent.TimeUnit
+import kotlin.math.pow
 
 class MapActivity : ComponentActivity() {
     private lateinit var fusedLocationClient: FusedLocationProviderClient
@@ -208,6 +213,7 @@ class MapActivity : ComponentActivity() {
             ) {
                 // Add markers and other map components here
                 markerList.forEach { marker ->
+                    val distance = haversineDistance(marker.state.geoPoint.latitude, marker.state.geoPoint.longitude, Locations.USERLOCATION.getLocation().latitude, Locations.USERLOCATION.getLocation().longitude)
                     Log.d(
                         LOCATION_TAG,
                         "set marker"
@@ -220,26 +226,28 @@ class MapActivity : ComponentActivity() {
                         visible = marker.visible,
                         id = marker.id,
                     ) {
-                        Column(
-                            modifier = Modifier
-                                .size(340.dp)
-                                .background(
-                                    color = Color.Black.copy(alpha = 0.75f),
-                                    shape = RoundedCornerShape(7.dp)
-                                ),
-                            verticalArrangement = Arrangement.Center,
-                            horizontalAlignment = Alignment.CenterHorizontally
-                        ) {
-                            Text(text = marker.title!!, fontSize = 20.sp, color = Color.White)
-                            Text(text = marker.snippet!!, fontSize = 15.sp, color = Color.White)
-                            Spacer(modifier = Modifier.height(8.dp))
-                            val drawableImage = painterResource(id = marker.pic)
-                            Image(
-                                painter = drawableImage,
-                                contentDescription = null, // Provide a proper content description if needed
-                                modifier = Modifier.size(220.dp) // Adjust size as needed
-                            )
-                            OpenActivityButton(marker)
+                        if (distance < 501) {
+                            Column(
+                                modifier = Modifier
+                                    .size(340.dp)
+                                    .background(
+                                        color = Color.Black.copy(alpha = 0.75f),
+                                        shape = RoundedCornerShape(7.dp)
+                                    ),
+                                verticalArrangement = Arrangement.Center,
+                                horizontalAlignment = Alignment.CenterHorizontally
+                            ) {
+                                Text(text = marker.title!!, fontSize = 20.sp, color = Color.White)
+                                Text(text = marker.snippet!!, fontSize = 15.sp, color = Color.White)
+                                Spacer(modifier = Modifier.height(8.dp))
+                                val drawableImage = painterResource(id = marker.pic)
+                                Image(
+                                    painter = drawableImage,
+                                    contentDescription = null, // Provide a proper content description if needed
+                                    modifier = Modifier.size(220.dp) // Adjust size as needed
+                                )
+                                OpenActivityButton(marker)
+                            }
                         }
                     }
                 }
@@ -273,21 +281,26 @@ class MapActivity : ComponentActivity() {
     @Composable
     fun OpenActivityButton(marker : MyMarker) {
         val context = LocalContext.current
-        Button(
-            onClick = {
-                // Handle the button click to open the new activity here
-                SelectedMarker.SELECTEDMARKER.setMarker(marker)
-                removeMarker(SelectedMarker.SELECTEDMARKER.takeMarker()!!)
-                      //val intent = Intent(context,marker.button)
-                //this.startActivity(intent, null)
-            },
-            modifier = Modifier
-                .padding(2.dp)
-                .width(200.dp)
-                .height(50.dp)
+        val distance = haversineDistance(marker.state.geoPoint.latitude, marker.state.geoPoint.longitude, Locations.USERLOCATION.getLocation().latitude, Locations.USERLOCATION.getLocation().longitude)
+        if(distance < 76) {
+            Button(
+                onClick = {
+                    // Handle the button click to open the new activity here
+                    SelectedMarker.SELECTEDMARKER.setMarker(marker)
+                    removeMarker(SelectedMarker.SELECTEDMARKER.takeMarker()!!)
+                    //val intent = Intent(context,marker.button)
+                    //this.startActivity(intent, null)
+                },
+                modifier = Modifier
+                    .padding(2.dp)
+                    .width(200.dp)
+                    .height(50.dp)
 
-        ) {
-            Text("${marker.buttonText}")
+            ) {
+                Text("${marker.buttonText}")
+            }
+        } else {
+            Text(text ="to faar away", color = Color.White, fontWeight = FontWeight.Bold)
         }
     }
 
@@ -422,6 +435,17 @@ class MapActivity : ComponentActivity() {
             originalBitmap?.let { Bitmap.createScaledBitmap(it, scaledWidth, scaledHeight, true) }
 
         return BitmapDrawable(context.resources, scaledBitmap)
+    }
+
+    fun haversineDistance(lat1: Double, lon1: Double, lat2: Double, lon2: Double): Double {
+        val radius = 6371000 // Radius der Erde in Metern
+
+        val dLat = Math.toRadians(lat2 - lat1)
+        val dLon = Math.toRadians(lon2 - lon1)
+        val a = sin(dLat / 2).pow(2) + cos(Math.toRadians(lat1)) * cos(Math.toRadians(lat2)) * sin(dLon / 2).pow(2)
+        val c = 2 * atan2(sqrt(a), sqrt(1 - a))
+
+        return radius * c
     }
 
 

@@ -27,6 +27,20 @@ enum class MapSaver(private var markers: ArrayList<GeoPoint>?) {
     }
 }
 
+enum class SelectedMarker(private var marker:MyMarker?) {
+    SELECTEDMARKER(null);
+
+    fun takeMarker(): MyMarker? {
+        val getter = marker
+        marker = null
+        return getter
+    }
+
+    fun setMarker(setMarker: MyMarker?){
+        marker = setMarker
+    }
+}
+
 enum class Locations(private var location : GeoPoint){
     USERLOCATION(GeoPoint(0.0,0.0));
 

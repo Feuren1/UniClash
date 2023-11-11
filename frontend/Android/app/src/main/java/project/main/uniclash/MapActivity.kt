@@ -26,6 +26,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -68,6 +69,7 @@ import project.main.uniclash.datatypes.Locations
 import project.main.uniclash.datatypes.MapSaver
 import project.main.uniclash.datatypes.MapSettings
 import project.main.uniclash.datatypes.MyMarker
+import project.main.uniclash.datatypes.SelectedMarker
 import project.main.uniclash.wildencounter.WildEncounterLogic
 import java.util.concurrent.TimeUnit
 
@@ -237,7 +239,7 @@ class MapActivity : ComponentActivity() {
                                 contentDescription = null, // Provide a proper content description if needed
                                 modifier = Modifier.size(220.dp) // Adjust size as needed
                             )
-                            OpenActivityButton(marker.button, marker.buttonText!!)
+                            OpenActivityButton(marker)
                         }
                     }
                 }
@@ -265,6 +267,27 @@ class MapActivity : ComponentActivity() {
                     }
                 }
             }
+        }
+    }
+
+    @Composable
+    fun OpenActivityButton(marker : MyMarker) {
+        val context = LocalContext.current
+        Button(
+            onClick = {
+                // Handle the button click to open the new activity here
+                SelectedMarker.SELECTEDMARKER.setMarker(marker)
+                removeMarker(SelectedMarker.SELECTEDMARKER.takeMarker()!!)
+                      //val intent = Intent(context,marker.button)
+                //this.startActivity(intent, null)
+            },
+            modifier = Modifier
+                .padding(2.dp)
+                .width(200.dp)
+                .height(50.dp)
+
+        ) {
+            Text("${marker.buttonText}")
         }
     }
 
@@ -304,7 +327,7 @@ class MapActivity : ComponentActivity() {
                 modifier = Modifier.size(240.dp)
             )
             Text(
-                text = "\nMap is loading",
+                text = "\nMap has problems to load",
                 color = Color.Red,
                 fontWeight = FontWeight.Bold
             )
@@ -347,19 +370,21 @@ class MapActivity : ComponentActivity() {
             for (marker in markers) {
                 markerList.add(marker)
             }
-            markersLoadded = true
         }
         updateMapMarkers()
     }
 
     // Methode zum Entfernen eines Markers aus der Liste und Aktualisieren der Karte
     fun removeMarker(marker: MyMarker) {
+        print("${markerList.size} markers")
         markerList.remove(marker)
+        print("${markerList.size} markers")
         updateMapMarkers()
     }
 
     // Methode zum Aktualisieren der Karte mit den Markern aus der Liste
     private fun updateMapMarkers() {
+        markersLoadded = true
         markersLoadded = false;
     }
 

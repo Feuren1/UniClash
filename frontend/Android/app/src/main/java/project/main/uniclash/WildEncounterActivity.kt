@@ -45,13 +45,12 @@ class WildEncounterActivity : ComponentActivity() {
 
     private var runaway by mutableStateOf(false)
     private var catchCritter by mutableStateOf(false)
-
+    val wildEncounter = SelectedMarker.SELECTEDMARKER.takeMarker()
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         setContent {
 
-            val wildEncounter = SelectedMarker.SELECTEDMARKER.takeMarker()
             Column(
                 modifier = Modifier
                     .fillMaxSize()

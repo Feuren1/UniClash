@@ -31,4 +31,84 @@ enum class CritterPic(private val drawableResId: Int) {
     fun getDrawable(): Int {
         return drawableResId
     }
+
+    fun searchDrawable(searchTerm : String) : Int{
+        if(searchTerm.equals("PRC2DUCK")){
+            return PRC2DUCK.getDrawable()
+        }
+        if(searchTerm.equals("KNIFEDUCK")){
+            return KNIFEDUCK.getDrawable()
+        }
+        if(searchTerm.equals("DEMOMUSK")){
+            return DEMOMUSK.getDrawable()
+        }
+        if(searchTerm.equals("MUSK")){
+            return MUSK.getDrawable()
+        }
+        if(searchTerm.equals("MOCKITO")){
+            return MOCKITO.getDrawable()
+        }
+        if(searchTerm.equals("QUIZIZZDRAGON")){
+            return QUIZIZZDRAGON.getDrawable()
+        }
+        if(searchTerm.equals("FONTYS")){
+            return FONTYS.getDrawable()
+        }
+        if(searchTerm.equals("LINUXPINGIUN")){
+            return LINUXPINGIUN.getDrawable()
+        }
+        if(searchTerm.equals("KNIFETURTLE")){
+            return KNIFETURTLE.getDrawable()
+        }
+        if(searchTerm.equals("COOLDUCK")){
+            return COOLDUCK.getDrawable()
+        }
+        if(searchTerm.equals("BORZOI")){
+            return BORZOI.getDrawable()
+        }
+        if(searchTerm.equals("PIKATCHU")){
+            return PIKATCHU.getDrawable()
+        }
+        return R.drawable.hub
+    }
+
+    fun searchDrawableM(searchTerm : String) : Int{
+        if(searchTerm.equals("PRC2DUCKM")){
+            return PRC2DUCKM.getDrawable()
+        }
+        if(searchTerm.equals("KNIFEDUCKM")){
+            return KNIFEDUCKM.getDrawable()
+        }
+        if(searchTerm.equals("DEMOMUSKM")){
+            return DEMOMUSKM.getDrawable()
+        }
+        if(searchTerm.equals("MUSKM")){
+            return MUSKM.getDrawable()
+        }
+        if(searchTerm.equals("MOCKITOM")){
+            return MOCKITOM.getDrawable()
+        }
+        if(searchTerm.equals("QUIZIZZDRAGONM")){
+            return QUIZIZZDRAGONM.getDrawable()
+        }
+        if(searchTerm.equals("FONTYSM")){
+            return FONTYSM.getDrawable()
+        }
+        if(searchTerm.equals("LINUXPINGIUNM")){
+            return LINUXPINGIUNM.getDrawable()
+        }
+        if(searchTerm.equals("KNIFETURTLEM")){
+            return KNIFETURTLEM.getDrawable()
+        }
+        if(searchTerm.equals("COOLDUCKM")){
+            return COOLDUCKM.getDrawable()
+        }
+        if(searchTerm.equals("BORZOIM")){
+            return BORZOIM.getDrawable()
+        }
+        if(searchTerm.equals("PIKATCHUM")){
+            return PIKATCHUM.getDrawable()
+        }
+        return R.drawable.hub
+    }
 }

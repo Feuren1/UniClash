@@ -55,33 +55,43 @@ import java.lang.Math.sqrt
          spd = 20,
          attacks = listOf(attack1, attack2)
      )
-
      @Composable
     fun initMarkers() : ArrayList<MyMarker> {
          userLocation = Locations.USERLOCATION.getLocation()
+
+         if(MapSaver.WILDENCOUNTER.getMarker() == null) {
              var randomLocation = generateRandomGeoPoints(userLocation, 3.0, 1200) //400 pro km
              var i = 0
+             val wildEncounter = CritterList()
+
              while (i < 1200) {
                  val state = rememberMarkerState(
-                     geoPoint = GeoPoint(randomLocation.get(i).latitude, randomLocation.get(i).longitude),
+                     geoPoint = GeoPoint(
+                         randomLocation.get(i).latitude,
+                         randomLocation.get(i).longitude
+                     ),
                  )
                  var myMarker = MyMarker(
                      id = "1",
                      state = state,
-                     icon = resizeDrawableTo50x50(context, CritterPic.QUIZIZZDRAGONM.getDrawable()),
+                     icon = resizeDrawableTo50x50(context, CritterPic.MUSK.searchDrawableM("${wildEncounter.get(i).name}M")),
                      visible = true,
-                     title = "frist automatic marker",
-                     snippet = "this is a discription",
-                     pic = CritterPic.QUIZIZZDRAGON.getDrawable(),
+                     title = "${wildEncounter.get(i).name}",
+                     snippet = "Level: ${wildEncounter.get(i).level}",
+                     pic = CritterPic.MUSK.searchDrawable("${wildEncounter.get(i).name}"),
                      button = Battle::class.java,
                      buttonText = "catch Critter",
-                     critterUsable = critter
+                     critterUsable = wildEncounter.get(i)
                  )
                  markerList.add(myMarker)
                  i++
              }
-        // add more markers
-        return markerList
+             // add more markers
+             MapSaver.WILDENCOUNTER.setMarker(markerList)
+             return markerList
+         } else {
+             return MapSaver.WILDENCOUNTER.getMarker()!!
+         }
     }
 
     fun getMarkerList(): ArrayList<MyMarker> {
@@ -107,7 +117,7 @@ import java.lang.Math.sqrt
     }
 
     private fun generateRandomGeoPoints(center: GeoPoint, radiusInKm: Double, times : Int): ArrayList<GeoPoint> {
-        if(MapSaver.WILDENCOUNTER.getMarker() == null) {
+        //if(MapSaver.WILDENCOUNTER.getMarker() == null) {
             val random = java.util.Random()
             var counter = times
             var geoLocations = ArrayList<GeoPoint>()
@@ -131,11 +141,50 @@ import java.lang.Math.sqrt
                 geoLocations.add(GeoPoint(newLatitude, newLongitude))
                 counter--
             }
-            MapSaver.WILDENCOUNTER.setMarker(geoLocations)
+            //MapSaver.WILDENCOUNTER.setMarker(geoLocations)
             return geoLocations
-        } else {
-            return MapSaver.WILDENCOUNTER.getMarker()!!
-        }
+        //} else {
+        //    return MapSaver.WILDENCOUNTER.getMarker()!!
+        //}
     }
+
+     fun CritterList() : ArrayList<CritterUsable>{
+         val wildEncunterList = ArrayList<CritterUsable>()
+         var i = 400
+         while (i > 0){
+         wildEncunterList.add(CritterUsable(1,"PRC2DUCK", 1, 1, 1, 1,listOf(attack1, attack2)))
+         wildEncunterList.add(CritterUsable(1,"PRC2DUCK", 1, 1, 1, 1,listOf(attack1, attack2)))
+         wildEncunterList.add(CritterUsable(1,"PRC2DUCK", 1, 1, 1, 1,listOf(attack1, attack2)))
+         wildEncunterList.add(CritterUsable(1,"PRC2DUCK", 1, 1, 1, 1,listOf(attack1, attack2)))
+         wildEncunterList.add(CritterUsable(1,"KNIFEDUCK", 1, 1, 1, 1,listOf(attack1, attack2)))
+         wildEncunterList.add(CritterUsable(1,"KNIFEDUCK", 1, 1, 1, 1,listOf(attack1, attack2)))
+         wildEncunterList.add(CritterUsable(1,"DEMOMUSK", 1, 1, 1, 1,listOf(attack1, attack2)))
+         wildEncunterList.add(CritterUsable(1,"DEMOMUSK", 1, 1, 1, 1,listOf(attack1, attack2)))
+         wildEncunterList.add(CritterUsable(1,"DEMOMUSK", 1, 1, 1, 1,listOf(attack1, attack2)))
+         wildEncunterList.add(CritterUsable(1,"DEMOMUSK", 1, 1, 1, 1,listOf(attack1, attack2)))
+         wildEncunterList.add(CritterUsable(1,"MUSK", 1, 1, 1, 1,listOf(attack1, attack2)))
+         wildEncunterList.add(CritterUsable(1,"MUSK", 1, 1, 1, 1,listOf(attack1, attack2)))
+         wildEncunterList.add(CritterUsable(1,"MOCKITO", 1, 1, 1, 1,listOf(attack1, attack2)))
+         wildEncunterList.add(CritterUsable(1,"MOCKITO", 1, 1, 1, 1,listOf(attack1, attack2)))
+         wildEncunterList.add(CritterUsable(1,"QUIZIZZDRAGON", 1, 1, 1, 1,listOf(attack1, attack2)))
+         wildEncunterList.add(CritterUsable(1,"QUIZIZZDRAGON", 1, 1, 1, 1,listOf(attack1, attack2)))
+         wildEncunterList.add(CritterUsable(1,"QUIZIZZDRAGON", 1, 1, 1, 1,listOf(attack1, attack2)))
+         wildEncunterList.add(CritterUsable(1,"FONTYS", 1, 1, 1, 1,listOf(attack1, attack2)))
+         wildEncunterList.add(CritterUsable(1,"LINUXPINGIUN", 1, 1, 1, 1,listOf(attack1, attack2)))
+         wildEncunterList.add(CritterUsable(1,"LINUXPINGIUN", 1, 1, 1, 1,listOf(attack1, attack2)))
+         wildEncunterList.add(CritterUsable(1,"KNIFETURTLE", 1, 1, 1, 1,listOf(attack1, attack2)))
+         wildEncunterList.add(CritterUsable(1,"KNIFETURTLE", 1, 1, 1, 1,listOf(attack1, attack2)))
+         wildEncunterList.add(CritterUsable(1,"COOLDUCK", 1, 1, 1, 1,listOf(attack1, attack2)))
+         wildEncunterList.add(CritterUsable(1,"COOLDUCK", 1, 1, 1, 1,listOf(attack1, attack2)))
+         wildEncunterList.add(CritterUsable(1,"COOLDUCK", 1, 1, 1, 1,listOf(attack1, attack2)))
+         wildEncunterList.add(CritterUsable(1,"BORZOI", 1, 1, 1, 1,listOf(attack1, attack2)))
+         wildEncunterList.add(CritterUsable(1,"BORZOI", 1, 1, 1, 1,listOf(attack1, attack2)))
+         wildEncunterList.add(CritterUsable(1,"PIKATCHU", 1, 1, 1, 1,listOf(attack1, attack2)))
+         wildEncunterList.add(CritterUsable(1,"PIKATCHU", 1, 1, 1, 1,listOf(attack1, attack2)))
+         wildEncunterList.add(CritterUsable(1,"PIKATCHU", 1, 1, 1, 1,listOf(attack1, attack2)))
+             i--
+             }
+         return wildEncunterList;
+     }
 
 }

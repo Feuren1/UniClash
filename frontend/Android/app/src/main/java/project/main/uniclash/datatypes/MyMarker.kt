@@ -7,7 +7,7 @@ import project.main.uniclash.MainActivity
 import project.main.uniclash.MenuActivity
 
 data class MyMarker(
-    var id: String,
+    var id: String? = "id",
     var state : MarkerState,
     var icon : Drawable? = null,
     var visible : Boolean = true,

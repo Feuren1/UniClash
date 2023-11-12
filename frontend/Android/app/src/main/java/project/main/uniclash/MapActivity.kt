@@ -26,7 +26,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -50,7 +49,6 @@ import androidx.compose.ui.unit.sp
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.graphics.drawable.toBitmap
-import project.main.uniclash.datatypes.CritterPic
 import project.main.uniclash.ui.theme.UniClashTheme
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationCallback
@@ -58,9 +56,7 @@ import com.google.android.gms.location.LocationRequest
 import com.google.android.gms.location.LocationResult
 import com.google.android.gms.location.LocationServices
 import com.utsman.osmandcompose.Marker
-import com.utsman.osmandcompose.MarkerState
 import com.utsman.osmandcompose.OpenStreetMap
-import com.utsman.osmandcompose.ZoomButtonVisibility
 import com.utsman.osmandcompose.rememberCameraState
 import com.utsman.osmandcompose.rememberMarkerState
 import kotlinx.coroutines.delay
@@ -91,7 +87,7 @@ class MapActivity : ComponentActivity() {
     private var mainLongitude: Double by mutableStateOf(Locations.USERLOCATION.getLocation().longitude)//"
 
     private var markerList = ArrayList<MyMarker>()
-    private var markersLoadded by mutableStateOf(false)
+    private var markersLoaded by mutableStateOf(false)
     private var movingCamera : Boolean ? = true
 
     private var shouldLoadFirstWildEncounter by mutableStateOf(false)
@@ -173,7 +169,7 @@ class MapActivity : ComponentActivity() {
                         "$mainLatitude and ${cameraState.geoPoint.latitude} ---- $mainLongitude and ${cameraState.geoPoint.longitude}"
                     )
                     gpsLocation.geoPoint = GeoPoint(mainLatitude, mainLongitude)
-                    if (MapSettings.MOVINGCAMERA.getMapSetting() == true) {
+                    if (MapSettings.MOVINGCAMERA.getMapSetting()) {
                         cameraState.geoPoint = GeoPoint(mainLatitude, mainLongitude)
                         cameraState.zoom = 20.5
                     } else if (movingCamera == true) {
@@ -206,7 +202,7 @@ class MapActivity : ComponentActivity() {
         }
 
         // Use camera state and location in your OpenStreetMap Composable
-        if (!markersLoadded) {
+        if (!markersLoaded) {
             OpenStreetMap(
                 modifier = Modifier.fillMaxSize(),
                 cameraState = cameraState
@@ -300,7 +296,7 @@ class MapActivity : ComponentActivity() {
                 Text("${marker.buttonText}")
             }
         } else {
-            Text(text ="to faar away", color = Color.White, fontWeight = FontWeight.Bold)
+            Text(text ="to far away", color = Color.White, fontWeight = FontWeight.Bold)
         }
     }
 
@@ -379,7 +375,7 @@ class MapActivity : ComponentActivity() {
     }
 
     fun addListOfMarkers(markers: ArrayList<MyMarker>) {
-        if(!markersLoadded!!) {
+        if(!markersLoaded!!) {
             for (marker in markers) {
                 markerList.add(marker)
             }
@@ -397,8 +393,8 @@ class MapActivity : ComponentActivity() {
 
     // Methode zum Aktualisieren der Karte mit den Markern aus der Liste
     private fun updateMapMarkers() {
-        markersLoadded = true
-        markersLoadded = false;
+        markersLoaded = true
+        markersLoaded = false;
     }
 
     fun resizeDrawableTo50x50(context: Context, @DrawableRes drawableRes: Int): Drawable? {

@@ -7,24 +7,15 @@ import android.graphics.drawable.Drawable
 import android.util.Log
 import androidx.annotation.DrawableRes
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.platform.LocalContext
 import androidx.core.graphics.drawable.toBitmap
-import com.utsman.osmandcompose.CameraState
-import com.utsman.osmandcompose.Marker
-import com.utsman.osmandcompose.MarkerState
 import com.utsman.osmandcompose.rememberMarkerState
 import org.osmdroid.util.GeoPoint
-import project.main.uniclash.Battle
-import project.main.uniclash.MapActivity
-import project.main.uniclash.MenuActivity
-import project.main.uniclash.R
 import project.main.uniclash.WildEncounterActivity
 import project.main.uniclash.datatypes.Attack
 import project.main.uniclash.datatypes.CritterPic
 import project.main.uniclash.datatypes.CritterUsable
 import project.main.uniclash.datatypes.Locations
 import project.main.uniclash.datatypes.MapSaver
-import project.main.uniclash.datatypes.MapSettings
 import project.main.uniclash.datatypes.MyMarker
 import java.lang.Math.PI
 import java.lang.Math.cos
@@ -44,18 +35,6 @@ import java.lang.Math.sqrt
          private const val LOCATION_TAG = "MyLocationTag"
      }
 
-     val attack1 = Attack(1, "Tackle", 1)
-     val attack2 = Attack(2, "Scratch",2)
-
-     val critter = CritterUsable(
-         level = 5,
-         name = "Pikachu",
-         hp = 50,
-         atk = 15,
-         def = 10,
-         spd = 20,
-         attacks = listOf(attack1, attack2)
-     )
      @Composable
     fun initMarkers() : ArrayList<MyMarker> {
          userLocation = Locations.USERLOCATION.getLocation()
@@ -118,7 +97,6 @@ import java.lang.Math.sqrt
     }
 
     private fun generateRandomGeoPoints(center: GeoPoint, radiusInKm: Double, times : Int): ArrayList<GeoPoint> {
-        //if(MapSaver.WILDENCOUNTER.getMarker() == null) {
             val random = java.util.Random()
             var counter = times
             var geoLocations = ArrayList<GeoPoint>()
@@ -142,12 +120,11 @@ import java.lang.Math.sqrt
                 geoLocations.add(GeoPoint(newLatitude, newLongitude))
                 counter--
             }
-            //MapSaver.WILDENCOUNTER.setMarker(geoLocations)
             return geoLocations
-        //} else {
-        //    return MapSaver.WILDENCOUNTER.getMarker()!!
-        //}
     }
+
+     val attack1 = Attack(1, "Tackle", 1)
+     val attack2 = Attack(2, "Scratch",2)
 
      fun CritterList() : ArrayList<CritterUsable>{
          val wildEncunterList = ArrayList<CritterUsable>()

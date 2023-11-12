@@ -45,7 +45,7 @@ class WildEncounterActivity : ComponentActivity() {
 
     private var runaway by mutableStateOf(false)
     private var catchCritter by mutableStateOf(false)
-    val wildEncounter = SelectedMarker.SELECTEDMARKER.takeMarker()
+    private val wildEncounter = SelectedMarker.SELECTEDMARKER.takeMarker()
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 

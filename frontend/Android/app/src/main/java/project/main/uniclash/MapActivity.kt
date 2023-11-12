@@ -96,7 +96,6 @@ class MapActivity : ComponentActivity() {
 
     private var shouldLoadFirstWildEncounter by mutableStateOf(false)
     private var shouldLoadWildEncounter by mutableStateOf(false)
-    //private var markersLoadded by mutableStateOf(false)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
@@ -288,9 +287,9 @@ class MapActivity : ComponentActivity() {
                 onClick = {
                     // Handle the button click to open the new activity here
                     SelectedMarker.SELECTEDMARKER.setMarker(marker)
-                    removeMarker(SelectedMarker.SELECTEDMARKER.takeMarker()!!)
-                    //val intent = Intent(context,marker.button)
-                    //this.startActivity(intent, null)
+                    //removeMarker(SelectedMarker.SELECTEDMARKER.takeMarker()!!)
+                    val intent = Intent(context,marker.button)
+                    this.startActivity(intent, null)
                 },
                 modifier = Modifier
                     .padding(2.dp)

@@ -32,7 +32,7 @@ enum class SelectedMarker(private var marker:MyMarker?) {
 
     fun takeMarker(): MyMarker? {
         val getter = marker
-        marker = null
+        //marker = null
         return getter
     }
 

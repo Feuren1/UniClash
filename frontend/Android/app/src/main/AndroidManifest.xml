@@ -31,7 +31,13 @@
             android:name=".MapActivity"
             android:noHistory="true"
             android:exported="false"
-            android:label="@string/title_activity_menu"
+            android:label="Map"
+            android:theme="@style/Theme.UniClash" />
+        <activity
+            android:name=".WildEncounterActivity"
+            android:noHistory="true"
+            android:exported="false"
+            android:label="WildEncounter"
             android:theme="@style/Theme.UniClash" />
         <activity
             android:name=".MainActivity"

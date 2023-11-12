@@ -18,6 +18,7 @@ import project.main.uniclash.Battle
 import project.main.uniclash.MapActivity
 import project.main.uniclash.MenuActivity
 import project.main.uniclash.R
+import project.main.uniclash.WildEncounterActivity
 import project.main.uniclash.datatypes.Attack
 import project.main.uniclash.datatypes.CritterPic
 import project.main.uniclash.datatypes.CritterUsable
@@ -60,11 +61,11 @@ import java.lang.Math.sqrt
          userLocation = Locations.USERLOCATION.getLocation()
 
          if(MapSaver.WILDENCOUNTER.getMarker() == null) {
-             var randomLocation = generateRandomGeoPoints(userLocation, 3.0, 1200) //400 pro km
+             var randomLocation = generateRandomGeoPoints(userLocation, 2.0, 800) //400 pro km
              var i = 0
              val wildEncounter = CritterList()
 
-             while (i < 1200) {
+             while (i < 800) {
                  val state = rememberMarkerState(
                      geoPoint = GeoPoint(
                          randomLocation.get(i).latitude,
@@ -79,7 +80,7 @@ import java.lang.Math.sqrt
                      title = "${wildEncounter.get(i).name}",
                      snippet = "Level: ${wildEncounter.get(i).level}",
                      pic = CritterPic.MUSK.searchDrawable("${wildEncounter.get(i).name}"),
-                     button = Battle::class.java,
+                     button = WildEncounterActivity::class.java,
                      buttonText = "catch Critter",
                      critterUsable = wildEncounter.get(i)
                  )

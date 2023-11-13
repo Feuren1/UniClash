@@ -26,7 +26,17 @@ enum class CritterPic(private val drawableResId: Int) {
     BORZOI(R.drawable.borzoi),
     BORZOIM(R.drawable.borzoim),
     PIKATCHU(R.drawable.pikatchu),
-    PIKATCHUM(R.drawable.pikatchum);
+    PIKATCHUM(R.drawable.pikatchum),
+    MATRYOSHKA(R.drawable.matryoshka),
+    MATRYOSHKAM(R.drawable.matryoshkam),
+    NUTCRACKER(R.drawable.nutcracker),
+    NUTCRACKERM(R.drawable.nutcrackerm),
+    EGGGIVINGWOOLMILK(R.drawable.egggivingwoolmilk),
+    EGGGIVINGWOOLMILKM(R.drawable.egggivingwoolmilkm),
+    MUTANTDUCK(R.drawable.mutantduck),
+    MUTANTDUCKM(R.drawable.mutantduckm),
+    CROCODILEDUCK(R.drawable.crocodileduck),
+    CROCODILEDUCKM(R.drawable.crocodileduckm);
 
     fun getDrawable(): Int {
         return drawableResId
@@ -69,6 +79,21 @@ enum class CritterPic(private val drawableResId: Int) {
         if(searchTerm.equals("PIKATCHU")){
             return PIKATCHU.getDrawable()
         }
+        if(searchTerm.equals("EGGGIVINGWOOLMILK")){
+            return EGGGIVINGWOOLMILK.getDrawable()
+        }
+        if(searchTerm.equals("NUTCRACKER")){
+            return NUTCRACKER.getDrawable()
+        }
+        if(searchTerm.equals("MATRYOSHKA")){
+            return MATRYOSHKA.getDrawable()
+        }
+        if(searchTerm.equals("MUTANTDUCK")){
+            return MUTANTDUCK.getDrawable()
+        }
+        if(searchTerm.equals("CROCODILEDUCK")){
+            return CROCODILEDUCK.getDrawable()
+        }
         return R.drawable.hub
     }
 
@@ -108,6 +133,21 @@ enum class CritterPic(private val drawableResId: Int) {
         }
         if(searchTerm.equals("PIKATCHUM")){
             return PIKATCHUM.getDrawable()
+        }
+        if(searchTerm.equals("EGGGIVINGWOOLMILKM")){
+            return EGGGIVINGWOOLMILKM.getDrawable()
+        }
+        if(searchTerm.equals("NUTCRACKERM")){
+            return NUTCRACKERM.getDrawable()
+        }
+        if(searchTerm.equals("MATRYOSHKAM")){
+            return MATRYOSHKAM.getDrawable()
+        }
+        if(searchTerm.equals("MUTANTDUCKM")){
+            return MUTANTDUCKM.getDrawable()
+        }
+        if(searchTerm.equals("CROCODILEDUCKM")){
+            return CROCODILEDUCKM.getDrawable()
         }
         return R.drawable.hub
     }

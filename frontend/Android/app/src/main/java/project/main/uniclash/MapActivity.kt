@@ -92,6 +92,8 @@ class MapActivity : ComponentActivity() {
 
     private var shouldLoadFirstWildEncounter by mutableStateOf(false)
     private var shouldLoadWildEncounter by mutableStateOf(false)
+
+    private var newCritterNotification by mutableStateOf(11)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
@@ -169,6 +171,7 @@ class MapActivity : ComponentActivity() {
                         "$mainLatitude and ${cameraState.geoPoint.latitude} ---- $mainLongitude and ${cameraState.geoPoint.longitude}"
                     )
                     gpsLocation.geoPoint = GeoPoint(mainLatitude, mainLongitude)
+                    gpsLocation.rotation = calculateDirection(GeoPoint(cameraState.geoPoint.latitude,cameraState.geoPoint.longitude), GeoPoint(mainLatitude,mainLongitude))+270F
                     if (MapSettings.MOVINGCAMERA.getMapSetting()) {
                         cameraState.geoPoint = GeoPoint(mainLatitude, mainLongitude)
                         cameraState.zoom = 20.5
@@ -191,6 +194,7 @@ class MapActivity : ComponentActivity() {
                     shouldLoadWildEncounter = true
                     Counter.WILDENCOUNTERREFRESHER.setCounter(20)
                 }
+                newCritterNotification = Counter.WILDENCOUNTERREFRESHER.getCounter()
             }
         }
 
@@ -198,7 +202,7 @@ class MapActivity : ComponentActivity() {
 
         // define marker icon
         val arrow: Drawable? by remember {
-            mutableStateOf(resizeDrawableTo50x50(context, R.drawable.location))
+            mutableStateOf(resizeDrawableTo50x50(context, R.drawable.arrow))
         }
 
         // Use camera state and location in your OpenStreetMap Composable
@@ -272,6 +276,7 @@ class MapActivity : ComponentActivity() {
                 }
             }
         }
+        NewCrittersAdvice()
     }
 
     @Composable
@@ -320,6 +325,14 @@ class MapActivity : ComponentActivity() {
     }
 
     private val wildEncounterLogic = WildEncounterLogic(context = this)
+
+    @Composable
+    fun NewCrittersAdvice(){
+        println("$newCritterNotification value")
+        if(newCritterNotification<11){
+            Text(text = "New Critters will spawn soon!",color = Color.Red, fontWeight = FontWeight.Bold)
+        }
+    }
 
     @Composable
     fun LoadMarkers(){
@@ -397,7 +410,7 @@ class MapActivity : ComponentActivity() {
         markersLoaded = false;
     }
 
-    fun resizeDrawableTo50x50(context: Context, @DrawableRes drawableRes: Int): Drawable? {
+    private fun resizeDrawableTo50x50(context: Context, @DrawableRes drawableRes: Int): Drawable? {
         val originalDrawable: Drawable? = context.getDrawable(drawableRes)
 
         val originalBitmap = originalDrawable?.toBitmap()
@@ -415,7 +428,7 @@ class MapActivity : ComponentActivity() {
         return BitmapDrawable(context.resources, scaledBitmap)
     }
 
-    fun resizeDrawableTo60x60(context: Context, @DrawableRes drawableRes: Int): Drawable? {
+    private fun resizeDrawableTo60x60(context: Context, @DrawableRes drawableRes: Int): Drawable? {
         val originalDrawable: Drawable? = context.getDrawable(drawableRes)
 
         val originalBitmap = originalDrawable?.toBitmap()
@@ -433,7 +446,19 @@ class MapActivity : ComponentActivity() {
         return BitmapDrawable(context.resources, scaledBitmap)
     }
 
-    fun haversineDistance(lat1: Double, lon1: Double, lat2: Double, lon2: Double): Double {
+    private fun calculateDirection(startpunkt: GeoPoint, zielpunkt: GeoPoint): Float {
+        val dX = zielpunkt.longitude - startpunkt.longitude
+        val dY = zielpunkt.latitude - startpunkt.latitude
+
+        val winkel = Math.toDegrees(atan2(dY, dX)).toFloat()
+        return if (winkel < 0) {
+            (winkel + 360) % 360 // Um negative Winkel in positive umzuwandeln
+        } else {
+            winkel
+        }
+    }
+
+    private fun haversineDistance(lat1: Double, lon1: Double, lat2: Double, lon2: Double): Double {
         val radius = 6371000 // Radius der Erde in Metern
 
         val dLat = Math.toRadians(lat2 - lat1)

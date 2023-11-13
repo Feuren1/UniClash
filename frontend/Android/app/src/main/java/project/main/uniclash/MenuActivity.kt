@@ -51,7 +51,7 @@ class MenuActivity : ComponentActivity() {
                 MenuCard(Category("Critters List", painterResource(R.drawable.prc2duck),1))
                 MenuCard(Category("Inventar", painterResource(R.drawable.energydrink),2))
                 MenuCard(Category("Pokedex", painterResource(R.drawable.prc2duck),3))
-                MenuCard(Category(  if(MapSettings.MOVINGCAMERA.getMapSetting() == true) {"Moving Map Camera off"} else {"Moving Map Camera on"}, painterResource(R.drawable.location),4))
+                MenuCard(Category(  if(MapSettings.MOVINGCAMERA.getMapSetting()) {"Following location arrow off"} else {"Following location arrow on"}, painterResource(R.drawable.location),4))
                 MenuCard(Category("New Building", painterResource(R.drawable.store),5))
                 MenuCard(Category("Battle Activity", painterResource(R.drawable.arena),6))
                 MenuCard(Category("Back to map", painterResource(R.drawable.map),7))

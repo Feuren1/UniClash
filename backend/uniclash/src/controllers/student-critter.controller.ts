@@ -1,3 +1,4 @@
+import {service} from '@loopback/core';
 import {
   Count,
   CountSchema,
@@ -16,13 +17,16 @@ import {
   requestBody,
 } from '@loopback/rest';
 import {
-  Student,
   Critter,
+  CritterUsable,
+  Student,
 } from '../models';
 import {StudentRepository} from '../repositories';
+import {StudentCritterService} from '../services/student-critter.service';
 
 export class StudentCritterController {
   constructor(
+    @service(StudentCritterService) protected studentCritterService: StudentCritterService,
     @repository(StudentRepository) protected studentRepository: StudentRepository,
   ) { }
 
@@ -106,5 +110,23 @@ export class StudentCritterController {
     @param.query.object('where', getWhereSchemaFor(Critter)) where?: Where<Critter>,
   ): Promise<Count> {
     return this.studentRepository.critters(id).delete(where);
+  }
+
+  @get('/students/{id}/usables', {
+    responses: {
+      '200': {
+        description: 'Calculate and return CritterUsable for all critters of a student',
+        content: {
+          'application/json': {
+            schema: getModelSchemaRef(CritterUsable), // Use CritterUsable schema
+          },
+        },
+      },
+    },
+  })
+  async calculateCritterUsable(
+    @param.path.number('id') id: number,
+  ): Promise<CritterUsable[]> {
+    return this.studentCritterService.createCritterUsableListOnStudentId(id);
   }
 }

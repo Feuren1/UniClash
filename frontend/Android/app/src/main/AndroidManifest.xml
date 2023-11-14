@@ -23,16 +23,25 @@
             android:theme="@style/Theme.UniClash" />
         <activity
             android:name=".MenuActivity"
+            android:noHistory="true"
             android:exported="false"
             android:label="@string/title_activity_menu"
             android:theme="@style/Theme.UniClash" />
         <activity
             android:name=".MapActivity"
+            android:noHistory="true"
             android:exported="false"
-            android:label="@string/title_activity_menu"
+            android:label="Map"
+            android:theme="@style/Theme.UniClash" />
+        <activity
+            android:name=".WildEncounterActivity"
+            android:noHistory="true"
+            android:exported="false"
+            android:label="WildEncounter"
             android:theme="@style/Theme.UniClash" />
         <activity
             android:name=".MainActivity"
+            android:noHistory="true"
             android:exported="true"
             android:label="UniClash"
             android:theme="@style/Theme.UniClash">

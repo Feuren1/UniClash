@@ -35,19 +35,19 @@ class MainActivity : ComponentActivity() {
     @Composable
     fun OpenMenuActivityButton() {
         val context = LocalContext.current
-        Button(
-            onClick = {
+        //Button(
+         //   onClick = {
                 // Handle the button click to open the new activity here
                 val intent = Intent(context, MapActivity::class.java)
                 this.startActivity(intent)
-            },
-            modifier = Modifier
-                .padding(2.dp)
-                .width(200.dp)
-                .height(50.dp)
+          //  },
+         //   modifier = Modifier
+         //       .padding(2.dp)
+          //      .width(200.dp)
+         //       .height(50.dp)
 
-        ) {
-            Text("Menu")
-        }
+       // ) {
+        //    Text("Menu")
+       // }
     }
 }

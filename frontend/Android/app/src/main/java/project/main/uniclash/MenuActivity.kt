@@ -34,6 +34,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import project.main.uniclash.datatypes.MapSettings
 import project.main.uniclash.ui.theme.UniClashTheme
 
 
@@ -48,9 +49,9 @@ class MenuActivity : ComponentActivity() {
             Column {
                 MenuHeader()
                 MenuCard(Category("Critters List", painterResource(R.drawable.prc2duck),1))
-                MenuCard(Category("Inventar", painterResource(R.drawable.energy_drink),2))
+                MenuCard(Category("Inventar", painterResource(R.drawable.energydrink),2))
                 MenuCard(Category("Pokedex", painterResource(R.drawable.prc2duck),3))
-                MenuCard(Category("Fix Location Camera on/off", painterResource(R.drawable.location),4))
+                MenuCard(Category(  if(MapSettings.MOVINGCAMERA.getMapSetting()) {"Following location arrow off"} else {"Following location arrow on"}, painterResource(R.drawable.location),4))
                 MenuCard(Category("New Building", painterResource(R.drawable.store),5))
                 MenuCard(Category("Battle Activity", painterResource(R.drawable.arena),6))
                 MenuCard(Category("Back to map", painterResource(R.drawable.map),7))
@@ -64,6 +65,11 @@ class MenuActivity : ComponentActivity() {
                 val intent = Intent(this, MapActivity::class.java)
                 this.startActivity(intent)
                 buttonRequest = 0
+            }
+            if(buttonRequest == 4){
+                MapSettings.MOVINGCAMERA.setMapSetting(!MapSettings.MOVINGCAMERA.getMapSetting())
+                val intent = Intent(this, MenuActivity::class.java)
+                this.startActivity(intent)
             }
         }
     }

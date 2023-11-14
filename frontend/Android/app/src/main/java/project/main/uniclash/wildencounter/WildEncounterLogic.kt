@@ -130,6 +130,9 @@ import java.lang.Math.sqrt
          val wildEncunterList = ArrayList<CritterUsable>()
          var i = 7
          while (i > 0){
+             wildEncunterList.add(CritterUsable(1,"STUDENTASSISTANCE", 1, 1, 1, 1,listOf(attack1, attack2)))
+             wildEncunterList.add(CritterUsable(1,"STUDENTASSISTANCE", 1, 1, 1, 1,listOf(attack1, attack2)))
+             wildEncunterList.add(CritterUsable(1,"STUDENTASSISTANCE", 1, 1, 1, 1,listOf(attack1, attack2)))
          wildEncunterList.add(CritterUsable(1,"PRC2DUCK", 1, 1, 1, 1,listOf(attack1, attack2)))
              wildEncunterList.add(CritterUsable(1,"PRC2DUCK", 1, 1, 1, 1,listOf(attack1, attack2)))
          wildEncunterList.add(CritterUsable(1,"PRC2DUCK", 1, 1, 1, 1,listOf(attack1, attack2)))
@@ -187,10 +190,10 @@ import java.lang.Math.sqrt
              wildEncunterList.add(CritterUsable(1,"CROCODILEDUCK", 1, 1, 1, 1,listOf(attack1, attack2)))
              wildEncunterList.add(CritterUsable(1,"CROCODILEDUCK", 1, 1, 1, 1,listOf(attack1, attack2)))
              wildEncunterList.add(CritterUsable(1,"CROCODILEDUCK", 1, 1, 1, 1,listOf(attack1, attack2)))
-             wildEncunterList.add(CritterUsable(1,"EGGGIVINGWOOLMILK", 1, 1, 1, 1,listOf(attack1, attack2)))
-             wildEncunterList.add(CritterUsable(1,"EGGGIVINGWOOLMILK", 1, 1, 1, 1,listOf(attack1, attack2)))
-             wildEncunterList.add(CritterUsable(1,"EGGGIVINGWOOLMILK", 1, 1, 1, 1,listOf(attack1, attack2)))
-             wildEncunterList.add(CritterUsable(1,"EGGGIVINGWOOLMILK", 1, 1, 1, 1,listOf(attack1, attack2)))
+             wildEncunterList.add(CritterUsable(1,"EGGGIVINGWOOLMILKPIG", 1, 1, 1, 1,listOf(attack1, attack2)))
+             wildEncunterList.add(CritterUsable(1,"EGGGIVINGWOOLMILKPIG", 1, 1, 1, 1,listOf(attack1, attack2)))
+             wildEncunterList.add(CritterUsable(1,"EGGGIVINGWOOLMILKPIG", 1, 1, 1, 1,listOf(attack1, attack2)))
+             wildEncunterList.add(CritterUsable(1,"EGGGIVINGWOOLMILKPIG", 1, 1, 1, 1,listOf(attack1, attack2)))
 
              wildEncunterList.add(CritterUsable(1,"PRC2DUCK", 1, 1, 1, 1,listOf(attack1, attack2)))
              wildEncunterList.add(CritterUsable(1,"PRC2DUCK", 1, 1, 1, 1,listOf(attack1, attack2)))
@@ -248,10 +251,10 @@ import java.lang.Math.sqrt
              wildEncunterList.add(CritterUsable(1,"CROCODILEDUCK", 1, 1, 1, 1,listOf(attack1, attack2)))
              wildEncunterList.add(CritterUsable(1,"CROCODILEDUCK", 1, 1, 1, 1,listOf(attack1, attack2)))
              wildEncunterList.add(CritterUsable(1,"CROCODILEDUCK", 1, 1, 1, 1,listOf(attack1, attack2)))
-             wildEncunterList.add(CritterUsable(1,"EGGGIVINGWOOLMILK", 1, 1, 1, 1,listOf(attack1, attack2)))
-             wildEncunterList.add(CritterUsable(1,"EGGGIVINGWOOLMILK", 1, 1, 1, 1,listOf(attack1, attack2)))
-             wildEncunterList.add(CritterUsable(1,"EGGGIVINGWOOLMILK", 1, 1, 1, 1,listOf(attack1, attack2)))
-             wildEncunterList.add(CritterUsable(1,"EGGGIVINGWOOLMILK", 1, 1, 1, 1,listOf(attack1, attack2)))
+             wildEncunterList.add(CritterUsable(1,"EGGGIVINGWOOLMILKPIG", 1, 1, 1, 1,listOf(attack1, attack2)))
+             wildEncunterList.add(CritterUsable(1,"EGGGIVINGWOOLMILKPIG", 1, 1, 1, 1,listOf(attack1, attack2)))
+             wildEncunterList.add(CritterUsable(1,"EGGGIVINGWOOLMILKPIG", 1, 1, 1, 1,listOf(attack1, attack2)))
+             wildEncunterList.add(CritterUsable(1,"EGGGIVINGWOOLMILKPIG", 1, 1, 1, 1,listOf(attack1, attack2)))
              i--
              }
          return wildEncunterList;

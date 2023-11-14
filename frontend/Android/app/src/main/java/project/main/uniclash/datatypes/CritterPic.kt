@@ -31,10 +31,12 @@ enum class CritterPic(private val drawableResId: Int) {
     MATRYOSHKAM(R.drawable.matryoshkam),
     NUTCRACKER(R.drawable.nutcracker),
     NUTCRACKERM(R.drawable.nutcrackerm),
-    EGGGIVINGWOOLMILK(R.drawable.egggivingwoolmilk),
-    EGGGIVINGWOOLMILKM(R.drawable.egggivingwoolmilkm),
+    EGGGIVINGWOOLMILKPIG(R.drawable.egggivingwoolmilk),
+    EGGGIVINGWOOLMILKPIGM(R.drawable.egggivingwoolmilkm),
     MUTANTDUCK(R.drawable.mutantduck),
     MUTANTDUCKM(R.drawable.mutantduckm),
+    STUDENTASSISTANCE(R.drawable.studentassistance),
+    STUDENTASSISTANCEM(R.drawable.studentassistancem),
     CROCODILEDUCK(R.drawable.crocodileduck),
     CROCODILEDUCKM(R.drawable.crocodileduckm);
 
@@ -79,8 +81,8 @@ enum class CritterPic(private val drawableResId: Int) {
         if(searchTerm.equals("PIKATCHU")){
             return PIKATCHU.getDrawable()
         }
-        if(searchTerm.equals("EGGGIVINGWOOLMILK")){
-            return EGGGIVINGWOOLMILK.getDrawable()
+        if(searchTerm.equals("EGGGIVINGWOOLMILKPIG")){
+            return EGGGIVINGWOOLMILKPIG.getDrawable()
         }
         if(searchTerm.equals("NUTCRACKER")){
             return NUTCRACKER.getDrawable()
@@ -93,6 +95,9 @@ enum class CritterPic(private val drawableResId: Int) {
         }
         if(searchTerm.equals("CROCODILEDUCK")){
             return CROCODILEDUCK.getDrawable()
+        }
+        if(searchTerm.equals("STUDENTASSISTANCE")){
+            return STUDENTASSISTANCE.getDrawable()
         }
         return R.drawable.hub
     }
@@ -134,8 +139,8 @@ enum class CritterPic(private val drawableResId: Int) {
         if(searchTerm.equals("PIKATCHUM")){
             return PIKATCHUM.getDrawable()
         }
-        if(searchTerm.equals("EGGGIVINGWOOLMILKM")){
-            return EGGGIVINGWOOLMILKM.getDrawable()
+        if(searchTerm.equals("EGGGIVINGWOOLMILKPIGM")){
+            return EGGGIVINGWOOLMILKPIGM.getDrawable()
         }
         if(searchTerm.equals("NUTCRACKERM")){
             return NUTCRACKERM.getDrawable()
@@ -148,6 +153,9 @@ enum class CritterPic(private val drawableResId: Int) {
         }
         if(searchTerm.equals("CROCODILEDUCKM")){
             return CROCODILEDUCKM.getDrawable()
+        }
+        if(searchTerm.equals("STUDENTASSISTANCEM")){
+            return STUDENTASSISTANCEM.getDrawable()
         }
         return R.drawable.hub
     }

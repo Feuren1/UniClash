@@ -1,33 +1,31 @@
 import {injectable} from '@loopback/core';
 import {repository} from '@loopback/repository';
-import {Attack, Critter, CritterCopy, CritterCopyAttack, CritterUsable} from '../models';
-import {AttackRepository, CritterCopyAttackRepository, CritterCopyRepository, CritterRepository} from '../repositories';
+import {Attack, Critter, CritterAttack, CritterTemplate, CritterUsable} from '../models';
+import {AttackRepository, CritterAttackRepository, CritterRepository, CritterTemplateRepository} from '../repositories';
 
 @injectable()
 export class CritterStatsService {
   constructor(
+    @repository(CritterTemplateRepository) protected critterTemplateRepository: CritterTemplateRepository,
     @repository(CritterRepository) protected critterRepository: CritterRepository,
-    @repository(CritterCopyRepository) protected critterCopyRepository: CritterCopyRepository,
-    @repository(CritterCopyAttackRepository) protected critterCopyAttackRepository: CritterCopyAttackRepository,
+    @repository(CritterAttackRepository) protected critterAttackRepository: CritterAttackRepository,
     @repository(AttackRepository) protected attackRepository: AttackRepository
   ) { }
 
-  async createCritterUsable(critterCopyId: number): Promise<CritterUsable> {
-    const copy: CritterCopy = await this.critterCopyRepository.findById(critterCopyId);
-    const critter: Critter = await this.critterRepository.findById(copy.critterId);
-    console.log('Received attacks: createcritterusable method', copy.critterCopyAttacks);
-    const critterAttacksToRetrieveActual: CritterCopyAttack[] = await this.critterCopyAttackRepository.find({
-      where: {critterCopyId: critterCopyId} // Apply any additional filters provided
+  async createCritterUsable(critterId: number): Promise<CritterUsable> {
+    const critter: Critter = await this.critterRepository.findById(critterId, {
+      include: ['critterAttacks'],
     });
-    const attacks: Attack[] = await this.getAttacks(critterAttacksToRetrieveActual);
-    const actualStats: number[] = this.calculateStats(critter, copy);
+    const critterTemplate: CritterTemplate = await this.critterTemplateRepository.findById(critter.critterTemplateId);
+    const attacks: Attack[] = await this.getAttacks(critter.critterAttacks);
+    const actualStats: number[] = this.calculateStats(critterTemplate, critter);
 
     // Check if the attacks array is empty
     if (attacks.length === 0) {
       // Handle the case when there are no attacks (provide a default or handle accordingly)
       // For example, set a default name and empty attacks array:
       const critterUsable = new CritterUsable({
-        level: copy.level,
+        level: critter.level,
         name: 'No Attacks Available', // Set a default name
         hp: actualStats[0], // Set the actual HP
         atk: actualStats[1], // Set the actual attack
@@ -40,8 +38,8 @@ export class CritterStatsService {
 
     // Create an instance of CritterUsable with valid attacks
     const critterUsable = new CritterUsable({
-      level: copy.level,
-      name: critter.name, // Use the critter's name
+      level: critter.level,
+      name: critterTemplate.name, // Use the critter's name
       hp: actualStats[0], // Set the actual HP
       atk: actualStats[1], // Set the actual attack
       def: actualStats[2], // Set the actual defense
@@ -53,7 +51,7 @@ export class CritterStatsService {
   }
 
 
-  async getAttacks(attacks: CritterCopyAttack[]): Promise<Attack[]> {
+  async getAttacks(attacks: CritterAttack[]): Promise<Attack[]> {
 
 
     const attackArray: Attack[] = [];
@@ -67,25 +65,25 @@ export class CritterStatsService {
 
   async calculateActualStats(critterCopyId: number): Promise<number[]> {
     // Retrieve the critter and its copies from the repository
-    const copy: CritterCopy = await this.critterCopyRepository.findById(critterCopyId);
-    const critter: Critter = await this.critterRepository.findById(copy.critterId);
+    const critter: Critter = await this.critterRepository.findById(critterCopyId);
+    const critterTemplate: CritterTemplate = await this.critterTemplateRepository.findById(critter.critterTemplateId);
 
     // Calculate the actual stats based on the critter and its copies
-    const actualStats: number[] = this.calculateStats(critter, copy);
+    const actualStats: number[] = this.calculateStats(critterTemplate, critter);
 
     return actualStats;
   }
 
   // Implement the actual stats calculation logic here
-  private calculateStats(critter: Critter, copy: CritterCopy): number[] {
+  private calculateStats(critterTemplate: CritterTemplate, critter: Critter): number[] {
     // Your logic for calculating stats goes here
     // You can use the critter, its copies, and attacks to compute the actual stats
     // and return them as an array of integers.
     return [
-      critter.baseHealth + copy.level,
-      critter.baseAttack + copy.level,
-      critter.baseDefend + copy.level,
-      critter.baseSpeed + copy.level,
+      critterTemplate.baseHealth + critter.level,
+      critterTemplate.baseAttack + critter.level,
+      critterTemplate.baseDefence + critter.level,
+      critterTemplate.baseSpeed + critter.level,
       // Additional calculations using 'attacks' if needed
     ];
   }

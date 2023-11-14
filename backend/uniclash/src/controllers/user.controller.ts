@@ -1,21 +1,21 @@
 // Uncomment these imports to begin using these cool features!
 
-import {TokenService, UserService} from '@loopback/authentication';
 import {inject} from '@loopback/core';
 import {model, property} from '@loopback/repository';
 import {
+  SchemaObject,
   get,
   post,
-  requestBody,
-  SchemaObject
+  requestBody
 } from '@loopback/rest';
-import {SecurityBindings, securityId, UserProfile} from '@loopback/security';
 import {genSalt, hash} from 'bcryptjs';
-import {RefreshTokenServiceBindings, TokenServiceBindings, UserServiceBindings} from '../keys';
-import {User} from '../models';
+import {RefreshTokenServiceBindings, SecurityBindings, TokenServiceBindings, UserServiceBindings} from '../keys';
+import {MyUserProfile, User} from '../models';
 import {UserRepository} from '../repositories';
-import {Credentials} from '../services/user.service';
-import {RefreshTokenService, TokenObject} from '../types';
+import {TokenService} from '../services/token.service';
+import {Credentials} from '../services/user-credential.service';
+import {UserService} from '../services/user.service';
+import {RefreshTokenService, TokenObject, securityId} from '../types';
 
 // Describes the type of grant object taken in by method "refresh"
 type RefreshGrant = {
@@ -82,7 +82,7 @@ export class UserController {
     @inject(UserServiceBindings.USER_SERVICE)
     public userService: UserService<User, Credentials>,
     @inject(SecurityBindings.USER, {optional: true})
-    private user: UserProfile,
+    private user: MyUserProfile,
     @inject(UserServiceBindings.USER_REPOSITORY)
     public userRepository: UserRepository,
     @inject(RefreshTokenServiceBindings.REFRESH_TOKEN_SERVICE)
@@ -207,7 +207,7 @@ export class UserController {
     // ensure the user exists, and the password is correct
     const user = await this.userService.verifyCredentials(credentials);
     // convert a User object into a UserProfile object (reduced set of properties)
-    const userProfile: UserProfile =
+    const userProfile: MyUserProfile =
       this.userService.convertToUserProfile(user);
     const accessToken = await this.jwtService.generateToken(userProfile);
     const tokens = await this.refreshService.generateToken(

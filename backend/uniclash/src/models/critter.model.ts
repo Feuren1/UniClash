@@ -1,5 +1,7 @@
-import {Entity, model, property, hasMany} from '@loopback/repository';
-import {CritterCopy} from './critter-copy.model';
+import {Entity, belongsTo, hasMany, model, property} from '@loopback/repository';
+import {CritterAttack} from './critter-attack.model';
+import {CritterTemplate} from './critter-template.model';
+import {Student} from './student.model';
 
 @model()
 export class Critter extends Entity {
@@ -8,35 +10,33 @@ export class Critter extends Entity {
     id: true,
     generated: true,
   })
-  id?: number;
+  id: number;
+
+  @property({
+    type: 'number',
+    default: 1,
+  })
+  level: number;
+
+  @property({
+    type: 'number',
+    default: 0,
+  })
+  expToNextLevel?: number;
 
   @property({
     type: 'string',
   })
-  name: string;
+  nature?: string;
 
-  @property({
-    type: 'number',
-  })
-  baseHealth: number;
+  @hasMany(() => CritterAttack)
+  critterAttacks: CritterAttack[];
 
-  @property({
-    type: 'number',
-  })
-  baseSpeed: number;
+  @belongsTo(() => CritterTemplate)
+  critterTemplateId: number;
 
-  @property({
-    type: 'number',
-  })
-  baseAttack: number;
-
-  @property({
-    type: 'number',
-  })
-  baseDefend: number;
-
-  @hasMany(() => CritterCopy)
-  critterCopies: CritterCopy[];
+  @belongsTo(() => Student)
+  studentId: number;
 
   constructor(data?: Partial<Critter>) {
     super(data);

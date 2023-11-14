@@ -4,11 +4,11 @@ plugins {
 }
 
 android {
-    namespace = "com.example.mymap"
+    namespace = "project.main.uniclash"
     compileSdk = 34
 
     defaultConfig {
-        applicationId = "com.example.mymap"
+        applicationId = "project.main.uniclash"
         minSdk = 29
         targetSdk = 33
         versionCode = 1
@@ -76,4 +76,7 @@ dependencies {
     implementation ("tech.utsmankece:osm-android-compose:0.0.5")
     implementation("org.osmdroid:osmdroid-android:6.1.16")
     implementation ("com.google.android.gms:play-services-location:17.1.0")
+    implementation ("androidx.activity:activity-ktx:1.4.0")
+    implementation ("androidx.activity:activity-compose:1.4.0-alpha01")
+    implementation ("androidx.lifecycle:lifecycle-viewmodel-ktx:2.3.1")
 }

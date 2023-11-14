@@ -1,8 +1,9 @@
 import {Getter, inject} from '@loopback/core';
-import {DefaultCrudRepository, HasManyRepositoryFactory, repository} from '@loopback/repository';
-import {CritterCopyAttackRepository} from '.';
+import {BelongsToAccessor, DefaultCrudRepository, HasManyRepositoryFactory, repository} from '@loopback/repository';
 import {DbDataSource} from '../datasources';
-import {Attack, AttackRelations, CritterCopyAttack} from '../models';
+import {Attack, AttackRelations, CritterAttack, Type} from '../models';
+import {CritterAttackRepository} from './critter-attack.repository';
+import {TypeRepository} from './type.repository';
 
 export class AttackRepository extends DefaultCrudRepository<
   Attack,
@@ -10,13 +11,18 @@ export class AttackRepository extends DefaultCrudRepository<
   AttackRelations
 > {
 
-  public readonly critterCopyAttacks: HasManyRepositoryFactory<CritterCopyAttack, typeof Attack.prototype.id>;
+
+  public readonly critterAttacks: HasManyRepositoryFactory<CritterAttack, typeof Attack.prototype.id>;
+
+  public readonly type: BelongsToAccessor<Type, typeof Attack.prototype.id>;
 
   constructor(
-    @inject('datasources.db') dataSource: DbDataSource, @repository.getter('CritterCopyRepository') protected critterCopyAttackRepositoryGetter: Getter<CritterCopyAttackRepository>,
+    @inject('datasources.db') dataSource: DbDataSource, @repository.getter('CritterAttackRepository') protected critterAttackRepositoryGetter: Getter<CritterAttackRepository>, @repository.getter('TypeRepository') protected typeRepositoryGetter: Getter<TypeRepository>,
   ) {
     super(Attack, dataSource);
-    this.critterCopyAttacks = this.createHasManyRepositoryFactoryFor('critterCopyAttacks', critterCopyAttackRepositoryGetter,);
-    this.registerInclusionResolver('critterCopies', this.critterCopyAttacks.inclusionResolver);
+    this.type = this.createBelongsToAccessorFor('type', typeRepositoryGetter,);
+    this.registerInclusionResolver('type', this.type.inclusionResolver);
+    this.critterAttacks = this.createHasManyRepositoryFactoryFor('critterAttacks', critterAttackRepositoryGetter,);
+    this.registerInclusionResolver('critterAttacks', this.critterAttacks.inclusionResolver);
   }
 }

@@ -1,6 +1,4 @@
 
-import {AuthenticationComponent} from '@loopback/authentication';
-import {JWTAuthenticationComponent} from '@loopback/authentication-jwt';
 import {BootMixin} from '@loopback/boot';
 import {ApplicationConfig} from '@loopback/core';
 import {RepositoryMixin} from '@loopback/repository';
@@ -16,8 +14,10 @@ import {UserCredentialsRepository, UserRepository} from './repositories';
 import {MySequence} from './sequence';
 import {CritterStatsService} from './services/critter-stats.service';
 
+import {AuthenticationComponent} from './authentication.component';
+import {JWTAuthenticationComponent} from './jwt-authentication-component';
 import {UserServiceBindings} from './keys';
-import {MyUserService} from './services/user.service';
+import {MyUserService} from './services/user-credential.service';
 export {ApplicationConfig};
 
 export class UniclashApplication extends BootMixin(

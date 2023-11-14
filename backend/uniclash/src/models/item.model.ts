@@ -1,5 +1,5 @@
-import {Entity, model, property, hasMany} from '@loopback/repository';
-import {ItemCopy} from './item-copy.model';
+import {Entity, model, property, belongsTo} from '@loopback/repository';
+import {ItemTemplate} from './item-template.model';
 
 @model()
 export class Item extends Entity {
@@ -9,19 +9,15 @@ export class Item extends Entity {
     generated: true,
   })
   id?: number;
-  @property({
-    type: 'string',
-  })
-  name: string;
 
   @property({
     type: 'number',
     default: 1,
   })
-  price?: number;
+  quantity?: number;
 
-  @hasMany(() => ItemCopy)
-  itemCopies: ItemCopy[];
+  @belongsTo(() => ItemTemplate)
+  itemTemplateId: number;
 
   constructor(data?: Partial<Item>) {
     super(data);

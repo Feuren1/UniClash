@@ -14,28 +14,37 @@
         android:label="UniClash"
         android:roundIcon="@drawable/icon"
         android:supportsRtl="true"
-        android:theme="@style/Theme.MyMap"
+        android:theme="@style/Theme.UniClash"
         tools:targetApi="31">
         <activity
             android:name=".Battle"
             android:exported="false"
             android:label="@string/title_activity_battle"
-            android:theme="@style/Theme.MyMap" />
+            android:theme="@style/Theme.UniClash" />
         <activity
             android:name=".MenuActivity"
+            android:noHistory="true"
             android:exported="false"
             android:label="@string/title_activity_menu"
-            android:theme="@style/Theme.MyMap" />
+            android:theme="@style/Theme.UniClash" />
         <activity
             android:name=".MapActivity"
+            android:noHistory="true"
             android:exported="false"
-            android:label="@string/title_activity_menu"
-            android:theme="@style/Theme.MyMap" />
+            android:label="Map"
+            android:theme="@style/Theme.UniClash" />
+        <activity
+            android:name=".WildEncounterActivity"
+            android:noHistory="true"
+            android:exported="false"
+            android:label="WildEncounter"
+            android:theme="@style/Theme.UniClash" />
         <activity
             android:name=".MainActivity"
+            android:noHistory="true"
             android:exported="true"
             android:label="UniClash"
-            android:theme="@style/Theme.MyMap">
+            android:theme="@style/Theme.UniClash">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

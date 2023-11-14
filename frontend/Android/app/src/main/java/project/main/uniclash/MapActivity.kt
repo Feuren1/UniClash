@@ -207,6 +207,13 @@ class MapActivity : ComponentActivity() {
 
         // Use camera state and location in your OpenStreetMap Composable
         if (!markersLoaded) {
+            var critterVisibilaty = 250
+            if(MapSettings.CRITTERBINOCULARS.getMapSetting()){
+                critterVisibilaty = 1000
+            } else {
+                critterVisibilaty = 250
+            }
+
             OpenStreetMap(
                 modifier = Modifier.fillMaxSize(),
                 cameraState = cameraState
@@ -223,7 +230,7 @@ class MapActivity : ComponentActivity() {
                         icon = marker.icon,
                         title = marker.title,
                         snippet = marker.snippet,
-                        visible = marker.visible,
+                        visible = if(marker.critterUsable != null && distance > critterVisibilaty){false}else{marker.visible},
                         id = marker.id,
                     ) {
                         if (distance < 501) {

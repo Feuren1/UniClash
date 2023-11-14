@@ -1,6 +1,5 @@
 // Uncomment these imports to begin using these cool features!
 
-import {TokenService, UserService} from '@loopback/authentication';
 import {inject} from '@loopback/core';
 import {model, property} from '@loopback/repository';
 import {
@@ -9,13 +8,14 @@ import {
   post,
   requestBody
 } from '@loopback/rest';
-import {SecurityBindings, securityId} from '@loopback/security';
 import {genSalt, hash} from 'bcryptjs';
-import {RefreshTokenServiceBindings, TokenServiceBindings, UserServiceBindings} from '../keys';
+import {RefreshTokenServiceBindings, SecurityBindings, TokenServiceBindings, UserServiceBindings} from '../keys';
 import {MyUserProfile, User} from '../models';
 import {UserRepository} from '../repositories';
-import {Credentials} from '../services/user.service';
-import {RefreshTokenService, TokenObject} from '../types';
+import {TokenService} from '../services/token.service';
+import {Credentials} from '../services/user-credential.service';
+import {UserService} from '../services/user.service';
+import {RefreshTokenService, TokenObject, securityId} from '../types';
 
 // Describes the type of grant object taken in by method "refresh"
 type RefreshGrant = {

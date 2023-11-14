@@ -1,8 +1,7 @@
-import {TokenService} from '@loopback/authentication';
+
 import {BindingScope, inject, injectable, uuid} from '@loopback/core';
 import {repository} from '@loopback/repository';
 import {HttpErrors} from '@loopback/rest';
-import {UserProfile, securityId} from '@loopback/security';
 import {promisify} from 'util';
 import {
   RefreshTokenServiceBindings,
@@ -11,8 +10,9 @@ import {
 } from '../keys';
 import {RefreshToken, RefreshTokenRelations} from '../models';
 import {RefreshTokenRepository} from '../repositories';
-import {TokenObject} from '../types';
-import {MyUserService} from './user.service';
+import {TokenObject, UserProfile, securityId} from '../types';
+import {TokenService} from './token.service';
+import {MyUserService} from './user-credential.service';
 const jwt = require('jsonwebtoken');
 const signAsync = promisify(jwt.sign);
 const verifyAsync = promisify(jwt.verify);

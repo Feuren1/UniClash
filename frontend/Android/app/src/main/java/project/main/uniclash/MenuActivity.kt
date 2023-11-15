@@ -56,6 +56,7 @@ class MenuActivity : ComponentActivity() {
                 MenuCard(Category("New Building", painterResource(R.drawable.store),5))
                 MenuCard(Category("Battle Activity", painterResource(R.drawable.arena),6))
                 MenuCard(Category("Back to map", painterResource(R.drawable.map),7))
+                MenuCard(Category("Student Hub", painterResource(R.drawable.store),8))
             }
             if(buttonRequest == 6) {
                 val intent = Intent(this, Battle::class.java)
@@ -64,6 +65,11 @@ class MenuActivity : ComponentActivity() {
             }
             if(buttonRequest == 7) {
                 val intent = Intent(this, MapActivity::class.java)
+                this.startActivity(intent)
+                buttonRequest = 0
+            }
+            if(buttonRequest == 8) {
+                val intent = Intent(this, StudentHubActivity::class.java)
                 this.startActivity(intent)
                 buttonRequest = 0
             }

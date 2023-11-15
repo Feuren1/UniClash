@@ -15,6 +15,8 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
@@ -49,14 +51,14 @@ fun StudentHub(modifier: Modifier = Modifier, studentHubViewModel: StudentHubVie
 
 //    val studentHubState by studentHubViewModel.studentHub.collectAsState()
 //    studentHubViewModel.loadStudentHub(1)
-//
-//    val itemsHubState by studentHubViewModel.items.collectAsState()
-//    studentHubViewModel.loadItems()
-//
-//    var studentHub = studentHubState.studentHub
-//    var itemList = itemsHubState.items
 
-    var itemList = List(2) { i -> Item("Item$i", 5) }
+    val itemsHubState by studentHubViewModel.items.collectAsState()
+    studentHubViewModel.loadItems()
+
+//    var studentHub = studentHubState.studentHub
+    var itemList = itemsHubState.items
+
+//    var itemList = List(2) { i -> Item("Item$i", 5) }
 
     println("Items: $itemList")
 
@@ -64,11 +66,11 @@ fun StudentHub(modifier: Modifier = Modifier, studentHubViewModel: StudentHubVie
 
         
 
-//        Button(onClick = {
-//            println("Items: $itemList")
-//            println("StudentHub: $studentHub")}) {
-//            Text(text = "Debug")
-//        }
+        Button(onClick = {
+            println("Items: $itemList")
+            }) {
+            Text(text = "Debug")
+        }
 
         ItemList(itemList, onButtonClicked = {/*TODO: Buying the item*/})
     }
@@ -94,7 +96,7 @@ fun ItemRow(itemName: String, itemCost: Int, onButtonClicked: () -> Unit, modifi
         Text(modifier = Modifier
             .weight(1f)
             .padding(start = 16.dp),
-            text = "Item: $itemName = Cost: $itemCost")
+            text = "$itemName for $itemCost")
         
         Button(modifier = Modifier
             .weight(1f)

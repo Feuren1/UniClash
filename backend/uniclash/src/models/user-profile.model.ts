@@ -1,5 +1,5 @@
 import {model, property} from '@loopback/repository';
-import {UserProfile, securityId} from '@loopback/security';
+import {UserProfile, securityId} from '../types';
 
 @model()
 export class MyUserProfile implements UserProfile {

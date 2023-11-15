@@ -20,6 +20,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import project.main.uniclash.datatypes.Item
 import project.main.uniclash.retrofit.StudentHubService
 import project.main.uniclash.ui.theme.UniClashTheme
@@ -39,7 +40,7 @@ class StudentHubActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    StudentHub(modifier = Modifier.fillMaxSize(), studentHubViewModel)
+                    StudentHub(modifier = Modifier.fillMaxSize(), studentHubViewModel = studentHubViewModel)
                 }
             }
         }
@@ -47,7 +48,7 @@ class StudentHubActivity : ComponentActivity() {
 }
 
 @Composable
-fun StudentHub(modifier: Modifier = Modifier, studentHubViewModel: StudentHubViewModel) {
+fun StudentHub(modifier: Modifier = Modifier, studentHubViewModel: StudentHubViewModel = viewModel()) {
 
 //    val studentHubState by studentHubViewModel.studentHub.collectAsState()
 //    studentHubViewModel.loadStudentHub(1)

@@ -17,33 +17,38 @@
         android:theme="@style/Theme.UniClash"
         tools:targetApi="31">
         <activity
+            android:name=".StudentHubActivity"
+            android:exported="false"
+            android:label="@string/title_activity_student_hub"
+            android:theme="@style/Theme.UniClash" />
+        <activity
             android:name=".Battle"
             android:exported="false"
             android:label="@string/title_activity_battle"
             android:theme="@style/Theme.UniClash" />
         <activity
             android:name=".MenuActivity"
-            android:noHistory="true"
             android:exported="false"
             android:label="@string/title_activity_menu"
+            android:noHistory="true"
             android:theme="@style/Theme.UniClash" />
         <activity
             android:name=".MapActivity"
-            android:noHistory="true"
             android:exported="false"
             android:label="Map"
+            android:noHistory="true"
             android:theme="@style/Theme.UniClash" />
         <activity
             android:name=".WildEncounterActivity"
-            android:noHistory="true"
             android:exported="false"
             android:label="WildEncounter"
+            android:noHistory="true"
             android:theme="@style/Theme.UniClash" />
         <activity
             android:name=".MainActivity"
-            android:noHistory="true"
             android:exported="true"
             android:label="UniClash"
+            android:noHistory="true"
             android:theme="@style/Theme.UniClash">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

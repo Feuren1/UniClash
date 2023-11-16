@@ -56,9 +56,15 @@ class MenuActivity : ComponentActivity() {
                 MenuCard(Category("Battle Activity", painterResource(R.drawable.arena),6))
                 MenuCard(Category("Back to map", painterResource(R.drawable.map),7))
                 MenuCard(Category("Student Hub", painterResource(R.drawable.store),8))
+                MenuCard(Category("Camera", painterResource(R.drawable.swords),9))
             }
             if(buttonRequest == 6) {
                 val intent = Intent(this, Battle::class.java)
+                this.startActivity(intent)
+                buttonRequest = 0
+            }
+            if(buttonRequest == 9) {
+                val intent = Intent(this, CameraActivity::class.java)
                 this.startActivity(intent)
                 buttonRequest = 0
             }
@@ -75,6 +81,10 @@ class MenuActivity : ComponentActivity() {
             if(buttonRequest == 4){
                 MapSettings.MOVINGCAMERA.setMapSetting(!MapSettings.MOVINGCAMERA.getMapSetting())
                 val intent = Intent(this, MenuActivity::class.java)
+                this.startActivity(intent)
+            }
+            if(buttonRequest == 1){
+                val intent = Intent(this, CameraActivity::class.java)
                 this.startActivity(intent)
             }
         }

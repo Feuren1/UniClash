@@ -67,7 +67,7 @@ fun CritterBattle(uniClashViewModel: UniClashViewModel) {
     val uniClashUiStateCritterUsable by uniClashViewModel.critterUsable.collectAsState()
     uniClashViewModel.loadCritters()
     uniClashViewModel.loadCritter(1)
-    uniClashViewModel.loadCritterUsable(1)
+    uniClashViewModel.loadCritterUsable(19)
     var critterList = uniClashUIState.critters
     var critter = uniClashUIStateCritter.critter
     var critterUsable = uniClashUiStateCritterUsable.critterUsable
@@ -153,7 +153,7 @@ fun CritterBattle(uniClashViewModel: UniClashViewModel) {
                 items(uniClashUIState.critters.size) {
                         index ->
                     Column {
-                        Text(text = uniClashUIState.critters[index].name)
+                        /*Text(text = uniClashUIState.critters[index].name)
                         Text(text = uniClashUIState.critters[index].baseHealth.toString())
                         Text(text = uniClashUIState.critters[index].baseAttack.toString())
                         Text(text = uniClashUIState.critters[index].baseDefend.toString())
@@ -162,7 +162,7 @@ fun CritterBattle(uniClashViewModel: UniClashViewModel) {
                         Text(text = uniClashUIState.critters[index].attack2.toString())
                         Text(text = uniClashUIState.critters[index].attack3.toString())
                         Text(text = uniClashUIState.critters[index].attack4.toString())
-                        Divider() // Add a divider between items
+                        Divider() // Add a divider between items*/
                     }
                 }
             }

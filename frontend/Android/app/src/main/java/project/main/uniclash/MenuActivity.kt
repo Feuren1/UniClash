@@ -52,14 +52,19 @@ class MenuActivity : ComponentActivity() {
                 MenuCard(Category("Inventar", painterResource(R.drawable.energydrink),2))
                 MenuCard(Category("Pokedex", painterResource(R.drawable.prc2duck),3))
                 MenuCard(Category(  if(MapSettings.MOVINGCAMERA.getMapSetting()) {"Following location arrow off"} else {"Following location arrow on"}, painterResource(R.drawable.location),4))
-                MenuCard(Category(  if(MapSettings.CRITTERBINOCULARS.getMapSetting()) {"Deactivate Binoculars"} else {"Activate Binoculars"}, painterResource(R.drawable.binoculars),8))
                 MenuCard(Category("New Building", painterResource(R.drawable.store),5))
                 MenuCard(Category("Battle Activity", painterResource(R.drawable.arena),6))
                 MenuCard(Category("Back to map", painterResource(R.drawable.map),7))
                 MenuCard(Category("Student Hub", painterResource(R.drawable.store),8))
+                MenuCard(Category("Camera", painterResource(R.drawable.swords),9))
             }
             if(buttonRequest == 6) {
                 val intent = Intent(this, Battle::class.java)
+                this.startActivity(intent)
+                buttonRequest = 0
+            }
+            if(buttonRequest == 9) {
+                val intent = Intent(this, CameraActivity::class.java)
                 this.startActivity(intent)
                 buttonRequest = 0
             }
@@ -78,9 +83,8 @@ class MenuActivity : ComponentActivity() {
                 val intent = Intent(this, MenuActivity::class.java)
                 this.startActivity(intent)
             }
-            if(buttonRequest == 8){
-                MapSettings.CRITTERBINOCULARS.setMapSetting(!MapSettings.CRITTERBINOCULARS.getMapSetting())
-                val intent = Intent(this, MenuActivity::class.java)
+            if(buttonRequest == 1){
+                val intent = Intent(this, CameraActivity::class.java)
                 this.startActivity(intent)
             }
         }

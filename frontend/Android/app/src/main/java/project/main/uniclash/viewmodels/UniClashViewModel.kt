@@ -87,6 +87,7 @@ class UniClashViewModel(
             critterUsable.update { it.copy(isLoading = true) }
             try {
                 val response = critterService.getCritterUsable(id).enqueue()
+                Log.d(TAG, "loadCritterUsable: $response")
                 if (response.isSuccessful) {
                     response.body()?.let {
                         critterUsable.update { state ->

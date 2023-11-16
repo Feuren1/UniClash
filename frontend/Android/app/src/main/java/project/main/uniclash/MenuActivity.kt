@@ -5,6 +5,7 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -16,6 +17,8 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -46,17 +49,47 @@ class MenuActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
 
         setContent {
-            Column {
-                MenuHeader()
-                MenuCard(Category("Critters List", painterResource(R.drawable.prc2duck),1))
-                MenuCard(Category("Inventar", painterResource(R.drawable.energydrink),2))
-                MenuCard(Category("Pokedex", painterResource(R.drawable.prc2duck),3))
-                MenuCard(Category(  if(MapSettings.MOVINGCAMERA.getMapSetting()) {"Following location arrow off"} else {"Following location arrow on"}, painterResource(R.drawable.location),4))
-                MenuCard(Category("New Building", painterResource(R.drawable.store),5))
-                MenuCard(Category("Battle Activity", painterResource(R.drawable.arena),6))
-                MenuCard(Category("Back to map", painterResource(R.drawable.map),7))
-                MenuCard(Category("Student Hub", painterResource(R.drawable.store),8))
-                MenuCard(Category("Camera", painterResource(R.drawable.swords),9))
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(MaterialTheme.colorScheme.background)
+                    .padding(16.dp)
+                    .verticalScroll(rememberScrollState())
+            ) {
+                Column {
+                    MenuHeader()
+                    MenuCard(Category("Critters List", painterResource(R.drawable.prc2duck), 1))
+                    MenuCard(Category("Inventar", painterResource(R.drawable.energydrink), 2))
+                    MenuCard(Category("Pokedex", painterResource(R.drawable.prc2duck), 3))
+                    MenuCard(
+                        Category(
+                            if (MapSettings.MOVINGCAMERA.getMapSetting()) {
+                                "Following location arrow off"
+                            } else {
+                                "Following location arrow on"
+                            }, painterResource(R.drawable.location), 4
+                        )
+                    )
+                    MenuCard(
+                        Category(
+                            if (MapSettings.CRITTERBINOCULARS.getMapSetting()) {
+                                "Deactivate Binoculars"
+                            } else {
+                                "Activate Binoculars"
+                            }, painterResource(R.drawable.binoculars), 10
+                        )
+                    )
+                    MenuCard(Category("New Building", painterResource(R.drawable.store), 5))
+                    MenuCard(Category("Battle Activity", painterResource(R.drawable.arena), 6))
+                    MenuCard(Category("Back to map", painterResource(R.drawable.map), 7))
+                    MenuCard(Category("Student Hub", painterResource(R.drawable.store), 8))
+                    MenuCard(Category("Camera", painterResource(R.drawable.swords), 9))
+                }
+            }
+            if(buttonRequest == 10) {
+                MapSettings.CRITTERBINOCULARS.setMapSetting(!MapSettings.CRITTERBINOCULARS.getMapSetting())
+                val intent = Intent(this, MenuActivity::class.java)
+                this.startActivity(intent)
             }
             if(buttonRequest == 6) {
                 val intent = Intent(this, Battle::class.java)
@@ -125,13 +158,13 @@ class MenuActivity : ComponentActivity() {
             textAlign = TextAlign.Start,
             modifier = Modifier.padding(vertical = 16.dp) // Add vertical padding
         )
-        Text(
+        /*Text(
             text = "Coins",
             fontSize = 18.sp, // Adjust the font size as needed
             fontWeight = FontWeight.Bold, // Use FontWeight.Bold for bold text
             textAlign = TextAlign.End,
             modifier = Modifier.padding(vertical = 16.dp) // Add vertical padding
-        )
+        )*/
     }
 
    /* @Composable

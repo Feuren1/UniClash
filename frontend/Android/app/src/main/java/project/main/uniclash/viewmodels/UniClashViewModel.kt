@@ -40,7 +40,7 @@ sealed interface CritterUsablesUIState {
     data class HasEntries(
         val critterUsables: List<CritterUsable?>,
         val isLoading: Boolean,
-    ) : CritterUsableUIState
+    ) : CritterUsablesUIState
 }
 
 
@@ -101,17 +101,23 @@ class UniClashViewModel(
         }
     }
 
+    @SuppressLint("MissingPermission")
     fun loadCritterUsables(id: Int) {
         viewModelScope.launch {
             critterUsables.update { it.copy(isLoading = true) }
             try {
                 val response = critterService.getCritterUsables(id).enqueue()
+                Log.d(TAG, "loadCrittersUsable: $response")
                 if (response.isSuccessful) {
-                    response.body()?.let {
-                        critterUsables.update { state ->
-                            state.copy(critterUsables = it, isLoading = false)
+                    Log.d(TAG, "loadCrittersUsables: success")
+                    val crittersUsables = response.body()!!
+                    Log.d(TAG, "loadCrittersUsables: $crittersUsables")
+                        critterUsables.update {
+                            it.copy(
+                                critterUsables = crittersUsables,
+                                isLoading = false
+                            )
                         }
-                    }
                 }
             } catch (e: Exception) {
                 e.printStackTrace()

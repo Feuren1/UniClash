@@ -64,6 +64,7 @@ import com.utsman.osmandcompose.rememberMarkerState
 import kotlinx.coroutines.delay
 import org.osmdroid.util.GeoPoint
 import project.main.uniclash.datatypes.Counter
+import project.main.uniclash.datatypes.CritterUsable
 import project.main.uniclash.datatypes.Locations
 import project.main.uniclash.datatypes.MapSaver
 import project.main.uniclash.datatypes.MapSettings
@@ -374,7 +375,8 @@ class MapActivity : ComponentActivity() {
         if(shouldLoadFirstWildEncounter) {
             if(alreadyLoaded == false) {
                 Log.d(LOCATION_TAG, "Excecuted first loadwildencounter")
-                addListOfMarkers(wildEncounterLogic.initMarkers())
+                var critterUsables = WildEncounter(uniClashViewModel)
+                    addListOfMarkers(wildEncounterLogic.initMarkers(critterUsables))
                 shouldLoadFirstWildEncounter = false
                 alreadyLoaded = true
             }
@@ -639,12 +641,10 @@ class MapActivity : ComponentActivity() {
         })
 
     @Composable
-    fun WildEncounter(uniClashViewModel: UniClashViewModel) {
+    fun WildEncounter(uniClashViewModel: UniClashViewModel):List<CritterUsable?> {
         val uniClashUiStateCritterUsables by uniClashViewModel.critterUsables.collectAsState()
         uniClashViewModel.loadCritterUsables(1)
-        var critterUsables = uniClashUiStateCritterUsables.critterUsables
-
-        println(critterUsables.get(0).toString())
-        //println(critterUsables.get(1).toString())
+        var critterUsables : List<CritterUsable?> = uniClashUiStateCritterUsables.critterUsables
+        return critterUsables
     }
 }

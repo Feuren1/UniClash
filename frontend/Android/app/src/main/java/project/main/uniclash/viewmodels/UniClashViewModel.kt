@@ -36,6 +36,13 @@ sealed interface CritterUsableUIState {
     ) : CritterUsableUIState
 }
 
+sealed interface CritterUsablesUIState {
+    data class HasEntries(
+        val critterUsables: List<CritterUsable?>,
+        val isLoading: Boolean,
+    ) : CritterUsableUIState
+}
+
 
 class UniClashViewModel(
     private val critterService: CritterService,
@@ -61,6 +68,13 @@ class UniClashViewModel(
         )
     )
 
+    val critterUsables = MutableStateFlow(
+        CritterUsablesUIState.HasEntries(
+            emptyList(),
+            isLoading = false
+        )
+    )
+
     init {
         viewModelScope.launch {
             Log.d(TAG, "Fetching initial critters data: ")
@@ -77,6 +91,24 @@ class UniClashViewModel(
                     response.body()?.let {
                         critterUsable.update { state ->
                             state.copy(critterUsable = it, isLoading = false)
+                        }
+                    }
+                }
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
+        }
+    }
+
+    fun loadCritterUsables(id: Int) {
+        viewModelScope.launch {
+            critterUsables.update { it.copy(isLoading = true) }
+            try {
+                val response = critterService.getCritterUsables(id).enqueue()
+                if (response.isSuccessful) {
+                    response.body()?.let {
+                        critterUsables.update { state ->
+                            state.copy(critterUsables = it, isLoading = false)
                         }
                     }
                 }

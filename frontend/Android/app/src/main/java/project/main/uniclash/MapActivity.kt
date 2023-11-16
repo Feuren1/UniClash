@@ -14,6 +14,7 @@ import android.os.Looper
 import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.activity.viewModels
 import androidx.annotation.DrawableRes
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -33,6 +34,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -67,6 +69,8 @@ import project.main.uniclash.datatypes.MapSaver
 import project.main.uniclash.datatypes.MapSettings
 import project.main.uniclash.datatypes.MyMarker
 import project.main.uniclash.datatypes.SelectedMarker
+import project.main.uniclash.retrofit.CritterService
+import project.main.uniclash.viewmodels.UniClashViewModel
 import project.main.uniclash.wildencounter.WildEncounterLogic
 import java.lang.Math.atan2
 import java.lang.Math.cos
@@ -284,6 +288,7 @@ class MapActivity : ComponentActivity() {
             }
         }
         NewCrittersAdvice()
+        WildEncounter(uniClashViewModel = uniClashViewModel)
     }
 
     @Composable
@@ -379,9 +384,9 @@ class MapActivity : ComponentActivity() {
     @Composable
     fun LoadWildEncounter(){
         if(shouldLoadWildEncounter) {
-                Log.d(LOCATION_TAG, "Excecuted second loadwildencounter")
-                //addListOfMarkers(wildEncounterLogic.initMarkers())
-                //shouldLoadWildEncounter = false
+            Log.d(LOCATION_TAG, "Excecuted second loadwildencounter")
+            //addListOfMarkers(wildEncounterLogic.initMarkers())
+            //shouldLoadWildEncounter = false
             val intent = Intent(this,MapActivity::class.java)
             this.startActivity(intent, null)
         }
@@ -542,9 +547,9 @@ class MapActivity : ComponentActivity() {
                      * */
                     for (location in result.locations) {
                         // Update data class with location data
-                            currentUserLocation = LatandLong(location.latitude, location.longitude)
+                        currentUserLocation = LatandLong(location.latitude, location.longitude)
 
-                            Log.d(LOCATION_TAG, "${location.latitude},${location.longitude}")
+                        Log.d(LOCATION_TAG, "${location.latitude},${location.longitude}")
                     }
 
 
@@ -559,8 +564,8 @@ class MapActivity : ComponentActivity() {
                                 val lat = location.latitude
                                 val long = location.longitude
                                 // Update data class with location data
-                                    currentUserLocation =
-                                        LatandLong(latitude = lat, longitude = long)
+                                currentUserLocation =
+                                    LatandLong(latitude = lat, longitude = long)
                             }
                         }
                         .addOnFailureListener {
@@ -627,5 +632,19 @@ class MapActivity : ComponentActivity() {
             Log.e(LOCATION_TAG, "Failed to remove Location Callback.. $se")
         }
     }
+ //BackendStuff
 
+        val uniClashViewModel: UniClashViewModel by viewModels(factoryProducer = {
+            UniClashViewModel.provideFactory(CritterService.getInstance(this))
+        })
+
+    @Composable
+    fun WildEncounter(uniClashViewModel: UniClashViewModel) {
+        val uniClashUiStateCritterUsables by uniClashViewModel.critterUsables.collectAsState()
+        uniClashViewModel.loadCritterUsables(1)
+        var critterUsables = uniClashUiStateCritterUsables.critterUsables
+
+        println(critterUsables.get(0).toString())
+        //println(critterUsables.get(1).toString())
+    }
 }

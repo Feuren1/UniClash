@@ -14,9 +14,11 @@ interface CritterService {
 
     @GET("/critters/{id}")
     fun getCritters(@Path("id") id: Int): Call<Critter>
-
     @GET("/critters/{id}/usable")
     fun getCritterUsable(@Path("id") id: Int): Call<CritterUsable>
+
+    @GET("/critters/{id}/usable")
+    fun getCritterUsables(@Path("id") id: Int): Call<List<CritterUsable>>
     /*
     @POST("/todo-lists")
     fun createTodoList(@Body todoListCreateRequest: TodoListCreateRequest): Call<TodoList>

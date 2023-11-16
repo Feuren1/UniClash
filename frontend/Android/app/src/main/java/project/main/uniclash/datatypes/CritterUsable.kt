@@ -9,5 +9,7 @@ data class CritterUsable(
     val spd: Int,
     val attacks: List<Attack>
 ){
-
+    override fun toString(): String {
+        return "CritterUsable(level=$level, name='$name', hp=$hp, atk=$atk, def=$def, spd=$spd, attacks=$attacks)"
+    }
 }

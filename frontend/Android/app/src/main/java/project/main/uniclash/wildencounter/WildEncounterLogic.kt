@@ -1,13 +1,19 @@
 package project.main.uniclash.wildencounter
 
 import android.content.Context
+import androidx.activity.viewModels
 import android.graphics.Bitmap
 import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.Drawable
 import android.util.Log
+import androidx.activity.viewModels
 import androidx.annotation.DrawableRes
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.core.graphics.drawable.toBitmap
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
 import com.utsman.osmandcompose.rememberMarkerState
 import org.osmdroid.util.GeoPoint
 import project.main.uniclash.WildEncounterActivity
@@ -17,13 +23,15 @@ import project.main.uniclash.datatypes.CritterUsable
 import project.main.uniclash.datatypes.Locations
 import project.main.uniclash.datatypes.MapSaver
 import project.main.uniclash.datatypes.MyMarker
+import project.main.uniclash.retrofit.CritterService
+import project.main.uniclash.viewmodels.UniClashViewModel
 import java.lang.Math.PI
 import java.lang.Math.cos
 import java.lang.Math.sin
 import java.lang.Math.sqrt
 
 
- class WildEncounterLogic(private val context: Context) {
+ class WildEncounterLogic(private val context: Context){
 
 
     val wildEncounters: ArrayList<CritterUsable> = ArrayList()
@@ -259,5 +267,4 @@ import java.lang.Math.sqrt
              }
          return wildEncunterList;
      }
-
 }

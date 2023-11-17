@@ -370,6 +370,7 @@ class MapActivity : ComponentActivity() {
     }
 
     var alreadyLoaded = false //for LoadWildEncounter firstLoad
+    @SuppressLint("SuspiciousIndentation")
     @Composable
     fun LoadFirstWildEncounter(){
         if(shouldLoadFirstWildEncounter) {

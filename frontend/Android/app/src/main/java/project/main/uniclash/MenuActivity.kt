@@ -86,6 +86,11 @@ class MenuActivity : ComponentActivity() {
                     MenuCard(Category("Camera", painterResource(R.drawable.swords), 9))
                 }
             }
+            if(buttonRequest == 1) {
+                val intent = Intent(this, CritterListActivity::class.java)
+                this.startActivity(intent)
+                buttonRequest == 0
+            }
             if(buttonRequest == 10) {
                 MapSettings.CRITTERBINOCULARS.setMapSetting(!MapSettings.CRITTERBINOCULARS.getMapSetting())
                 val intent = Intent(this, MenuActivity::class.java)
@@ -115,10 +120,7 @@ class MenuActivity : ComponentActivity() {
                 MapSettings.MOVINGCAMERA.setMapSetting(!MapSettings.MOVINGCAMERA.getMapSetting())
                 val intent = Intent(this, MenuActivity::class.java)
                 this.startActivity(intent)
-            }
-            if(buttonRequest == 1){
-                val intent = Intent(this, CameraActivity::class.java)
-                this.startActivity(intent)
+                buttonRequest = 0
             }
         }
     }

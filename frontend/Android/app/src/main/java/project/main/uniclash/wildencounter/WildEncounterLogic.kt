@@ -52,7 +52,6 @@ import java.lang.Math.sqrt
          Log.d(WILDENCOUNTERLOGIC_TAG, "--------")
          Log.d(WILDENCOUNTERLOGIC_TAG, "executed")
          var wildEncounterMax = usableCritters
-         //TODO what happend if wildEcounters is empty?
          while(wildEncounterMax.size < 801){
              Log.d(WILDENCOUNTERLOGIC_TAG, "loop :) ${wildEncounterMax.size}")
              wildEncounterMax = wildEncounterMax + usableCritters
@@ -74,7 +73,7 @@ import java.lang.Math.sqrt
                  var myMarker = MyMarker(
                      id = "1",
                      state = state,
-                     //icon = resizeDrawableTo50x50(context, CritterPic.MUSK.searchDrawableM("${wildEncounter.get(i)?.name}M")),
+                     icon = resizeDrawableTo50x50(context, CritterPic.MUSK.searchDrawableM("${wildEncounter.get(i)?.name}M")),
                      visible = true,
                      title = "${wildEncounter.get(i)?.name}",
                      snippet = "Level: ${wildEncounter.get(i)?.level}",

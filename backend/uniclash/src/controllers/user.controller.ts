@@ -9,6 +9,7 @@ import {
   requestBody
 } from '@loopback/rest';
 import {genSalt, hash} from 'bcryptjs';
+import {log} from 'console';
 import {RefreshTokenServiceBindings, SecurityBindings, TokenServiceBindings, UserServiceBindings} from '../keys';
 import {MyUserProfile, User} from '../models';
 import {UserRepository} from '../repositories';
@@ -113,9 +114,12 @@ export class UserController {
     })
     newUserRequest: NewUserRequest,
   ): Promise<User> {
+    log("newUserRequest:" + newUserRequest)
     const password = await hash(newUserRequest.password, await genSalt());
+    log("Password:" + password)
     delete (newUserRequest as Partial<NewUserRequest>).password;
     const savedUser = await this.userRepository.create(newUserRequest);
+    log("User:" + savedUser.username + savedUser.email + savedUser.id)
 
     await this.userRepository.userCredentials(savedUser.id).create({password});
 

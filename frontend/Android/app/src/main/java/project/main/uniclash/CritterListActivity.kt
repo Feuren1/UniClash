@@ -55,19 +55,16 @@ class CritterListActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
 
         setContent {
-            //var myCritters : List<CritterUsable?> = MyCritters(uniClashViewModel)
-            var myCritters = CritterList()
+            var myCritters : List<CritterUsable?> = MyCritters(uniClashViewModel)
+            //var myCritters = CritterList()
             Column {
                 Box(
                     modifier = Modifier
                         .fillMaxSize()
                         .background(MaterialTheme.colorScheme.background)
                         .padding(16.dp)
-                       // .verticalScroll(rememberScrollState())
+                     .verticalScroll(rememberScrollState())
                 ) {
-                    Column {
-                        MenuHeader()
-                    }
                     Image(
                         painter = painterResource(id = R.drawable.exit),
                         contentDescription = null,
@@ -78,15 +75,13 @@ class CritterListActivity : ComponentActivity() {
                             }
                             .align(Alignment.TopEnd) // Das Foto oben rechts ausrichten
                     )
-                    Box( modifier = Modifier
-                        .background(MaterialTheme.colorScheme.background)
-                        .padding(16.dp)
-                        .verticalScroll(rememberScrollState())){
                     Column {
+                        MenuHeader()
                         for (critter in myCritters) {
                             CritterDetail(critter)
                         }
-                    }
+
+                        }
                     }
                 }
             }
@@ -96,7 +91,6 @@ class CritterListActivity : ComponentActivity() {
                 exitRequest = false
             }
         }
-    }
 
     @Composable
     fun MenuHeader() {

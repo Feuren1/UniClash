@@ -44,7 +44,7 @@
         <activity
             android:name=".CritterListActivity"
             android:exported="false"
-            android:label="@string/title_activity_menu"
+            android:label="@string/title_activity_critter_list"
             android:noHistory="true"
             android:theme="@style/Theme.UniClash" />
         <activity

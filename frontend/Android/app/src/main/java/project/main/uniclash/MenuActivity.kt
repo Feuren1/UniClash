@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -80,33 +81,29 @@ class MenuActivity : ComponentActivity() {
                             .verticalScroll(rememberScrollState())
                     ) {
                         Column {
-                            MenuCard(
+                            MenuCard(listOf(
                                 Category(
                                     "Critters List",
                                     painterResource(R.drawable.prc2duck),
                                     1
-                                )
-                            )
-                            MenuCard(
+                                ),Category("Pokedex", painterResource(R.drawable.prc2duck), 3)
+                            ))
+                            MenuCard(listOf(
                                 Category(
                                     "Inventar",
                                     painterResource(R.drawable.energydrink),
                                     2
                                 )
                             )
-                            MenuCard(Category("Pokedex", painterResource(R.drawable.prc2duck), 3))
-                            MenuCard(Category("Back to map", painterResource(R.drawable.map), 7))
-                            MenuCard(
+                            )
+                            MenuCard(listOf(Category("Back to map", painterResource(R.drawable.map), 7),
                                 Category(
                                     if (MapSettings.MOVINGCAMERA.getMapSetting()) {
                                         "Following location arrow off"
                                     } else {
                                         "Following location arrow on"
                                     }, painterResource(R.drawable.location), 4
-                                )
-                            )
-                            MenuCard(
-                                Category(
+                                ), Category(
                                     if (MapSettings.CRITTERBINOCULARS.getMapSetting()) {
                                         "Deactivate Binoculars"
                                     } else {
@@ -114,16 +111,18 @@ class MenuActivity : ComponentActivity() {
                                     }, painterResource(R.drawable.binoculars), 10
                                 )
                             )
-                            MenuCard(Category("New Building", painterResource(R.drawable.store), 5))
-                            MenuCard(
+                            )
+                            MenuCard(listOf(Category("New Building", painterResource(R.drawable.store), 5)))
+                            MenuCard(listOf(
                                 Category(
                                     "Battle Activity",
                                     painterResource(R.drawable.arena),
                                     6
                                 )
                             )
-                            MenuCard(Category("Student Hub", painterResource(R.drawable.store), 8))
-                            MenuCard(Category("Camera", painterResource(R.drawable.swords), 9))
+                            )
+                            MenuCard(listOf(Category("Student Hub", painterResource(R.drawable.store), 8)))
+                            MenuCard(listOf(Category("Camera", painterResource(R.drawable.swords), 9)))
                         }
                     }
                 }
@@ -249,7 +248,7 @@ class MenuActivity : ComponentActivity() {
     data class Category(val title: String, val picture: Painter, val id: Int)
 
     @Composable
-    fun MenuCard(category: Category) {
+    fun MenuCard(categories: List<Category>) {
         Box(
             modifier = Modifier
                 .padding(all = 8.dp)
@@ -258,28 +257,34 @@ class MenuActivity : ComponentActivity() {
                     Color.LightGray,
                     shape = RoundedCornerShape(8.dp)
                 ) // Hintergrundfarbe und abgeflachte Ecken
-                .clickable {buttonRequest = category.id }
+                //.clickable {buttonRequest = category.id }
         ) {
-        Row(modifier = Modifier.padding(all = 8.dp)) {
-            Image(
-                painter = category.picture,
-                contentDescription = null,
-                modifier = Modifier
-                    .size(60.dp) //40
-            )
-            Spacer(modifier = Modifier.width(8.dp))
             Column {
-                Spacer(modifier = Modifier.height(18.dp))
-                Text(
-                    text = category.title,
-                    fontSize = 18.sp,
-                    color = MaterialTheme.colorScheme.secondary,
-                    style = MaterialTheme.typography.titleSmall
+            for (category in categories) {
+                Box(modifier = Modifier.clickable {buttonRequest = category.id }.fillMaxWidth()){
+                Row(modifier = Modifier.padding(all = 8.dp)) {
+                    Image(
+                        painter = category.picture,
+                        contentDescription = null,
+                        modifier = Modifier
+                            .size(60.dp) //40
+                    )
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Column {
+                        Spacer(modifier = Modifier.height(18.dp))
+                        Text(
+                            text = category.title,
+                            fontSize = 18.sp,
+                            color = MaterialTheme.colorScheme.secondary,
+                            style = MaterialTheme.typography.titleSmall
 
-                )
-                Spacer(modifier = Modifier.height(8.dp))
+                        )
+                        Spacer(modifier = Modifier.height(8.dp))
+                    }
+                }
+                }
+                }
             }
-        }
         }
     }
 

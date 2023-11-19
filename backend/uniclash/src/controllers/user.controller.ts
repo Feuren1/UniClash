@@ -4,6 +4,7 @@ import {inject} from '@loopback/core';
 import {model, property} from '@loopback/repository';
 import {
   SchemaObject,
+  getModelSchemaRef,
   get,
   post,
   requestBody
@@ -16,6 +17,7 @@ import {TokenService} from '../services/token.service';
 import {Credentials} from '../services/user-credential.service';
 import {UserService} from '../services/user.service';
 import {RefreshTokenService, TokenObject, securityId} from '../types';
+import _ from 'lodash';
 
 // Describes the type of grant object taken in by method "refresh"
 type RefreshGrant = {
@@ -116,9 +118,11 @@ export class UserController {
     console.log("newUserRequest:", newUserRequest);
     const password = await hash(newUserRequest.password, await genSalt());
     console.log("Password:", password);
-    delete (newUserRequest as Partial<NewUserRequest>).password;
+    //delete (newUserRequest as Partial<NewUserRequest>).password;
     console.log("newUserRequest:", newUserRequest);
-    const savedUser = await this.userRepository.create(newUserRequest);
+    const savedUser = await this.userRepository.create(
+      _.omit(newUserRequest, 'password'),
+    );
     console.log("User:", savedUser.username, savedUser.email, savedUser.id);
 
     await this.userRepository.userCredentials(savedUser.id).create({password});

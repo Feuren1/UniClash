@@ -2,6 +2,7 @@ package project.main.uniclash.retrofit
 
 import android.content.Context
 import project.main.uniclash.datatypes.Critter
+import project.main.uniclash.datatypes.CritterTemplate
 import project.main.uniclash.datatypes.CritterUsable
 import retrofit2.Call
 import retrofit2.create
@@ -20,8 +21,12 @@ interface CritterService {
 
     @GET("/students/{id}/usables")
     fun getCritterUsables(@Path("id") id: Int): Call<List<CritterUsable>>
+
     @POST("/students/{id}/critters")
     fun postStudentCritters(@Path("id") id: Int): Call<List<CritterUsable>>
+
+    @GET("/critter-templates")
+    fun getCrittersTemplates(): Call<List<CritterTemplate>>
     /*
     @POST("/todo-lists")
     fun createTodoList(@Body todoListCreateRequest: TodoListCreateRequest): Call<TodoList>

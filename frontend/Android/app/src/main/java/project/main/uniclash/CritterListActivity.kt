@@ -57,7 +57,7 @@ class CritterListActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
 
         setContent {
-            val myCritters = CritterList()
+            val myCritters = MyCritters(uniClashViewModel)
 
             Column {
                 Box(

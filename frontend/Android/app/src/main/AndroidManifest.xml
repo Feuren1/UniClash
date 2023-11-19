@@ -48,6 +48,12 @@
             android:noHistory="true"
             android:theme="@style/Theme.UniClash" />
         <activity
+            android:name=".CritterDexActivity"
+            android:exported="false"
+            android:label="@string/title_activity_critter_dex"
+            android:noHistory="true"
+            android:theme="@style/Theme.UniClash" />
+        <activity
             android:name=".MapActivity"
             android:exported="false"
             android:label="Map"

@@ -86,7 +86,7 @@ class MenuActivity : ComponentActivity() {
                                     "Critters List",
                                     painterResource(R.drawable.prc2duck),
                                     1
-                                ),Category("Pokedex", painterResource(R.drawable.prc2duck), 3)
+                                ),Category("Critterdex", painterResource(R.drawable.prc2duck), 3)
                             ))
                             MenuCard(listOf(
                                 Category(
@@ -129,6 +129,11 @@ class MenuActivity : ComponentActivity() {
             }
             if(buttonRequest == 1) {
                 val intent = Intent(this, CritterListActivity::class.java)
+                this.startActivity(intent)
+                buttonRequest == 0
+            }
+            if(buttonRequest == 3) {
+                val intent = Intent(this, CritterDexActivity::class.java)
                 this.startActivity(intent)
                 buttonRequest == 0
             }

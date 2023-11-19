@@ -117,6 +117,7 @@ export class UserController {
     const password = await hash(newUserRequest.password, await genSalt());
     console.log("Password:", password);
     delete (newUserRequest as Partial<NewUserRequest>).password;
+    console.log("newUserRequest:", newUserRequest);
     const savedUser = await this.userRepository.create(newUserRequest);
     console.log("User:", savedUser.username, savedUser.email, savedUser.id);
 

@@ -64,7 +64,7 @@ class UniClashViewModel(
     init {
         viewModelScope.launch {
             Log.d(TAG, "Fetching initial critters data: ")
-            loadCritters()
+            loadCritterUsable(19)
         }
     }
 

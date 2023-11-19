@@ -13,11 +13,13 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
@@ -49,41 +51,81 @@ class MenuActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
 
         setContent {
-            Box(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .background(MaterialTheme.colorScheme.background)
-                    .padding(16.dp)
-                    .verticalScroll(rememberScrollState())
-            ) {
-                Column {
+            Column {
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .background(MaterialTheme.colorScheme.background)
+                        .padding(16.dp)
+                ) {
                     MenuHeader()
-                    MenuCard(Category("Critters List", painterResource(R.drawable.prc2duck), 1))
-                    MenuCard(Category("Inventar", painterResource(R.drawable.energydrink), 2))
-                    MenuCard(Category("Pokedex", painterResource(R.drawable.prc2duck), 3))
-                    MenuCard(
-                        Category(
-                            if (MapSettings.MOVINGCAMERA.getMapSetting()) {
-                                "Following location arrow off"
-                            } else {
-                                "Following location arrow on"
-                            }, painterResource(R.drawable.location), 4
-                        )
+                    Image(
+                        painter = painterResource(id = R.drawable.profile),
+                        contentDescription = null,
+                        modifier = Modifier
+                            .size(60.dp)
+                            .clickable {
+                                buttonRequest = 0 //TODO to Profile
+                            }
+                            .align(Alignment.TopEnd)
                     )
-                    MenuCard(
-                        Category(
-                            if (MapSettings.CRITTERBINOCULARS.getMapSetting()) {
-                                "Deactivate Binoculars"
-                            } else {
-                                "Activate Binoculars"
-                            }, painterResource(R.drawable.binoculars), 10
-                        )
-                    )
-                    MenuCard(Category("New Building", painterResource(R.drawable.store), 5))
-                    MenuCard(Category("Battle Activity", painterResource(R.drawable.arena), 6))
-                    MenuCard(Category("Back to map", painterResource(R.drawable.map), 7))
-                    MenuCard(Category("Student Hub", painterResource(R.drawable.store), 8))
-                    MenuCard(Category("Camera", painterResource(R.drawable.swords), 9))
+                }
+                Box(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .background(Color.White) // Hier wird der Hintergrund weiß gemacht
+                        ) {
+                    Box(
+                        modifier = Modifier
+                            .verticalScroll(rememberScrollState())
+                    ) {
+                        Column {
+                            MenuCard(
+                                Category(
+                                    "Critters List",
+                                    painterResource(R.drawable.prc2duck),
+                                    1
+                                )
+                            )
+                            MenuCard(
+                                Category(
+                                    "Inventar",
+                                    painterResource(R.drawable.energydrink),
+                                    2
+                                )
+                            )
+                            MenuCard(Category("Pokedex", painterResource(R.drawable.prc2duck), 3))
+                            MenuCard(Category("Back to map", painterResource(R.drawable.map), 7))
+                            MenuCard(
+                                Category(
+                                    if (MapSettings.MOVINGCAMERA.getMapSetting()) {
+                                        "Following location arrow off"
+                                    } else {
+                                        "Following location arrow on"
+                                    }, painterResource(R.drawable.location), 4
+                                )
+                            )
+                            MenuCard(
+                                Category(
+                                    if (MapSettings.CRITTERBINOCULARS.getMapSetting()) {
+                                        "Deactivate Binoculars"
+                                    } else {
+                                        "Activate Binoculars"
+                                    }, painterResource(R.drawable.binoculars), 10
+                                )
+                            )
+                            MenuCard(Category("New Building", painterResource(R.drawable.store), 5))
+                            MenuCard(
+                                Category(
+                                    "Battle Activity",
+                                    painterResource(R.drawable.arena),
+                                    6
+                                )
+                            )
+                            MenuCard(Category("Student Hub", painterResource(R.drawable.store), 8))
+                            MenuCard(Category("Camera", painterResource(R.drawable.swords), 9))
+                        }
+                    }
                 }
             }
             if(buttonRequest == 1) {
@@ -208,15 +250,22 @@ class MenuActivity : ComponentActivity() {
 
     @Composable
     fun MenuCard(category: Category) {
+        Box(
+            modifier = Modifier
+                .padding(all = 8.dp)
+                .fillMaxWidth() // making box from left to right site
+                .background(
+                    Color.LightGray,
+                    shape = RoundedCornerShape(8.dp)
+                ) // Hintergrundfarbe und abgeflachte Ecken
+                .clickable {buttonRequest = category.id }
+        ) {
         Row(modifier = Modifier.padding(all = 8.dp)) {
             Image(
                 painter = category.picture,
                 contentDescription = null,
                 modifier = Modifier
-                    .clickable { buttonRequest = category.id }
                     .size(60.dp) //40
-                    //.clip(CircleShape)
-                    //.border(1.5.dp, MaterialTheme.colorScheme.primary, CircleShape)
             )
             Spacer(modifier = Modifier.width(8.dp))
             Column {
@@ -224,20 +273,13 @@ class MenuActivity : ComponentActivity() {
                 Text(
                     text = category.title,
                     fontSize = 18.sp,
-                    modifier = Modifier.clickable { buttonRequest = category.id },
                     color = MaterialTheme.colorScheme.secondary,
                     style = MaterialTheme.typography.titleSmall
 
                 )
                 Spacer(modifier = Modifier.height(8.dp))
-                /*Surface(shape = MaterialTheme.shapes.medium, shadowElevation = 1.dp) {
-                    Text(
-                        text = category.body,
-                        modifier = Modifier.padding(all = 4.dp),
-                        style = MaterialTheme.typography.bodyMedium
-                    )
-                }*/
             }
+        }
         }
     }
 

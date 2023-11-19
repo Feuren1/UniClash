@@ -57,42 +57,54 @@ class CritterListActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
 
         setContent {
-            var myCritters : List<CritterUsable?> = MyCritters(uniClashViewModel)
-            //var myCritters = CritterList()
+            val myCritters = CritterList()
+
             Column {
                 Box(
                     modifier = Modifier
-                        .fillMaxSize()
+                        .fillMaxWidth()
                         .background(MaterialTheme.colorScheme.background)
                         .padding(16.dp)
-                     .verticalScroll(rememberScrollState())
                 ) {
+                    MenuHeader()
                     Image(
                         painter = painterResource(id = R.drawable.exit),
                         contentDescription = null,
                         modifier = Modifier
-                            .size(40.dp) // Passe die Größe des Fotos nach Bedarf an
+                            .size(40.dp)
                             .clickable {
                                 exitRequest = true
                             }
-                            .align(Alignment.TopEnd) // Das Foto oben rechts ausrichten
+                            .align(Alignment.TopEnd)
                     )
-                    Column {
-                        MenuHeader()
-                        for (critter in myCritters) {
-                            CritterDetail(critter)
-                        }
+                }
 
+                // Scroll-Box für Critters mit weißem Hintergrund
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .background(Color.White) // Hier wird der Hintergrund weiß gemacht
+                ) {
+                    Box(
+                        modifier = Modifier
+                            .verticalScroll(rememberScrollState())
+                    ) {
+                        Column {
+                            for (critter in myCritters) {
+                                CritterDetail(critter)
+                            }
                         }
                     }
                 }
-            if(exitRequest) {
+            }
+
+            if (exitRequest) {
                 val intent = Intent(this, MenuActivity::class.java)
                 this.startActivity(intent)
                 exitRequest = false
             }
-            }
         }
+    }
 
     @Composable
     fun MenuHeader() {
@@ -110,8 +122,11 @@ class CritterListActivity : ComponentActivity() {
         Box(
             modifier = Modifier
                 .padding(all = 8.dp)
-                .fillMaxWidth() // Füllt die Breite bis zum rechten Bildschirmrand aus
-                .background(Color.LightGray, shape = RoundedCornerShape(8.dp)) // Hintergrundfarbe und abgeflachte Ecken
+                .fillMaxWidth() // making box from left to right site
+                .background(
+                    Color.LightGray,
+                    shape = RoundedCornerShape(8.dp)
+                ) // Hintergrundfarbe und abgeflachte Ecken
                 .clickable { }
         ) {
             Row(modifier = Modifier.padding(all = 8.dp)) {

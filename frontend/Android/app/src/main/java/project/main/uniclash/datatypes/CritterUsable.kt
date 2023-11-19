@@ -9,5 +9,7 @@ data class CritterUsable(
     val spd: Int,
     val attacks: List<Attack>
 ){
-
+    fun reduceHealth(damage: Int) {
+    this.hp.minus(damage)
+    }
 }

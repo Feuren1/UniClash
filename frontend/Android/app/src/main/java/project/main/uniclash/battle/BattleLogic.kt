@@ -1,9 +1,9 @@
 package project.main.uniclash.battle
 
 import project.main.uniclash.datatypes.Attack
-import project.main.uniclash.datatypes.Critter
+import project.main.uniclash.datatypes.CritterUsable
 
-class BattleLogic(private val playerCritter: Critter, private val cpuCritter: Critter) {
+class BattleLogic(private val playerCritter: CritterUsable, private val cpuCritter: CritterUsable) {
 
     private val damageCalculator = DamageCalculator()
     private var playerTurn = true
@@ -14,6 +14,18 @@ class BattleLogic(private val playerCritter: Critter, private val cpuCritter: Cr
     // Max rounds for the battle (you can adjust this)
     private val maxRounds = 10
 
+
+    fun init(){
+        if(playerCritter.spd>cpuCritter.spd){
+            playerTurn = true
+        }
+        if (playerCritter.spd==cpuCritter.spd){
+
+        }
+        else {
+            playerTurn = false
+        }
+    }
     fun attack(attack: Attack) {
         val attacker = if (playerTurn) playerCritter else cpuCritter
         val defender = if (playerTurn) cpuCritter else playerCritter
@@ -26,9 +38,9 @@ class BattleLogic(private val playerCritter: Critter, private val cpuCritter: Cr
     }
 
     fun checkWinner() {
-        if (playerCritter.baseHealth <= 0) {
+        if (playerCritter.hp <= 0) {
             playerWinner = true
-        } else if (cpuCritter.baseHealth <= 0) {
+        } else if (cpuCritter.hp <= 0) {
             cpuWinner = true
         }
     }

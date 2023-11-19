@@ -42,18 +42,37 @@ class UniClashViewModel(
 ) : ViewModel() {
     //TAG for logging
     private val TAG = UniClashViewModel::class.java.simpleName
+
+    val playerCritter = MutableStateFlow(
+        playerCritterUIState.HasEntries(
+            playerCritter = null,
+            isLoading = true,
+            hasTurn = false,
+        )
+    )
+
+    val cpuCritter = MutableStateFlow(
+        cpuCritterUIState.HasEntries(
+            cpuCritter = null,
+            isLoading = true,
+            hasTurn = false,
+        )
+    )
+
     val critters = MutableStateFlow(
         CrittersUIState.HasEntries(
             emptyList(),
             isLoading = false
         )
     )
+
     val critter = MutableStateFlow(
         CritterUIState.HasEntries(
             isLoading = false,
             critter = null
         )
     )
+
     val critterUsable = MutableStateFlow(
         CritterUsableUIState.HasEntries(
             critterUsable = null,

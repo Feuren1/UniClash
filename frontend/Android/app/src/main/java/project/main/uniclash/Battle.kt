@@ -4,6 +4,7 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -32,20 +33,21 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.toLowerCase
 import androidx.lifecycle.viewmodel.compose.viewModel
 import project.main.uniclash.datatypes.Attack
-import project.main.uniclash.datatypes.Critter
-import project.main.uniclash.datatypes.CritterUsable
-import project.main.uniclash.viewmodels.UniClashViewModel
 import project.main.uniclash.retrofit.CritterService
+import project.main.uniclash.viewmodels.BattleViewModel
 
 class Battle : ComponentActivity() {
     //TODO Rename into BattleActivity
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         //initializes a viewmodel for further use. Uses the critterservice in order to talk to the backend
-        val uniClashViewModel by viewModels<UniClashViewModel> {
-            UniClashViewModel.provideFactory(CritterService.getInstance(this))
+        val battleViewModel by viewModels<BattleViewModel> {
+            BattleViewModel.provideFactory(CritterService.getInstance(this))
         }
         setContent {
             UniClashTheme {
@@ -54,10 +56,12 @@ class Battle : ComponentActivity() {
                     color = MaterialTheme.colorScheme.background
                 ) {
                     //creates the pokemongame composable (name should be critterBattle)
-                    val uniClashUiStateCritterUsable by uniClashViewModel.critterUsable.collectAsState()
-                    var critterUsable = uniClashUiStateCritterUsable.critterUsable
-                    if(critterUsable!=null){
-                        CritterBattle(uniClashViewModel)
+                    val battleViewPlayerUIState by battleViewModel.playerCritter.collectAsState()
+                    var playerCritter = battleViewPlayerUIState.playerCritter
+                    val battleViewcpuCritterUIState by battleViewModel.cpuCritter.collectAsState()
+                    var cpuCritter = battleViewcpuCritterUIState.cpuCritter
+                    if(playerCritter!=null&&cpuCritter!=null){
+                        CritterBattle(battleViewModel)
                     }
                 }
 
@@ -67,20 +71,19 @@ class Battle : ComponentActivity() {
 }
 
 @Composable
-fun CritterBattle(uniClashViewModel: UniClashViewModel = viewModel()) {
-    val uniClashUiStateCritterUsable by uniClashViewModel.critterUsable.collectAsState()
-    var critterUsable = uniClashUiStateCritterUsable.critterUsable
-    
+fun CritterBattle(battleViewModel: BattleViewModel = viewModel()) {
+    val battleViewPlayerUIState by battleViewModel.playerCritter.collectAsState()
+    var playerCritter = battleViewPlayerUIState.playerCritter
+    val battleViewcpuCritterUIState by battleViewModel.cpuCritter.collectAsState()
+    var cpuCritter = battleViewcpuCritterUIState.cpuCritter
 
-    val attack1: Attack? = critterUsable?.attacks?.get(0)
-    val attack2: Attack? = critterUsable?.attacks?.get(1)
-    val attack3: Attack? = critterUsable?.attacks?.get(2)
-    val attack4: Attack? = critterUsable?.attacks?.get(3)
-    val playerCritter: CritterUsable? = critterUsable
-    val cpuCritter: Critter = Critter(100, 50, 50, 70, attack1, attack1, attack1, attack1, "BöseEnte")
+    val attack1: Attack? = playerCritter?.attacks?.get(0)
+    val attack2: Attack? = playerCritter?.attacks?.get(1)
+    val attack3: Attack? = playerCritter?.attacks?.get(2)
+    val attack4: Attack? = playerCritter?.attacks?.get(3)
 
-    var playerHealth by remember { mutableStateOf(80) }
-    var cpuHealth by remember { mutableStateOf(80) }
+    var playerHealth by remember { mutableStateOf(playerCritter!!.hp) }
+    var cpuHealth by remember { mutableStateOf(cpuCritter!!.hp) }
 
     Column(
         modifier = Modifier
@@ -101,7 +104,27 @@ fun CritterBattle(uniClashViewModel: UniClashViewModel = viewModel()) {
                 if (playerCritter != null) {
                     Text(playerCritter.name)
                 }
+                val context = LocalContext.current
+                val name: String = playerCritter!!.name.lowercase()
+                // Get the resource ID using getIdentifier
+                val resourceId = context.resources.getIdentifier(name, "drawable", context.packageName)
+                // Check if the resource ID is valid
+                if (resourceId != 0) {
+                    // Load the image using painterResource
+                    val picture = painterResource(id = resourceId)
+
+                    // Display the image
+                    Image(
+                        painter = picture,
+                        contentDescription = null,
+                        modifier = Modifier
+                            .size(120.dp)
+                    )
+                } else {
+                    Text("Image not found for $name")
+                }
             }
+
         }
 
         Spacer(modifier = Modifier.height(16.dp)) // Add vertical space
@@ -110,12 +133,36 @@ fun CritterBattle(uniClashViewModel: UniClashViewModel = viewModel()) {
             modifier = Modifier.fillMaxWidth()
         ) {
             Column() {
-                HealthBar(
-                    currentHealth = cpuHealth,
-                    maxHealth = cpuCritter.baseHealth,
-                    barColor = Color.Red
-                )
-                Text(cpuCritter.name)
+                if (cpuCritter != null) {
+                    HealthBar(
+                        currentHealth = cpuHealth,
+                        maxHealth = cpuCritter.hp,
+                        barColor = Color.Red
+                    )
+                }
+                if (cpuCritter != null) {
+                    Text(cpuCritter.name)
+                }
+                val context = LocalContext.current
+                val name: String = cpuCritter!!.name.lowercase()
+                // Get the resource ID using getIdentifier
+                val resourceId = context.resources.getIdentifier(name, "drawable", context.packageName)
+                // Check if the resource ID is valid
+                if (resourceId != 0) {
+                    // Load the image using painterResource
+                    val picture = painterResource(id = resourceId)
+
+                    // Display the image
+                    Image(
+                        painter = picture,
+                        contentDescription = null,
+                        modifier = Modifier
+                            .size(120.dp)
+                    )
+                } else {
+                    Text("Image not found for $name")
+                }
+
             }
         }
 
@@ -140,7 +187,8 @@ fun CritterBattle(uniClashViewModel: UniClashViewModel = viewModel()) {
         Button(
             
             onClick = {
-                println("CritterUsable:$critterUsable")
+                println("CritterUsable:$playerCritter")
+                println("CritterUsable:$cpuCritter")
                       },
             modifier = Modifier
                 .padding(2.dp)

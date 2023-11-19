@@ -7,6 +7,7 @@ import androidx.activity.compose.setContent
 import androidx.activity.viewModels
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -20,6 +21,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
@@ -105,36 +107,37 @@ class CritterListActivity : ComponentActivity() {
 
     @Composable
     fun CritterDetail(critter: CritterUsable?) {
-        Row(modifier = Modifier.padding(all = 8.dp)) {
-            Image(
-                painter = painterResource(CritterPic.MUSK.searchDrawable("${critter?.name}")),
-                contentDescription = null,
-                modifier = Modifier
-                    .clickable { }
-                    .size(60.dp) //40
-                    //.clip(CircleShape)
-                    //.border(1.5.dp, MaterialTheme.colorScheme.primary, CircleShape)
-            )
-            Spacer(modifier = Modifier.width(8.dp))
-            Column {
-                Spacer(modifier = Modifier.height(18.dp))
-                Text(
-                    text = critter!!.name,
-                    fontSize = 18.sp,
-                    modifier = Modifier.clickable {  },
-                    color = MaterialTheme.colorScheme.secondary,
-                    style = MaterialTheme.typography.titleSmall
-
+        Box(
+            modifier = Modifier
+                .padding(all = 8.dp)
+                .fillMaxWidth() // Füllt die Breite bis zum rechten Bildschirmrand aus
+                .background(Color.LightGray, shape = RoundedCornerShape(8.dp)) // Hintergrundfarbe und abgeflachte Ecken
+                .clickable { }
+        ) {
+            Row(modifier = Modifier.padding(all = 8.dp)) {
+                Image(
+                    painter = painterResource(CritterPic.MUSK.searchDrawable("${critter?.name}")),
+                    contentDescription = null,
+                    modifier = Modifier
+                        .size(60.dp)
                 )
-                Text(
-                    text = "Level: ${critter?.level}",
-                    fontSize = 12.sp,
-                    modifier = Modifier.clickable {  },
-                    color = MaterialTheme.colorScheme.secondary,
-                    style = MaterialTheme.typography.titleSmall
-
-                )
-                Spacer(modifier = Modifier.height(8.dp))
+                Spacer(modifier = Modifier.width(8.dp))
+                Column {
+                    Spacer(modifier = Modifier.height(18.dp))
+                    Text(
+                        text = critter!!.name,
+                        fontSize = 18.sp,
+                        color = MaterialTheme.colorScheme.secondary,
+                        style = MaterialTheme.typography.titleSmall
+                    )
+                    Text(
+                        text = "Level: ${critter?.level}",
+                        fontSize = 12.sp,
+                        color = MaterialTheme.colorScheme.secondary,
+                        style = MaterialTheme.typography.titleSmall
+                    )
+                    Spacer(modifier = Modifier.height(8.dp))
+                }
             }
         }
     }

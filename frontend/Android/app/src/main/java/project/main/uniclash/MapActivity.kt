@@ -413,10 +413,8 @@ class MapActivity : ComponentActivity() {
         }
     }
 
-    // Methode zum Hinzufügen eines Markers zur Liste und Aktualisieren der Karte
     fun addMarker(marker: MyMarker) {
         markerList.add(marker)
-        // Aktualisiere die Karte hier, um den neuen Marker anzuzeigen
         updateMapMarkers()
     }
 
@@ -429,7 +427,6 @@ class MapActivity : ComponentActivity() {
         updateMapMarkers()
     }
 
-    // Methode zum Entfernen eines Markers aus der Liste und Aktualisieren der Karte
     fun removeMarker(marker: MyMarker) {
         print("${markerList.size} markers")
         markerList.remove(marker)
@@ -437,7 +434,6 @@ class MapActivity : ComponentActivity() {
         updateMapMarkers()
     }
 
-    // Methode zum Aktualisieren der Karte mit den Markern aus der Liste
     private fun updateMapMarkers() {
         markersLoaded = true
         markersLoaded = false;
@@ -447,7 +443,7 @@ class MapActivity : ComponentActivity() {
         val originalDrawable: Drawable? = context.getDrawable(drawableRes)
 
         val originalBitmap = originalDrawable?.toBitmap()
-        val originalWidth = originalBitmap?.width ?: 1 // Verhindert Division durch Null
+        val originalWidth = originalBitmap?.width ?: 1
         val originalHeight = originalBitmap?.height ?: 1
 
         val scaleRatio = 50.0f / originalHeight.toFloat()
@@ -465,7 +461,7 @@ class MapActivity : ComponentActivity() {
         val originalDrawable: Drawable? = context.getDrawable(drawableRes)
 
         val originalBitmap = originalDrawable?.toBitmap()
-        val originalWidth = originalBitmap?.width ?: 1 // Verhindert Division durch Null
+        val originalWidth = originalBitmap?.width ?: 1
         val originalHeight = originalBitmap?.height ?: 1
 
         val scaleRatio = 60.0f / originalHeight.toFloat()
@@ -479,20 +475,20 @@ class MapActivity : ComponentActivity() {
         return BitmapDrawable(context.resources, scaledBitmap)
     }
 
-    private fun calculateDirection(startpunkt: GeoPoint, zielpunkt: GeoPoint): Float {
-        val dX = zielpunkt.longitude - startpunkt.longitude
-        val dY = zielpunkt.latitude - startpunkt.latitude
+    private fun calculateDirection(startpoint: GeoPoint, endpoint: GeoPoint): Float {
+        val dX = endpoint.longitude - startpoint.longitude
+        val dY = endpoint.latitude - startpoint.latitude
 
         val winkel = Math.toDegrees(atan2(dY, dX)).toFloat()
         return if (winkel < 0) {
-            (winkel + 360) % 360 // Um negative Winkel in positive umzuwandeln
+            (winkel + 360) % 360 // like: *-1
         } else {
             winkel
         }
     }
 
     private fun haversineDistance(lat1: Double, lon1: Double, lat2: Double, lon2: Double): Double {
-        val radius = 6371000 // Radius der Erde in Metern
+        val radius = 6371000 // radius of the earth in meters
 
         val dLat = Math.toRadians(lat2 - lat1)
         val dLon = Math.toRadians(lon2 - lon1)

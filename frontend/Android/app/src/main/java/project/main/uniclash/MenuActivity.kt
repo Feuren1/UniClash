@@ -86,12 +86,12 @@ class MenuActivity : ComponentActivity() {
                                     "Critters List",
                                     painterResource(R.drawable.prc2duck),
                                     1
-                                ),Category("Critterdex", painterResource(R.drawable.prc2duck), 3)
+                                ),Category("Critterdex", painterResource(R.drawable.critterdex), 3)
                             ))
                             MenuCard(listOf(
                                 Category(
-                                    "Inventar",
-                                    painterResource(R.drawable.energydrink),
+                                    "Inventory",
+                                    painterResource(R.drawable.bag),
                                     2
                                 )
                             )

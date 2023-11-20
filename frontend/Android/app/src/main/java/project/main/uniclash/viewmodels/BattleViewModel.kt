@@ -207,7 +207,7 @@ class BattleViewModel(
         _battleText.value = when (result) {
             BattleResult.PLAYER_WINS -> "Player wins!"
             BattleResult.CPU_WINS -> "CPU wins!"
-            else -> "CPU took $damageAfterCalculation damage!"
+            else -> "${playerCritter.value.playerCritter!!.name} took $damageAfterCalculation damage!"
         }
     }
     fun applyDamageToPCpu(damage: Int) {
@@ -225,7 +225,7 @@ class BattleViewModel(
         _battleText.value = when (result) {
             BattleResult.PLAYER_WINS -> "Player wins!"
             BattleResult.CPU_WINS -> "CPU wins!"
-            else -> "Player took $damageAfterCalculation damage!"
+            else -> "${cpuCritter.value.cpuCritter!!.name} took $damageAfterCalculation damage!"
         }
     }
 

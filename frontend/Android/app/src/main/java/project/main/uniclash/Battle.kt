@@ -4,6 +4,12 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
+import androidx.compose.animation.Animatable
+import androidx.compose.animation.core.FastOutSlowInEasing
+import androidx.compose.animation.core.RepeatMode
+import androidx.compose.animation.core.infiniteRepeatable
+import androidx.compose.animation.core.keyframes
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -212,7 +218,7 @@ fun CritterBattle(battleViewModel: BattleViewModel = viewModel()) {
             }
         }
 
-        Row(
+        /*Row(
             modifier = Modifier
                 .fillMaxWidth()
                 .horizontalScroll(rememberScrollState())
@@ -241,7 +247,7 @@ fun CritterBattle(battleViewModel: BattleViewModel = viewModel()) {
             ) {
                 Text(text = "Debug")
             }
-        }
+        }*/
 
         Box(
             modifier = Modifier
@@ -311,7 +317,33 @@ fun HealthBar(
     maxHealth: Int,
     barColor: Color
 ) {
+    // Calculate health percentage
     val healthPercentage = (currentHealth / maxHealth.toFloat()).coerceIn(0f, 1f)
+
+    // Create an Animatable for the shake animation
+    val shakeOffset = remember { androidx.compose.animation.core.Animatable(0f) }
+
+    // Start the shake animation when the health changes
+    LaunchedEffect(currentHealth) {
+        if (currentHealth < maxHealth) {
+            shakeOffset.animateTo(
+                targetValue = 20f,
+                animationSpec = keyframes {
+                    durationMillis = 200
+                    0.0f at 0
+                    5.0f at 50
+                    0.0f at 100
+                    10.0f at 150
+                    0.0f at 200
+                    5.0f at 250
+                    0.0f at 300
+                }
+            )
+
+            // Reset the shake offset after the animation
+            shakeOffset.animateTo(0f, animationSpec = tween(1))
+        }
+    }
 
     Box(
         modifier = Modifier
@@ -319,14 +351,19 @@ fun HealthBar(
             .height(20.dp)
             .background(Color.Gray.copy(alpha = 0.5f), RoundedCornerShape(10.dp))
     ) {
+        // Apply the shake animation to the health bar
         Box(
             modifier = Modifier
                 .fillMaxWidth(healthPercentage)
                 .fillMaxHeight()
+                .offset(y = shakeOffset.value.dp)
                 .background(barColor, RoundedCornerShape(10.dp))
         )
     }
 }
+
+
+
 
 @Composable
 fun BattleDialogText(
@@ -367,7 +404,7 @@ fun BattleDialogText(
 }
 
 @Composable
-fun CritterInfoText(playerCritter: CritterUsable) {
+fun CritterInfoText(critter: CritterUsable) {
     Box(
         modifier = Modifier
             .background(Color.Gray, RoundedCornerShape(4.dp))
@@ -383,9 +420,9 @@ fun CritterInfoText(playerCritter: CritterUsable) {
                 .padding(6.dp),  // Optional: Add padding to the text itself
             text = buildAnnotatedString {
                 withStyle(style = SpanStyle(color = Color.Green)) {
-                    append(playerCritter.name)
+                    append(critter.name)
                 }
-                append(" HP: ${playerCritter.hp}")
+                append(" LVL: ${critter.level} HP: ${critter.hp}")
             },
             fontSize = 18.sp,
             fontWeight = FontWeight.Bold,

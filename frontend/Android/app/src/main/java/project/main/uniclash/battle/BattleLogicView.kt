@@ -3,7 +3,7 @@ package project.main.uniclash.battle
 import project.main.uniclash.datatypes.Attack
 import project.main.uniclash.datatypes.CritterUsable
 
-class BattleLogic(private val playerCritter: CritterUsable?, private val cpuCritter: CritterUsable?) {
+class BattleLogicView(private val playerCritter: CritterUsable?, private val cpuCritter: CritterUsable?) {
 
     private val damageCalculator = DamageCalculator()
      var playerTurn = false
@@ -71,7 +71,8 @@ class BattleLogic(private val playerCritter: CritterUsable?, private val cpuCrit
         } else if (cpuWinner) {
             return BattleResult.CPU_WINS
         } else {
-            return BattleResult.NOTOVER
+
         }
+        return BattleResult.NOTOVER
     }
 }

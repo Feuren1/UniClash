@@ -5,18 +5,22 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.Dispatchers
 import project.main.uniclash.datatypes.Critter
 import project.main.uniclash.datatypes.CritterUsable
 import project.main.uniclash.retrofit.CritterService
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import project.main.uniclash.battle.BattleLogic
+import project.main.uniclash.battle.BattleLogicView
+import project.main.uniclash.battle.BattleResult
 import project.main.uniclash.retrofit.enqueue
 
 public data class playerCritterIdCallback(val success: Boolean, val id: String)
 public data class cpuCritterIdCallback(val success: Boolean, val id: String)
 
-sealed interface playerCritterUIState {
+sealed interface PlayerCritterUIState {
     data class HasEntries(
         val playerCritter: CritterUsable?,
         val isLoading: Boolean,
@@ -24,7 +28,7 @@ sealed interface playerCritterUIState {
     ) : CritterUsableUIState
 }
 
-sealed interface cpuCritterUIState {
+sealed interface CpuCritterUIState {
     data class HasEntries(
         val cpuCritter: CritterUsable?,
         val isLoading: Boolean,
@@ -35,12 +39,17 @@ sealed interface cpuCritterUIState {
 
 class BattleViewModel(
     private val critterService: CritterService,
+    private var playerTurn: Boolean,
 ) : ViewModel() {
     //TAG for logging
     private val TAG = UniClashViewModel::class.java.simpleName
+    private var battleLogic: BattleLogicView? = null;
+
+    private val _battleText = MutableStateFlow("Battle started!")
+    val battleText: MutableStateFlow<String> get() = _battleText
 
     val playerCritter = MutableStateFlow(
-        playerCritterUIState.HasEntries(
+        PlayerCritterUIState.HasEntries(
             playerCritter = null,
             isLoading = true,
             hasTurn = false,
@@ -48,7 +57,7 @@ class BattleViewModel(
     )
 
     val cpuCritter = MutableStateFlow(
-        cpuCritterUIState.HasEntries(
+        CpuCritterUIState.HasEntries(
             cpuCritter = null,
             isLoading = true,
             hasTurn = false,
@@ -60,6 +69,69 @@ class BattleViewModel(
             Log.d(TAG, "Fetching initial critters data: ")
             loadPlayerCritter(19)
             loadCpuCritter(20)
+        }
+        if(playerCritter.value.playerCritter!=null&&cpuCritter.value.cpuCritter!=null) {
+            whoStarts()
+        }
+    }
+
+    fun whoStarts(){
+        if(playerCritter.value.playerCritter!!.spd>cpuCritter.value.cpuCritter!!.spd){
+            playerTurn = true
+        }
+        if (playerCritter.value.playerCritter!!.spd==cpuCritter.value.cpuCritter!!.spd){
+
+        }
+        else {
+            playerTurn = false
+        }
+    }
+
+    fun checkResult(): BattleResult {
+        if(playerCritter.value.playerCritter!!.hp<=0){
+            return BattleResult.CPU_WINS;
+        }
+        if(cpuCritter.value.cpuCritter!!.hp<=0){
+            return BattleResult.PLAYER_WINS
+        }
+        return BattleResult.NOTOVER
+    }
+
+    fun applyDamageToPlayer(damage: Int) {
+        viewModelScope.launch() {
+            playerCritter.update { currentState ->
+                currentState.copy(
+                    playerCritter = currentState.playerCritter?.copy(
+                        hp = (currentState.playerCritter.hp) - damage
+                    ),
+                    // You might want to update other properties if needed
+                    //hasTurn = true, // Update as needed
+                    //isLoading = false // Update as needed
+                )
+            }
+        }
+        val result = checkResult()
+        _battleText.value = when (result) {
+            BattleResult.PLAYER_WINS -> "Player wins!"
+            BattleResult.CPU_WINS -> "CPU wins!"
+            else -> "CPU took $damage damage!"
+        }
+    }
+    fun applyDamageToPCpu(damage: Int) {
+        viewModelScope.launch() {
+            cpuCritter.update { currentState ->
+                currentState.copy(
+                    cpuCritter = currentState.cpuCritter?.copy(
+                        hp = (currentState.cpuCritter.hp) - damage
+                    ),
+                )
+            }
+        }
+        val result = checkResult()
+        _battleText.value = when (result) {
+            BattleResult.PLAYER_WINS -> "Player wins!"
+            BattleResult.CPU_WINS -> "CPU wins!"
+            else -> "Player took $damage damage!"
         }
     }
 
@@ -103,8 +175,6 @@ class BattleViewModel(
         }
     }
 
-
-
     companion object {
         fun provideFactory(
             critterService: CritterService,
@@ -113,129 +183,11 @@ class BattleViewModel(
                 @Suppress("UNCHECKED_CAST")
                 override fun <T : ViewModel> create(modelClass: Class<T>): T {
                     return BattleViewModel(
-                        critterService
+                        critterService,
+                        false
                     ) as T
                 }
             }
     }
-
-
-    /*
-
-        fun createTodoList(
-            title: String,
-            color: String,
-            callback: (TodoListIdCallback) -> Unit = {}
-        ) {
-            val call = todoListService.createTodoList(
-                TodoListCreateRequest(
-                    title = title,
-                    color = color
-                )
-            )
-            call.enqueue(object : Callback<TodoList> {
-                override fun onResponse(
-                    call: Call<TodoList>,
-                    response: Response<TodoList>
-                ) {
-                    response.body().let {
-                        if (response.code() == 200) {
-                            println("Saved successfully")
-                            callback(TodoListIdCallback(true, response.body()!!.id.toString()))
-                            return
-                        } else {
-                            println("Saving failed")
-                            println("Error: " + response.message())
-                        }
-                    }
-                    callback(TodoListIdCallback(false, ""))
-                }
-
-                override fun onFailure(call: Call<TodoList>, t: Throwable) {
-                    t.printStackTrace()
-                    callback(TodoListIdCallback(false, ""))
-                }
-            })
-        }
-
-        fun createTodo(
-            todoListId: String,
-            title: String,
-            description: String,
-            callback: (TodoListIdCallback) -> Unit = {}
-        ) {
-            val call = todoListService.createTodo(
-                todoListId,
-                TodoCreateRequest(
-                    title = title,
-                    desc = description
-                )
-            )
-            call.enqueue(object : Callback<Todo> {
-                override fun onResponse(
-                    call: Call<Todo>,
-                    response: Response<Todo>
-                ) {
-                    response.body().let {
-                        if (response.code() == 200) {
-                            println("Saved successfully")
-                            callback(TodoListIdCallback(true, todoListId))
-                            loadTodoList(todoListId)
-                            return
-                        } else {
-                            println("Saving failed")
-                            println("Error: ${response.code()}" + response.message())
-                        }
-                    }
-                    callback(TodoListIdCallback(false, ""))
-                }
-
-                override fun onFailure(call: Call<Todo>, t: Throwable) {
-                    t.printStackTrace()
-                    callback(TodoListIdCallback(false, ""))
-                }
-            })
-        }
-
-        fun patchTodo(
-            todoId: String,
-            title: String? = null,
-            description: String? = null,
-            isComplete: Boolean? = null,
-            callback: (TodoListIdCallback) -> Unit = {}
-        ) {
-            val call = todoListService.updateTodo(
-                todoId,
-                TodoPatchRequest(
-                    title = title,
-                    desc = description,
-                    isComplete = isComplete
-                )
-            )
-            call.enqueue(object : Callback<Todo> {
-                override fun onResponse(
-                    call: Call<Todo>,
-                    response: Response<Todo>
-                ) {
-                    response.body().let {
-                        if (response.code() == 204) {
-                            println("Saved successfully")
-                            callback(TodoListIdCallback(true, todoId))
-                            return
-                        } else {
-                            println("Saving failed")
-                            println("Error: ${response.code()}" + response.message())
-                        }
-                    }
-                    callback(TodoListIdCallback(false, ""))
-                }
-
-                override fun onFailure(call: Call<Todo>, t: Throwable) {
-                    t.printStackTrace()
-                    callback(TodoListIdCallback(false, ""))
-                }
-            })
-        }
-    */
 
 }

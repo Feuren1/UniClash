@@ -35,20 +35,31 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.toLowerCase
+import androidx.compose.ui.text.withStyle
+import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import project.main.uniclash.battle.BattleLogic
+import project.main.uniclash.battle.DamageCalculator
 import project.main.uniclash.datatypes.Attack
+import project.main.uniclash.datatypes.CritterUsable
 import project.main.uniclash.retrofit.CritterService
 import project.main.uniclash.viewmodels.BattleViewModel
+import project.main.uniclash.viewmodels.PlayerCritterUIState
 
 class Battle : ComponentActivity() {
     //TODO Rename into BattleActivity
+    private val battleViewModel by viewModels<BattleViewModel> {
+        BattleViewModel.provideFactory(CritterService.getInstance(this))
+    }
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         //initializes a viewmodel for further use. Uses the critterservice in order to talk to the backend
-        val battleViewModel by viewModels<BattleViewModel> {
-            BattleViewModel.provideFactory(CritterService.getInstance(this))
-        }
+
         setContent {
             UniClashTheme {
                 Surface(
@@ -73,17 +84,15 @@ class Battle : ComponentActivity() {
 @Composable
 fun CritterBattle(battleViewModel: BattleViewModel = viewModel()) {
     val battleViewPlayerUIState by battleViewModel.playerCritter.collectAsState()
-    var playerCritter = battleViewPlayerUIState.playerCritter
     val battleViewcpuCritterUIState by battleViewModel.cpuCritter.collectAsState()
-    var cpuCritter = battleViewcpuCritterUIState.cpuCritter
+    val battleText by battleViewModel.battleText.collectAsState()
+    val playerMaxHealth by remember {
+        mutableStateOf(battleViewPlayerUIState.playerCritter?.hp ?: 0)
+    }
 
-    val attack1: Attack? = playerCritter?.attacks?.get(0)
-    val attack2: Attack? = playerCritter?.attacks?.get(1)
-    val attack3: Attack? = playerCritter?.attacks?.get(2)
-    val attack4: Attack? = playerCritter?.attacks?.get(3)
-
-    var playerHealth by remember { mutableStateOf(playerCritter!!.hp) }
-    var cpuHealth by remember { mutableStateOf(cpuCritter!!.hp) }
+    val cpuMaxHealth by remember {
+        mutableStateOf(battleViewcpuCritterUIState.cpuCritter?.hp ?: 0)
+    }
 
     Column(
         modifier = Modifier
@@ -94,25 +103,19 @@ fun CritterBattle(battleViewModel: BattleViewModel = viewModel()) {
             modifier = Modifier.fillMaxWidth()
         ) {
             Column() {
-                if (playerCritter != null) {
                     HealthBar(
-                        currentHealth = playerHealth,
-                        maxHealth = playerCritter.hp,
+                        currentHealth = battleViewPlayerUIState.playerCritter!!.hp,
+                        maxHealth = playerMaxHealth,
                         barColor = Color.Green
                     )
-                }
-                if (playerCritter != null) {
-                    Text(playerCritter.name)
-                }
-                val context = LocalContext.current
-                val name: String = playerCritter!!.name.lowercase()
-                // Get the resource ID using getIdentifier
-                val resourceId = context.resources.getIdentifier(name, "drawable", context.packageName)
-                // Check if the resource ID is valid
-                if (resourceId != 0) {
-                    // Load the image using painterResource
-                    val picture = painterResource(id = resourceId)
+                CritterInfoText(battleViewPlayerUIState.playerCritter!!)
 
+                val context = LocalContext.current
+                val name: String = battleViewPlayerUIState.playerCritter!!.name.lowercase()
+                val resourceId =
+                    context.resources.getIdentifier(name, "drawable", context.packageName)
+                if (resourceId != 0) {
+                    val picture = painterResource(id = resourceId)
                     // Display the image
                     Image(
                         painter = picture,
@@ -133,25 +136,19 @@ fun CritterBattle(battleViewModel: BattleViewModel = viewModel()) {
             modifier = Modifier.fillMaxWidth()
         ) {
             Column() {
-                if (cpuCritter != null) {
                     HealthBar(
-                        currentHealth = cpuHealth,
-                        maxHealth = cpuCritter.hp,
+                        currentHealth = battleViewcpuCritterUIState.cpuCritter!!.hp,
+                        maxHealth = cpuMaxHealth,
                         barColor = Color.Red
                     )
-                }
-                if (cpuCritter != null) {
-                    Text(cpuCritter.name)
-                }
+                CritterInfoText(battleViewcpuCritterUIState.cpuCritter!!)
+
                 val context = LocalContext.current
-                val name: String = cpuCritter!!.name.lowercase()
-                // Get the resource ID using getIdentifier
+                val name: String = battleViewcpuCritterUIState.cpuCritter!!.name.lowercase()
                 val resourceId = context.resources.getIdentifier(name, "drawable", context.packageName)
-                // Check if the resource ID is valid
                 if (resourceId != 0) {
                     // Load the image using painterResource
                     val picture = painterResource(id = resourceId)
-
                     // Display the image
                     Image(
                         painter = picture,
@@ -169,27 +166,80 @@ fun CritterBattle(battleViewModel: BattleViewModel = viewModel()) {
         Spacer(modifier = Modifier.height(16.dp)) // Add more vertical space
 
         // Create a horizontal list of attack options
-        LazyRow(
+        LazyColumn(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(16.dp),
-            contentPadding = PaddingValues(8.dp)
+            contentPadding = PaddingValues(8.dp),
+            verticalArrangement = Arrangement.spacedBy(8.dp),
+            horizontalAlignment = Alignment.CenterHorizontally
+
         ) {
-            items(4) { index ->
-                val attack = playerCritter?.attacks?.get(index)
-                if (attack != null) {
-                    ClickableAttack(attack)
+            item {
+                // First row with two attacks side by side
+                LazyRow(
+                    modifier = Modifier
+                        .fillMaxWidth(),
+                    contentPadding = PaddingValues(8.dp),
+                ) {
+                    items(2) {
+                        ClickableAttack(
+                            attack = battleViewPlayerUIState.playerCritter!!.attacks[it],
+                            onAttackClicked = { selectedAttack ->
+                                battleViewModel.applyDamageToPCpu(selectedAttack)
+                            }
+                        )
+                    }
+                }
+            }
+
+            item {
+                // Second row with two attacks side by side
+                LazyRow(
+                    modifier = Modifier
+                        .fillMaxWidth(),
+                    contentPadding = PaddingValues(8.dp)
+                ) {
+                    items(2) {
+                        ClickableAttack(
+                            attack = battleViewPlayerUIState.playerCritter!!.attacks[it + 2],
+                            onAttackClicked = { selectedAttack ->
+                                battleViewModel.applyDamageToPCpu(selectedAttack)
+                            }
+                        )
+                    }
                 }
             }
         }
+
         Spacer(modifier = Modifier.height(16.dp))
-        
+
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(16.dp),
+            contentAlignment = Alignment.Center
+        ) {
+            Text(
+                text = battleText,
+                modifier = Modifier
+                    .padding(16.dp)
+                    .background(
+                        color = Color.Gray,
+                        shape = RoundedCornerShape(16.dp)
+                    )
+                    .padding(16.dp),
+                fontFamily = FontFamily.Default, // Replace with your custom font
+                fontSize = 18.sp,
+                color = Color.White
+            )
+        }
         Button(
-            
+
             onClick = {
-                println("CritterUsable:$playerCritter")
-                println("CritterUsable:$cpuCritter")
-                      },
+                println("PlayerCritter:${battleViewPlayerUIState.playerCritter}")
+                println("CpuCritter:${battleViewcpuCritterUIState.cpuCritter}")
+            },
             modifier = Modifier
                 .padding(2.dp)
                 .size(100.dp)
@@ -197,44 +247,29 @@ fun CritterBattle(battleViewModel: BattleViewModel = viewModel()) {
         ) {
             Text(text = "Debug")
         }
-        
-        Column {
-            // Display the list of critters
-            LazyColumn {
-                //items(uniClashUIState.critters.size) {
-                       // index ->
-                    //Column {
-                        /*Text(text = uniClashUIState.critters[index].name)
-                        Text(text = uniClashUIState.critters[index].baseHealth.toString())
-                        Text(text = uniClashUIState.critters[index].baseAttack.toString())
-                        Text(text = uniClashUIState.critters[index].baseDefend.toString())
-                        Text(text = uniClashUIState.critters[index].baseSpeed.toString())
-                        Text(text = uniClashUIState.critters[index].attack1.toString())
-                        Text(text = uniClashUIState.critters[index].attack2.toString())
-                        Text(text = uniClashUIState.critters[index].attack3.toString())
-                        Text(text = uniClashUIState.critters[index].attack4.toString())
-                        Divider() // Add a divider between items*/
-                    }
-                }
-            }
-       // }
-   // }
-    // You can add controls or game logic here to update player1Health and player2Health.
+    }
 }
 
 @Composable
-fun ClickableAttack(attack: Attack) {
+fun ClickableAttack(
+    attack: Attack,
+    onAttackClicked: (Int) -> Unit
+) {
     Box(
         modifier = Modifier
             .width(100.dp)
             .height(40.dp)
             .background(Color.Blue, RoundedCornerShape(8.dp))
-            .clickable { /* Handle attack selection here */ },
+            .clickable {
+                // Handle attack selection here
+                onAttackClicked(attack.strength) // Assuming 10 damage for now
+            },
         contentAlignment = Alignment.Center
     ) {
         Text(text = attack.name, color = Color.White)
     }
 }
+
 
 
 @Composable
@@ -259,6 +294,33 @@ fun HealthBar(
         )
     }
 }
+
+@Composable
+fun CritterInfoText(playerCritter: CritterUsable) {
+    Box(
+        modifier = Modifier
+            .background(Color.Gray, RoundedCornerShape(4.dp))
+            .padding(2.dp)
+    ) {
+        Text(
+            modifier = Modifier
+                .padding(6.dp)
+                .background(Color.Gray, RoundedCornerShape(4.dp))  // Optional: Add a background to the text itself
+                .padding(6.dp),  // Optional: Add padding to the text itself
+            text = buildAnnotatedString {
+                withStyle(style = SpanStyle(color = Color.Green)) {
+                    append(playerCritter.name)
+                }
+                append(" HP: ${playerCritter.hp}")
+            },
+            fontSize = 18.sp,
+            fontWeight = FontWeight.Bold,
+            color = Color.White
+        )
+    }
+}
+
+
 
 @Preview(showBackground = true)
 @Composable

@@ -5,32 +5,10 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="2664f604-c89e-4413-893f-fd324c0a096b" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/frontend/Android/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/Android/.idea/misc.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/frontend/Android/app/build.gradle.kts" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/Android/app/build.gradle.kts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/Android/app/src/androidTest/java/com/example/mymap/ExampleInstrumentedTest.kt" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/Android/app/src/androidTest/java/project/main/uniclash/ExampleInstrumentedTest.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/Android/app/src/main/AndroidManifest.xml" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/Android/app/src/main/AndroidManifest.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/Android/app/src/main/java/com/example/mymap/Battle.kt" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/Android/app/src/main/java/project/main/uniclash/Battle.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/Android/app/src/main/java/com/example/mymap/MainActivity.kt" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/Android/app/src/main/java/project/main/uniclash/MainActivity.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/Android/app/src/main/java/com/example/mymap/MapActivity.kt" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/Android/app/src/main/java/project/main/uniclash/MapActivity.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/Android/app/src/main/java/com/example/mymap/MenuActivity.kt" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/Android/app/src/main/java/project/main/uniclash/MenuActivity.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/Android/app/src/main/java/com/example/mymap/battle/BattleLogic.kt" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/Android/app/src/main/java/project/main/uniclash/battle/BattleLogic.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/Android/app/src/main/java/com/example/mymap/battle/BattleResult.kt" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/Android/app/src/main/java/project/main/uniclash/battle/BattleResult.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/Android/app/src/main/java/com/example/mymap/battle/DamageCalculator.kt" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/Android/app/src/main/java/project/main/uniclash/battle/DamageCalculator.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/Android/app/src/main/java/com/example/mymap/datatypes/Attack.kt" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/Android/app/src/main/java/project/main/uniclash/datatypes/Attack.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/Android/app/src/main/java/com/example/mymap/datatypes/Critter.kt" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/Android/app/src/main/java/project/main/uniclash/datatypes/Critter.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/Android/app/src/main/java/com/example/mymap/datatypes/CritterPic.kt" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/Android/app/src/main/java/project/main/uniclash/datatypes/CritterPic.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/Android/app/src/main/java/com/example/mymap/datatypes/CritterUsable.kt" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/Android/app/src/main/java/project/main/uniclash/datatypes/CritterUsable.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/Android/app/src/main/java/com/example/mymap/datatypes/Student.kt" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/Android/app/src/main/java/project/main/uniclash/datatypes/Student.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/Android/app/src/main/java/com/example/mymap/datatypes/User.kt" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/Android/app/src/main/java/project/main/uniclash/datatypes/User.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/Android/app/src/main/java/com/example/mymap/retrofit/CritterService.kt" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/Android/app/src/main/java/project/main/uniclash/retrofit/CritterService.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/Android/app/src/main/java/com/example/mymap/retrofit/InstantTypeAdapter.kt" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/Android/app/src/main/java/project/main/uniclash/retrofit/InstantTypeAdapter.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/Android/app/src/main/java/com/example/mymap/retrofit/Retrofit.kt" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/Android/app/src/main/java/project/main/uniclash/retrofit/Retrofit.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/Android/app/src/main/java/com/example/mymap/ui/theme/Color.kt" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/Android/app/src/main/java/project/main/uniclash/ui/theme/Color.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/Android/app/src/main/java/com/example/mymap/ui/theme/Theme.kt" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/Android/app/src/main/java/project/main/uniclash/ui/theme/Theme.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/Android/app/src/main/java/com/example/mymap/ui/theme/Type.kt" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/Android/app/src/main/java/project/main/uniclash/ui/theme/Type.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/Android/app/src/main/java/com/example/mymap/viewmodels/UniClashViewModel.kt" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/Android/app/src/main/java/project/main/uniclash/viewmodels/UniClashViewModel.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/Android/app/src/main/res/values/strings.xml" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/Android/app/src/main/res/values/strings.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/Android/app/src/test/java/com/example/mymap/ExampleUnitTest.kt" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/Android/app/src/test/java/project/main/uniclash/ExampleUnitTest.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/Android/app/src/main/java/project/main/uniclash/Battle.kt" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/Android/app/src/main/java/project/main/uniclash/Battle.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/Android/app/src/main/java/project/main/uniclash/viewmodels/UniClashViewModel.kt" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/Android/app/src/main/java/project/main/uniclash/viewmodels/UniClashViewModel.kt" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -76,7 +54,7 @@
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "RunOnceActivity.cidr.known.project.marker": "true",
     "cidr.known.project.marker": "true",
-    "last_opened_file_path": "C:/Users/elias/prj3-2023-android-02/frontend/Android",
+    "last_opened_file_path": "D:/prj3-2023-android-02/frontend/Android",
     "project.structure.last.edited": "Modules",
     "project.structure.proportion": "0.17",
     "project.structure.side.proportion": "0.2"

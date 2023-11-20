@@ -57,18 +57,22 @@ class UniClashViewModel(
 ) : ViewModel() {
     //TAG for logging
     private val TAG = UniClashViewModel::class.java.simpleName
+
+
     val critters = MutableStateFlow(
         CrittersUIState.HasEntries(
             emptyList(),
             isLoading = false
         )
     )
+
     val critter = MutableStateFlow(
         CritterUIState.HasEntries(
             isLoading = false,
             critter = null
         )
     )
+
     val critterUsable = MutableStateFlow(
         CritterUsableUIState.HasEntries(
             critterUsable = null,
@@ -93,7 +97,7 @@ class UniClashViewModel(
     init {
         viewModelScope.launch {
             Log.d(TAG, "Fetching initial critters data: ")
-            loadCritters()
+            loadCritterUsable(19)
         }
     }
 

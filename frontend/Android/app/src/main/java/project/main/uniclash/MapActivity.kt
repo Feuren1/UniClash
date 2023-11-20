@@ -18,7 +18,6 @@ import androidx.activity.viewModels
 import androidx.annotation.DrawableRes
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -58,7 +57,9 @@ import com.google.android.gms.location.LocationCallback
 import com.google.android.gms.location.LocationRequest
 import com.google.android.gms.location.LocationResult
 import com.google.android.gms.location.LocationServices
+import com.utsman.osmandcompose.CameraState
 import com.utsman.osmandcompose.Marker
+import com.utsman.osmandcompose.MarkerState
 import com.utsman.osmandcompose.OpenStreetMap
 import com.utsman.osmandcompose.rememberCameraState
 import com.utsman.osmandcompose.rememberMarkerState
@@ -158,13 +159,25 @@ class MapActivity : ComponentActivity() {
         }
     }
 
+    lateinit var gpsLocation : MarkerState
+    lateinit var cameraState : CameraState
+    var alreadySetedUpMap = false
+    @Composable
+    fun SettingUpMap() {
+        if(!alreadySetedUpMap)
+         gpsLocation = rememberMarkerState()
+         cameraState = rememberCameraState()
+        alreadySetedUpMap = true
+    }
+
     @Composable
     fun Map() {
         LoadMarkers()
         LoadFirstWildEncounter()
         LoadWildEncounter()
-        var gpsLocation = rememberMarkerState()
-        val cameraState = rememberCameraState()
+
+        SettingUpMap()
+
         LaunchedEffect(Unit) {
             while (true) {
                 val tolerance = 0.0001 //0.0001 before
@@ -180,10 +193,10 @@ class MapActivity : ComponentActivity() {
                     gpsLocation.rotation = calculateDirection(GeoPoint(cameraState.geoPoint.latitude,cameraState.geoPoint.longitude), GeoPoint(mainLatitude,mainLongitude))+270F
                     if (MapSettings.MOVINGCAMERA.getMapSetting()) {
                         cameraState.geoPoint = GeoPoint(mainLatitude, mainLongitude)
-                        cameraState.zoom = 20.5
+                        cameraState.zoom = 20.0
                     } else if (movingCamera == true) {
                         cameraState.geoPoint = GeoPoint(mainLatitude, mainLongitude)
-                        cameraState.zoom = 20.5
+                        cameraState.zoom = 20.0
                         movingCamera = false
                     }
                 }
@@ -198,7 +211,7 @@ class MapActivity : ComponentActivity() {
                 if(Counter.WILDENCOUNTERREFRESHER.getCounter() <1){
                     MapSaver.WILDENCOUNTER.setMarker(null)
                     shouldLoadWildEncounter = true
-                    Counter.WILDENCOUNTERREFRESHER.setCounter(20)
+                    Counter.WILDENCOUNTERREFRESHER.setCounter(60)
                 }
                 newCritterNotification = Counter.WILDENCOUNTERREFRESHER.getCounter()
             }
@@ -213,11 +226,11 @@ class MapActivity : ComponentActivity() {
 
         // Use camera state and location in your OpenStreetMap Composable
         if (!markersLoaded) {
-            var critterVisibilaty = 250
+            var critterVisibility : Int
             if(MapSettings.CRITTERBINOCULARS.getMapSetting()){
-                critterVisibilaty = 1000
+                critterVisibility = 1000
             } else {
-                critterVisibilaty = 250
+                critterVisibility = 250
             }
 
             OpenStreetMap(
@@ -236,7 +249,7 @@ class MapActivity : ComponentActivity() {
                         icon = marker.icon,
                         title = marker.title,
                         snippet = marker.snippet,
-                        visible = if(marker.critterUsable != null && distance > critterVisibilaty){false}else{marker.visible},
+                        visible = if(marker.critterUsable != null && distance > critterVisibility){false}else{marker.visible},
                         id = marker.id,
                     ) {
                         if (distance < 501) {
@@ -290,7 +303,7 @@ class MapActivity : ComponentActivity() {
             }
         }
         NewCrittersAdvice()
-        WildEncounter(uniClashViewModel = uniClashViewModel)
+        //WildEncounter(uniClashViewModel = uniClashViewModel)
     }
 
     @Composable
@@ -342,7 +355,6 @@ class MapActivity : ComponentActivity() {
 
     @Composable
     fun NewCrittersAdvice(){
-        println("$newCritterNotification value")
         if(newCritterNotification<11){
             Text(text = "New Critters will spawn soon!",color = Color.Red, fontWeight = FontWeight.Bold)
         }
@@ -371,16 +383,21 @@ class MapActivity : ComponentActivity() {
     }
 
     var alreadyLoaded = false //for LoadWildEncounter firstLoad
-    @SuppressLint("SuspiciousIndentation")
+    //@SuppressLint("SuspiciousIndentation")
     @Composable
     fun LoadFirstWildEncounter(){
         if(shouldLoadFirstWildEncounter) {
             if(alreadyLoaded == false) {
                 Log.d(LOCATION_TAG, "Excecuted first loadwildencounter")
                 var critterUsables = WildEncounter(uniClashViewModel)
+                println("${critterUsables.size} size")
                     addListOfMarkers(wildEncounterLogic.initMarkers(critterUsables))
                 shouldLoadFirstWildEncounter = false
-                alreadyLoaded = true
+                if(critterUsables.isEmpty()){
+                    Counter.FIRSTSPAWN.setCounter(2)
+                } else {
+                    alreadyLoaded = true
+                }
             }
         }
     }
@@ -647,6 +664,7 @@ class MapActivity : ComponentActivity() {
         val uniClashUiStateCritterUsables by uniClashViewModel.critterUsables.collectAsState()
         uniClashViewModel.loadCritterUsables(1)
         var critterUsables : List<CritterUsable?> = uniClashUiStateCritterUsables.critterUsables
+        println("${critterUsables.size} size in methode")
         return critterUsables
     }
 }

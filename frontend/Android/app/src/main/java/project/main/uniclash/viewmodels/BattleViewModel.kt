@@ -115,7 +115,27 @@ class BattleViewModel(
                 }
             }
         }
+
+        chooseCpuAttack()?.let { selectCpuAttack(it) }
     }
+
+    fun executeCpuAttack() {
+        if (cpuInput.value.isCpuAttackSelected) {
+            // Execute the attack logic here
+            // For example, you can apply CPU damage based on the selected attack
+            applyDamageToPlayer(cpuInput.value.selectedCpuAttack!!.strength)
+            // Reset the state for the next turn
+            viewModelScope.launch() {
+                cpuInput.update { currentState ->
+                    currentState.copy(
+                        isCpuAttackSelected = false,
+                        selectedCpuAttack = null,
+                    )
+                }
+            }
+        }
+    }
+
 
     fun selectPlayerAttack(attack: Attack) {
         viewModelScope.launch() {

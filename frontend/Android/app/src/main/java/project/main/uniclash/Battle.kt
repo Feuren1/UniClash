@@ -247,12 +247,24 @@ fun CritterBattle(battleViewModel: BattleViewModel = viewModel()) {
             modifier = Modifier
                 .fillMaxSize()
                 .padding(16.dp)
-                .clickable { battleViewModel.executePlayerAttack() } // Handle click to execute attack
+                .clickable {
+                    if(playerInputUIState.isPlayerAttackSelected) {
+                        battleViewModel.executePlayerAttack()
+                    }
+                    if(cpuInputUIState.isCpuAttackSelected) {
+                        battleViewModel.executeCpuAttack()
+                }
+
+                } // Handle click to execute attack
         ) {
             Text(
                 text = if (playerInputUIState.isPlayerAttackSelected) {
-                    "${battleViewPlayerUIState.playerCritter!!.name} attacks with ${playerInputUIState.selectedPlayerAttack}!"
-                } else {
+                    "${battleViewPlayerUIState.playerCritter!!.name} attacks with ${playerInputUIState.selectedPlayerAttack!!.name}!"
+                } else if (cpuInputUIState.isCpuAttackSelected) {
+                    "${battleViewcpuCritterUIState.cpuCritter!!.name} attacks with ${cpuInputUIState.selectedCpuAttack!!.name}!"
+                }
+
+                else {
                     battleText
                 },
                 modifier = Modifier
@@ -332,15 +344,11 @@ fun BattleDialogText(
     ) {
         Text(
             text = if (isPlayerAttack) {
-                if (battleText.isNotBlank()) {
-                    battleText
-                } else {
+                battleText.ifBlank {
                     "$critterName attacks with ${selectedAttack?.name}!"
                 }
             } else {
-                if (battleText.isNotBlank()) {
-                    battleText
-                } else {
+                battleText.ifBlank {
                     "$critterName is attacking with ${selectedAttack?.name}! Click to continue."
                 }
             },

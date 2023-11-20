@@ -27,8 +27,10 @@ import androidx.compose.ui.unit.dp
 import project.main.uniclash.ui.theme.UniClashTheme
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -39,17 +41,13 @@ import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.toLowerCase
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import project.main.uniclash.battle.BattleLogic
-import project.main.uniclash.battle.DamageCalculator
 import project.main.uniclash.datatypes.Attack
 import project.main.uniclash.datatypes.CritterUsable
 import project.main.uniclash.retrofit.CritterService
 import project.main.uniclash.viewmodels.BattleViewModel
-import project.main.uniclash.viewmodels.PlayerCritterUIState
 
 class Battle : ComponentActivity() {
     //TODO Rename into BattleActivity
@@ -86,6 +84,8 @@ fun CritterBattle(battleViewModel: BattleViewModel = viewModel()) {
     val battleViewPlayerUIState by battleViewModel.playerCritter.collectAsState()
     val battleViewcpuCritterUIState by battleViewModel.cpuCritter.collectAsState()
     val battleText by battleViewModel.battleText.collectAsState()
+    val playerInputUIState by battleViewModel.playerInput.collectAsState()
+    val cpuInputUIState by battleViewModel.cpuInput.collectAsState()
     val playerMaxHealth by remember {
         mutableStateOf(battleViewPlayerUIState.playerCritter?.hp ?: 0)
     }
@@ -186,7 +186,7 @@ fun CritterBattle(battleViewModel: BattleViewModel = viewModel()) {
                         ClickableAttack(
                             attack = battleViewPlayerUIState.playerCritter!!.attacks[it],
                             onAttackClicked = { selectedAttack ->
-                                battleViewModel.applyDamageToPCpu(selectedAttack)
+                                battleViewModel.selectPlayerAttack(selectedAttack)
                             }
                         )
                     }
@@ -204,7 +204,7 @@ fun CritterBattle(battleViewModel: BattleViewModel = viewModel()) {
                         ClickableAttack(
                             attack = battleViewPlayerUIState.playerCritter!!.attacks[it + 2],
                             onAttackClicked = { selectedAttack ->
-                                battleViewModel.applyDamageToPCpu(selectedAttack)
+                                battleViewModel.selectPlayerAttack(selectedAttack)
                             }
                         )
                     }
@@ -212,16 +212,49 @@ fun CritterBattle(battleViewModel: BattleViewModel = viewModel()) {
             }
         }
 
-        Spacer(modifier = Modifier.height(16.dp))
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .horizontalScroll(rememberScrollState())
+        ) {
+            // "Start" button
+            Button(
+                onClick = {  },
+                modifier = Modifier
+                    .padding(2.dp)
+                    .size(80.dp)
+            ) {
+                Text(text = "Start")
+            }
+
+            Spacer(modifier = Modifier.width(16.dp)) // Add space between buttons
+
+            // "Debug" button
+            Button(
+                onClick = {
+                    println("PlayerCritter:${battleViewPlayerUIState.playerCritter}")
+                    println("CpuCritter:${battleViewcpuCritterUIState.cpuCritter}")
+                },
+                modifier = Modifier
+                    .padding(2.dp)
+                    .size(80.dp)
+            ) {
+                Text(text = "Debug")
+            }
+        }
 
         Box(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(16.dp),
-            contentAlignment = Alignment.Center
+                .padding(16.dp)
+                .clickable { battleViewModel.executePlayerAttack() } // Handle click to execute attack
         ) {
             Text(
-                text = battleText,
+                text = if (playerInputUIState.isPlayerAttackSelected) {
+                    "${battleViewPlayerUIState.playerCritter!!.name} attacks with ${playerInputUIState.selectedPlayerAttack}!"
+                } else {
+                    battleText
+                },
                 modifier = Modifier
                     .padding(16.dp)
                     .background(
@@ -234,26 +267,14 @@ fun CritterBattle(battleViewModel: BattleViewModel = viewModel()) {
                 color = Color.White
             )
         }
-        Button(
 
-            onClick = {
-                println("PlayerCritter:${battleViewPlayerUIState.playerCritter}")
-                println("CpuCritter:${battleViewcpuCritterUIState.cpuCritter}")
-            },
-            modifier = Modifier
-                .padding(2.dp)
-                .size(100.dp)
-
-        ) {
-            Text(text = "Debug")
-        }
     }
 }
 
 @Composable
 fun ClickableAttack(
     attack: Attack,
-    onAttackClicked: (Int) -> Unit
+    onAttackClicked: (Attack) -> Unit
 ) {
     Box(
         modifier = Modifier
@@ -262,7 +283,7 @@ fun ClickableAttack(
             .background(Color.Blue, RoundedCornerShape(8.dp))
             .clickable {
                 // Handle attack selection here
-                onAttackClicked(attack.strength) // Assuming 10 damage for now
+                onAttackClicked(attack) // Assuming 10 damage for now
             },
         contentAlignment = Alignment.Center
     ) {
@@ -296,6 +317,48 @@ fun HealthBar(
 }
 
 @Composable
+fun BattleDialogText(
+    isPlayerAttack: Boolean,
+    critterName: String,
+    selectedAttack: Attack?,
+    battleText: String,
+    onAttackClicked: () -> Unit
+) {
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(16.dp)
+            .clickable { onAttackClicked() } // Handle click to execute attack
+    ) {
+        Text(
+            text = if (isPlayerAttack) {
+                if (battleText.isNotBlank()) {
+                    battleText
+                } else {
+                    "$critterName attacks with ${selectedAttack?.name}!"
+                }
+            } else {
+                if (battleText.isNotBlank()) {
+                    battleText
+                } else {
+                    "$critterName is attacking with ${selectedAttack?.name}! Click to continue."
+                }
+            },
+            modifier = Modifier
+                .padding(16.dp)
+                .background(
+                    color = Color.Gray,
+                    shape = RoundedCornerShape(16.dp)
+                )
+                .padding(16.dp),
+            fontFamily = FontFamily.Default, // Replace with your custom font
+            fontSize = 18.sp,
+            color = Color.White
+        )
+    }
+}
+
+@Composable
 fun CritterInfoText(playerCritter: CritterUsable) {
     Box(
         modifier = Modifier
@@ -305,7 +368,10 @@ fun CritterInfoText(playerCritter: CritterUsable) {
         Text(
             modifier = Modifier
                 .padding(6.dp)
-                .background(Color.Gray, RoundedCornerShape(4.dp))  // Optional: Add a background to the text itself
+                .background(
+                    Color.Gray,
+                    RoundedCornerShape(4.dp)
+                )  // Optional: Add a background to the text itself
                 .padding(6.dp),  // Optional: Add padding to the text itself
             text = buildAnnotatedString {
                 withStyle(style = SpanStyle(color = Color.Green)) {

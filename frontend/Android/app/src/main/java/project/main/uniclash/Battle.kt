@@ -1,5 +1,6 @@
 package project.main.uniclash
 
+import android.media.MediaPlayer
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -49,6 +50,9 @@ import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.sp
+import androidx.core.view.WindowCompat
+import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.WindowInsetsControllerCompat
 import androidx.lifecycle.viewmodel.compose.viewModel
 import project.main.uniclash.datatypes.Attack
 import project.main.uniclash.datatypes.CritterUsable
@@ -57,13 +61,21 @@ import project.main.uniclash.viewmodels.BattleViewModel
 
 class Battle : ComponentActivity() {
     //TODO Rename into BattleActivity
+    private var mediaPlayer: MediaPlayer? = null
     private val battleViewModel by viewModels<BattleViewModel> {
         BattleViewModel.provideFactory(CritterService.getInstance(this))
     }
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         //initializes a viewmodel for further use. Uses the critterservice in order to talk to the backend
-
+        mediaPlayer = MediaPlayer.create(this, R.raw.battlesoundtrack1)
+        mediaPlayer?.isLooping = true
+        mediaPlayer?.start()
+        WindowCompat.setDecorFitsSystemWindows(window, false)
+        WindowInsetsControllerCompat(window, window.decorView).run {
+            hide(WindowInsetsCompat.Type.systemBars())
+            systemBarsBehavior = WindowInsetsControllerCompat.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
+        }
         setContent {
             UniClashTheme {
                 Surface(
@@ -82,6 +94,13 @@ class Battle : ComponentActivity() {
 
             }
         }
+
+    }
+    override fun onDestroy() {
+        super.onDestroy()
+
+        // Release the MediaPlayer when the activity is destroyed
+        mediaPlayer?.release()
     }
 }
 
@@ -332,10 +351,10 @@ fun HealthBar(
                     durationMillis = 200
                     0.0f at 0
                     5.0f at 50
-                    0.0f at 100
-                    10.0f at 150
-                    0.0f at 200
-                    5.0f at 250
+                    -5.0f at 100
+                    0.0f at 150
+                    5.0f at 200
+                    -5.0f at 250
                     0.0f at 300
                 }
             )
@@ -361,9 +380,6 @@ fun HealthBar(
         )
     }
 }
-
-
-
 
 @Composable
 fun BattleDialogText(

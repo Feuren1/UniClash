@@ -3,7 +3,8 @@ package project.main.uniclash.datatypes
 import org.osmdroid.util.GeoPoint
 
 enum class MapSettings(private var selection : Boolean){
-    MOVINGCAMERA(true);
+    MOVINGCAMERA(true),
+    CRITTERBINOCULARS(false);
 
     fun getMapSetting():Boolean{
         return selection

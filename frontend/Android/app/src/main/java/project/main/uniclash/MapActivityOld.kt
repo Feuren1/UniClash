@@ -13,6 +13,7 @@ import android.os.Looper
 import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.activity.viewModels
 import androidx.annotation.DrawableRes
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -61,10 +62,16 @@ import com.utsman.osmandcompose.rememberCameraState
 import com.utsman.osmandcompose.rememberMarkerState
 import kotlinx.coroutines.delay
 import org.osmdroid.util.GeoPoint
+import project.main.uniclash.retrofit.CritterService
+import project.main.uniclash.viewmodels.UniClashViewModel
 import project.main.uniclash.wildencounter.WildEncounterLogic
 import java.util.concurrent.TimeUnit
 
 class MapActivityOld : ComponentActivity() {
+
+    val uniClashViewModel: UniClashViewModel by viewModels(factoryProducer = {
+        UniClashViewModel.provideFactory(CritterService.getInstance(this))
+    })
     private lateinit var fusedLocationClient: FusedLocationProviderClient
     private val locationPermissions = arrayOf(
         //array ONLY for location Permissions!!!

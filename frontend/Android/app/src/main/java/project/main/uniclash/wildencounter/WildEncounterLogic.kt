@@ -1,13 +1,19 @@
 package project.main.uniclash.wildencounter
 
 import android.content.Context
+import androidx.activity.viewModels
 import android.graphics.Bitmap
 import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.Drawable
 import android.util.Log
+import androidx.activity.viewModels
 import androidx.annotation.DrawableRes
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.core.graphics.drawable.toBitmap
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
 import com.utsman.osmandcompose.rememberMarkerState
 import org.osmdroid.util.GeoPoint
 import project.main.uniclash.WildEncounterActivity
@@ -17,13 +23,15 @@ import project.main.uniclash.datatypes.CritterUsable
 import project.main.uniclash.datatypes.Locations
 import project.main.uniclash.datatypes.MapSaver
 import project.main.uniclash.datatypes.MyMarker
+import project.main.uniclash.retrofit.CritterService
+import project.main.uniclash.viewmodels.UniClashViewModel
 import java.lang.Math.PI
 import java.lang.Math.cos
 import java.lang.Math.sin
 import java.lang.Math.sqrt
 
 
- class WildEncounterLogic(private val context: Context) {
+ class WildEncounterLogic(private val context: Context){
 
 
     val wildEncounters: ArrayList<CritterUsable> = ArrayList()
@@ -32,17 +40,28 @@ import java.lang.Math.sqrt
     private var markerList = ArrayList<MyMarker>()
 
      companion object {
-         private const val LOCATION_TAG = "MyLocationTag"
+         private const val WILDENCOUNTERLOGIC_TAG = "WildEncounterLogic"
      }
 
      @Composable
-    fun initMarkers() : ArrayList<MyMarker> {
+    fun initMarkers(usableCritters : List<CritterUsable?>) : ArrayList<MyMarker> {
+         if(usableCritters.isEmpty()){
+             //throw IllegalArgumentException("Database contains no Critters")
+             return markerList
+         }
+         Log.d(WILDENCOUNTERLOGIC_TAG, "--------")
+         Log.d(WILDENCOUNTERLOGIC_TAG, "executed")
+         var wildEncounterMax = usableCritters
+         while(wildEncounterMax.size < 801){
+             Log.d(WILDENCOUNTERLOGIC_TAG, "loop :) ${wildEncounterMax.size}")
+             wildEncounterMax = wildEncounterMax + usableCritters
+         }
+         Log.d(WILDENCOUNTERLOGIC_TAG, "executed2")
          userLocation = Locations.USERLOCATION.getLocation()
-
          if(MapSaver.WILDENCOUNTER.getMarker() == null) {
              var randomLocation = generateRandomGeoPoints(userLocation, 2.0, 800) //400 pro km
              var i = 0
-             val wildEncounter = CritterList()
+             val wildEncounter = wildEncounterMax
 
              while (i < 800) {
                  val state = rememberMarkerState(
@@ -54,11 +73,11 @@ import java.lang.Math.sqrt
                  var myMarker = MyMarker(
                      id = "1",
                      state = state,
-                     icon = resizeDrawableTo50x50(context, CritterPic.MUSK.searchDrawableM("${wildEncounter.get(i).name}M")),
+                     icon = resizeDrawableTo50x50(context, CritterPic.MUSK.searchDrawableM("${wildEncounter.get(i)?.name}M")),
                      visible = true,
-                     title = "${wildEncounter.get(i).name}",
-                     snippet = "Level: ${wildEncounter.get(i).level}",
-                     pic = CritterPic.MUSK.searchDrawable("${wildEncounter.get(i).name}"),
+                     title = "${wildEncounter.get(i)?.name}",
+                     snippet = "Level: ${wildEncounter.get(i)?.level}",
+                     pic = CritterPic.MUSK.searchDrawable("${wildEncounter.get(i)?.name}"),
                      button = WildEncounterActivity::class.java,
                      buttonText = "catch Critter",
                      critterUsable = wildEncounter.get(i)
@@ -101,7 +120,7 @@ import java.lang.Math.sqrt
             var counter = times
             var geoLocations = ArrayList<GeoPoint>()
             while (counter > 0) {
-                Log.d(WildEncounterLogic.LOCATION_TAG, "new Random Location")
+                Log.d(WildEncounterLogic.WILDENCOUNTERLOGIC_TAG, "new Random Location")
                 // Convert radius from kilometers to degrees
                 val radiusInDegrees = radiusInKm / 111.32
 
@@ -125,6 +144,7 @@ import java.lang.Math.sqrt
 
      val attack1 = Attack(1, "Tackle", 1)
      val attack2 = Attack(2, "Scratch",2)
+
 
      fun CritterList() : ArrayList<CritterUsable>{
          val wildEncunterList = ArrayList<CritterUsable>()
@@ -259,5 +279,4 @@ import java.lang.Math.sqrt
              }
          return wildEncunterList;
      }
-
 }

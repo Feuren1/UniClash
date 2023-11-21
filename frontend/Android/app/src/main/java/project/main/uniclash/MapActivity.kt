@@ -242,6 +242,7 @@ class MapActivity : ComponentActivity() {
                 cameraState = cameraState
             ) {
                 // Add markers and other map components here
+                LoadStudentHubs()
                 markerList.forEach { marker ->
                     val distance = haversineDistance(marker.state.geoPoint.latitude, marker.state.geoPoint.longitude, Locations.USERLOCATION.getLocation().latitude, Locations.USERLOCATION.getLocation().longitude)
                     Log.d(
@@ -419,44 +420,51 @@ class MapActivity : ComponentActivity() {
 
     @Composable
     fun LoadStudentHubs(){
-        if(MapSaver.STUDENTHUB.getMarker() == null){
+        if(MapSaver.STUDENTHUB.getMarker()== null){
             MapSaver.STUDENTHUB.setMarker(createStudentHubMarker())
-        }
-
-        if(MapSaver.STUDENTHUB.getMarker() != null) {
-
-            addListOfMarkers(MapSaver.STUDENTHUB.getMarker()!!)
+            if(MapSaver.STUDENTHUB.getMarker()!!.isNotEmpty()){
+                addListOfMarkers(MapSaver.STUDENTHUB.getMarker()!!)
+            }
+        } else if (MapSaver.STUDENTHUB.getMarker()!!.isEmpty()){
+            MapSaver.STUDENTHUB.setMarker(createStudentHubMarker())
+            if(MapSaver.STUDENTHUB.getMarker()!!.isNotEmpty()){
+                addListOfMarkers(MapSaver.STUDENTHUB.getMarker()!!)
+            }
         }
     }
 
     @Composable
     fun createStudentHubMarker(): ArrayList<MyMarker> {
-
         val context = LocalContext.current
-
-        var studentHubs = StudentHubs(studentHubViewModel)
-
+        val studentHubs = StudentHubs(studentHubViewModel)
         var studentHubMarkerList = ArrayList<MyMarker>()
 
-        for(studentHub in studentHubs) {
+        println("${studentHubs.size} size from the database")
 
-            val state = rememberMarkerState(geoPoint = GeoPoint(studentHub?.lat!!,
-                studentHub?.lon!!
-            ))
+        for (studentHub in studentHubs) {
+            val geoPoint = GeoPoint(studentHub?.lat!!, studentHub?.lon!!)
+            //val state = rememberMarkerState(geoPoint = geoPoint)
 
-            var myMarker = MyMarker(id = "1",
-                state = state,
-                icon = resizeDrawableTo50x50(context, CritterPic.STUDENTASSISTANCE.getDrawable()),
+            val icon: Drawable? by remember {
+                mutableStateOf(resizeDrawableTo50x50(context, R.drawable.store))
+            }
+
+            val myMarker = MyMarker(
+                id = "1",
+                state = MarkerState(geoPoint = geoPoint),
+                icon = icon,
                 visible = true,
-                title ="${studentHub?.name}",
+                title = "${studentHub?.name}",
                 snippet = "Description: ${studentHub?.description}",
-                pic = CritterPic.STUDENTASSISTANCEM.getDrawable(),
-                button = StudentHubActivity::class.java,
+                pic = R.drawable.store,
+                button =WildEncounterActivity::class.java,
                 buttonText = "Go to Hub",
-                studentHub = studentHub)
+                studentHub = studentHub
+            )
 
             studentHubMarkerList.add(myMarker)
         }
+        println("Methode success!")
         return studentHubMarkerList
     }
 

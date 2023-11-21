@@ -45,6 +45,10 @@ import java.lang.Math.sqrt
 
      @Composable
     fun initMarkers(usableCritters : List<CritterUsable?>) : ArrayList<MyMarker> {
+         println("nicht mehr")
+         println("nicht mehr")
+         println("nicht mehr")
+         println("nicht mehr")
          if(usableCritters.isEmpty()){
              //throw IllegalArgumentException("Database contains no Critters")
              return markerList

@@ -96,4 +96,5 @@ dependencies {
     implementation ("androidx.activity:activity-ktx:1.4.0")
     implementation ("androidx.activity:activity-compose:1.4.0-alpha01")
     implementation ("androidx.lifecycle:lifecycle-viewmodel-ktx:2.3.1")
+    implementation ("androidx.lifecycle:lifecycle-viewmodel-compose:2.6.1")
 }

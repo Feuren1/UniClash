@@ -413,6 +413,16 @@ class MapActivity : ComponentActivity() {
         }
     }
 
+    @Composable
+    fun LoadStudentHubs(){
+        if(MapSaver.STUDENTHUB.getMarker() != null){
+            if(!(MapSaver.STUDENTHUB.getMarker()!!.isEmpty()))
+            addListOfMarkers(MapSaver.STUDENTHUB.getMarker()!!)
+        } else {
+            StudenHubs()
+        }
+    }
+
     fun addMarker(marker: MyMarker) {
         markerList.add(marker)
         updateMapMarkers()
@@ -662,5 +672,10 @@ class MapActivity : ComponentActivity() {
         var critterUsables : List<CritterUsable?> = uniClashUiStateCritterUsables.critterUsables
         println("${critterUsables.size} size in methode")
         return critterUsables
+    }
+
+    @Composable
+    fun StudenHubs(){
+
     }
 }

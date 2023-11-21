@@ -166,7 +166,7 @@ fun ItemRow(
             .padding(end = 16.dp),
             onClick = {
                 println("BEFORE Buy button clicked in ItemRow")
-                onButtonClicked
+                onButtonClicked()
                 println("AFTER Buy button clicked in ItemRow")
             }) {
 

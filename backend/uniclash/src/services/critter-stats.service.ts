@@ -45,6 +45,8 @@ export class CritterStatsService {
       def: actualStats[2], // Set the actual defense
       spd: actualStats[3], // Set the actual speed
       attacks: attacks, // Set the array of Attack instances
+      critterId: critter.id,
+      critterTemplateId: critter.critterTemplateId
     });
 
     return critterUsable;

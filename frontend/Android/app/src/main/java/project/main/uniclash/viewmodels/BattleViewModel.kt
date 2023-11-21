@@ -233,14 +233,14 @@ class BattleViewModel(
         val def = playerCritter.value.playerCritter!!.def;
         val atk = cpuCritter.value.cpuCritter!!.atk;
         val level = cpuCritter.value.cpuCritter!!.level;
-        return (((((2*level)/5)+2)*attack)/50)+2
+        return (((((2*level)/5)+2)*attack*atk/def)/50)+2
     }
 
     fun calculateCpuDamage(attack: Int): Int {
         val def = cpuCritter.value.cpuCritter!!.def;
         val atk = playerCritter.value.playerCritter!!.atk;
         val level = playerCritter.value.playerCritter!!.level;
-        return (((((2*level)/5)+2)*attack)/50)+2
+        return (((((2*level)/5)+2)*attack*atk/def)/50)+2
     }
 
     fun loadPlayerCritter(id: Int) {

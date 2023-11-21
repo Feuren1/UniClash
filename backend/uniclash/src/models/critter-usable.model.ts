@@ -38,6 +38,16 @@ export class CritterUsable extends Model {
   })
   spd: number;
 
+  @property({
+    type: 'number',
+  })
+  critterId: number;
+
+  @property({
+    type: 'number',
+  })
+  critterTemplateId: number;
+
   @property.array(Attack)
   attacks: Attack[]; // Store Attack model instances directly
 

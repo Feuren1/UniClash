@@ -25,6 +25,8 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -63,34 +65,36 @@ fun StudentHub(modifier: Modifier = Modifier, studentHubViewModel: StudentHubVie
 
     var context = LocalContext.current
 
-//    val studentHubState by studentHubViewModel.studentHub.collectAsState()
-//    studentHubViewModel.loadStudentHub(1)
+    val studentHubsState by studentHubViewModel.studentHubs.collectAsState()
+    studentHubViewModel.loadStudentHubs()
 
     val itemsHubState by studentHubViewModel.items.collectAsState()
     studentHubViewModel.loadItems()
 
-//    var studentHub = studentHubState.studentHub
+    var studentHubList = studentHubsState.studentHubs
     var itemList = itemsHubState.items
 
+    // test list of Items
 //    var itemList = List(2) { i -> Item("Item$i", 5) }
 
-    println("Items: $itemList")
+    var boughtItemCount by mutableStateOf(0)
 
     Column(modifier = modifier) {
 
-        
+        Text("You have bought $boughtItemCount items.")
 
         Button(onClick = {
             println("Items: $itemList")
+            println("StudentHubs: $studentHubList")
             }) {
             Text(text = "Debug")
         }
 
         //Exit Box, image and position:
         Box(modifier = Modifier
-                .fillMaxWidth()
-                .background(MaterialTheme.colorScheme.background)
-                .padding(16.dp)) {
+            .fillMaxWidth()
+            .background(MaterialTheme.colorScheme.background)
+            .padding(16.dp)) {
             Image(
                 painter = painterResource(id = R.drawable.exit),
                 contentDescription = null,
@@ -104,7 +108,11 @@ fun StudentHub(modifier: Modifier = Modifier, studentHubViewModel: StudentHubVie
             )
         }
 
-        ItemList(itemList, onButtonClicked = {/*TODO: Buying the item*/})
+        ItemList(itemList, onButtonClicked = {
+            studentHubViewModel.buyItem()
+            boughtItemCount++
+            println("Buy item clicked in StudentHub")
+        })
     }
 }
 
@@ -115,7 +123,8 @@ fun ItemList(itemList: List<Item>, onButtonClicked: () -> Unit, modifier: Modifi
 
         items(items = itemList, key = {item -> item.name}) {
 
-            item -> ItemRow(itemName = item.name, itemCost = item.cost, onButtonClicked = {/*TODO: Buying the item*/})
+            item -> ItemRow(itemName = item.name, itemCost = item.cost, onButtonClicked = {onButtonClicked
+            println("Buy Item clicked in ItemList")})
         }
     }
 }
@@ -133,7 +142,8 @@ fun ItemRow(itemName: String, itemCost: Int, onButtonClicked: () -> Unit, modifi
         Button(modifier = Modifier
             .weight(1f)
             .padding(end = 16.dp),
-            onClick = onButtonClicked) {
+            onClick = {onButtonClicked
+                println("Buy button clicked in ItemRow")}) {
             
             Text(text = "Buy")
         }

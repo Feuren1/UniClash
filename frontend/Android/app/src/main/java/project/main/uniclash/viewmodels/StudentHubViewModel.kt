@@ -145,6 +145,7 @@ class StudentHubViewModel(
 
     fun buyItem() {
 
+        println("Buy button was pressed")
         //TODO: buying stuff logic
     }
 

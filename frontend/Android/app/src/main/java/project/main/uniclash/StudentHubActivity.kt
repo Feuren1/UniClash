@@ -63,13 +63,13 @@ fun StudentHub(modifier: Modifier = Modifier, studentHubViewModel: StudentHubVie
 
     var context = LocalContext.current
 
-//    val studentHubState by studentHubViewModel.studentHub.collectAsState()
-//    studentHubViewModel.loadStudentHub(1)
+    val studentHubsState by studentHubViewModel.studentHubs.collectAsState()
+    studentHubViewModel.loadStudentHubs()
 
     val itemsHubState by studentHubViewModel.items.collectAsState()
     studentHubViewModel.loadItems()
 
-//    var studentHub = studentHubState.studentHub
+    var studentHubList = studentHubsState.studentHubs
     var itemList = itemsHubState.items
 
 //    var itemList = List(2) { i -> Item("Item$i", 5) }
@@ -82,15 +82,16 @@ fun StudentHub(modifier: Modifier = Modifier, studentHubViewModel: StudentHubVie
 
         Button(onClick = {
             println("Items: $itemList")
+            println("StudentHubs: $studentHubList")
             }) {
             Text(text = "Debug")
         }
 
         //Exit Box, image and position:
         Box(modifier = Modifier
-                .fillMaxWidth()
-                .background(MaterialTheme.colorScheme.background)
-                .padding(16.dp)) {
+            .fillMaxWidth()
+            .background(MaterialTheme.colorScheme.background)
+            .padding(16.dp)) {
             Image(
                 painter = painterResource(id = R.drawable.exit),
                 contentDescription = null,

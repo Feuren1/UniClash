@@ -1,7 +1,7 @@
 # Game API<br>
 
 ## Critters<br>
-| id | name       | baseHealth | baseAttack | baseDefence | baseSpeed |attack1   |attack1   |attack1   |attack1   |
+| id | name       | baseHealth | baseAttack | baseDefence | baseSpeed |attack1   |attack2   |attack3   |attack4   |
 |----|------------|------------|------------|-------------|-----------|----------|----------|----------|----------|
 | 0  | string     | 0          | 0          | 0           | 0         |0         |0         |0         |0         |         
 | 0  | string     | 0          | 0          | 0           | 0         |0         |0         |0         |0         |

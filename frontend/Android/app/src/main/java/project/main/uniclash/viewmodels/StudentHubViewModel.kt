@@ -101,6 +101,11 @@ class StudentHubViewModel(
         }
     }
 
+    fun buyItem() {
+
+        //TODO: buying stuff logic
+    }
+
     companion object {
         fun provideFactory(
             studentHubService: StudentHubService,

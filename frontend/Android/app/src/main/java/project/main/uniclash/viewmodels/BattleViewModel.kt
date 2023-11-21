@@ -20,8 +20,6 @@ import kotlin.coroutines.suspendCoroutine
 public data class playerCritterIdCallback(val success: Boolean, val id: String)
 public data class cpuCritterIdCallback(val success: Boolean, val id: String)
 
-
-
 sealed interface PlayerCritterUIState {
     data class HasEntries(
         val playerCritter: CritterUsable?,
@@ -95,8 +93,8 @@ class BattleViewModel(
     init {
         viewModelScope.launch {
             Log.d(TAG, "Fetching initial critters data: ")
-            loadPlayerCritter(19)
-            loadCpuCritter(20)
+            //loadPlayerCritter(19)
+            //loadCpuCritter(20)
         }
     }
 

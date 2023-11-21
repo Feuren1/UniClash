@@ -31,7 +31,7 @@
             android:label="@string/title_activity_student_hub"
             android:theme="@style/Theme.UniClash" />
         <activity
-            android:name=".Battle"
+            android:name=".BattleWildEncounter"
             android:exported="false"
             android:label="@string/title_activity_battle"
             android:theme="@style/Theme.UniClash" />

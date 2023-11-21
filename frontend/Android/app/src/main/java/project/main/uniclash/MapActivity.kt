@@ -105,6 +105,10 @@ class MapActivity : ComponentActivity() {
     private var shouldLoadWildEncounter by mutableStateOf(false)
 
     private var newCritterNotification by mutableStateOf(11)
+
+    private var shouldLoadStudentHubs by mutableStateOf(false)
+    private var shouldInitStudentHubs by mutableStateOf(false)
+    private var alreadyLoadStudentHubs by mutableStateOf(false)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
@@ -179,6 +183,8 @@ class MapActivity : ComponentActivity() {
         LoadMarkers()
         LoadFirstWildEncounter()
         LoadWildEncounter()
+        LoadStudentHubs()
+        InitStudentHubMarker()
 
         SettingUpMap()
 
@@ -218,6 +224,14 @@ class MapActivity : ComponentActivity() {
                     Counter.WILDENCOUNTERREFRESHER.setCounter(60)
                 }
                 newCritterNotification = Counter.WILDENCOUNTERREFRESHER.getCounter()
+
+                shouldLoadStudentHubs = true
+
+                if(MapSaver.STUDENTHUB.getMarker() == null){
+                    shouldInitStudentHubs = true
+                } else if(MapSaver.STUDENTHUB.getMarker()!!.isEmpty()){
+                    shouldInitStudentHubs = true
+                }
             }
         }
 
@@ -241,9 +255,7 @@ class MapActivity : ComponentActivity() {
                 modifier = Modifier.fillMaxSize(),
                 cameraState = cameraState
             ) {
-                // Add markers and other map components here
-                LoadStudentHubs()
-                //TODO not the best location to laod hubs (LoadStudenHubs)
+                // Add markers and other map components here s)
                 markerList.forEach { marker ->
                     val distance = haversineDistance(marker.state.geoPoint.latitude, marker.state.geoPoint.longitude, Locations.USERLOCATION.getLocation().latitude, Locations.USERLOCATION.getLocation().longitude)
                     Log.d(
@@ -421,66 +433,72 @@ class MapActivity : ComponentActivity() {
 
     @Composable
     fun LoadStudentHubs(){
-        if(MapSaver.STUDENTHUB.getMarker()== null){
-            MapSaver.STUDENTHUB.setMarker(createStudentHubMarker())
-            if(MapSaver.STUDENTHUB.getMarker()!!.isNotEmpty()){
+        if(shouldLoadStudentHubs) {
+            println("trying to load student hubs ${MapSaver.STUDENTHUB.getMarker().toString()}")
+            if (MapSaver.STUDENTHUB.getMarker() != null && MapSaver.STUDENTHUB.getMarker()!!
+                    .isNotEmpty() && !alreadyLoadStudentHubs
+            ) {
+                println("executed :( executed :( executed :( executed :( executed :(")
+                alreadyLoadStudentHubs = true
                 addListOfMarkers(MapSaver.STUDENTHUB.getMarker()!!)
-            }
-        } else if (MapSaver.STUDENTHUB.getMarker()!!.isEmpty()){
-            MapSaver.STUDENTHUB.setMarker(createStudentHubMarker())
-            if(MapSaver.STUDENTHUB.getMarker()!!.isNotEmpty()){
-                addListOfMarkers(MapSaver.STUDENTHUB.getMarker()!!)
+            }else {
+                shouldLoadStudentHubs = false
             }
         }
     }
 
     @Composable
-    fun createStudentHubMarker(): ArrayList<MyMarker> {
-        val context = LocalContext.current
-        val studentHubs = StudentHubs(studentHubViewModel)
-        var studentHubMarkerList = ArrayList<MyMarker>()
+    fun InitStudentHubMarker() {
+        if(shouldInitStudentHubs) {
+            val context = LocalContext.current
+            val studentHubs = StudentHubs(studentHubViewModel)
+            var studentHubMarkerList = ArrayList<MyMarker>()
 
-        println("${studentHubs.size} size from the database")
+            println("${studentHubs.size} size from the database")
 
-        for (studentHub in studentHubs) {
-            val geoPoint = GeoPoint(studentHub?.lat!!, studentHub?.lon!!)
-            //val state = rememberMarkerState(geoPoint = geoPoint)
+            for (studentHub in studentHubs) {
+                val geoPoint = GeoPoint(studentHub?.lat!!, studentHub?.lon!!)
 
-            val icon: Drawable? by remember {
-                mutableStateOf(resizeDrawableTo50x50(context, R.drawable.store))
+                val icon: Drawable? by remember {
+                    mutableStateOf(resizeDrawableTo50x50(context, R.drawable.store))
+                }
+
+                val myMarker = MyMarker(
+                    id = "1",
+                    state = MarkerState(geoPoint = geoPoint),
+                    icon = icon,
+                    visible = true,
+                    title = "${studentHub?.name}",
+                    snippet = "${studentHub?.description}",
+                    pic = R.drawable.store,
+                    button = StudentHubActivity::class.java,
+                    buttonText = "Go to Hub",
+                    studentHub = studentHub
+                )
+
+                studentHubMarkerList.add(myMarker)
             }
-
-            val myMarker = MyMarker(
-                id = "1",
-                state = MarkerState(geoPoint = geoPoint),
-                icon = icon,
-                visible = true,
-                title = "${studentHub?.name}",
-                snippet = "Description: ${studentHub?.description}",
-                pic = R.drawable.store,
-                button =StudentHubActivity::class.java,
-                buttonText = "Go to Hub",
-                studentHub = studentHub
-            )
-
-            studentHubMarkerList.add(myMarker)
+            MapSaver.STUDENTHUB.setMarker(studentHubMarkerList)
+            shouldInitStudentHubs = false
         }
-        println("Methode success!")
-        return studentHubMarkerList
     }
 
     fun addMarker(marker: MyMarker) {
-        markerList.add(marker)
-        updateMapMarkers()
+        if(!(markerList.contains(marker))) {
+            markerList.add(marker)
+            updateMapMarkers()
+        }
     }
 
     fun addListOfMarkers(markers: ArrayList<MyMarker>) {
-        if(!markersLoaded!!) {
-            for (marker in markers) {
-                markerList.add(marker)
+        if(!(markerList.containsAll(markers))) {
+            if (!markersLoaded!!) {
+                for (marker in markers) {
+                    markerList.add(marker)
+                }
             }
+            updateMapMarkers()
         }
-        updateMapMarkers()
     }
 
     fun removeMarker(marker: MyMarker) {

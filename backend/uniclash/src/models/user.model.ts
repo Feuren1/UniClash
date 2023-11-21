@@ -1,7 +1,7 @@
 import {Entity, hasOne, model, property} from '@loopback/repository';
 import {UserCredentials} from '.';
 
-@model({settings: {strict: false}})
+@model()
 export class User extends Entity {
   @property({
     type: 'string',
@@ -9,7 +9,7 @@ export class User extends Entity {
     defaultFn: 'uuidv4',
   })
   id: string;
-  
+
 
   @property({
     type: 'string',
@@ -40,3 +40,4 @@ export interface UserRelations {
 }
 
 export type UserWithRelations = User & UserRelations;
+

@@ -37,9 +37,9 @@ Max User Level: 0<br>
 Coins per Win: 0 <br>
 Ep per Win: 0<br>
 Coins per captured Arena: 0<br>
-Ep per captured Arena:0<br>
+Ep per captured Arena: 0<br>
 
-Ep for reaching a Level:0 <br>
+Ep for reaching a Level: 0 <br>
 Max Level: 0 <br>
 
 # Other Game Rules<br>

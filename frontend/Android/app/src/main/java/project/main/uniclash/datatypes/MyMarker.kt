@@ -16,6 +16,6 @@ data class MyMarker(
     var pic : Int = 0,
     var button : Class<out Activity> = MainActivity::class.java,
     var buttonText : String? = "button",
-    var critterUsable: CritterUsable ? = null
-    //var building : Building ? = null
+    var critterUsable: CritterUsable ? = null,
+    var studentHub : StudentHub ? = null
     )

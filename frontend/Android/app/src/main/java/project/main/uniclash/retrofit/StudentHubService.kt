@@ -12,6 +12,8 @@ interface StudentHubService {
 
     @GET("/student-hubs/{id}")
     fun getStudentHub(@Path("id") id: Int): Call<StudentHub>
+    @GET("/Student-hubs")
+    fun getStudentHubs(): Call<List<StudentHub>>
     @GET("/item-templates")
     fun getItems(): Call<List<Item>>
 

@@ -51,7 +51,6 @@ import androidx.compose.ui.unit.sp
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.graphics.drawable.toBitmap
-import project.main.uniclash.ui.theme.UniClashTheme
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationCallback
 import com.google.android.gms.location.LocationRequest
@@ -66,13 +65,18 @@ import com.utsman.osmandcompose.rememberMarkerState
 import kotlinx.coroutines.delay
 import org.osmdroid.util.GeoPoint
 import project.main.uniclash.datatypes.Counter
+import project.main.uniclash.datatypes.CritterPic
 import project.main.uniclash.datatypes.CritterUsable
 import project.main.uniclash.datatypes.Locations
 import project.main.uniclash.datatypes.MapSaver
 import project.main.uniclash.datatypes.MapSettings
 import project.main.uniclash.datatypes.MyMarker
 import project.main.uniclash.datatypes.SelectedMarker
+import project.main.uniclash.datatypes.StudentHub
 import project.main.uniclash.retrofit.CritterService
+import project.main.uniclash.retrofit.StudentHubService
+import project.main.uniclash.ui.theme.UniClashTheme
+import project.main.uniclash.viewmodels.StudentHubViewModel
 import project.main.uniclash.viewmodels.UniClashViewModel
 import project.main.uniclash.wildencounter.WildEncounterLogic
 import java.lang.Math.atan2
@@ -415,12 +419,45 @@ class MapActivity : ComponentActivity() {
 
     @Composable
     fun LoadStudentHubs(){
-        if(MapSaver.STUDENTHUB.getMarker() != null){
-            if(!(MapSaver.STUDENTHUB.getMarker()!!.isEmpty()))
-            addListOfMarkers(MapSaver.STUDENTHUB.getMarker()!!)
-        } else {
-            StudenHubs()
+        if(MapSaver.STUDENTHUB.getMarker() == null){
+            MapSaver.STUDENTHUB.setMarker(createStudentHubMarker())
         }
+
+        if(MapSaver.STUDENTHUB.getMarker() != null) {
+
+            addListOfMarkers(MapSaver.STUDENTHUB.getMarker()!!)
+        }
+    }
+
+    @Composable
+    fun createStudentHubMarker(): ArrayList<MyMarker> {
+
+        val context = LocalContext.current
+
+        var studentHubs = StudentHubs(studentHubViewModel)
+
+        var studentHubMarkerList = ArrayList<MyMarker>()
+
+        for(studentHub in studentHubs) {
+
+            val state = rememberMarkerState(geoPoint = GeoPoint(studentHub?.lat!!,
+                studentHub?.lon!!
+            ))
+
+            var myMarker = MyMarker(id = "1",
+                state = state,
+                icon = resizeDrawableTo50x50(context, CritterPic.STUDENTASSISTANCE.getDrawable()),
+                visible = true,
+                title ="${studentHub?.name}",
+                snippet = "Description: ${studentHub?.description}",
+                pic = CritterPic.STUDENTASSISTANCEM.getDrawable(),
+                button = StudentHubActivity::class.java,
+                buttonText = "Go to Hub",
+                studentHub = studentHub)
+
+            studentHubMarkerList.add(myMarker)
+        }
+        return studentHubMarkerList
     }
 
     fun addMarker(marker: MyMarker) {
@@ -661,9 +698,13 @@ class MapActivity : ComponentActivity() {
     }
  //BackendStuff
 
-        val uniClashViewModel: UniClashViewModel by viewModels(factoryProducer = {
-            UniClashViewModel.provideFactory(CritterService.getInstance(this))
-        })
+    val uniClashViewModel: UniClashViewModel by viewModels(factoryProducer = {
+        UniClashViewModel.provideFactory(CritterService.getInstance(this))
+    })
+
+    val studentHubViewModel: StudentHubViewModel by viewModels(factoryProducer = {
+        StudentHubViewModel.provideFactory(StudentHubService.getInstance(this))
+    })
 
     @Composable
     fun WildEncounter(uniClashViewModel: UniClashViewModel):List<CritterUsable?> {
@@ -675,7 +716,11 @@ class MapActivity : ComponentActivity() {
     }
 
     @Composable
-    fun StudenHubs(){
-
+    fun StudentHubs(studentHubViewModel: StudentHubViewModel):List<StudentHub?> {
+        val studentHubsUIState by studentHubViewModel.studentHubs.collectAsState()
+        studentHubViewModel.loadStudentHubs()
+        var studentHubs : List<StudentHub?> = studentHubsUIState.studentHubs
+        println("${studentHubs.size} size in methode")
+        return studentHubs
     }
 }

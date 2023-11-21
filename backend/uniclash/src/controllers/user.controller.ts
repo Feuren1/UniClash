@@ -107,7 +107,7 @@ export class UserController {
     @requestBody({
       content: {
         'application/json': {
-          schema: CredentialsSchema,
+          schema: User,
         },
       },
     })

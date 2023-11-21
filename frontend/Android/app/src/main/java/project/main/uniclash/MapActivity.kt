@@ -243,6 +243,7 @@ class MapActivity : ComponentActivity() {
             ) {
                 // Add markers and other map components here
                 LoadStudentHubs()
+                //TODO not the best location to laod hubs (LoadStudenHubs)
                 markerList.forEach { marker ->
                     val distance = haversineDistance(marker.state.geoPoint.latitude, marker.state.geoPoint.longitude, Locations.USERLOCATION.getLocation().latitude, Locations.USERLOCATION.getLocation().longitude)
                     Log.d(
@@ -457,7 +458,7 @@ class MapActivity : ComponentActivity() {
                 title = "${studentHub?.name}",
                 snippet = "Description: ${studentHub?.description}",
                 pic = R.drawable.store,
-                button =WildEncounterActivity::class.java,
+                button =StudentHubActivity::class.java,
                 buttonText = "Go to Hub",
                 studentHub = studentHub
             )

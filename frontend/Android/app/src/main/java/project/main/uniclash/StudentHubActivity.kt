@@ -26,6 +26,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -82,11 +83,11 @@ fun StudentHubScreen(
     // test list of Items
     //var itemList = List(2) { i -> Item("Item$i", 5) }
 
-    var boughtItemCount by remember { mutableStateOf(0) }
+    var boughtItemCount by rememberSaveable { mutableStateOf(0) }
 
     Column(modifier = modifier) {
 
-//        Text("You have bought $boughtItemCount items.")
+        Text("You have bought $boughtItemCount items.")
 
 //        Button(onClick = {
 //            println("Items: $itemList")
@@ -156,8 +157,8 @@ fun ItemRow(
     Row(modifier = modifier, verticalAlignment = Alignment.CenterVertically) {
 
         Text(modifier = Modifier
-                .weight(1f)
-                .padding(start = 16.dp),
+            .weight(1f)
+            .padding(start = 16.dp),
             text = "$itemName for $itemCost"
         )
 

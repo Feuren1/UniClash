@@ -26,6 +26,10 @@ enum class MapSaver(private var markers: ArrayList<MyMarker>?) {
     fun setMarker(setMarker: ArrayList<MyMarker>?){
         markers = setMarker
     }
+
+    override fun toString(): String {
+        return "MapSaver(markers=$markers)"
+    }
 }
 
 enum class SelectedMarker(private var marker:MyMarker?) {

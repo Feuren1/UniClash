@@ -132,6 +132,11 @@ class MenuActivity : ComponentActivity() {
                 this.startActivity(intent)
                 buttonRequest == 0
             }
+            if(buttonRequest == 2) {
+                val intent = Intent(this, RegisterActivity::class.java)
+                this.startActivity(intent)
+                buttonRequest == 0
+            }
             if(buttonRequest == 3) {
                 val intent = Intent(this, CritterDexActivity::class.java)
                 this.startActivity(intent)

@@ -5,7 +5,7 @@ import {User} from '.';
 export class RefreshToken extends Entity {
   @property({
     type: 'number',
-    id: 1,
+    id: true,
     generated: true,
   })
   id: number;

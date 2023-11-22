@@ -1,5 +1,6 @@
 // Uncomment these imports to begin using these cool features!
 
+import {authenticate} from '@loopback/authentication';
 import {inject} from '@loopback/core';
 import {model, property} from '@loopback/repository';
 import {
@@ -15,7 +16,7 @@ import {UserRepository} from '../repositories';
 import {TokenService} from '../services/token.service';
 import {Credentials} from '../services/user-credential.service';
 import {UserService} from '../services/user.service';
-import {RefreshTokenService, TokenObject, securityId} from '../types';
+import {RefreshTokenService, TokenObject} from '../types';
 
 // Describes the type of grant object taken in by method "refresh"
 type RefreshGrant = {
@@ -58,6 +59,25 @@ const CredentialsSchema: SchemaObject = {
   },
 };
 
+const SignupSchema: SchemaObject = {
+  type: 'object',
+  required: ['email', 'password', 'username'],
+  properties: {
+    email: {
+      type: 'string',
+      format: 'email',
+    },
+    password: {
+      type: 'string',
+      minLength: 8,
+    },
+    username: {
+      type: 'string',
+      minLength: 4,
+    },
+  },
+};
+
 @model()
 export class NewUserRequest extends User {
   @property({
@@ -96,7 +116,7 @@ export class UserController {
         content: {
           'application/json': {
             schema: {
-              'x-ts-type': User,
+              'x-ts-type': SignupSchema,
             },
           },
         },
@@ -107,7 +127,7 @@ export class UserController {
     @requestBody({
       content: {
         'application/json': {
-          schema: CredentialsSchema,
+          schema: SignupSchema,
         },
       },
     })
@@ -163,19 +183,19 @@ export class UserController {
     return {token};
   }
 
-  //@authenticate('jwt')
+  @authenticate('jwt')
   @get('/whoAmI', {
     responses: {
       '200': {
         description: '',
         schema: {
-          type: 'string',
+          type: 'object',
         },
       },
     },
   })
-  async whoAmI(): Promise<string> {
-    return this.user[securityId];
+  async whoAmI(): Promise<MyUserProfile> {
+    return this.user;
   }
   /**
    * A login function that returns refresh token and access token.

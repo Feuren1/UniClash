@@ -2,17 +2,16 @@
 
 ## **Rough Sprint Goals**
 1.Gernal Architecture and Design <br>
-- User Stories<br>
-Must / Should / Could have<br>
 -Connect Front Backend<br>
-- Basic Database Entity, Attributes and Relations for the must have Use Stories<br>
-2.Register / Login / Create Profile / Menu<br>
-3. Core functionality (must have)<br>
-4.”<br>
-5.”<br>
+-Basic Database Entity, Attributes and Relations for the must have Use Stories<br>
+-Split User Stories in Must / Should / Could have<br>
+2.Getting startet you our use cases<br>
+3.Implement Core functionality until week 5 (must have)<br>
+4.Implement User / Trainer”<br>
+5.Finishing Must have User Stories (Core functionality)”<br>
 6.Should have and could have<br>
 7.”<br>
-8.”<br>
+8.” (Chrismas Week)<br>
 
 ## **Our Rules**
 •	Definition of done: When the task is reviewed by another dev and merged into main, the merging must be reviewed too.<br>

@@ -16,14 +16,14 @@ export class StudentHub extends Entity {
   name?: string;
 
   @property({
-    type: 'number',
+    type: 'string',
   })
-  lat?: number;
+  lat?: string;
 
   @property({
-    type: 'number',
+    type: 'string',
   })
-  lon?: number;
+  lon?: string;
 
   @property({
     type: 'string',

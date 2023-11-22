@@ -30,7 +30,12 @@ export class EvolveCritterService {
       studentId: critterToReplace.studentId
     })
 
+    //create new critterAttack based on old but with replaced critterId
     await this.critterAttackRepository.createAll(critterToReplace.critterAttacks.map(attack => ({...attack, critterId: critterEvolved.id})));
+
+
+    await this.critterRepository.deleteById(critterId);
+    await this.critterAttackRepository.deleteAll({critterId: critterId});
 
     return critterEvolved
   }

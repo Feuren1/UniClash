@@ -1,3 +1,5 @@
+package project.main.uniclash
+
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.PendingIntent
@@ -7,7 +9,6 @@ import android.os.Build
 import androidx.core.app.NotificationCompat
 import com.google.firebase.messaging.FirebaseMessagingService
 import com.google.firebase.messaging.RemoteMessage
-import project.main.uniclash.MainActivity
 
 const val channelId = "notification_channel"
 const val channelName = "project.main.uniclash"
@@ -33,7 +34,7 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
         val builder: NotificationCompat.Builder = NotificationCompat.Builder(
             applicationContext, channelId
         )
-            .setSmallIcon(android.R.drawable.ic_dialog_info) // Use a default Android icon
+            .setSmallIcon(android.R.drawable.ic_dialog_info)
             .setContentTitle(title)
             .setContentText(message)
             .setAutoCancel(true)

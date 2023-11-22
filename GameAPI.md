@@ -7,7 +7,8 @@
 | 0  | KnifeDuck           | 0          | 0          | 0           | 0         |0         |0         |0         |0         |MutantDuck
 | 0  | MutantDuck          | 0          | 0          | 0           | 0         |0         |0         |0         |0         |
 | 0  | KnifeTurtle         | 0          | 0          | 0           | 0         |0         |0         |0         |0         |
-| 0  | CoolDuck            | 0          | 0          | 0           | 0         |0         |0         |0         |0         |
+| 0  | CoolDuck            | 0          | 0          | 0           | 0         |0         |0         |0         |0         |CrocodileDuck
+| 0  | CrocodileDuck       | 0          | 0          | 0           | 0         |0         |0         |0         |0         |
 | 0  | DemoMusk            | 0          | 0          | 0           | 0         |0         |0         |0         |0         |Musk
 | 0  | Musk                | 0          | 0          | 0           | 0         |0         |0         |0         |0         |
 | 0  | Mockito             | 0          | 0          | 0           | 0         |0         |0         |0         |0         |
@@ -20,7 +21,6 @@
 | 0  | Nurcracker          | 0          | 0          | 0           | 0         |0         |0         |0         |0         |
 | 0  | EggGivingWoolMilkPig| 0          | 0          | 0           | 0         |0         |0         |0         |0         |
 | 0  | StudentAssistence   | 0          | 0          | 0           | 0         |0         |0         |0         |0         |
-| 0  | CrocodileDuck       | 0          | 0          | 0           | 0         |0         |0         |0         |0         |
 | 0  | string              | 0          | 0          | 0           | 0         |0         |0         |0         |0         |
 
 ## Types<br>

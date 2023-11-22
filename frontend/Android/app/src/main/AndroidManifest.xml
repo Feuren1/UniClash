@@ -5,6 +5,11 @@
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.CAMERA" />
+
+    <uses-feature
+        android:name="android.hardware.camera"
+        android:required="false" />
 
     <application
         android:allowBackup="true"
@@ -18,6 +23,21 @@
         tools:targetApi="31">
 
         <activity
+            android:name=".RegisterActivity"
+            android:exported="false"
+            android:label="@string/title_activity_register"
+            android:theme="@style/Theme.UniClash" />
+        <activity
+            android:name=".CameraActivity"
+            android:exported="false"
+            android:label="@string/title_activity_camera"
+            android:theme="@style/Theme.UniClash" />
+        <activity
+            android:name=".StudentHubActivity"
+            android:exported="false"
+            android:label="@string/title_activity_student_hub"
+            android:theme="@style/Theme.UniClash" />
+        <activity
             android:name=".Battle"
             android:exported="false"
             android:label="@string/title_activity_battle"
@@ -26,6 +46,18 @@
             android:name=".MenuActivity"
             android:exported="false"
             android:label="@string/title_activity_menu"
+            android:noHistory="true"
+            android:theme="@style/Theme.UniClash" />
+        <activity
+            android:name=".CritterListActivity"
+            android:exported="false"
+            android:label="@string/title_activity_critter_list"
+            android:noHistory="true"
+            android:theme="@style/Theme.UniClash" />
+        <activity
+            android:name=".CritterDexActivity"
+            android:exported="false"
+            android:label="@string/title_activity_critter_dex"
             android:noHistory="true"
             android:theme="@style/Theme.UniClash" />
         <activity

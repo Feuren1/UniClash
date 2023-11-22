@@ -11,6 +11,7 @@ import project.main.uniclash.retrofit.CritterService
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import project.main.uniclash.datatypes.CritterTemplate
 import project.main.uniclash.retrofit.enqueue
 
 public data class CritterIdCallback(val success: Boolean, val id: String)
@@ -36,24 +37,42 @@ sealed interface CritterUsableUIState {
     ) : CritterUsableUIState
 }
 
+sealed interface CritterUsablesUIState {
+    data class HasEntries(
+        val critterUsables: List<CritterUsable?>,
+        val isLoading: Boolean,
+    ) : CritterUsablesUIState
+}
+sealed interface CritterTemplatesUIState {
+    data class HasEntries(
+        val critterTemplates: List<CritterTemplate?>,
+        val isLoading: Boolean,
+    ) : CritterTemplatesUIState
+}
+
+
 
 class UniClashViewModel(
     private val critterService: CritterService,
 ) : ViewModel() {
     //TAG for logging
     private val TAG = UniClashViewModel::class.java.simpleName
+
+
     val critters = MutableStateFlow(
         CrittersUIState.HasEntries(
             emptyList(),
             isLoading = false
         )
     )
+
     val critter = MutableStateFlow(
         CritterUIState.HasEntries(
             isLoading = false,
             critter = null
         )
     )
+
     val critterUsable = MutableStateFlow(
         CritterUsableUIState.HasEntries(
             critterUsable = null,
@@ -61,10 +80,24 @@ class UniClashViewModel(
         )
     )
 
+    val critterUsables = MutableStateFlow(
+        CritterUsablesUIState.HasEntries(
+            emptyList(),
+            isLoading = false
+        )
+    )
+
+    val critterTemplates = MutableStateFlow(
+        CritterTemplatesUIState.HasEntries(
+            emptyList(),
+            isLoading = false
+        )
+    )
+
     init {
         viewModelScope.launch {
             Log.d(TAG, "Fetching initial critters data: ")
-            loadCritters()
+            loadCritterUsable(19)
         }
     }
 
@@ -73,11 +106,60 @@ class UniClashViewModel(
             critterUsable.update { it.copy(isLoading = true) }
             try {
                 val response = critterService.getCritterUsable(id).enqueue()
+                Log.d(TAG, "loadCritterUsable: $response")
                 if (response.isSuccessful) {
                     response.body()?.let {
                         critterUsable.update { state ->
                             state.copy(critterUsable = it, isLoading = false)
                         }
+                    }
+                }
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
+        }
+    }
+
+    @SuppressLint("MissingPermission")
+    fun loadCritterUsables(id: Int) {
+        viewModelScope.launch {
+            critterUsables.update { it.copy(isLoading = true) }
+            try {
+                val response = critterService.getCritterUsables(id).enqueue()
+                Log.d(TAG, "loadCrittersUsable: $response")
+                if (response.isSuccessful) {
+                    Log.d(TAG, "loadCrittersUsables: success")
+                    val crittersUsables = response.body()!!
+                    Log.d(TAG, "loadCrittersUsables: $crittersUsables")
+                        critterUsables.update {
+                            it.copy(
+                                critterUsables = crittersUsables,
+                                isLoading = false
+                            )
+                        }
+                }
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
+        }
+    }
+
+    @SuppressLint("MissingPermission")
+    fun loadCritterTemplates() {
+        viewModelScope.launch {
+            critterTemplates.update { it.copy(isLoading = true) }
+            try {
+                val response = critterService.getCrittersTemplates().enqueue()
+                Log.d(TAG, "loadCrittersTemplates: $response")
+                if (response.isSuccessful) {
+                    Log.d(TAG, "loadCrittersTemplates: success")
+                    val crittersTemplates = response.body()!!
+                    Log.d(TAG, "loadCrittersTemplates: $crittersTemplates")
+                    critterTemplates.update {
+                        it.copy(
+                            critterTemplates = crittersTemplates,
+                            isLoading = false
+                        )
                     }
                 }
             } catch (e: Exception) {

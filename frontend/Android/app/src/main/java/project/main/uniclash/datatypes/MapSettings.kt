@@ -3,7 +3,8 @@ package project.main.uniclash.datatypes
 import org.osmdroid.util.GeoPoint
 
 enum class MapSettings(private var selection : Boolean){
-    MOVINGCAMERA(true);
+    MOVINGCAMERA(true),
+    CRITTERBINOCULARS(false);
 
     fun getMapSetting():Boolean{
         return selection
@@ -24,6 +25,10 @@ enum class MapSaver(private var markers: ArrayList<MyMarker>?) {
 
     fun setMarker(setMarker: ArrayList<MyMarker>?){
         markers = setMarker
+    }
+
+    override fun toString(): String {
+        return "MapSaver(markers=$markers)"
     }
 }
 

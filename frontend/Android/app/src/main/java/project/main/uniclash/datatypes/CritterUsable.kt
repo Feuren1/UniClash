@@ -7,7 +7,14 @@ data class CritterUsable(
     val atk: Int,
     val def: Int,
     val spd: Int,
-    val attacks: List<Attack>
+    val attacks: List<Attack>,
+    val critterId : Int,
+    val critterTemplateId : Int,
 ){
-
+    fun reduceHealth(damage: Int) {
+    this.hp.minus(damage)
+	}
+    override fun toString(): String {
+        return "CritterUsable(level=$level, name='$name', hp=$hp, atk=$atk, def=$def, spd=$spd, attacks=$attacks)"
+    }
 }

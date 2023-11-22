@@ -1,40 +1,56 @@
 package project.main.uniclash.battle
 
 import project.main.uniclash.datatypes.Attack
-import project.main.uniclash.datatypes.Critter
+import project.main.uniclash.datatypes.CritterUsable
 
-class BattleLogic(private val playerCritter: Critter, private val cpuCritter: Critter) {
+class BattleLogic(private val playerCritter: CritterUsable?, private val cpuCritter: CritterUsable?) {
 
     private val damageCalculator = DamageCalculator()
-    private var playerTurn = true
-    private var playerWinner = false
+     var playerTurn = false
+     var playerWinner = false
     private var cpuWinner = false
     private var roundCounter = 0
 
     // Max rounds for the battle (you can adjust this)
     private val maxRounds = 10
 
-    fun attack(attack: Attack) {
+
+    fun init(){
+        if(playerCritter!!.spd>cpuCritter!!.spd){
+            playerTurn = true
+        }
+        if (playerCritter!!.spd==cpuCritter!!.spd){
+
+        }
+        else {
+            playerTurn = false
+        }
+    }
+    fun attack(attack: Attack): Int {
         val attacker = if (playerTurn) playerCritter else cpuCritter
         val defender = if (playerTurn) cpuCritter else playerCritter
 
         val damage = damageCalculator.calculateDamage(attack, attacker, defender)
-        defender.reduceHealth(damage)
-
+        defender!!.reduceHealth(damage)
         checkWinner()
         endRound()
+        return damage
     }
 
     fun checkWinner() {
-        if (playerCritter.baseHealth <= 0) {
+        if (playerCritter!!.hp <= 0) {
             playerWinner = true
-        } else if (cpuCritter.baseHealth <= 0) {
+        } else if (cpuCritter!!.hp <= 0) {
             cpuWinner = true
         }
     }
 
     fun switchTurns() {
         playerTurn = !playerTurn
+    }
+
+    fun letCpuAttack(){
+
     }
 
     fun endRound() {
@@ -55,7 +71,7 @@ class BattleLogic(private val playerCritter: Critter, private val cpuCritter: Cr
         } else if (cpuWinner) {
             return BattleResult.CPU_WINS
         } else {
-            return BattleResult.DRAW
+            return BattleResult.NOTOVER
         }
     }
 }

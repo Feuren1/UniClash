@@ -1,3 +1,4 @@
+import {service} from '@loopback/core';
 import {
   repository,
 } from '@loopback/repository';
@@ -12,10 +13,11 @@ import {
   CritterUsable,
 } from '../models';
 import {CritterRepository} from '../repositories';
+import {CritterStatsService} from '../services/critter-stats.service';
 
 export class CritterCritterTemplateController {
-  critterStatsService: any;
   constructor(
+    @service(CritterStatsService) protected critterStatsService: CritterStatsService,
     @repository(CritterRepository)
     public critterRepository: CritterRepository,
   ) { }

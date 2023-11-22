@@ -1,6 +1,6 @@
 // Uncomment these imports to begin using these cool features!
 
-import {TokenService, UserService} from '@loopback/authentication';
+import {authenticate} from '@loopback/authentication';
 import {inject} from '@loopback/core';
 import {model, property} from '@loopback/repository';
 import {
@@ -9,12 +9,13 @@ import {
   post,
   requestBody
 } from '@loopback/rest';
-import {SecurityBindings, securityId} from '@loopback/security';
 import {genSalt, hash} from 'bcryptjs';
-import {RefreshTokenServiceBindings, TokenServiceBindings, UserServiceBindings} from '../keys';
+import {RefreshTokenServiceBindings, SecurityBindings, TokenServiceBindings, UserServiceBindings} from '../keys';
 import {MyUserProfile, User} from '../models';
 import {UserRepository} from '../repositories';
-import {Credentials} from '../services/user.service';
+import {TokenService} from '../services/token.service';
+import {Credentials} from '../services/user-credential.service';
+import {UserService} from '../services/user.service';
 import {RefreshTokenService, TokenObject} from '../types';
 
 // Describes the type of grant object taken in by method "refresh"
@@ -58,6 +59,25 @@ const CredentialsSchema: SchemaObject = {
   },
 };
 
+const SignupSchema: SchemaObject = {
+  type: 'object',
+  required: ['email', 'password', 'username'],
+  properties: {
+    email: {
+      type: 'string',
+      format: 'email',
+    },
+    password: {
+      type: 'string',
+      minLength: 8,
+    },
+    username: {
+      type: 'string',
+      minLength: 4,
+    },
+  },
+};
+
 @model()
 export class NewUserRequest extends User {
   @property({
@@ -96,7 +116,7 @@ export class UserController {
         content: {
           'application/json': {
             schema: {
-              'x-ts-type': User,
+              'x-ts-type': SignupSchema,
             },
           },
         },
@@ -107,16 +127,18 @@ export class UserController {
     @requestBody({
       content: {
         'application/json': {
-          schema: CredentialsSchema,
+          schema: SignupSchema,
         },
       },
     })
     newUserRequest: NewUserRequest,
   ): Promise<User> {
     const password = await hash(newUserRequest.password, await genSalt());
+    console.log("Password:", password);
     delete (newUserRequest as Partial<NewUserRequest>).password;
+    console.log("newUserRequest:", newUserRequest);
     const savedUser = await this.userRepository.create(newUserRequest);
-
+    console.log("User:", savedUser.username, savedUser.email, savedUser.id);
     await this.userRepository.userCredentials(savedUser.id).create({password});
 
     return savedUser;
@@ -161,19 +183,19 @@ export class UserController {
     return {token};
   }
 
-  //@authenticate('jwt')
+  @authenticate('jwt')
   @get('/whoAmI', {
     responses: {
       '200': {
         description: '',
         schema: {
-          type: 'string',
+          type: 'object',
         },
       },
     },
   })
-  async whoAmI(): Promise<string> {
-    return this.user[securityId];
+  async whoAmI(): Promise<MyUserProfile> {
+    return this.user;
   }
   /**
    * A login function that returns refresh token and access token.

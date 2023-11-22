@@ -1,14 +1,13 @@
 // Copyright IBM Corp. and LoopBack contributors 2020. All Rights Reserved.
 // Node module: @loopback/authentication-jwt
 // This file is licensed under the MIT License.
-// License text available at https://opensource.org/licenses/MIT
-
-import {TokenService} from '@loopback/authentication';
+// License text available at https://opensource.org/lic
 import {inject} from '@loopback/core';
 import {HttpErrors} from '@loopback/rest';
-import {securityId, UserProfile} from '@loopback/security';
 import {promisify} from 'util';
 import {TokenServiceBindings} from '../keys';
+import {UserProfile, securityId} from '../types';
+import {TokenService} from './token.service';
 
 const jwt = require('jsonwebtoken');
 const signAsync = promisify(jwt.sign);

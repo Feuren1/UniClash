@@ -14,6 +14,7 @@ import android.os.Looper
 import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.activity.viewModels
 import androidx.annotation.DrawableRes
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -33,6 +34,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -49,24 +51,33 @@ import androidx.compose.ui.unit.sp
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.graphics.drawable.toBitmap
-import project.main.uniclash.ui.theme.UniClashTheme
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationCallback
 import com.google.android.gms.location.LocationRequest
 import com.google.android.gms.location.LocationResult
 import com.google.android.gms.location.LocationServices
+import com.utsman.osmandcompose.CameraState
 import com.utsman.osmandcompose.Marker
+import com.utsman.osmandcompose.MarkerState
 import com.utsman.osmandcompose.OpenStreetMap
 import com.utsman.osmandcompose.rememberCameraState
 import com.utsman.osmandcompose.rememberMarkerState
 import kotlinx.coroutines.delay
 import org.osmdroid.util.GeoPoint
 import project.main.uniclash.datatypes.Counter
+import project.main.uniclash.datatypes.CritterPic
+import project.main.uniclash.datatypes.CritterUsable
 import project.main.uniclash.datatypes.Locations
 import project.main.uniclash.datatypes.MapSaver
 import project.main.uniclash.datatypes.MapSettings
 import project.main.uniclash.datatypes.MyMarker
 import project.main.uniclash.datatypes.SelectedMarker
+import project.main.uniclash.datatypes.StudentHub
+import project.main.uniclash.retrofit.CritterService
+import project.main.uniclash.retrofit.StudentHubService
+import project.main.uniclash.ui.theme.UniClashTheme
+import project.main.uniclash.viewmodels.StudentHubViewModel
+import project.main.uniclash.viewmodels.UniClashViewModel
 import project.main.uniclash.wildencounter.WildEncounterLogic
 import java.lang.Math.atan2
 import java.lang.Math.cos
@@ -94,6 +105,10 @@ class MapActivity : ComponentActivity() {
     private var shouldLoadWildEncounter by mutableStateOf(false)
 
     private var newCritterNotification by mutableStateOf(11)
+
+    private var shouldLoadStudentHubs by mutableStateOf(false)
+    private var shouldInitStudentHubs by mutableStateOf(false)
+    private var alreadyLoadStudentHubs by mutableStateOf(false)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
@@ -152,13 +167,27 @@ class MapActivity : ComponentActivity() {
         }
     }
 
+    lateinit var gpsLocation : MarkerState
+    lateinit var cameraState : CameraState
+    var alreadySetedUpMap = false
+    @Composable
+    fun SettingUpMap() {
+        if(!alreadySetedUpMap)
+         gpsLocation = rememberMarkerState()
+         cameraState = rememberCameraState()
+        alreadySetedUpMap = true
+    }
+
     @Composable
     fun Map() {
         LoadMarkers()
         LoadFirstWildEncounter()
         LoadWildEncounter()
-        var gpsLocation = rememberMarkerState()
-        val cameraState = rememberCameraState()
+        LoadStudentHubs()
+        InitStudentHubMarker()
+
+        SettingUpMap()
+
         LaunchedEffect(Unit) {
             while (true) {
                 val tolerance = 0.0001 //0.0001 before
@@ -174,10 +203,10 @@ class MapActivity : ComponentActivity() {
                     gpsLocation.rotation = calculateDirection(GeoPoint(cameraState.geoPoint.latitude,cameraState.geoPoint.longitude), GeoPoint(mainLatitude,mainLongitude))+270F
                     if (MapSettings.MOVINGCAMERA.getMapSetting()) {
                         cameraState.geoPoint = GeoPoint(mainLatitude, mainLongitude)
-                        cameraState.zoom = 20.5
+                        cameraState.zoom = 20.0
                     } else if (movingCamera == true) {
                         cameraState.geoPoint = GeoPoint(mainLatitude, mainLongitude)
-                        cameraState.zoom = 20.5
+                        cameraState.zoom = 20.0
                         movingCamera = false
                     }
                 }
@@ -192,9 +221,17 @@ class MapActivity : ComponentActivity() {
                 if(Counter.WILDENCOUNTERREFRESHER.getCounter() <1){
                     MapSaver.WILDENCOUNTER.setMarker(null)
                     shouldLoadWildEncounter = true
-                    Counter.WILDENCOUNTERREFRESHER.setCounter(20)
+                    Counter.WILDENCOUNTERREFRESHER.setCounter(60)
                 }
                 newCritterNotification = Counter.WILDENCOUNTERREFRESHER.getCounter()
+
+                shouldLoadStudentHubs = true
+
+                if(MapSaver.STUDENTHUB.getMarker() == null){
+                    shouldInitStudentHubs = true
+                } else if(MapSaver.STUDENTHUB.getMarker()!!.isEmpty()){
+                    shouldInitStudentHubs = true
+                }
             }
         }
 
@@ -207,11 +244,18 @@ class MapActivity : ComponentActivity() {
 
         // Use camera state and location in your OpenStreetMap Composable
         if (!markersLoaded) {
+            var critterVisibility : Int
+            if(MapSettings.CRITTERBINOCULARS.getMapSetting()){
+                critterVisibility = 1000
+            } else {
+                critterVisibility = 250
+            }
+
             OpenStreetMap(
                 modifier = Modifier.fillMaxSize(),
                 cameraState = cameraState
             ) {
-                // Add markers and other map components here
+                // Add markers and other map components here s)
                 markerList.forEach { marker ->
                     val distance = haversineDistance(marker.state.geoPoint.latitude, marker.state.geoPoint.longitude, Locations.USERLOCATION.getLocation().latitude, Locations.USERLOCATION.getLocation().longitude)
                     Log.d(
@@ -223,7 +267,7 @@ class MapActivity : ComponentActivity() {
                         icon = marker.icon,
                         title = marker.title,
                         snippet = marker.snippet,
-                        visible = marker.visible,
+                        visible = if(marker.critterUsable != null && distance > critterVisibility){false}else{marker.visible},
                         id = marker.id,
                     ) {
                         if (distance < 501) {
@@ -277,6 +321,7 @@ class MapActivity : ComponentActivity() {
             }
         }
         NewCrittersAdvice()
+        //WildEncounter(uniClashViewModel = uniClashViewModel)
     }
 
     @Composable
@@ -328,7 +373,6 @@ class MapActivity : ComponentActivity() {
 
     @Composable
     fun NewCrittersAdvice(){
-        println("$newCritterNotification value")
         if(newCritterNotification<11){
             Text(text = "New Critters will spawn soon!",color = Color.Red, fontWeight = FontWeight.Bold)
         }
@@ -357,14 +401,21 @@ class MapActivity : ComponentActivity() {
     }
 
     var alreadyLoaded = false //for LoadWildEncounter firstLoad
+    //@SuppressLint("SuspiciousIndentation")
     @Composable
     fun LoadFirstWildEncounter(){
         if(shouldLoadFirstWildEncounter) {
             if(alreadyLoaded == false) {
                 Log.d(LOCATION_TAG, "Excecuted first loadwildencounter")
-                addListOfMarkers(wildEncounterLogic.initMarkers())
+                var critterUsables = WildEncounter(uniClashViewModel)
+                println("${critterUsables.size} size")
+                    addListOfMarkers(wildEncounterLogic.initMarkers(critterUsables))
                 shouldLoadFirstWildEncounter = false
-                alreadyLoaded = true
+                if(critterUsables.isEmpty()){
+                    Counter.FIRSTSPAWN.setCounter(2)
+                } else {
+                    alreadyLoaded = true
+                }
             }
         }
     }
@@ -372,31 +423,84 @@ class MapActivity : ComponentActivity() {
     @Composable
     fun LoadWildEncounter(){
         if(shouldLoadWildEncounter) {
-                Log.d(LOCATION_TAG, "Excecuted second loadwildencounter")
-                //addListOfMarkers(wildEncounterLogic.initMarkers())
-                //shouldLoadWildEncounter = false
+            Log.d(LOCATION_TAG, "Excecuted second loadwildencounter")
+            //addListOfMarkers(wildEncounterLogic.initMarkers())
+            //shouldLoadWildEncounter = false
             val intent = Intent(this,MapActivity::class.java)
             this.startActivity(intent, null)
         }
     }
 
-    // Methode zum Hinzufügen eines Markers zur Liste und Aktualisieren der Karte
+    @Composable
+    fun LoadStudentHubs(){
+        if(shouldLoadStudentHubs) {
+            println("trying to load student hubs ${MapSaver.STUDENTHUB.getMarker().toString()}")
+            if (MapSaver.STUDENTHUB.getMarker() != null && MapSaver.STUDENTHUB.getMarker()!!
+                    .isNotEmpty() && !alreadyLoadStudentHubs
+            ) {
+                println("executed :( executed :( executed :( executed :( executed :(")
+                alreadyLoadStudentHubs = true
+                addListOfMarkers(MapSaver.STUDENTHUB.getMarker()!!)
+            }else {
+                shouldLoadStudentHubs = false
+            }
+        }
+    }
+
+    @Composable
+    fun InitStudentHubMarker() {
+        if(shouldInitStudentHubs) {
+            val context = LocalContext.current
+            val studentHubs = StudentHubs(studentHubViewModel)
+            var studentHubMarkerList = ArrayList<MyMarker>()
+
+            println("${studentHubs.size} size from the database")
+
+            for (studentHub in studentHubs) {
+                val geoPoint = GeoPoint(studentHub?.lat!!, studentHub?.lon!!)
+
+                val icon: Drawable? by remember {
+                    mutableStateOf(resizeDrawableTo50x50(context, R.drawable.store))
+                }
+
+                val myMarker = MyMarker(
+                    id = "1",
+                    state = MarkerState(geoPoint = geoPoint),
+                    icon = icon,
+                    visible = true,
+                    title = "${studentHub?.name}",
+                    snippet = "${studentHub?.description}",
+                    pic = R.drawable.store,
+                    button = StudentHubActivity::class.java,
+                    buttonText = "Go to Hub",
+                    studentHub = studentHub
+                )
+
+                studentHubMarkerList.add(myMarker)
+            }
+            MapSaver.STUDENTHUB.setMarker(studentHubMarkerList)
+            shouldInitStudentHubs = false
+        }
+    }
+
     fun addMarker(marker: MyMarker) {
-        markerList.add(marker)
-        // Aktualisiere die Karte hier, um den neuen Marker anzuzeigen
-        updateMapMarkers()
+        if(!(markerList.contains(marker))) {
+            markerList.add(marker)
+            updateMapMarkers()
+        }
     }
 
     fun addListOfMarkers(markers: ArrayList<MyMarker>) {
-        if(!markersLoaded!!) {
-            for (marker in markers) {
-                markerList.add(marker)
+        if(!(markerList.containsAll(markers))) {
+            if (!markersLoaded!!) {
+                for (marker in markers) {
+                    markerList.add(marker)
+                }
             }
+            updateMapMarkers()
         }
-        updateMapMarkers()
     }
 
-    // Methode zum Entfernen eines Markers aus der Liste und Aktualisieren der Karte
     fun removeMarker(marker: MyMarker) {
         print("${markerList.size} markers")
         markerList.remove(marker)
@@ -404,7 +508,6 @@ class MapActivity : ComponentActivity() {
         updateMapMarkers()
     }
 
-    // Methode zum Aktualisieren der Karte mit den Markern aus der Liste
     private fun updateMapMarkers() {
         markersLoaded = true
         markersLoaded = false;
@@ -414,7 +517,7 @@ class MapActivity : ComponentActivity() {
         val originalDrawable: Drawable? = context.getDrawable(drawableRes)
 
         val originalBitmap = originalDrawable?.toBitmap()
-        val originalWidth = originalBitmap?.width ?: 1 // Verhindert Division durch Null
+        val originalWidth = originalBitmap?.width ?: 1
         val originalHeight = originalBitmap?.height ?: 1
 
         val scaleRatio = 50.0f / originalHeight.toFloat()
@@ -432,7 +535,7 @@ class MapActivity : ComponentActivity() {
         val originalDrawable: Drawable? = context.getDrawable(drawableRes)
 
         val originalBitmap = originalDrawable?.toBitmap()
-        val originalWidth = originalBitmap?.width ?: 1 // Verhindert Division durch Null
+        val originalWidth = originalBitmap?.width ?: 1
         val originalHeight = originalBitmap?.height ?: 1
 
         val scaleRatio = 60.0f / originalHeight.toFloat()
@@ -446,20 +549,20 @@ class MapActivity : ComponentActivity() {
         return BitmapDrawable(context.resources, scaledBitmap)
     }
 
-    private fun calculateDirection(startpunkt: GeoPoint, zielpunkt: GeoPoint): Float {
-        val dX = zielpunkt.longitude - startpunkt.longitude
-        val dY = zielpunkt.latitude - startpunkt.latitude
+    private fun calculateDirection(startpoint: GeoPoint, endpoint: GeoPoint): Float {
+        val dX = endpoint.longitude - startpoint.longitude
+        val dY = endpoint.latitude - startpoint.latitude
 
         val winkel = Math.toDegrees(atan2(dY, dX)).toFloat()
         return if (winkel < 0) {
-            (winkel + 360) % 360 // Um negative Winkel in positive umzuwandeln
+            (winkel + 360) % 360 // like: *-1
         } else {
             winkel
         }
     }
 
     private fun haversineDistance(lat1: Double, lon1: Double, lat2: Double, lon2: Double): Double {
-        val radius = 6371000 // Radius der Erde in Metern
+        val radius = 6371000 // radius of the earth in meters
 
         val dLat = Math.toRadians(lat2 - lat1)
         val dLon = Math.toRadians(lon2 - lon1)
@@ -535,9 +638,9 @@ class MapActivity : ComponentActivity() {
                      * */
                     for (location in result.locations) {
                         // Update data class with location data
-                            currentUserLocation = LatandLong(location.latitude, location.longitude)
+                        currentUserLocation = LatandLong(location.latitude, location.longitude)
 
-                            Log.d(LOCATION_TAG, "${location.latitude},${location.longitude}")
+                        Log.d(LOCATION_TAG, "${location.latitude},${location.longitude}")
                     }
 
 
@@ -552,8 +655,8 @@ class MapActivity : ComponentActivity() {
                                 val lat = location.latitude
                                 val long = location.longitude
                                 // Update data class with location data
-                                    currentUserLocation =
-                                        LatandLong(latitude = lat, longitude = long)
+                                currentUserLocation =
+                                    LatandLong(latitude = lat, longitude = long)
                             }
                         }
                         .addOnFailureListener {
@@ -620,5 +723,31 @@ class MapActivity : ComponentActivity() {
             Log.e(LOCATION_TAG, "Failed to remove Location Callback.. $se")
         }
     }
+ //BackendStuff
 
+    val uniClashViewModel: UniClashViewModel by viewModels(factoryProducer = {
+        UniClashViewModel.provideFactory(CritterService.getInstance(this))
+    })
+
+    val studentHubViewModel: StudentHubViewModel by viewModels(factoryProducer = {
+        StudentHubViewModel.provideFactory(StudentHubService.getInstance(this))
+    })
+
+    @Composable
+    fun WildEncounter(uniClashViewModel: UniClashViewModel):List<CritterUsable?> {
+        val uniClashUiStateCritterUsables by uniClashViewModel.critterUsables.collectAsState()
+        uniClashViewModel.loadCritterUsables(1)
+        var critterUsables : List<CritterUsable?> = uniClashUiStateCritterUsables.critterUsables
+        println("${critterUsables.size} size in methode")
+        return critterUsables
+    }
+
+    @Composable
+    fun StudentHubs(studentHubViewModel: StudentHubViewModel):List<StudentHub?> {
+        val studentHubsUIState by studentHubViewModel.studentHubs.collectAsState()
+        studentHubViewModel.loadStudentHubs()
+        var studentHubs : List<StudentHub?> = studentHubsUIState.studentHubs
+        println("${studentHubs.size} size in methode")
+        return studentHubs
+    }
 }

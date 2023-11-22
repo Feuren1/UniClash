@@ -20,4 +20,5 @@ export * from './item-template.controller';
 export * from './item.controller';
 export * from './student-critter.controller';
 export * from './student.controller';
-
+export * from './student-user.controller';
+export * from './user-student.controller';

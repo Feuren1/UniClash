@@ -1,3 +1,4 @@
+import {service} from '@loopback/core';
 import {
   Count,
   CountSchema,
@@ -7,24 +8,26 @@ import {
   Where,
 } from '@loopback/repository';
 import {
-  post,
-  param,
+  del,
   get,
   getModelSchemaRef,
+  param,
   patch,
+  post,
   put,
-  del,
   requestBody,
   response,
 } from '@loopback/rest';
 import {Critter} from '../models';
 import {CritterRepository} from '../repositories';
+import {EvolveCritterService} from '../services';
 
 export class CritterController {
   constructor(
+    @service(EvolveCritterService) protected evolveCritterService: EvolveCritterService,
     @repository(CritterRepository)
-    public critterRepository : CritterRepository,
-  ) {}
+    public critterRepository: CritterRepository,
+  ) { }
 
   @post('/critters')
   @response(200, {
@@ -147,4 +150,25 @@ export class CritterController {
   async deleteById(@param.path.number('id') id: number): Promise<void> {
     await this.critterRepository.deleteById(id);
   }
+
+  @get('/critters/{id}/evolve', {
+    responses: {
+      '200': {
+        description: 'Calculate and return CritterUsable for all critters of a student',
+        content: {
+          'application/json': {
+            schema: getModelSchemaRef(Critter), // Use CritterUsable schema
+          },
+        },
+      },
+    },
+  })
+  async calculateCritterUsable(
+    @param.path.number('id') id: number,
+  ): Promise<Critter> {
+    return this.evolveCritterService.evolveCritter(id);
+  }
+
+
+
 }

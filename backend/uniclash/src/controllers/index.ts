@@ -22,3 +22,4 @@ export * from './student-critter.controller';
 export * from './student.controller';
 
 export * from './type.controller';
+export * from './critter-template-critter-template.controller';

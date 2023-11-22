@@ -11,15 +11,13 @@ export class EvolveCritterService {
     @repository(CritterAttackRepository) protected critterAttackRepository: CritterAttackRepository,
     @repository(AttackRepository) protected attackRepository: AttackRepository,
     @repository(StudentRepository) protected studentRepository: StudentRepository,
-    //@inject('services.CritterStatsService') // Inject the CritterStatsService
-    protected evolveCritterService: EvolveCritterService,
   ) { }
 
   async evolveCritter(critterId: number): Promise<Critter> {
     const critterToReplace: Critter = await this.critterRepository.findById(critterId, {
       include: ['critterTemplate', 'student', 'critterAttacks'],
     })
-    const critterTemplateFromToReplace: CritterTemplate = await this.critterTemplateRepository.findById(critterId, {
+    const critterTemplateFromToReplace: CritterTemplate = await this.critterTemplateRepository.findById(critterToReplace.critterTemplateId, {
       include: ['evolvesInto'],
     })
     if (critterTemplateFromToReplace.evolvesIntoTemplateId === undefined) {
@@ -34,7 +32,10 @@ export class EvolveCritterService {
     })
 
     //create new critterAttack based on old but with replaced critterId
-    await this.critterAttackRepository.createAll(critterToReplace.critterAttacks.map(attack => ({...attack, critterId: critterEvolved.id})));
+    await this.critterAttackRepository.createAll(critterToReplace.critterAttacks.map(attack => ({
+      ...attack, critterId: critterEvolved.id,
+      id: undefined,
+    })));
 
 
     await this.critterRepository.deleteById(critterId);

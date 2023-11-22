@@ -163,7 +163,7 @@ export class CritterController {
       },
     },
   })
-  async calculateCritterUsable(
+  async evolveCritter(
     @param.path.number('id') id: number,
   ): Promise<Critter> {
     return this.evolveCritterService.evolveCritter(id);

@@ -25,8 +25,8 @@ enum class CritterPic(private val drawableResId: Int) {
     COOLDUCKM(R.drawable.coolduckm),
     BORZOI(R.drawable.borzoi),
     BORZOIM(R.drawable.borzoim),
-    PIKATCHU(R.drawable.pikatchu),
-    PIKATCHUM(R.drawable.pikatchum),
+    PIKACHU(R.drawable.pikatchu),
+    PIKACHUM(R.drawable.pikatchum),
     MATRYOSHKA(R.drawable.matryoshka),
     MATRYOSHKAM(R.drawable.matryoshkam),
     NUTCRACKER(R.drawable.nutcracker),
@@ -79,7 +79,7 @@ enum class CritterPic(private val drawableResId: Int) {
             return BORZOI.getDrawable()
         }
         if(searchTerm.equals("PIKATCHU")){
-            return PIKATCHU.getDrawable()
+            return PIKACHU.getDrawable()
         }
         if(searchTerm.equals("EGGGIVINGWOOLMILKPIG")){
             return EGGGIVINGWOOLMILKPIG.getDrawable()
@@ -137,7 +137,7 @@ enum class CritterPic(private val drawableResId: Int) {
             return BORZOIM.getDrawable()
         }
         if(searchTerm.equals("PIKATCHUM")){
-            return PIKATCHUM.getDrawable()
+            return PIKACHUM.getDrawable()
         }
         if(searchTerm.equals("EGGGIVINGWOOLMILKPIGM")){
             return EGGGIVINGWOOLMILKPIGM.getDrawable()

@@ -1,10 +1,11 @@
-import {inject, Getter} from '@loopback/core';
-import {DefaultCrudRepository, repository, HasManyRepositoryFactory} from '@loopback/repository';
+import {Getter, inject} from '@loopback/core';
+import {BelongsToAccessor, DefaultCrudRepository, HasManyRepositoryFactory, repository} from '@loopback/repository';
 import {DbDataSource} from '../datasources';
-import {Student, StudentRelations, Critter, Arena, Item} from '../models';
-import {CritterRepository} from './critter.repository';
+import {Arena, Critter, Item, Student, StudentRelations, User} from '../models';
 import {ArenaRepository} from './arena.repository';
+import {CritterRepository} from './critter.repository';
 import {ItemRepository} from './item.repository';
+import {UserRepository} from './user.repository';
 
 export class StudentRepository extends DefaultCrudRepository<
   Student,
@@ -18,8 +19,9 @@ export class StudentRepository extends DefaultCrudRepository<
 
   public readonly items: HasManyRepositoryFactory<Item, typeof Student.prototype.id>;
 
+  public readonly user: BelongsToAccessor<User, typeof Student.prototype.id>;
   constructor(
-    @inject('datasources.db') dataSource: DbDataSource, @repository.getter('CritterRepository') protected critterRepositoryGetter: Getter<CritterRepository>, @repository.getter('ArenaRepository') protected arenaRepositoryGetter: Getter<ArenaRepository>, @repository.getter('ItemRepository') protected itemRepositoryGetter: Getter<ItemRepository>,
+    @inject('datasources.db') dataSource: DbDataSource, @repository.getter('CritterRepository') protected critterRepositoryGetter: Getter<CritterRepository>, @repository.getter('ArenaRepository') protected arenaRepositoryGetter: Getter<ArenaRepository>, @repository.getter('ItemRepository') protected itemRepositoryGetter: Getter<ItemRepository>, @repository.getter('UserRepository') protected userRepositoryGetter: Getter<UserRepository>,
   ) {
     super(Student, dataSource);
     this.items = this.createHasManyRepositoryFactoryFor('items', itemRepositoryGetter,);
@@ -28,5 +30,7 @@ export class StudentRepository extends DefaultCrudRepository<
     this.registerInclusionResolver('arenas', this.arenas.inclusionResolver);
     this.critters = this.createHasManyRepositoryFactoryFor('critters', critterRepositoryGetter,);
     this.registerInclusionResolver('critters', this.critters.inclusionResolver);
+    this.user = this.createBelongsToAccessorFor('user', userRepositoryGetter,);
+    this.registerInclusionResolver('user', this.user.inclusionResolver);
   }
 }

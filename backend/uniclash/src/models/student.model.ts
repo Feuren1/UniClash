@@ -1,7 +1,8 @@
-import {Entity, hasMany, model, property} from '@loopback/repository';
-import {Critter} from './critter.model';
+import {Entity, belongsTo, hasMany, model, property} from '@loopback/repository';
 import {Arena} from './arena.model';
+import {Critter} from './critter.model';
 import {Item} from './item.model';
+import {User} from './user.model';
 
 @model()
 export class Student extends Entity {
@@ -47,6 +48,8 @@ export class Student extends Entity {
 
   @hasMany(() => Item)
   items: Item[];
+  @belongsTo(() => User)
+  userId: string;
 
   constructor(data?: Partial<Student>) {
     super(data);

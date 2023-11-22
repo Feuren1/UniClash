@@ -142,7 +142,7 @@ class StudentHubViewModel(
             }
         }
     }
-    
+
 
     fun buyItem(itemTemplateId: Int) {
 

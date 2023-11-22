@@ -63,24 +63,21 @@ class StudentHubActivity : ComponentActivity() {
 }
 
 @Composable
-fun StudentHubScreen(
-    modifier: Modifier = Modifier,
-    studentHubViewModel: StudentHubViewModel = viewModel()
-) {
+fun StudentHubScreen(modifier: Modifier = Modifier,
+    studentHubViewModel: StudentHubViewModel = viewModel()) {
 
     var context = LocalContext.current
 
-    val studentHubsState by studentHubViewModel.studentHubs.collectAsState()
-    studentHubViewModel.loadStudentHubs()
+//    val studentHubsState by studentHubViewModel.studentHubs.collectAsState()
+//    studentHubViewModel.loadStudentHubs()
+//    var studentHubList = studentHubsState.studentHubs
 
     val itemTemplatesHubState by studentHubViewModel.itemTemplates.collectAsState()
     studentHubViewModel.loadItemTemplates()
-
-    var studentHubList = studentHubsState.studentHubs
     var itemTemplateList = itemTemplatesHubState.itemTemplates
 
     // test list of Items
-    //var itemList = List(2) { i -> Item("Item$i", 5) }
+//    var itemTemplateList = List(20) { i -> ItemTemplate(i,"Item${i + 1}", 5) }
 
     var boughtItemName by rememberSaveable { mutableStateOf("Nothing") }
 
@@ -90,7 +87,7 @@ fun StudentHubScreen(
 
         Button(onClick = {
             println("Items: $itemTemplateList")
-            println("StudentHubs: $studentHubList")
+//            println("StudentHubs: $studentHubList")
             }) {
             Text(text = "Debug")
         }
@@ -172,37 +169,3 @@ fun ItemRow(
         }
     }
 }
-
-//@Composable
-//fun StatefulCounter(modifier: Modifier = Modifier) {
-//    var count by rememberSaveable { mutableStateOf(0) }
-//    StatelessCounter(
-//        count = count,
-//        onIncrement = { count++ },
-//        modifier = modifier
-//    )
-//}
-//
-//@Composable
-//fun StatelessCounter(count: Int, onIncrement: () -> Unit, modifier: Modifier = Modifier) {
-//    Column(modifier = modifier.padding(16.dp)) {
-//        if (count > 0) {
-//            Text("You have bought $count items.")
-//        }
-//        Button(
-//            onClick = onIncrement,
-//            enabled = count < 10,
-//            modifier = Modifier.padding(top = 8.dp)
-//        ) {
-//            Text("Add one")
-//        }
-//    }
-//}
-
-//@Preview(showBackground = true)
-//@Composable
-//fun GreetingPreview() {
-//    UniClashTheme {
-//        StudentHub()
-//    }
-//}

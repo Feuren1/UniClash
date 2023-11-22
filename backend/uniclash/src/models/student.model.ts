@@ -1,5 +1,7 @@
-import {Entity, hasMany, model, property, belongsTo} from '@loopback/repository';
+import {Entity, belongsTo, hasMany, model, property} from '@loopback/repository';
+import {Arena} from './arena.model';
 import {Critter} from './critter.model';
+import {Item} from './item.model';
 import {User} from './user.model';
 
 @model()
@@ -41,6 +43,11 @@ export class Student extends Entity {
   @hasMany(() => Critter)
   critters: Critter[];
 
+  @hasMany(() => Arena)
+  arenas: Arena[];
+
+  @hasMany(() => Item)
+  items: Item[];
   @belongsTo(() => User)
   userId: string;
 

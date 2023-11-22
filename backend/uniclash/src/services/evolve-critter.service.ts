@@ -22,6 +22,9 @@ export class EvolveCritterService {
     const critterTemplateFromToReplace: CritterTemplate = await this.critterTemplateRepository.findById(critterId, {
       include: ['evolvesInto'],
     })
+    if (critterTemplateFromToReplace.evolvesIntoTemplateId === undefined) {
+      return critterToReplace
+    }
     const critterTemplateToCreateNew: CritterTemplate = await this.critterTemplateRepository.findById(critterTemplateFromToReplace.evolvesIntoTemplateId)
 
     const critterEvolved: Critter = await this.critterRepository.create({

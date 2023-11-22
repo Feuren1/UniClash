@@ -1,5 +1,7 @@
 import {Entity, hasMany, model, property} from '@loopback/repository';
 import {Critter} from './critter.model';
+import {Arena} from './arena.model';
+import {Item} from './item.model';
 
 @model()
 export class Student extends Entity {
@@ -39,6 +41,12 @@ export class Student extends Entity {
 
   @hasMany(() => Critter)
   critters: Critter[];
+
+  @hasMany(() => Arena)
+  arenas: Arena[];
+
+  @hasMany(() => Item)
+  items: Item[];
 
   constructor(data?: Partial<Student>) {
     super(data);

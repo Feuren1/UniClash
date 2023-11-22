@@ -22,3 +22,7 @@ export * from './student-critter.controller';
 export * from './student.controller';
 
 export * from './type.controller';
+export * from './arena-student.controller';
+export * from './student-arena.controller';
+export * from './item-student.controller';
+export * from './student-item.controller';

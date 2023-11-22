@@ -17,7 +17,6 @@ import {
 } from '@loopback/rest';
 import {
   CritterTemplate,
-  CritterTemplate,
 } from '../models';
 import {CritterTemplateRepository} from '../repositories';
 

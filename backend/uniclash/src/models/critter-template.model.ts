@@ -1,6 +1,5 @@
-import {Entity, hasMany, model, property, hasOne} from '@loopback/repository';
+import {Entity, hasMany, hasOne, model, property} from '@loopback/repository';
 import {Critter} from './critter.model';
-import {CritterTemplate} from './critter-template.model';
 
 @model()
 export class CritterTemplate extends Entity {

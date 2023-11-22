@@ -129,4 +129,22 @@ export class StudentCritterController {
   ): Promise<CritterUsable[]> {
     return this.studentCritterService.createCritterUsableListOnStudentId(id);
   }
+
+  @get('/usables', {
+    responses: {
+      '200': {
+        description: 'Calculate and return CritterUsable of all critters',
+        content: {
+          'application/json': {
+            schema: getModelSchemaRef(CritterUsable), // Use CritterUsable schema
+          },
+        },
+      },
+    },
+  })
+  async calculateAllCritterUsable(
+    @param.path.number('id') id: number,
+  ): Promise<CritterUsable[]> {
+    return this.studentCritterService.createCritterUsableListOfAll();
+  }
 }

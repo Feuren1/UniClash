@@ -12,6 +12,10 @@ interface ArenaService {
     @GET ("/arenas/{id}")
     fun getArenas(@Path("id")id : Int): Call<Arena>
 
+    @GET ("/arenas")
+    fun getArenas() : Call <List<Arena>>
+
+
 
     companion object {
         private var arenaService: ArenaService? = null

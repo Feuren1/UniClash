@@ -10,7 +10,14 @@ import kotlinx.coroutines.launch
 import project.main.uniclash.datatypes.Arena
 import project.main.uniclash.retrofit.ArenaService
 import project.main.uniclash.retrofit.enqueue
-import retrofit2.http.Tag
+
+
+sealed interface ArenasUIState{
+    data class HasEntries(
+        val arenas: List<Arena>?,
+        val isLoading: Boolean,
+    ): ArenasUIState
+}
 
 
 sealed interface ArenaUIState {
@@ -22,10 +29,11 @@ sealed interface ArenaUIState {
 
 class ArenaViewModel(
     private val arenaService: ArenaService
-
-
 ) : ViewModel(){
+
     private val TAG = ArenaViewModel::class.java.simpleName
+
+
     val arena = MutableStateFlow(
         ArenaUIState.HasEntries(
             arena = null,
@@ -33,10 +41,38 @@ class ArenaViewModel(
         )
     )
 
-    init {
-    loadArena(1)
-    }
+    val arenas = MutableStateFlow(
+        ArenasUIState.HasEntries(
+            arenas = null,
+            isLoading = false,
+        )
+    )
 
+    init {
+        loadArena(5)
+    loadArenas()
+
+    }
+    fun loadArenas(){
+        viewModelScope.launch {
+            arenas.update {it.copy(isLoading = true)  }
+            try {
+                val response = arenaService.getArenas().enqueue()
+                Log.d(TAG, "LoadAllArenas: $response")
+                if (response.isSuccessful) {
+                    Log.d(TAG, "Success: ${response.body()}")
+                    response.body().let {
+                        arenas.update { state ->
+                            state.copy(arenas = it, isLoading = false)
+                        }
+
+                    }
+                }
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
+        }
+    }
     fun loadArena(id : Int){
         viewModelScope.launch {
             arena.update {it.copy(isLoading = true)  }

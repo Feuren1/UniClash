@@ -2,6 +2,7 @@ package project.main.uniclash.retrofit
 
 import android.content.Context
 import project.main.uniclash.datatypes.Item
+import project.main.uniclash.datatypes.ItemTemplate
 import project.main.uniclash.datatypes.StudentHub
 import retrofit2.Call
 import retrofit2.create
@@ -15,6 +16,8 @@ interface StudentHubService {
     @GET("/student-hubs")
     fun getStudentHubs(): Call<List<StudentHub>>
     @GET("/item-templates")
+    fun getItemTemplates(): Call<List<ItemTemplate>>
+    @GET("/items")
     fun getItems(): Call<List<Item>>
 
     companion object {

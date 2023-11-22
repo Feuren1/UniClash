@@ -2,9 +2,11 @@ package project.main.uniclash.datatypes
 
 data class Item(
     val name: String,
-    val cost: Int
+    val quantity: Double,
+    val itemTemplateId: Int,
 ){
+
     override fun toString(): String {
-        return ("Item name: $name, cost: $cost")
+        return "Item(name='$name', quantity=$quantity, itemTemplateId=$itemTemplateId)"
     }
 }

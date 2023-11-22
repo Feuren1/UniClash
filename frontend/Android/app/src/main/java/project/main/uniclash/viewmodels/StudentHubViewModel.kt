@@ -7,7 +7,7 @@ import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import project.main.uniclash.datatypes.Item
+import project.main.uniclash.datatypes.ItemTemplate
 import project.main.uniclash.datatypes.StudentHub
 import project.main.uniclash.retrofit.StudentHubService
 import project.main.uniclash.retrofit.enqueue
@@ -28,11 +28,11 @@ sealed interface StudentHubsUIState {
     ) : StudentHubsUIState
 }
 
-sealed interface ItemUIState {
+sealed interface ItemTemplatesUIState {
     data class HasEntries(
-        val items: List<Item>,
+        val itemTemplates: List<ItemTemplate>,
         val isLoading: Boolean,
-    ) : ItemUIState
+    ) : ItemTemplatesUIState
 }
 
 class StudentHubViewModel(
@@ -54,8 +54,8 @@ class StudentHubViewModel(
         )
     )
 
-    val items = MutableStateFlow(
-        ItemUIState.HasEntries(
+    val itemTemplates = MutableStateFlow(
+        ItemTemplatesUIState.HasEntries(
             emptyList(),
             isLoading = false
         )
@@ -64,7 +64,7 @@ class StudentHubViewModel(
     init {
         viewModelScope.launch {
             Log.d(TAG, "Fetching initial studentHub data: ")
-            loadItems()
+            loadItemTemplates()
         }
     }
 
@@ -117,36 +117,37 @@ class StudentHubViewModel(
     }
 
     //loads all itemTemplates inside the database
-    fun loadItems() {
+    fun loadItemTemplates() {
         viewModelScope.launch {
-            items.update { it.copy(isLoading = true) }
+            itemTemplates.update { it.copy(isLoading = true) }
             try {
-                val response = studentHubService.getItems().enqueue()
-                Log.d(TAG, "loadItems: $response")
+                val response = studentHubService.getItemTemplates().enqueue()
+                Log.d(TAG, "loadItemTemplates: $response")
                 if (response.isSuccessful) {
-                    Log.d(TAG, "loadItems: success")
+                    Log.d(TAG, "loadItemTemplates: success")
                     //creates an item list based on the fetched data
-                    val items = response.body()!!
-                    Log.d(TAG, "loadItems: $items")
+                    val itemTemplates = response.body()!!
+                    Log.d(TAG, "loadItemTemplates: $itemTemplates")
                     //replaces the critters list inside the UI state with the fetched data
-                    this@StudentHubViewModel.items.update {
+                    this@StudentHubViewModel.itemTemplates.update {
                         it.copy(
-                            items = items,
+                            itemTemplates = itemTemplates,
                             isLoading = false
                         )
                     }
                 }
             } catch (e: Exception) {
-                Log.e(TAG, "items: error")
+                Log.e(TAG, "itemTemplate: error")
                 e.printStackTrace()
             }
         }
     }
+    
 
-    fun buyItem() {
+    fun buyItem(itemTemplateId: Int) {
 
-        println("Buy button was pressed")
-        //TODO: buying stuff logic
+        println("Buy button was pressed in the ViewModel")
+
     }
 
     companion object {

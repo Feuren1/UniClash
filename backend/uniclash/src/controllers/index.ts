@@ -21,3 +21,4 @@ export * from './item.controller';
 export * from './student-critter.controller';
 export * from './student.controller';
 
+export * from './type.controller';

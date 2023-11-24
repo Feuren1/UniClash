@@ -1,4 +1,4 @@
-import {Entity, hasMany, model, property} from '@loopback/repository';
+import {Entity, hasMany, hasOne, model, property} from '@loopback/repository';
 import {Critter} from './critter.model';
 
 @model()
@@ -42,6 +42,14 @@ export class CritterTemplate extends Entity {
 
   @hasMany(() => Critter)
   critters: Critter[];
+
+  @hasOne(() => CritterTemplate, {keyTo: 'evolvesIntoTemplateId'})
+  evolvesInto: CritterTemplate;
+
+  @property({
+    type: 'number',
+  })
+  evolvesIntoTemplateId?: number;
 
   constructor(data?: Partial<CritterTemplate>) {
     super(data);

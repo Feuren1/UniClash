@@ -3,27 +3,28 @@
 ## Critters<br>
 | id | name                | baseHealth | baseAttack | baseDefence | baseSpeed |Evolution            |Evolves at|type      |
 |----|---------------------|------------|------------|-------------|-----------|---------------------|----------|----------|
-| 0  | PRC2Duck            | 0          | 0          | 0           |0         |KnifeDuck            |20        |          |
-| 0  | KnifeDuck           | 0          | 0          | 0           |0         |MutantDuck           |40        |          |
-| 0  | MutantDuck          | 0          | 0          | 0           |0         |                     |          |          |
-| 0  | KnifeTurtle         | 0          | 0          | 0           |0         |                     |          |          |
-| 0  | CoolDuck            | 0          | 0          | 0           |0         |CrocodileDuck        |25        |          |
-| 0  | CrocodileDuck       | 0          | 0          | 0           |0         |                     |          |          |
-| 0  | DemoMusk            | 0          | 0          | 0           | 0        |Musk                 |25        |          |
-| 0  | Musk                | 0          | 0          | 0           | 0        |                     |          |          |
-| 0  | Mockito             | 0          | 0          | 0           | 0        |                     |          |          |
-| 0  | QuizizzDragon       | 0          | 0          | 0           | 0        |                     |          |          |
-| 0  | Fontys              | 0          | 0          | 0           | 0        |                     |          |          |
-| 0  | LinuxPingiun        | 0          | 0          | 0           | 0        |                     |          |          |
-| 0  | Borzoi              | 0          | 0          | 0           | 0        |                     |          |          |
-| 0  | Pikachu             | 0          | 0          | 0           | 0        |                     |          |          |
-| 0  | Matryoshka          | 0          | 0          | 0           | 0        |                     |          |          |
-| 0  | Nutcracker          | 0          | 0          | 0           | 0        |                     |          |          |
-| 0  | EggGivingWoolMilkPig| 0          | 0          | 0           | 0        |                     |          |          |
-| 0  | StudentAssistence   | 0          | 0          | 0           | 0        |                     |          |          |
-| 1  | Charmander          | 39         | 52         | 43          | 65       |Charmeleon           |16        |          |
-| 2  | Charmeleon          | 58         | 64         | 58          | 80       |Charizard            |36        |          |
-| 23 | Charizard           | 78         | 84         | 78          | 100      |                     |          |          |
+| 0  | PRC2Duck            | 41         | 64         | 45          | 50        |KnifeDuck            |20        |          |
+| 0  | KnifeDuck           | 61         | 84         | 65          | 70        |MutantDuck           |40        |          |
+| 0  | MutantDuck          | 91         | 134        | 95          | 80        |                     |          |          |
+| 0  | KnifeTurtle         | 200        | 45         | 10          | 40        |                     |          |          |
+| 0  | CoolDuck            | 20         | 10         | 55          | 80        |CrocodileDuck        |50        |          |
+| 0  | CrocodileDuck       | 95         | 125        | 79          | 81        |                     |          |          |
+| 0  | DemoMusk            | 40         | 50         | 40          | 90        |Musk                 |25        |          |
+| 0  | Musk                | 90         | 95         | 95          | 70        |                     |          |          |
+| 0  | Mockito             | 48         | 48         | 48          | 48        |                     |          |          |
+| 0  | QuizizzDragon       | 80         | 105        | 65          | 130       |                     |          |          |
+| 0  | LinuxPingiun        | 50         | 95         | 180         | 70        |                     |          |          |
+| 0  | Borzoi              | 90         | 65         | 65          | 15        |                     |          |          |
+| 0  | Pikachu             | 35         | 55         | 40          | 90        |                     |          |          |
+| 0  | Matryoshka          | 35         | 100        | 50          | 120       |                     |          |          |
+| 0  | Nutcracker          | 70         | 84         | 70          | 51        |                     |          |          |
+| 0  | EggGivingWoolMilkPig| 90         | 65         | 65          | 15        |                     |          |          |
+| 0  | StudentAssistence   | 100        | 100        | 100         | 100       |                     |          |          |
+| 1  | Charmander          | 39         | 52         | 43          | 65        |Charmeleon           |16        |          |
+| 2  | Charmeleon          | 58         | 64         | 58          | 80        |Charizard            |36        |          |
+| 23 | Charizard           | 78         | 84         | 78          | 100       |                     |          |          |
+| 24 | Snorlax             | 160        | 110        | 65          | 30        |                     |          |          |
+| 0  | Fontys              | 80         | 130        | 100         | 110       |                     |          |          |
 
 ## Types<br>
 |name     |
@@ -51,7 +52,8 @@
 
 
 ## Effectivness<br>
-|Type1    |Type2     |effectivness value| //0.5 or 1 or 2
+//0.5 or 1 or 2
+|Type1    |Type2     |effectivness value| 
 |---------|----------|------------------|
 |Java     |
 |Linux    |

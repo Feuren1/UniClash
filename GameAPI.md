@@ -39,6 +39,16 @@
 
 ## Attacks<br>
 |id|name|type|attack value|
+|----|---------------|-----------|--------------|
+| 1  | Growl         |           | 20           |
+| 2  | Ember         |           | 50           |
+| 3  | QuickAttack   |           | 45           |
+| 4  | Tackle        | Normal    | 45           |
+| 5  | Zap Connon    | Electric  | 120          |
+| 6  | Volt Tackle   | Electric  | 100          |
+| 7  | Double Shock  | Electric  | 110          |
+| 8  | Blizzard      | Ice       | 110          |
+
 
 ## Effectivness<br>
 |Type1    |Type2     |effectivness value| //0.5 or 1 or 2

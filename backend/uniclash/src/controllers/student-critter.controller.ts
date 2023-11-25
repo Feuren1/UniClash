@@ -23,11 +23,13 @@ import {
 } from '../models';
 import {StudentRepository} from '../repositories';
 import {StudentCritterService} from '../services/student-critter.service';
+import {CatchCritterService} from "../services/catch-critter.service";
 
 export class StudentCritterController {
   constructor(
     @service(StudentCritterService) protected studentCritterService: StudentCritterService,
     @repository(StudentRepository) protected studentRepository: StudentRepository,
+    @service(CatchCritterService) protected catchCritterService : CatchCritterService,
   ) { }
 
   @get('/students/{id}/critters', {
@@ -128,5 +130,50 @@ export class StudentCritterController {
     @param.path.number('id') id: number,
   ): Promise<CritterUsable[]> {
     return this.studentCritterService.createCritterUsableListOnStudentId(id);
+  }
+
+  @get('/usables', {
+    responses: {
+      '200': {
+        description: 'Calculate and return CritterUsable of all critters',
+        content: {
+          'application/json': {
+            schema: getModelSchemaRef(CritterUsable), // Use CritterUsable schema
+          },
+        },
+      },
+    },
+  })
+  async calculateAllCritterUsable(
+    @param.path.number('id') id: number,
+  ): Promise<CritterUsable[]> {
+    return this.studentCritterService.createCritterUsableListOfAll();
+  }
+
+  @post('/students/{studentId}/critters/{critterId}/catchCritter', {
+    responses: {
+      '200': {
+        description: 'Adds a newly caught critter to the student',
+        content: {'application/json': {schema: getModelSchemaRef(Critter)}},
+      },
+    },
+  })
+  async catchCritter(
+      @param.path.number('studentId') studentId: typeof Student.prototype.id,
+      @param.path.number('critterId') critterId: typeof Critter.prototype.id,
+      @requestBody({
+        content: {
+          'application/json': {
+            schema: getModelSchemaRef(Critter, {
+              title: 'NewCritterInStudent',
+              exclude: ['id'],
+              optional: ['studentId']
+            }),
+          },
+        },
+      }) critter: Omit<Critter, 'id'>,
+  ): Promise<CritterUsable> {
+    return this.catchCritterService.createCopyOfCritter(studentId,
+        critterId);
   }
 }

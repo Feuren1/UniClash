@@ -1,5 +1,6 @@
 package project.main.uniclash
 
+import android.content.Intent
 import android.media.MediaPlayer
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -60,6 +61,8 @@ import project.main.uniclash.retrofit.CritterService
 import project.main.uniclash.viewmodels.BattleViewModel
 
 class Battle : ComponentActivity() {
+
+    private var exitRequest by mutableStateOf(false)
     //TODO Rename into BattleActivity
     private var mediaPlayer: MediaPlayer? = null
     private val battleViewModel by viewModels<BattleViewModel> {
@@ -87,9 +90,37 @@ class Battle : ComponentActivity() {
                     var playerCritter = battleViewPlayerUIState.playerCritter
                     val battleViewcpuCritterUIState by battleViewModel.cpuCritter.collectAsState()
                     var cpuCritter = battleViewcpuCritterUIState.cpuCritter
-                    if(playerCritter!=null&&cpuCritter!=null){
-                        CritterBattle(battleViewModel)
+                    Column {
+                        Box(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .background(MaterialTheme.colorScheme.background)
+                                .padding(16.dp)
+                        ) {
+                            Image(
+                                painter = painterResource(id = R.drawable.exit),
+                                contentDescription = null,
+                                modifier = Modifier
+                                    .size(40.dp)
+                                    .clickable {
+                                        exitRequest = true
+                                    }
+                                    .align(Alignment.TopEnd)
+                            )
+                        }
+                        Box {
+                            if(playerCritter!=null&&cpuCritter!=null){
+                                CritterBattle(battleViewModel)
+                            }
+                        }
                     }
+                    if (exitRequest) {
+                        mediaPlayer?.release()
+                        val intent = Intent(this, MenuActivity::class.java)
+                        this.startActivity(intent)
+                        exitRequest = false
+                    }
+
                 }
 
             }
@@ -273,12 +304,12 @@ fun CritterBattle(battleViewModel: BattleViewModel = viewModel()) {
                 .fillMaxSize()
                 .padding(16.dp)
                 .clickable {
-                    if(playerInputUIState.isPlayerAttackSelected) {
+                    if (playerInputUIState.isPlayerAttackSelected) {
                         battleViewModel.executePlayerAttack()
                     }
-                    if(cpuInputUIState.isCpuAttackSelected) {
+                    if (cpuInputUIState.isCpuAttackSelected) {
                         battleViewModel.executeCpuAttack()
-                }
+                    }
 
                 } // Handle click to execute attack
         ) {

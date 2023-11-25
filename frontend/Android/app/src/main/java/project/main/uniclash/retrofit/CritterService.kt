@@ -38,7 +38,8 @@ interface CritterService {
     fun updateTodo(@Path("id") id: String, @Body todo: TodoPatchRequest): Call<Todo>
 
      */
-
+    @GET("/critters/{id}/evolve")
+    fun evolveCritter(@Path("id") id: Int): Call<Critter>
     companion object {
         private var critterService: CritterService? = null
         fun getInstance(context: Context): CritterService {

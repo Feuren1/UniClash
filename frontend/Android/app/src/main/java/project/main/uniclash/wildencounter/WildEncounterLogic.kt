@@ -45,10 +45,6 @@ import java.lang.Math.sqrt
 
      @Composable
     fun initMarkers(usableCritters : List<CritterUsable?>) : ArrayList<MyMarker> {
-         println("nicht mehr")
-         println("nicht mehr")
-         println("nicht mehr")
-         println("nicht mehr")
          if(usableCritters.isEmpty()){
              //throw IllegalArgumentException("Database contains no Critters")
              return markerList
@@ -145,7 +141,4 @@ import java.lang.Math.sqrt
             }
             return geoLocations
     }
-
-     val attack1 = Attack(1, "Tackle", 1)
-     val attack2 = Attack(2, "Scratch",2)
 }

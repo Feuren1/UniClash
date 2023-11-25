@@ -76,6 +76,7 @@ import project.main.uniclash.datatypes.StudentHub
 import project.main.uniclash.retrofit.CritterService
 import project.main.uniclash.retrofit.StudentHubService
 import project.main.uniclash.ui.theme.UniClashTheme
+import project.main.uniclash.viewmodels.MapLocationViewModel
 import project.main.uniclash.viewmodels.StudentHubViewModel
 import project.main.uniclash.viewmodels.UniClashViewModel
 import project.main.uniclash.wildencounter.WildEncounterLogic
@@ -88,6 +89,11 @@ import kotlin.math.pow
 
 class MapActivity : ComponentActivity() {
     private lateinit var fusedLocationClient: FusedLocationProviderClient
+
+    val mapLocationViewModel: MapLocationViewModel by viewModels(factoryProducer = {
+        MapLocationViewModel.provideFactory()
+    })
+
     private val locationPermissions = arrayOf(
         //array ONLY for location Permissions!!!
         Manifest.permission.ACCESS_COARSE_LOCATION,
@@ -109,6 +115,7 @@ class MapActivity : ComponentActivity() {
     private var shouldLoadStudentHubs by mutableStateOf(false)
     private var shouldInitStudentHubs by mutableStateOf(false)
     private var alreadyLoadStudentHubs by mutableStateOf(false)
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
@@ -333,7 +340,6 @@ class MapActivity : ComponentActivity() {
                 onClick = {
                     // Handle the button click to open the new activity here
                     SelectedMarker.SELECTEDMARKER.setMarker(marker)
-                    //removeMarker(SelectedMarker.SELECTEDMARKER.takeMarker()!!)
                     val intent = Intent(context,marker.button)
                     this.startActivity(intent, null)
                 },
@@ -590,7 +596,7 @@ class MapActivity : ComponentActivity() {
         grantResults: IntArray
     ) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-        // Handle permission results if needed
+        // Handle permission results if neededA
     }
 
     private fun hasPermissions(): Boolean {

@@ -177,7 +177,7 @@ export class CritterController {
         description: 'Evolve Critter and return CritterUsable',
         content: {
           'application/json': {
-            schema: getModelSchemaRef(Critter),
+            schema: getModelSchemaRef(CritterUsable),
           },
         },
       },
@@ -202,7 +202,6 @@ export class CritterController {
     },
   })
   async calculateAllCritterUsable(
-    @param.path.number('id') id: number,
   ): Promise<CritterUsable[]> {
     return this.studentCritterService.createCritterUsableListOfAll();
   }

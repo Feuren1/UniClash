@@ -1,27 +1,29 @@
 # Game API<br>
 
 ## Critters<br>
-| id | name                | baseHealth | baseAttack | baseDefence | baseSpeed |attack1   |attack2   |attack3   |attack4   |Evolution            |Evolves at|type      |
-|----|---------------------|------------|------------|-------------|-----------|----------|----------|----------|----------|---------------------|----------|----------|
-| 0  | PRC2Duck            | 0          | 0          | 0           | 0         |0         |0         |0         |0         |KnifeDuck            |20        |          |
-| 0  | KnifeDuck           | 0          | 0          | 0           | 0         |0         |0         |0         |0         |MutantDuck           |40        |          |
-| 0  | MutantDuck          | 0          | 0          | 0           | 0         |0         |0         |0         |0         |                     |          |          |
-| 0  | KnifeTurtle         | 0          | 0          | 0           | 0         |0         |0         |0         |0         |                     |          |          |
-| 0  | CoolDuck            | 0          | 0          | 0           | 0         |0         |0         |0         |0         |CrocodileDuck        |25        |          |
-| 0  | CrocodileDuck       | 0          | 0          | 0           | 0         |0         |0         |0         |0         |                     |          |          |
-| 0  | DemoMusk            | 0          | 0          | 0           | 0         |0         |0         |0         |0         |Musk                 |25        |          |
-| 0  | Musk                | 0          | 0          | 0           | 0         |0         |0         |0         |0         |                     |          |          |
-| 0  | Mockito             | 0          | 0          | 0           | 0         |0         |0         |0         |0         |                     |          |          |
-| 0  | QuizizzDragon       | 0          | 0          | 0           | 0         |0         |0         |0         |0         |                     |          |          |
-| 0  | Fontys              | 0          | 0          | 0           | 0         |0         |0         |0         |0         |                     |          |          |
-| 0  | LinuxPingiun        | 0          | 0          | 0           | 0         |0         |0         |0         |0         |                     |          |          |
-| 0  | Borzoi              | 0          | 0          | 0           | 0         |0         |0         |0         |0         |                     |          |          |
-| 0  | Pikachu             | 0          | 0          | 0           | 0         |0         |0         |0         |0         |                     |          |          |
-| 0  | Matryoshka          | 0          | 0          | 0           | 0         |0         |0         |0         |0         |                     |          |          |
-| 0  | Nutcracker          | 0          | 0          | 0           | 0         |0         |0         |0         |0         |                     |          |          |
-| 0  | EggGivingWoolMilkPig| 0          | 0          | 0           | 0         |0         |0         |0         |0         |                     |          |          |
-| 0  | StudentAssistence   | 0          | 0          | 0           | 0         |0         |0         |0         |0         |                     |          |          |
-| 0  | string              | 0          | 0          | 0           | 0         |0         |0         |0         |0         |                     |          |          |
+| id | name                | baseHealth | baseAttack | baseDefence | baseSpeed |Evolution            |Evolves at|type      |
+|----|---------------------|------------|------------|-------------|-----------|---------------------|----------|----------|
+| 0  | PRC2Duck            | 0          | 0          | 0           |0         |KnifeDuck            |20        |          |
+| 0  | KnifeDuck           | 0          | 0          | 0           |0         |MutantDuck           |40        |          |
+| 0  | MutantDuck          | 0          | 0          | 0           |0         |                     |          |          |
+| 0  | KnifeTurtle         | 0          | 0          | 0           |0         |                     |          |          |
+| 0  | CoolDuck            | 0          | 0          | 0           |0         |CrocodileDuck        |25        |          |
+| 0  | CrocodileDuck       | 0          | 0          | 0           |0         |                     |          |          |
+| 0  | DemoMusk            | 0          | 0          | 0           | 0        |Musk                 |25        |          |
+| 0  | Musk                | 0          | 0          | 0           | 0        |                     |          |          |
+| 0  | Mockito             | 0          | 0          | 0           | 0        |                     |          |          |
+| 0  | QuizizzDragon       | 0          | 0          | 0           | 0        |                     |          |          |
+| 0  | Fontys              | 0          | 0          | 0           | 0        |                     |          |          |
+| 0  | LinuxPingiun        | 0          | 0          | 0           | 0        |                     |          |          |
+| 0  | Borzoi              | 0          | 0          | 0           | 0        |                     |          |          |
+| 0  | Pikachu             | 0          | 0          | 0           | 0        |                     |          |          |
+| 0  | Matryoshka          | 0          | 0          | 0           | 0        |                     |          |          |
+| 0  | Nutcracker          | 0          | 0          | 0           | 0        |                     |          |          |
+| 0  | EggGivingWoolMilkPig| 0          | 0          | 0           | 0        |                     |          |          |
+| 0  | StudentAssistence   | 0          | 0          | 0           | 0        |                     |          |          |
+| 1  | Charmander          | 39         | 52         | 43          | 65       |Charmeleon           |16        |          |
+| 2  | Charmeleon          | 58         | 64         | 58          | 80       |Charizard            |36        |          |
+| 23 | Charizard           | 78         | 84         | 78          | 100      |                     |          |          |
 
 ## Types<br>
 |name     |

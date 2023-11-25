@@ -31,6 +31,9 @@ interface CritterService {
     @POST("/students/{id}/critters")
     fun postStudentCritter(@Path("id") id: Int, @Body critterForStudent: CritterForStudent) : Call<CritterUsable>
 
+    @POST("/students/{studentId}/critters/{critterId}/catchCritter")
+    fun postCatchedCritter(@Path("studentId") studentId: Int, @Path("critterId") critterId : Int) :Call<CritterUsable>
+
     @GET("/critter-templates")
     fun getCrittersTemplates(): Call<List<CritterTemplate>>
 

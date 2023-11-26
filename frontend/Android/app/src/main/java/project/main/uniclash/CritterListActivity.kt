@@ -175,10 +175,10 @@ class CritterListActivity : ComponentActivity() {
     @Composable
     fun MyCritters(uniClashViewModel: UniClashViewModel):List<CritterUsable?> {
         val preferences = this.getSharedPreferences("Ids", Context.MODE_PRIVATE)
-        val userID = preferences.getString("UserId", "") ?: ""
+        val studentId = preferences.getInt("StudentId", 1) ?: 1
 
         val uniClashUiStateCritterUsables by uniClashViewModel.critterUsables.collectAsState()
-        uniClashViewModel.loadCritterUsables(userID.toInt())
+        uniClashViewModel.loadCritterUsables(studentId)
         var critterUsables : List<CritterUsable?> = uniClashUiStateCritterUsables.critterUsables
         return critterUsables
     }

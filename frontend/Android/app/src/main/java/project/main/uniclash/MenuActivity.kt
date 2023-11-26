@@ -66,7 +66,7 @@ class MenuActivity : ComponentActivity() {
                         modifier = Modifier
                             .size(60.dp)
                             .clickable {
-                                buttonRequest = 0 //TODO to Profile
+                                buttonRequest = 13 //TODO to Profile
                             }
                             .align(Alignment.TopEnd)
                     )
@@ -123,9 +123,16 @@ class MenuActivity : ComponentActivity() {
                             )
                             MenuCard(listOf(Category("Student Hub", painterResource(R.drawable.store), 8)))
                             MenuCard(listOf(Category("Camera", painterResource(R.drawable.swords), 9)))
+                            MenuCard(listOf(Category("Log in", painterResource(R.drawable.profile), 10)))
+                            MenuCard(listOf(Category("Register", painterResource(R.drawable.profile), 11)))
                         }
                     }
                 }
+            }
+            if(buttonRequest == 13) {
+                val intent = Intent(this, ProfileActivity::class.java)
+                this.startActivity(intent)
+                buttonRequest = 0
             }
             if(buttonRequest == 1) {
                 val intent = Intent(this, CritterListActivity::class.java)
@@ -133,8 +140,6 @@ class MenuActivity : ComponentActivity() {
                 buttonRequest == 0
             }
             if(buttonRequest == 2) {
-                val intent = Intent(this, RegisterActivity::class.java)
-                this.startActivity(intent)
                 buttonRequest == 0
             }
             if(buttonRequest == 3) {
@@ -170,6 +175,16 @@ class MenuActivity : ComponentActivity() {
             if(buttonRequest == 4){
                 MapSettings.MOVINGCAMERA.setMapSetting(!MapSettings.MOVINGCAMERA.getMapSetting())
                 val intent = Intent(this, MenuActivity::class.java)
+                this.startActivity(intent)
+                buttonRequest = 0
+            }
+            if(buttonRequest == 10) {
+                val intent = Intent(this, LoginAcitivity::class.java)
+                this.startActivity(intent)
+                buttonRequest = 0
+            }
+            if(buttonRequest == 11) {
+                val intent = Intent(this, RegisterActivity::class.java)
                 this.startActivity(intent)
                 buttonRequest = 0
             }

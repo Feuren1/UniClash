@@ -24,6 +24,7 @@ class Retrofit {
     companion object {
         private const val BASE_URL = "https://friends-app-b7tv.onrender.com/"
         private var retrofit: Retrofit? = null
+
         fun getRetrofitInstance(context: Context): Retrofit {
             if (retrofit == null) {
                 val contentType = "application/json".toMediaType()
@@ -31,11 +32,10 @@ class Retrofit {
                     Instant::class.java,
                     InstantTypeAdapter()
                 ).create()
-                retrofit =
-                    Retrofit.Builder().baseUrl(BASE_URL)
-                        .addConverterFactory(GsonConverterFactory.create(gson))
-                        .client(okhttpClient(context))
-                        .build()
+                retrofit = Retrofit.Builder().baseUrl(BASE_URL)
+                    .addConverterFactory(GsonConverterFactory.create(gson))
+                    .client(okhttpClient(context))
+                    .build()
             }
             return retrofit!!
         }
@@ -43,10 +43,35 @@ class Retrofit {
         private fun okhttpClient(context: Context): OkHttpClient {
             return OkHttpClient.Builder()
                 .addInterceptor(LoggingInterceptor())
+                .addInterceptor(AuthInterceptor(context))
                 .build()
         }
     }
 }
+
+internal class AuthInterceptor(private val context: Context) : Interceptor {
+    override fun intercept(chain: Interceptor.Chain): okhttp3.Response {
+        var request = chain.request()
+        val preferences = context.getSharedPreferences("Token", Context.MODE_PRIVATE)
+
+        // Retrieve the token from SharedPreferences
+        val token = preferences.getString("JWT-Token", "") ?: ""
+
+        if (token.isNotEmpty()) {
+            // Add Authorization header only if the token is not empty
+            request = request.newBuilder()
+                .addHeader("Authorization", "Bearer $token")
+                .build()
+        }
+
+        println("Request headers: ${request.headers}")
+        return chain.proceed(request)
+    }
+}
+
+
+// Rest of your code remains unchanged
+
 internal class LoggingInterceptor : Interceptor {
     @Throws(IOException::class)
     override fun intercept(chain: Interceptor.Chain): okhttp3.Response {

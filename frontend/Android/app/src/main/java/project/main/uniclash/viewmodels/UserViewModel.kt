@@ -214,7 +214,7 @@ class UserViewModel(private val userService: UserService, application: Applicati
                                         state.copy(user = it, isLoading = false)
                                     }
                                 }
-                                getStudent(user.value.user!!.id)
+                                getStudent(response.body()!!.id)
                             }
                             saveUserIdToSharedPreferences(user.value.user!!.id, context)
                             callback(UserCallback(true, response.body()))
@@ -247,13 +247,14 @@ class UserViewModel(private val userService: UserService, application: Applicati
                 val response = userService.getStudent(id).enqueue()
                 Log.d(TAG, "Load Student of User: $response")
                 if (response.isSuccessful) {
-                    saveStudentIdToSharedPreferences(response.body()!!.id,context)
                     Log.d(TAG, "Success: ${response.body()}")
                     response.body()?.let { student ->
                         user.update { state ->
                             state.copy(user = state.user!!.copy(student = student), isLoading = false)
                         }
+                        saveStudentIdToSharedPreferences(response.body()!!.id,context)
                     }
+
                     Log.d(TAG, "Student/Game-progress has been loaded ${user.value.user}")
                 }
             } catch (e: Exception) {

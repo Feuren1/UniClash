@@ -185,6 +185,11 @@ class UserViewModel(private val userService: UserService, application: Applicati
         preferences.edit().putString("UserId", id).apply()
     }
 
+    private fun saveStudentIdToSharedPreferences(id: Int, context: Context){
+        val preferences = context.getSharedPreferences("Ids", Context.MODE_PRIVATE)
+        preferences.edit().putInt("StudentId", id).apply()
+    }
+
     fun whoAmI(token: String?,
                context: Context,
                callback: (UserCallback) -> Unit = {}
@@ -212,6 +217,7 @@ class UserViewModel(private val userService: UserService, application: Applicati
                                 getStudent(user.value.user!!.id)
                             }
                             saveUserIdToSharedPreferences(user.value.user!!.id, context)
+                            saveStudentIdToSharedPreferences(user.value.user!!.student.id,context)
                             callback(UserCallback(true, response.body()))
                             text.value = "You are logged in!"
                         } else{

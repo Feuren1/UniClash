@@ -217,7 +217,6 @@ class UserViewModel(private val userService: UserService, application: Applicati
                                 getStudent(user.value.user!!.id)
                             }
                             saveUserIdToSharedPreferences(user.value.user!!.id, context)
-                            saveStudentIdToSharedPreferences(user.value.user!!.student.id,context)
                             callback(UserCallback(true, response.body()))
                             text.value = "You are logged in!"
                         } else{
@@ -248,6 +247,7 @@ class UserViewModel(private val userService: UserService, application: Applicati
                 val response = userService.getStudent(id).enqueue()
                 Log.d(TAG, "Load Student of User: $response")
                 if (response.isSuccessful) {
+                    saveStudentIdToSharedPreferences(response.body()!!.id,context)
                     Log.d(TAG, "Success: ${response.body()}")
                     response.body()?.let { student ->
                         user.update { state ->

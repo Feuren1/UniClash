@@ -123,8 +123,7 @@ class MenuActivity : ComponentActivity() {
                             )
                             MenuCard(listOf(Category("Student Hub", painterResource(R.drawable.store), 8)))
                             MenuCard(listOf(Category("Camera", painterResource(R.drawable.swords), 9)))
-                            MenuCard(listOf(Category("Log in", painterResource(R.drawable.profile), 10)))
-                            MenuCard(listOf(Category("Register", painterResource(R.drawable.profile), 11)))
+                            MenuCard(listOf(Category("Log in", painterResource(R.drawable.profile), 10),Category("Register", painterResource(R.drawable.profile), 11)))
                         }
                     }
                 }

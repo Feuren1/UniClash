@@ -6,8 +6,9 @@ import {
   repository,
 } from '@loopback/repository';
 import {UserServiceBindings} from '../keys';
-import {User, UserCredentials, UserRelations} from '../models';
+import {User, UserCredentials, UserRelations, Student} from '../models';
 import {UserCredentialsRepository} from './user-credentials.repository';
+import {StudentRepository} from './student.repository';
 
 export class UserRepository extends DefaultCrudRepository<
   User,
@@ -19,13 +20,17 @@ export class UserRepository extends DefaultCrudRepository<
     typeof User.prototype.id
   >;
 
+  public readonly student: HasOneRepositoryFactory<Student, typeof User.prototype.id>;
+
   constructor(
     @inject(`datasources.${UserServiceBindings.DATASOURCE_NAME}`)
     dataSource: juggler.DataSource,
     @repository.getter('UserCredentialsRepository')
-    protected userCredentialsRepositoryGetter: Getter<UserCredentialsRepository>,
+    protected userCredentialsRepositoryGetter: Getter<UserCredentialsRepository>, @repository.getter('StudentRepository') protected studentRepositoryGetter: Getter<StudentRepository>,
   ) {
     super(User, dataSource);
+    this.student = this.createHasOneRepositoryFactoryFor('student', studentRepositoryGetter);
+    this.registerInclusionResolver('student', this.student.inclusionResolver);
     this.userCredentials = this.createHasOneRepositoryFactoryFor(
       'userCredentials',
       userCredentialsRepositoryGetter,

@@ -9,8 +9,8 @@ data class Critter(
     val attack2: Attack?,
     val attack3: Attack?,
     val attack4: Attack?,
-    val name: String,
-    val id: Int
+    val name: String
+
 ) {
     override fun toString(): String {
         return ("$name stats: $baseHealth $baseAttack $baseDefend $baseSpeed")

@@ -95,7 +95,7 @@ class BattleViewModel(
     init {
         viewModelScope.launch {
             Log.d(TAG, "Fetching initial critters data: ")
-            loadPlayerCritter(44)
+            loadPlayerCritter(19)
             loadCpuCritter(20)
         }
     }

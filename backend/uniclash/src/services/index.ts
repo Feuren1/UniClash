@@ -1,5 +1,4 @@
 export * from './critter-stats.service';
-export * from './evolve-critter.service';
 export * from './jwt.auth.strategy';
 export * from './jwt.service';
 export * from './refreshtoken.service';

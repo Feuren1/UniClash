@@ -1,8 +1,7 @@
 import {Entity, hasOne, model, property} from '@loopback/repository';
 import {UserCredentials} from '.';
-import {Student} from './student.model';
 
-@model()
+@model({settings: {strict: false}})
 export class User extends Entity {
   @property({
     type: 'string',
@@ -30,8 +29,6 @@ export class User extends Entity {
   @hasOne(() => UserCredentials)
   userCredentials: UserCredentials;
 
-  @hasOne(() => Student)
-  student: Student;
   [prop: string]: any;
 
   constructor(data?: Partial<User>) {
@@ -44,4 +41,3 @@ export interface UserRelations {
 }
 
 export type UserWithRelations = User & UserRelations;
-

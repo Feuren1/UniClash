@@ -1,4 +1,3 @@
-import {service} from '@loopback/core';
 import {
   Count,
   CountSchema,
@@ -8,28 +7,24 @@ import {
   Where,
 } from '@loopback/repository';
 import {
-  del,
+  post,
+  param,
   get,
   getModelSchemaRef,
-  param,
   patch,
-  post,
   put,
+  del,
   requestBody,
   response,
 } from '@loopback/rest';
-import {Critter, CritterUsable} from '../models';
+import {Critter} from '../models';
 import {CritterRepository} from '../repositories';
-import {EvolveCritterService} from '../services';
-import {StudentCritterService} from '../services/student-critter.service';
 
 export class CritterController {
   constructor(
-    @service(EvolveCritterService) protected evolveCritterService: EvolveCritterService,
     @repository(CritterRepository)
-    public critterRepository: CritterRepository,
-    @service(StudentCritterService) protected studentCritterService: StudentCritterService,
-  ) { }
+    public critterRepository : CritterRepository,
+  ) {}
 
   @post('/critters')
   @response(200, {
@@ -152,58 +147,4 @@ export class CritterController {
   async deleteById(@param.path.number('id') id: number): Promise<void> {
     await this.critterRepository.deleteById(id);
   }
-
-  @get('/critters/{id}/evolve', {
-    responses: {
-      '200': {
-        description: 'Evolve Critter and return Critter',
-        content: {
-          'application/json': {
-            schema: getModelSchemaRef(Critter),
-          },
-        },
-      },
-    },
-  })
-  async evolveCritter(
-    @param.path.number('id') id: number,
-  ): Promise<Critter> {
-    return this.evolveCritterService.evolveCritter(id);
-  }
-
-  @get('/critters/{id}/evolveUsable', {
-    responses: {
-      '200': {
-        description: 'Evolve Critter and return CritterUsable',
-        content: {
-          'application/json': {
-            schema: getModelSchemaRef(CritterUsable),
-          },
-        },
-      },
-    },
-  })
-  async evolveCritterUsable(
-    @param.path.number('id') id: number,
-  ): Promise<CritterUsable> {
-    return this.evolveCritterService.evolveCritterUsable(id);
-  }
-
-  @get('/usables', {
-    responses: {
-      '200': {
-        description: 'Calculate and return CritterUsable of all critters',
-        content: {
-          'application/json': {
-            schema: getModelSchemaRef(CritterUsable), // Use CritterUsable schema
-          },
-        },
-      },
-    },
-  })
-  async calculateAllCritterUsable(
-  ): Promise<CritterUsable[]> {
-    return this.studentCritterService.createCritterUsableListOfAll();
-  }
-
 }

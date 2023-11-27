@@ -127,15 +127,7 @@ class CritterListActivity : ComponentActivity() {
                     Color.LightGray,
                     shape = RoundedCornerShape(8.dp)
                 ) // Hintergrundfarbe und abgeflachte Ecken
-                .clickable {
-                    val intent = Intent(this, CritterProfileActivity::class.java)
-                    val b = Bundle()
-                    b.putInt("critterId", critter!!.critterId)
-                    intent.putExtras(b)
-                    startActivity(intent)
-                    finish()
-                }
-
+                .clickable { }
         ) {
             Row(modifier = Modifier.padding(all = 8.dp)) {
                 Image(

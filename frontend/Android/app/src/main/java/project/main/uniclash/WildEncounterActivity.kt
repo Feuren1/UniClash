@@ -4,7 +4,6 @@ import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.activity.viewModels
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -39,27 +38,16 @@ import project.main.uniclash.datatypes.CritterPic
 import project.main.uniclash.datatypes.MapSaver
 import project.main.uniclash.datatypes.MapSettings
 import project.main.uniclash.datatypes.SelectedMarker
-import project.main.uniclash.retrofit.CritterService
 import project.main.uniclash.ui.theme.UniClashTheme
-import project.main.uniclash.viewmodels.BattleViewModel
-import project.main.uniclash.viewmodels.WildEncounterViewModel
 
 
 class WildEncounterActivity : ComponentActivity() {
 
     private var runaway by mutableStateOf(false)
     private var catchCritter by mutableStateOf(false)
-
-    private lateinit var wildEncounterActivity: WildEncounterViewModel
-
+    private val wildEncounter = SelectedMarker.SELECTEDMARKER.takeMarker()
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
-        wildEncounterActivity = viewModels<WildEncounterViewModel> {
-            WildEncounterViewModel.provideFactory(CritterService.getInstance(this))
-        }.value
-
-        var wildEncounter = wildEncounterActivity.getWildEncounterMarker()
 
         setContent {
 
@@ -109,7 +97,6 @@ class WildEncounterActivity : ComponentActivity() {
                 this.startActivity(intent)
             }
             if(catchCritter){
-                wildEncounterActivity.addWildEncounterToUser()
                 val intent = Intent(this, MapActivity::class.java)
                 this.startActivity(intent)
             }

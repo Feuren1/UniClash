@@ -16,4 +16,3 @@ export * from './critter.model';
 export * from './critter-attack.model';
 export * from './type.model';
 export * from './student.model';
-export * from './user.model';

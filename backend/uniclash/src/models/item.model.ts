@@ -1,6 +1,5 @@
 import {Entity, model, property, belongsTo} from '@loopback/repository';
 import {ItemTemplate} from './item-template.model';
-import {Student} from './student.model';
 
 @model()
 export class Item extends Entity {
@@ -19,9 +18,6 @@ export class Item extends Entity {
 
   @belongsTo(() => ItemTemplate)
   itemTemplateId: number;
-
-  @belongsTo(() => Student)
-  studentId: number;
 
   constructor(data?: Partial<Item>) {
     super(data);

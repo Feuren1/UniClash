@@ -1,7 +1,7 @@
 import {belongsTo, Entity, model, property} from '@loopback/repository';
 import {User} from '.';
 
-@model()
+@model({settings: {strict: false}})
 export class RefreshToken extends Entity {
   @property({
     type: 'number',

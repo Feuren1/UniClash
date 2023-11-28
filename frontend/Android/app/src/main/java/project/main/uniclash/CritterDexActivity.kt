@@ -55,7 +55,7 @@ class CritterDexActivity : ComponentActivity() {
 
         setContent {
             critterDexViewModel.loadCritterTemplates()
-            critterDexViewModel.sortCritterTemplates()
+            //critterDexViewModel.sortCritterTemplates()
             val critterDexUiStateCritterTemplates by critterDexViewModel.critterTemplatesOrdered.collectAsState()
             val critterTemplates = critterDexUiStateCritterTemplates.critterTemplates
             //val critterDexOrdered = critterDexViewModel.sortCritterTemplates()

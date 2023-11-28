@@ -31,7 +31,7 @@ class CritterDexViewModel(
     private val critterService: CritterService,
 ) : ViewModel() {
     //TAG for logging
-    private val TAG = UniClashViewModel::class.java.simpleName
+    private val TAG = CritterDexViewModel::class.java.simpleName
 
     val critterTemplates = MutableStateFlow(
         CritterTemplatesUIState.HasEntries(
@@ -51,13 +51,14 @@ class CritterDexViewModel(
             Log.d(TAG, "Fetching initial critters data: ")
 
             critterTemplates.collect {
-                loadCritterTemplates()
+                //loadCritterTemplates()
+                sortCritterTemplates()
             }
 
             // Observe changes in critterTemplatesOrdered and trigger reload
-            critterTemplatesOrdered.collect {
-                sortCritterTemplates()
-            }
+            //critterTemplatesOrdered.collect {
+            //    sortCritterTemplates()
+            //}
         }
     }
     @SuppressLint("MissingPermission")
@@ -77,6 +78,7 @@ class CritterDexViewModel(
                             isLoading = false
                         )
                     }
+                    println("exceuted before")
                 }
             } catch (e: Exception) {
                 e.printStackTrace()
@@ -84,26 +86,42 @@ class CritterDexViewModel(
         }
     }
 
-    fun sortCritterTemplates(){
+    fun sortCritterTemplates() {
         viewModelScope.launch {
             val templatesOrdered = mutableListOf<ArrayList<CritterTemplate>>()
 
-
             val templates = critterTemplates.value.critterTemplates
             if (templates.isNotEmpty()) {
+                val visitedIds = HashSet<Int>()
 
-                println("${templates.size} hallohallohallohallohallohallo")
-
-                for (i in 0 until templates.size) {
-                    val currentTemplate = templates[i]
-                    val template: ArrayList<CritterTemplate> = ArrayList()
-                    templates[i]?.let { template.add(it) }
-                    templatesOrdered.add(template)
+                for (template in templates) {
+                    if (!visitedIds.contains(template?.id)) {
+                        val currentList = ArrayList<CritterTemplate>()
+                        collectTemplates(template, templates, visitedIds, currentList)
+                        templatesOrdered.add(currentList)
+                    }
                 }
 
                 critterTemplatesOrdered.update {
                     it.copy(critterTemplates = templatesOrdered)
                 }
+            }
+        }
+    }
+
+    private fun collectTemplates(
+        currentTemplate: CritterTemplate?,
+        allTemplates: List<CritterTemplate?>,
+        visitedIds: HashSet<Int>,
+        currentList: ArrayList<CritterTemplate>
+    ) {
+        currentTemplate?.let {
+            visitedIds.add(it.id)
+            currentList.add(it)
+
+            if (it.evolvesIntoTemplateId != 0) {
+                val nextTemplate = allTemplates.find { template -> template?.id == it.evolvesIntoTemplateId }
+                collectTemplates(nextTemplate, allTemplates, visitedIds, currentList)
             }
         }
     }

@@ -7,9 +7,7 @@ import androidx.activity.compose.setContent
 import androidx.activity.viewModels
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -23,7 +21,6 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -34,31 +31,38 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import project.main.uniclash.datatypes.Attack
 import project.main.uniclash.datatypes.CritterPic
 import project.main.uniclash.datatypes.CritterTemplate
 import project.main.uniclash.datatypes.CritterUsable
-import project.main.uniclash.datatypes.MapSettings
 import project.main.uniclash.retrofit.CritterService
-import project.main.uniclash.ui.theme.UniClashTheme
+import project.main.uniclash.viewmodels.CritterDexViewModel
 import project.main.uniclash.viewmodels.UniClashViewModel
 
 
 class CritterDexActivity : ComponentActivity() {
     private var exitRequest by mutableStateOf(false)
     override fun onCreate(savedInstanceState: Bundle?) {
+        val critterDexViewModel: CritterDexViewModel by viewModels(factoryProducer = {
+            CritterDexViewModel.provideFactory(CritterService.getInstance(this))
+        })
+
         super.onCreate(savedInstanceState)
 
         setContent {
-            val critterDexCritters = GetCritterTemplates(uniClashViewModel)
+            critterDexViewModel.loadCritterTemplates()
+            critterDexViewModel.sortCritterTemplates()
+            val critterDexUiStateCritterTemplates by critterDexViewModel.critterTemplatesOrdered.collectAsState()
+            val critterTemplates = critterDexUiStateCritterTemplates.critterTemplates
+            //val critterDexOrdered = critterDexViewModel.sortCritterTemplates()
+            //val critterDexUiStateCritterTemplates2 by critterDexViewModel.critterTemplates.collectAsState()
+            //val critterDexCritters = critterDexUiStateCritterTemplates.critterTemplates
+            //val critterDexOrdered = critterDexViewModel.sortCritterTemplates()
+
 
             Column {
                 Box(
@@ -91,8 +95,8 @@ class CritterDexActivity : ComponentActivity() {
                             .verticalScroll(rememberScrollState())
                     ) {
                         Column {
-                            for (critter in critterDexCritters) {
-                                CritterDetail(critter)
+                            for (critters in critterTemplates) {
+                                CritterDetail(critters)
                             }
                         }
                     }
@@ -119,7 +123,7 @@ class CritterDexActivity : ComponentActivity() {
     }
 
     @Composable
-    fun CritterDetail(critter: CritterTemplate?) {
+    fun CritterDetail(critters: List<CritterTemplate?>) {
         Box(
             modifier = Modifier
                 .padding(all = 8.dp)
@@ -130,44 +134,47 @@ class CritterDexActivity : ComponentActivity() {
                 ) // Hintergrundfarbe und abgeflachte Ecken
                 .clickable { }
         ) {
-            Row(modifier = Modifier.padding(all = 8.dp)) {
-                Image(
-                    painter = painterResource(CritterPic.MUSK.searchDrawable("${critter?.name}")),
-                    contentDescription = null,
-                    modifier = Modifier
-                        .size(60.dp)
-                )
-                Spacer(modifier = Modifier.width(8.dp))
-                Column {
-                    Spacer(modifier = Modifier.height(8.dp))
-                    Text(
-                        text = critter!!.name,
-                        fontSize = 18.sp,
-                        color = MaterialTheme.colorScheme.secondary,
-                        style = MaterialTheme.typography.titleSmall
-                    )
-                    Text(
-                        text = "Health: ${critter?.baseHealth} Attack: ${critter?.baseAttack}\nDefence: ${critter?.baseDefence} Speed: ${critter?.baseSpeed}",
-                        fontSize = 12.sp,
-                        color = MaterialTheme.colorScheme.secondary,
-                        style = MaterialTheme.typography.titleSmall
-                    )
-                    Spacer(modifier = Modifier.height(8.dp))
+            Column {
+                for (critter in critters) {
+                    Box(modifier = Modifier
+                        .clickable {}
+                        .fillMaxWidth()) {
+                        Row(modifier = Modifier.padding(all = 8.dp)) {
+                            Image(
+                                painter = painterResource(CritterPic.MUSK.searchDrawable("${critter?.name}")),
+                                contentDescription = null,
+                                modifier = Modifier
+                                    .size(60.dp)
+                            )
+                            Spacer(modifier = Modifier.width(8.dp))
+                            Column {
+                                Spacer(modifier = Modifier.height(8.dp))
+                                Text(
+                                    text = critter!!.name,
+                                    fontSize = 18.sp,
+                                    color = MaterialTheme.colorScheme.secondary,
+                                    style = MaterialTheme.typography.titleSmall
+                                )
+                                var text = ""
+                                if (critter?.evolesAt == 0) {
+                                    text =
+                                        "Health: ${critter?.baseHealth} Attack: ${critter?.baseAttack}\nDefence: ${critter?.baseDefence} Speed: ${critter?.baseSpeed}"
+                                } else {
+                                    text =
+                                        "Health: ${critter?.baseHealth} Attack: ${critter?.baseAttack}\nDefence: ${critter?.baseDefence} Speed: ${critter?.baseSpeed}\nEvolves at: ${critter?.evolesAt}"
+                                }
+                                Text(
+                                    text = text,
+                                    fontSize = 12.sp,
+                                    color = MaterialTheme.colorScheme.secondary,
+                                    style = MaterialTheme.typography.titleSmall
+                                )
+                                Spacer(modifier = Modifier.height(8.dp))
+                            }
+                        }
+                    }
                 }
             }
         }
-    }
-
-
-    val uniClashViewModel: UniClashViewModel by viewModels(factoryProducer = {
-        UniClashViewModel.provideFactory(CritterService.getInstance(this))
-    })
-
-    @Composable
-    fun GetCritterTemplates(uniClashViewModel: UniClashViewModel):List<CritterTemplate?> {
-        val uniClashUiStateCritterTemplates by uniClashViewModel.critterTemplates.collectAsState()
-        uniClashViewModel.loadCritterTemplates()
-        var critterTemplates : List<CritterTemplate?> = uniClashUiStateCritterTemplates.critterTemplates
-        return critterTemplates
     }
 }

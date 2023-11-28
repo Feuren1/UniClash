@@ -43,6 +43,7 @@ class Retrofit {
         private fun okhttpClient(context: Context): OkHttpClient {
             return OkHttpClient.Builder()
                 .addInterceptor(LoggingInterceptor())
+
                 .build()
         }
     }

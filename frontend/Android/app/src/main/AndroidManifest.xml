@@ -22,6 +22,16 @@
         android:theme="@style/Theme.UniClash"
         tools:targetApi="31">
         <activity
+            android:name=".PokéActivity"
+            android:exported="false"
+            android:label="@string/title_activity_poké"
+            android:theme="@style/Theme.UniClash" />
+        <activity
+            android:name=".ArenaActivity"
+            android:exported="false"
+            android:label="@string/title_activity_arena"
+            android:theme="@style/Theme.UniClash" />
+        <activity
             android:name=".InventoryActivity"
             android:exported="false"
             android:label="@string/title_activity_inventory"

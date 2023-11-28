@@ -1,12 +1,17 @@
 package project.main.uniclash.retrofit
 
 import android.content.Context
+import project.main.uniclash.datatypes.CritterForStudent
+import project.main.uniclash.datatypes.CritterUsable
 import project.main.uniclash.datatypes.Item
+import project.main.uniclash.datatypes.ItemForStudent
 import project.main.uniclash.datatypes.ItemTemplate
 import project.main.uniclash.datatypes.StudentHub
 import retrofit2.Call
 import retrofit2.create
+import retrofit2.http.Body
 import retrofit2.http.GET
+import retrofit2.http.POST
 import retrofit2.http.Path
 
 interface StudentHubService {
@@ -19,6 +24,8 @@ interface StudentHubService {
     fun getItemTemplates(): Call<List<ItemTemplate>>
     @GET("/items")
     fun getItems(): Call<List<Item>>
+    @POST("/student/{id}/items")
+    fun postStudentItem(@Path("id") id: Int, @Body itemForStudent: ItemForStudent) : Call<Item>
 
     companion object {
         private var studentHubService: StudentHubService? = null

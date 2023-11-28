@@ -1,20 +1,30 @@
 package project.main.uniclash.viewmodels
 
+import android.content.ContentValues
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
+import com.google.gson.JsonObject
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import project.main.uniclash.datatypes.Item
+import project.main.uniclash.datatypes.ItemForStudent
 import project.main.uniclash.datatypes.ItemTemplate
 import project.main.uniclash.datatypes.StudentHub
+import project.main.uniclash.datatypes.UserLoginRequest
 import project.main.uniclash.retrofit.StudentHubService
 import project.main.uniclash.retrofit.enqueue
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
 
-public data class StudentHubIdCallback(val success: Boolean, val id: String)
+
+public data class BuyItemCallback(val success: Boolean, val item: String)
 
 sealed interface StudentHubUIState {
+
     data class HasEntries(
         val studentHub: StudentHub?,
         val isLoading: Boolean,
@@ -33,6 +43,13 @@ sealed interface ItemTemplatesUIState {
         val itemTemplates: List<ItemTemplate>,
         val isLoading: Boolean,
     ) : ItemTemplatesUIState
+}
+
+sealed interface ItemUIState {
+    data class HasEntries(
+        val item: Item?,
+        val isLoading: Boolean,
+    ) : ItemUIState
 }
 
 class StudentHubViewModel(
@@ -58,6 +75,13 @@ class StudentHubViewModel(
         ItemTemplatesUIState.HasEntries(
             emptyList(),
             isLoading = false
+        )
+    )
+
+    val item = MutableStateFlow(
+        ItemUIState.HasEntries(
+            isLoading = false,
+            item = null
         )
     )
 
@@ -144,9 +168,13 @@ class StudentHubViewModel(
     }
 
 
-    fun buyItem(itemTemplateId: Int) {
+    fun buyItem(quantity: Int,
+                itemTemplateId : Int,
+                studentId : Int) {
 
         println("Buy button was pressed in the ViewModel")
+
+        studentHubService.postStudentItem(studentId ,ItemForStudent(quantity = quantity, itemTemplateId = itemTemplateId, studentId = studentId))
 
     }
 

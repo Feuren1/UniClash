@@ -114,9 +114,10 @@ fun StudentHubScreen(modifier: Modifier = Modifier,
 
         ItemList(itemTemplateList,
             onButtonClicked = { itemTemplate ->
-                println("ID: ${itemTemplate.id}, Name: ${itemTemplate.name}, Cost: ${itemTemplate.cost}")
+                //println("ID: ${itemTemplate.id}, Name: ${itemTemplate.name}, Cost: ${itemTemplate.cost}")
+                //boughtItemName = itemTemplate.name
                 println("Before buyItem")
-                boughtItemName = itemTemplate.name
+                studentHubViewModel.buyItem(1, 1, 2)
                 println("After buyItem")
                 println("Buy item clicked in StudentHub")
             })

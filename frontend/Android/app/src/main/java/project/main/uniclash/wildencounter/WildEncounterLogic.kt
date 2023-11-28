@@ -35,12 +35,7 @@ import java.lang.Math.sqrt
          private const val WILDENCOUNTERLOGIC_TAG = "WildEncounterLogic"
      }
 
-     @Composable
     fun initMarkers(usableCritters : List<CritterUsable?>) : ArrayList<MarkerData> {
-         println("nicht mehr")
-         println("nicht mehr")
-         println("nicht mehr")
-         println("nicht mehr")
          if(usableCritters.isEmpty()){
              //throw IllegalArgumentException("Database contains no Critters")
              return markerList
@@ -60,15 +55,8 @@ import java.lang.Math.sqrt
              val wildEncounter = wildEncounterMax
 
              while (i < 800) {
-                 val state = rememberMarkerState(
-                     geoPoint = GeoPoint(
-                         randomLocation.get(i).latitude,
-                         randomLocation.get(i).longitude
-                     ),
-                 )
                  var myMarker = MarkerData(
-                     id = "1",
-                     state = state,
+                     state = GeoPoint(randomLocation.get(i).latitude, randomLocation.get(i).longitude),
                      icon = resizeDrawableTo50x50(context, CritterPic.MUSK.searchDrawableM("${wildEncounter.get(i)?.name}M")),
                      visible = true,
                      title = "${wildEncounter.get(i)?.name}",

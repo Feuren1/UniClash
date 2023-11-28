@@ -264,18 +264,22 @@ class MapActivity : ComponentActivity() {
             ) {
                 // Add markers and other map components here s)
                 markerList.forEach { marker ->
-                    val distance = haversineDistance(marker.state.geoPoint.latitude, marker.state.geoPoint.longitude, Locations.USERLOCATION.getLocation().latitude, Locations.USERLOCATION.getLocation().longitude)
+                    val distance = haversineDistance(marker.state.latitude, marker.state.longitude, Locations.USERLOCATION.getLocation().latitude, Locations.USERLOCATION.getLocation().longitude)
                     Log.d(
                         LOCATION_TAG,
                         "set marker"
                     )
+
+                    val state = rememberMarkerState(
+                        geoPoint = marker.state
+                        )
+
                     Marker(
-                        state = marker.state,
+                        state = state,
                         icon = marker.icon,
                         title = marker.title,
                         snippet = marker.snippet,
                         visible = if(marker.critterUsable != null && distance > critterVisibility){false}else{marker.visible},
-                        id = marker.id,
                     ) {
                         if (distance < 501) {
                             Column(
@@ -334,7 +338,7 @@ class MapActivity : ComponentActivity() {
     @Composable
     fun OpenActivityButton(marker : MarkerData) {
         val context = LocalContext.current
-        val distance = haversineDistance(marker.state.geoPoint.latitude, marker.state.geoPoint.longitude, Locations.USERLOCATION.getLocation().latitude, Locations.USERLOCATION.getLocation().longitude)
+        val distance = haversineDistance(marker.state.latitude, marker.state.longitude, Locations.USERLOCATION.getLocation().latitude, Locations.USERLOCATION.getLocation().longitude)
         if(distance < 76) {
             Button(
                 onClick = {
@@ -469,8 +473,7 @@ class MapActivity : ComponentActivity() {
                 }
 
                 val myMarker = MarkerData(
-                    id = "1",
-                    state = MarkerState(geoPoint = geoPoint),
+                    state = geoPoint,
                     icon = icon,
                     visible = true,
                     title = "${studentHub?.name}",

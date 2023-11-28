@@ -33,7 +33,6 @@ import project.main.uniclash.MapActivity
 import project.main.uniclash.WildEncounterActivity
 import project.main.uniclash.datatypes.CritterForStudent
 import project.main.uniclash.datatypes.CritterUsable
-import project.main.uniclash.datatypes.MyMarker
 import project.main.uniclash.datatypes.SelectedMarker
 import project.main.uniclash.retrofit.CritterService
 import project.main.uniclash.retrofit.StudentHubService

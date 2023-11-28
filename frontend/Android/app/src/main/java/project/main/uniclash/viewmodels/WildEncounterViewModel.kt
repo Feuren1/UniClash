@@ -14,7 +14,7 @@ import project.main.uniclash.datatypes.SelectedMarker
 import project.main.uniclash.retrofit.CritterService
 import project.main.uniclash.retrofit.enqueue
 
-sealed interface PostCrittersUIState {
+sealed interface PostCrittersUIState { //TODO: CritterS to Critter?
     data class HasEntries(
         val critter: CritterUsable?,
         val isLoading: Boolean,
@@ -33,8 +33,8 @@ class WildEncounterViewModel(
         return wildEncounterMarker
     }
 
-    val critters = MutableStateFlow(
-        PostCrittersUIState.HasEntries(
+    val critters = MutableStateFlow( //TODO: change critterS to critter, is not a list
+        PostCrittersUIState.HasEntries( //TODO: here too
             critter = null,
             isLoading = false
         )

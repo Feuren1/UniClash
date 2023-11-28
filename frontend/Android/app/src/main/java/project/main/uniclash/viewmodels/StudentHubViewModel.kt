@@ -7,14 +7,17 @@ import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import project.main.uniclash.datatypes.Item
+import project.main.uniclash.datatypes.ItemForStudent
+import project.main.uniclash.datatypes.ItemTemplate
 import project.main.uniclash.datatypes.StudentHub
 import project.main.uniclash.retrofit.StudentHubService
 import project.main.uniclash.retrofit.enqueue
 
-public data class StudentHubIdCallback(val success: Boolean, val id: String)
+
+public data class BuyItemCallback(val success: Boolean, val item: String)
 
 sealed interface StudentHubUIState {
+
     data class HasEntries(
         val studentHub: StudentHub?,
         val isLoading: Boolean,
@@ -28,11 +31,18 @@ sealed interface StudentHubsUIState {
     ) : StudentHubsUIState
 }
 
-sealed interface ItemUIState {
+sealed interface ItemTemplatesUIState {
     data class HasEntries(
-        val items: List<Item>,
+        val itemTemplates: List<ItemTemplate>,
         val isLoading: Boolean,
-    ) : ItemUIState
+    ) : ItemTemplatesUIState
+}
+
+sealed interface ItemForStudentUIState {
+    data class HasEntries(
+        val itemForStudent: ItemForStudent?,
+        val isLoading: Boolean,
+    ) : ItemForStudentUIState
 }
 
 class StudentHubViewModel(
@@ -54,17 +64,24 @@ class StudentHubViewModel(
         )
     )
 
-    val items = MutableStateFlow(
-        ItemUIState.HasEntries(
+    val itemTemplates = MutableStateFlow(
+        ItemTemplatesUIState.HasEntries(
             emptyList(),
             isLoading = false
+        )
+    )
+
+    val itemForStudent = MutableStateFlow(
+        ItemForStudentUIState.HasEntries(
+            isLoading = false,
+            itemForStudent = null
         )
     )
 
     init {
         viewModelScope.launch {
             Log.d(TAG, "Fetching initial studentHub data: ")
-            loadItems()
+            loadItemTemplates()
         }
     }
 
@@ -117,36 +134,60 @@ class StudentHubViewModel(
     }
 
     //loads all itemTemplates inside the database
-    fun loadItems() {
+    fun loadItemTemplates() {
         viewModelScope.launch {
-            items.update { it.copy(isLoading = true) }
+            itemTemplates.update { it.copy(isLoading = true) }
             try {
-                val response = studentHubService.getItems().enqueue()
-                Log.d(TAG, "loadItems: $response")
+                val response = studentHubService.getItemTemplates().enqueue()
+                Log.d(TAG, "loadItemTemplates: $response")
                 if (response.isSuccessful) {
-                    Log.d(TAG, "loadItems: success")
+                    Log.d(TAG, "loadItemTemplates: success")
                     //creates an item list based on the fetched data
-                    val items = response.body()!!
-                    Log.d(TAG, "loadItems: $items")
+                    val itemTemplates = response.body()!!
+                    Log.d(TAG, "loadItemTemplates: $itemTemplates")
                     //replaces the critters list inside the UI state with the fetched data
-                    this@StudentHubViewModel.items.update {
+                    this@StudentHubViewModel.itemTemplates.update {
                         it.copy(
-                            items = items,
+                            itemTemplates = itemTemplates,
                             isLoading = false
                         )
                     }
                 }
             } catch (e: Exception) {
-                Log.e(TAG, "items: error")
+                Log.e(TAG, "itemTemplate: error")
                 e.printStackTrace()
             }
         }
     }
 
-    fun buyItem() {
 
-        println("Buy button was pressed")
-        //TODO: buying stuff logic
+    fun buyItem(quantity: Int, itemTemplateId: Int) {
+
+        println("Buy button was pressed in the ViewModel")
+
+//        studentHubService.postStudentItem(studentId ,ItemForStudent(quantity = quantity, itemTemplateId = itemTemplateId, studentId = studentId))
+
+        viewModelScope.launch {
+            itemForStudent.update { it.copy(isLoading = true) }
+            try {
+                var itemForStudent = ItemForStudent(quantity,itemTemplateId, 2)
+                val response = studentHubService.postStudentItem(2, itemForStudent).enqueue()
+                println(itemForStudent)
+                Log.d(TAG, "loadBuyItem: $response")
+                if (response.isSuccessful) {
+                    Log.d(TAG, "Success: ${response.body()}")
+                    response.body()?.let {
+                        this@StudentHubViewModel.itemForStudent.update { state ->
+                            state.copy(itemForStudent = it, isLoading = false)
+                        }
+                    }
+                } else {
+                    Log.d(TAG, "Failed")
+                }
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
+        }
     }
 
     companion object {

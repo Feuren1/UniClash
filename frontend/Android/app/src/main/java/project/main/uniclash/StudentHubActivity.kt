@@ -25,7 +25,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -34,7 +33,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import project.main.uniclash.datatypes.Item
+import project.main.uniclash.datatypes.ItemTemplate
 import project.main.uniclash.retrofit.StudentHubService
 import project.main.uniclash.ui.theme.UniClashTheme
 import project.main.uniclash.viewmodels.StudentHubViewModel
@@ -64,37 +63,34 @@ class StudentHubActivity : ComponentActivity() {
 }
 
 @Composable
-fun StudentHubScreen(
-    modifier: Modifier = Modifier,
-    studentHubViewModel: StudentHubViewModel = viewModel()
-) {
+fun StudentHubScreen(modifier: Modifier = Modifier,
+    studentHubViewModel: StudentHubViewModel = viewModel()) {
 
     var context = LocalContext.current
 
-    val studentHubsState by studentHubViewModel.studentHubs.collectAsState()
-    studentHubViewModel.loadStudentHubs()
+//    val studentHubsState by studentHubViewModel.studentHubs.collectAsState()
+//    studentHubViewModel.loadStudentHubs()
+//    var studentHubList = studentHubsState.studentHubs
 
-    val itemsHubState by studentHubViewModel.items.collectAsState()
-    studentHubViewModel.loadItems()
-
-    var studentHubList = studentHubsState.studentHubs
-    var itemList = itemsHubState.items
+    val itemTemplatesState by studentHubViewModel.itemTemplates.collectAsState()
+    studentHubViewModel.loadItemTemplates()
+    var itemTemplateList = itemTemplatesState.itemTemplates
 
     // test list of Items
-    //var itemList = List(2) { i -> Item("Item$i", 5) }
+//    var itemTemplateList = List(20) { i -> ItemTemplate(i,"Item${i + 1}", 5) }
 
-    var boughtItemCount by rememberSaveable { mutableStateOf(0) }
+    var boughtItemName by rememberSaveable { mutableStateOf("Nothing") }
 
     Column(modifier = modifier) {
 
-        Text("You have bought $boughtItemCount items.")
+        Text("You have bought $boughtItemName.")
 
-//        Button(onClick = {
-//            println("Items: $itemList")
+        Button(onClick = {
+            println("Items: $itemTemplateList")
 //            println("StudentHubs: $studentHubList")
-//            }) {
-//            Text(text = "Debug")
-//        }
+            }) {
+            Text(text = "Debug")
+        }
 
         //Exit Box, image and position:
         Box(
@@ -116,30 +112,30 @@ fun StudentHubScreen(
             )
         }
 
-        ItemList(itemList,
-            onButtonClicked = {
+        ItemList(itemTemplateList,
+            onButtonClicked = { itemTemplate ->
+                println("ID: ${itemTemplate.id}, Name: ${itemTemplate.name}, Cost: ${itemTemplate.cost}")
+                boughtItemName = itemTemplate.name
                 println("Before buyItem")
-                studentHubViewModel.buyItem()
+                studentHubViewModel.buyItem(1, itemTemplate.id)
                 println("After buyItem")
-                boughtItemCount++
                 println("Buy item clicked in StudentHub")
             })
     }
 }
 
 @Composable
-fun ItemList(itemList: List<Item>, onButtonClicked: () -> Unit, modifier: Modifier = Modifier) {
+fun ItemList(itemTemplateList: List<ItemTemplate>, onButtonClicked: (ItemTemplate) -> Unit, modifier: Modifier = Modifier) {
 
     LazyColumn(modifier = modifier) {
 
-        items(items = itemList, key = { item -> item.name }) {
+        items(items = itemTemplateList, key = { item -> item.name }) {
 
                 item ->
-            ItemRow(itemName = item.name,
-                itemCost = item.cost,
+            ItemRow(itemTemplate = item,
                 onButtonClicked = {
                     println("BEFORE Buy Item clicked in ItemList")
-                    onButtonClicked()
+                    onButtonClicked(item)
                     println("AFTER Buy Item clicked in ItemList")
                 })
         }
@@ -148,9 +144,8 @@ fun ItemList(itemList: List<Item>, onButtonClicked: () -> Unit, modifier: Modifi
 
 @Composable
 fun ItemRow(
-    itemName: String,
-    itemCost: Int,
-    onButtonClicked: () -> Unit,
+    itemTemplate: ItemTemplate,
+    onButtonClicked: (ItemTemplate) -> Unit,
     modifier: Modifier = Modifier
 ) {
 
@@ -159,7 +154,7 @@ fun ItemRow(
         Text(modifier = Modifier
             .weight(1f)
             .padding(start = 16.dp),
-            text = "$itemName for $itemCost"
+            text = "${itemTemplate.name} for ${itemTemplate.cost}"
         )
 
         Button(modifier = Modifier
@@ -167,7 +162,7 @@ fun ItemRow(
             .padding(end = 16.dp),
             onClick = {
                 println("BEFORE Buy button clicked in ItemRow")
-                onButtonClicked()
+                onButtonClicked(itemTemplate)
                 println("AFTER Buy button clicked in ItemRow")
             }) {
 
@@ -175,37 +170,3 @@ fun ItemRow(
         }
     }
 }
-
-//@Composable
-//fun StatefulCounter(modifier: Modifier = Modifier) {
-//    var count by rememberSaveable { mutableStateOf(0) }
-//    StatelessCounter(
-//        count = count,
-//        onIncrement = { count++ },
-//        modifier = modifier
-//    )
-//}
-//
-//@Composable
-//fun StatelessCounter(count: Int, onIncrement: () -> Unit, modifier: Modifier = Modifier) {
-//    Column(modifier = modifier.padding(16.dp)) {
-//        if (count > 0) {
-//            Text("You have bought $count items.")
-//        }
-//        Button(
-//            onClick = onIncrement,
-//            enabled = count < 10,
-//            modifier = Modifier.padding(top = 8.dp)
-//        ) {
-//            Text("Add one")
-//        }
-//    }
-//}
-
-//@Preview(showBackground = true)
-//@Composable
-//fun GreetingPreview() {
-//    UniClashTheme {
-//        StudentHub()
-//    }
-//}

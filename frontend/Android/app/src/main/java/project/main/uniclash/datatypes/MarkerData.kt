@@ -4,11 +4,10 @@ import android.app.Activity
 import android.graphics.drawable.Drawable
 import com.utsman.osmandcompose.MarkerState
 import project.main.uniclash.MainActivity
-import project.main.uniclash.MenuActivity
 
-data class MyMarker(
-    var id: String? = "id",
-    var state : MarkerState,
+data class MarkerData(
+    var id: String? = "id",//kann weg
+    var state : MarkerState, //todo kein Marker state sondern, geoPoint
     var icon : Drawable? = null,
     var visible : Boolean = true,
     var title :String? = "marker",
@@ -18,4 +17,5 @@ data class MyMarker(
     var buttonText : String? = "button",
     var critterUsable: CritterUsable ? = null,
     var studentHub : StudentHub ? = null
+    //todo drei data data class die extenden.
     )

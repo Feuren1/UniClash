@@ -30,6 +30,14 @@
             android:name=".ArenaActivity"
             android:exported="false"
             android:label="@string/title_activity_arena"
+            android:name=".InventoryActivity"
+            android:exported="false"
+            android:label="@string/title_activity_inventory"
+            android:theme="@style/Theme.UniClash" />
+        <activity
+            android:name=".CritterProfileActivity"
+            android:exported="false"
+            android:label="@string/title_activity_critter_profile"
             android:theme="@style/Theme.UniClash" />
         <activity
             android:name=".RegisterActivity"

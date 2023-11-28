@@ -36,5 +36,20 @@ export class StudentCritterService {
     return critterUsables;
   }
 
+  async createCritterUsableListOfAll(): Promise<CritterUsable[]> {
 
+    const critters: Critter[] = await this.critterRepository.find();
+    const critterUsables: CritterUsable[] = [];
+
+    for (const critter of critters) {
+
+      //if (critter.id !== undefined) {//other option, that was used, is to remove the ? in the model at id?
+      //}
+      const critterUsable = await this.critterStatsService.createCritterUsable(critter.id);
+      critterUsables.push(critterUsable);
+
+    }
+
+    return critterUsables;
+  }
 }

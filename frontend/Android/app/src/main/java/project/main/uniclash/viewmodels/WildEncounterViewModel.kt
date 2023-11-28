@@ -1,27 +1,20 @@
 package project.main.uniclash.viewmodels
 
 import android.content.ContentValues.TAG
-import android.content.Intent
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
-import androidx.lifecycle.viewmodel.compose.viewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.flow.update
-import project.main.uniclash.MapActivity
-import project.main.uniclash.WildEncounterActivity
-import project.main.uniclash.datatypes.CritterForStudent
 import project.main.uniclash.datatypes.CritterUsable
-import project.main.uniclash.datatypes.MyMarker
+import project.main.uniclash.datatypes.MarkerData
 import project.main.uniclash.datatypes.SelectedMarker
 import project.main.uniclash.retrofit.CritterService
 import project.main.uniclash.retrofit.enqueue
-import retrofit2.Call
 
-sealed interface PostCrittersUIState {
+sealed interface PostCrittersUIState { //TODO: CritterS to Critter?
     data class HasEntries(
         val critter: CritterUsable?,
         val isLoading: Boolean,
@@ -36,12 +29,12 @@ class WildEncounterViewModel(
             Log.d(TAG, "Fetching WildEncounterViewModel ")
         }
     }
-    fun getWildEncounterMarker(): MyMarker?{
+    fun getWildEncounterMarker(): MarkerData?{
         return wildEncounterMarker
     }
 
-    val critters = MutableStateFlow(
-        PostCrittersUIState.HasEntries(
+    val critters = MutableStateFlow( //TODO: change critterS to critter, is not a list
+        PostCrittersUIState.HasEntries( //TODO: here too
             critter = null,
             isLoading = false
         )

@@ -40,6 +40,11 @@ export class CritterTemplate extends Entity {
   })
   baseSpeed: number;
 
+  @property({
+    type: 'number',
+  })
+  evolesAt: number;
+
   @hasMany(() => Critter)
   critters: Critter[];
 

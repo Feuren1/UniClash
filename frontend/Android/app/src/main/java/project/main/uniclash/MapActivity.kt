@@ -65,12 +65,11 @@ import com.utsman.osmandcompose.rememberMarkerState
 import kotlinx.coroutines.delay
 import org.osmdroid.util.GeoPoint
 import project.main.uniclash.datatypes.Counter
-import project.main.uniclash.datatypes.CritterPic
 import project.main.uniclash.datatypes.CritterUsable
 import project.main.uniclash.datatypes.Locations
 import project.main.uniclash.datatypes.MapSaver
 import project.main.uniclash.datatypes.MapSettings
-import project.main.uniclash.datatypes.MyMarker
+import project.main.uniclash.datatypes.MarkerData
 import project.main.uniclash.datatypes.SelectedMarker
 import project.main.uniclash.datatypes.StudentHub
 import project.main.uniclash.retrofit.CritterService
@@ -103,7 +102,7 @@ class MapActivity : ComponentActivity() {
     private var mainLatitude: Double by mutableStateOf(Locations.USERLOCATION.getLocation().latitude) //for gps location
     private var mainLongitude: Double by mutableStateOf(Locations.USERLOCATION.getLocation().longitude)//"
 
-    private var markerList = ArrayList<MyMarker>()
+    private var markerList = ArrayList<MarkerData>()
     private var markersLoaded by mutableStateOf(false)
     private var movingCamera : Boolean ? = true
 
@@ -122,6 +121,7 @@ class MapActivity : ComponentActivity() {
 
 
         setContent {
+            // todo uistate from viewmodel
             UniClashTheme {
                 Surface(
                     modifier = Modifier.fillMaxSize(),
@@ -332,7 +332,7 @@ class MapActivity : ComponentActivity() {
     }
 
     @Composable
-    fun OpenActivityButton(marker : MyMarker) {
+    fun OpenActivityButton(marker : MarkerData) {
         val context = LocalContext.current
         val distance = haversineDistance(marker.state.geoPoint.latitude, marker.state.geoPoint.longitude, Locations.USERLOCATION.getLocation().latitude, Locations.USERLOCATION.getLocation().longitude)
         if(distance < 76) {
@@ -426,7 +426,6 @@ class MapActivity : ComponentActivity() {
         }
     }
 
-    @Composable
     fun LoadWildEncounter(){
         if(shouldLoadWildEncounter) {
             Log.d(LOCATION_TAG, "Excecuted second loadwildencounter")
@@ -437,7 +436,7 @@ class MapActivity : ComponentActivity() {
         }
     }
 
-    @Composable
+
     fun LoadStudentHubs(){
         if(shouldLoadStudentHubs) {
             println("trying to load student hubs ${MapSaver.STUDENTHUB.getMarker().toString()}")
@@ -458,7 +457,7 @@ class MapActivity : ComponentActivity() {
         if(shouldInitStudentHubs) {
             val context = LocalContext.current
             val studentHubs = StudentHubs(studentHubViewModel)
-            var studentHubMarkerList = ArrayList<MyMarker>()
+            var studentHubMarkerList = ArrayList<MarkerData>()
 
             println("${studentHubs.size} size from the database")
 
@@ -469,7 +468,7 @@ class MapActivity : ComponentActivity() {
                     mutableStateOf(resizeDrawableTo50x50(context, R.drawable.store))
                 }
 
-                val myMarker = MyMarker(
+                val myMarker = MarkerData(
                     id = "1",
                     state = MarkerState(geoPoint = geoPoint),
                     icon = icon,
@@ -489,14 +488,14 @@ class MapActivity : ComponentActivity() {
         }
     }
 
-    fun addMarker(marker: MyMarker) {
+    fun addMarker(marker: MarkerData) {
         if(!(markerList.contains(marker))) {
             markerList.add(marker)
             updateMapMarkers()
         }
     }
 
-    fun addListOfMarkers(markers: ArrayList<MyMarker>) {
+    fun addListOfMarkers(markers: ArrayList<MarkerData>) {
         if(!(markerList.containsAll(markers))) {
             if (!markersLoaded!!) {
                 for (marker in markers) {
@@ -507,7 +506,7 @@ class MapActivity : ComponentActivity() {
         }
     }
 
-    fun removeMarker(marker: MyMarker) {
+    fun removeMarker(marker: MarkerData) {
         print("${markerList.size} markers")
         markerList.remove(marker)
         print("${markerList.size} markers")
@@ -738,6 +737,8 @@ class MapActivity : ComponentActivity() {
     val studentHubViewModel: StudentHubViewModel by viewModels(factoryProducer = {
         StudentHubViewModel.provideFactory(StudentHubService.getInstance(this))
     })
+
+
 
     @Composable
     fun WildEncounter(uniClashViewModel: UniClashViewModel):List<CritterUsable?> {

@@ -18,15 +18,17 @@ import {
   requestBody,
   response,
 } from '@loopback/rest';
-import {Critter} from '../models';
+import {Critter, CritterUsable} from '../models';
 import {CritterRepository} from '../repositories';
 import {EvolveCritterService} from '../services';
+import {StudentCritterService} from '../services/student-critter.service';
 
 export class CritterController {
   constructor(
     @service(EvolveCritterService) protected evolveCritterService: EvolveCritterService,
     @repository(CritterRepository)
     public critterRepository: CritterRepository,
+    @service(StudentCritterService) protected studentCritterService: StudentCritterService,
   ) { }
 
   @post('/critters')
@@ -154,10 +156,10 @@ export class CritterController {
   @get('/critters/{id}/evolve', {
     responses: {
       '200': {
-        description: 'Calculate and return CritterUsable for all critters of a student',
+        description: 'Evolve Critter and return Critter',
         content: {
           'application/json': {
-            schema: getModelSchemaRef(Critter), // Use CritterUsable schema
+            schema: getModelSchemaRef(Critter),
           },
         },
       },
@@ -169,6 +171,39 @@ export class CritterController {
     return this.evolveCritterService.evolveCritter(id);
   }
 
+  @get('/critters/{id}/evolveUsable', {
+    responses: {
+      '200': {
+        description: 'Evolve Critter and return CritterUsable',
+        content: {
+          'application/json': {
+            schema: getModelSchemaRef(CritterUsable),
+          },
+        },
+      },
+    },
+  })
+  async evolveCritterUsable(
+    @param.path.number('id') id: number,
+  ): Promise<CritterUsable> {
+    return this.evolveCritterService.evolveCritterUsable(id);
+  }
 
+  @get('/usables', {
+    responses: {
+      '200': {
+        description: 'Calculate and return CritterUsable of all critters',
+        content: {
+          'application/json': {
+            schema: getModelSchemaRef(CritterUsable), // Use CritterUsable schema
+          },
+        },
+      },
+    },
+  })
+  async calculateAllCritterUsable(
+  ): Promise<CritterUsable[]> {
+    return this.studentCritterService.createCritterUsableListOfAll();
+  }
 
 }

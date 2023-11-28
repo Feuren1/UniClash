@@ -30,6 +30,8 @@
             android:name=".ArenaActivity"
             android:exported="false"
             android:label="@string/title_activity_arena"
+            android:theme="@style/Theme.UniClash" />
+        <activity
             android:name=".InventoryActivity"
             android:exported="false"
             android:label="@string/title_activity_inventory"

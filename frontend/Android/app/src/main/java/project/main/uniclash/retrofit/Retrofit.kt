@@ -14,6 +14,7 @@ import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import java.io.IOException
 import java.lang.String
+import java.net.HttpURLConnection
 import java.time.Instant
 import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
@@ -65,6 +66,10 @@ internal class AuthInterceptor(private val context: Context) : Interceptor {
         }
 
         println("Request headers: ${request.headers}")
+        //var response = chain.proceed(request)
+        //if(response.code== HttpURLConnection.HTTP_UNAUTHORIZED){
+        //    response.close()
+        //}
         return chain.proceed(request)
     }
 }

@@ -17,17 +17,18 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
 import project.main.uniclash.retrofit.UserService
 import project.main.uniclash.ui.theme.UniClashTheme
-import project.main.uniclash.viewmodels.UserViewModel
+import project.main.uniclash.viewmodels.LoginViewModel
+import project.main.uniclash.viewmodels.ProfileViewModel
 
 class ProfileActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
-        val userViewModel: UserViewModel by viewModels(factoryProducer = {
-            UserViewModel.provideFactory(UserService.getInstance(this), Application())
+        val profileViewModel: ProfileViewModel by viewModels(factoryProducer = {
+            ProfileViewModel.provideFactory(UserService.getInstance(this), Application())
         })
         val preferences = this.getSharedPreferences("Ids", Context.MODE_PRIVATE)
         val token = preferences.getString("UserId", "") ?: ""
 
-        userViewModel.loadProfile(token, this)
+        profileViewModel.loadProfile(token, this)
 
         super.onCreate(savedInstanceState)
         setContent {
@@ -36,7 +37,7 @@ class ProfileActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    PlayerProfile(userViewModel)
+                    PlayerProfile(profileViewModel)
                 }
             }
         }
@@ -44,8 +45,8 @@ class ProfileActivity : ComponentActivity() {
     }
 
 @Composable
-fun PlayerProfile(userViewModel: UserViewModel) {
-    val userUIState by userViewModel.user.collectAsState()
+fun PlayerProfile(profileViewModel: ProfileViewModel) {
+    val userUIState by profileViewModel.user.collectAsState()
 
     Column(
         modifier = Modifier

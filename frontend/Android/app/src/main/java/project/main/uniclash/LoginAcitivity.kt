@@ -14,8 +14,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Email
@@ -31,10 +29,7 @@ import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
-import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
@@ -44,13 +39,14 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import project.main.uniclash.retrofit.UserService
 import project.main.uniclash.ui.theme.UniClashTheme
-import project.main.uniclash.viewmodels.UserViewModel
+import project.main.uniclash.viewmodels.LoginViewModel
+import project.main.uniclash.viewmodels.UserIDCallback
 
 @OptIn(ExperimentalComposeUiApi::class)
 class LoginAcitivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
-            val userViewModel: UserViewModel by viewModels(factoryProducer = {
-                UserViewModel.provideFactory(UserService.getInstance(this), Application())
+            val loginViewModel: LoginViewModel by viewModels(factoryProducer = {
+                LoginViewModel.provideFactory(UserService.getInstance(this), Application())
             })
 
         val activityContext = this
@@ -64,8 +60,8 @@ class LoginAcitivity : ComponentActivity() {
                         .fillMaxSize()
                         .background(MaterialTheme.colorScheme.background),
                 ) {
-                    val userUIState by userViewModel.user.collectAsState()
-                    val message by userViewModel.text.collectAsState()
+                    val message by loginViewModel.text.collectAsState()
+                    val loginUIState by loginViewModel.login.collectAsState()
 
                     Column(
                         modifier = Modifier
@@ -84,12 +80,12 @@ class LoginAcitivity : ComponentActivity() {
                             )
                         }
 
-                        if (userUIState.user != null) {
-                            println(userUIState.user)
+                        if (loginUIState.success == true) {
+                            println(loginUIState.success)
                             ReturnToMenuButton(context = activityContext)
                         }
 
-                        LoginForm(userViewModel)
+                        LoginForm(loginViewModel)
                     }
                 }
             }
@@ -100,7 +96,7 @@ class LoginAcitivity : ComponentActivity() {
 
 @OptIn(ExperimentalComposeUiApi::class, ExperimentalMaterial3Api::class)
 @Composable
-fun LoginForm(userViewModel: UserViewModel) {
+fun LoginForm(loginViewModel: LoginViewModel) {
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     var passwordVisibility by remember { mutableStateOf(false) }
@@ -154,7 +150,7 @@ fun LoginForm(userViewModel: UserViewModel) {
 
         Button(
             onClick = {
-                userViewModel.login(email, password, context) { callback ->
+                loginViewModel.login(email, password, context) { callback ->
                     if (callback.success) {
                         // Login successful
                         // Handle the success scenario (e.g., navigate to the next screen)

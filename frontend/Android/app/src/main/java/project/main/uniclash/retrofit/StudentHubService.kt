@@ -1,8 +1,6 @@
 package project.main.uniclash.retrofit
 
 import android.content.Context
-import project.main.uniclash.datatypes.CritterForStudent
-import project.main.uniclash.datatypes.CritterUsable
 import project.main.uniclash.datatypes.Item
 import project.main.uniclash.datatypes.ItemForStudent
 import project.main.uniclash.datatypes.ItemTemplate
@@ -24,8 +22,8 @@ interface StudentHubService {
     fun getItemTemplates(): Call<List<ItemTemplate>>
     @GET("/items")
     fun getItems(): Call<List<Item>>
-    @POST("/student/{id}/items")
-    fun postStudentItem(@Path("id") id: Int, @Body itemForStudent: ItemForStudent) : Call<Item>
+    @POST("/students/{id}/items")
+    fun postStudentItem(@Path("id") id: Int, @Body itemForStudent: ItemForStudent) : Call<ItemForStudent>
 
     companion object {
         private var studentHubService: StudentHubService? = null

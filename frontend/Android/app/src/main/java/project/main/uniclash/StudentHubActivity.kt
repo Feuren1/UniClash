@@ -72,9 +72,9 @@ fun StudentHubScreen(modifier: Modifier = Modifier,
 //    studentHubViewModel.loadStudentHubs()
 //    var studentHubList = studentHubsState.studentHubs
 
-    val itemTemplatesHubState by studentHubViewModel.itemTemplates.collectAsState()
+    val itemTemplatesState by studentHubViewModel.itemTemplates.collectAsState()
     studentHubViewModel.loadItemTemplates()
-    var itemTemplateList = itemTemplatesHubState.itemTemplates
+    var itemTemplateList = itemTemplatesState.itemTemplates
 
     // test list of Items
 //    var itemTemplateList = List(20) { i -> ItemTemplate(i,"Item${i + 1}", 5) }
@@ -114,10 +114,10 @@ fun StudentHubScreen(modifier: Modifier = Modifier,
 
         ItemList(itemTemplateList,
             onButtonClicked = { itemTemplate ->
-                //println("ID: ${itemTemplate.id}, Name: ${itemTemplate.name}, Cost: ${itemTemplate.cost}")
-                //boughtItemName = itemTemplate.name
+                println("ID: ${itemTemplate.id}, Name: ${itemTemplate.name}, Cost: ${itemTemplate.cost}")
+                boughtItemName = itemTemplate.name
                 println("Before buyItem")
-                studentHubViewModel.buyItem(1, 1, 2)
+                studentHubViewModel.buyItem(1, itemTemplate.id)
                 println("After buyItem")
                 println("Buy item clicked in StudentHub")
             })

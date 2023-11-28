@@ -161,31 +161,59 @@ class StudentHubViewModel(
     }
 
 
-    fun buyItem(quantity: Int, itemTemplateId: Int) {
+    fun buyItem(itemTemplateId: Int) {
 
         println("Buy button was pressed in the ViewModel")
 
 //        studentHubService.postStudentItem(studentId ,ItemForStudent(quantity = quantity, itemTemplateId = itemTemplateId, studentId = studentId))
 
-        viewModelScope.launch {
-            itemForStudent.update { it.copy(isLoading = true) }
-            try {
-                var itemForStudent = ItemForStudent(quantity,itemTemplateId, 2)
-                val response = studentHubService.postStudentItem(2, itemForStudent).enqueue()
-                println(itemForStudent)
-                Log.d(TAG, "loadBuyItem: $response")
-                if (response.isSuccessful) {
-                    Log.d(TAG, "Success: ${response.body()}")
-                    response.body()?.let {
-                        this@StudentHubViewModel.itemForStudent.update { state ->
-                            state.copy(itemForStudent = it, isLoading = false)
+        val boolean = false
+
+        if(boolean == true /*StudentItem ItemTemplateId doesn't exist = POST a new one*/) {
+
+            viewModelScope.launch {
+                itemForStudent.update { it.copy(isLoading = true) }
+                try {
+                    var itemForStudent = ItemForStudent(1,itemTemplateId, 2)
+                    val response = studentHubService.postStudentItem(2, itemForStudent).enqueue()
+                    println(itemForStudent)
+                    Log.d(TAG, "loadBuyItem: $response")
+                    if (response.isSuccessful) {
+                        Log.d(TAG, "Success: ${response.body()}")
+                        response.body()?.let {
+                            this@StudentHubViewModel.itemForStudent.update { state ->
+                                state.copy(itemForStudent = it, isLoading = false)
+                            }
                         }
+                    } else {
+                        Log.d(TAG, "Failed")
                     }
-                } else {
-                    Log.d(TAG, "Failed")
+                } catch (e: Exception) {
+                    e.printStackTrace()
                 }
-            } catch (e: Exception) {
-                e.printStackTrace()
+            }
+        } else {
+
+            viewModelScope.launch {
+                itemForStudent.update { it.copy(isLoading = true) }
+                try {
+                    val response = studentHubService.updateItemQuantityByTemplateId(3, itemTemplateId, 1).enqueue()
+                    println(itemForStudent)
+                    Log.d(TAG, "loadUpdateItemQuantity: $response")
+                    if (response.isSuccessful) {
+                        Log.d(TAG, "Success: ${response.body()}")
+                        response.body()?.let {
+                            this@StudentHubViewModel.itemForStudent.update { state ->
+                                state.copy(itemForStudent = it, isLoading = false)
+                            }
+                        }
+                        println(itemForStudent)
+                    } else {
+                        Log.d(TAG, "Failed")
+                    }
+                } catch (e: Exception) {
+                    e.printStackTrace()
+                }
             }
         }
     }

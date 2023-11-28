@@ -9,7 +9,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import project.main.uniclash.datatypes.CritterUsable
-import project.main.uniclash.datatypes.MyMarker
+import project.main.uniclash.datatypes.MarkerData
 import project.main.uniclash.datatypes.SelectedMarker
 import project.main.uniclash.retrofit.CritterService
 import project.main.uniclash.retrofit.enqueue
@@ -29,7 +29,7 @@ class WildEncounterViewModel(
             Log.d(TAG, "Fetching WildEncounterViewModel ")
         }
     }
-    fun getWildEncounterMarker(): MyMarker?{
+    fun getWildEncounterMarker(): MarkerData?{
         return wildEncounterMarker
     }
 

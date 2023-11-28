@@ -14,16 +14,16 @@ enum class MapSettings(private var selection : Boolean){
         selection = setSelection
     }
 }
-enum class MapSaver(private var markers: ArrayList<MyMarker>?) {
+enum class MapSaver(private var markers: ArrayList<MarkerData>?) {
     WILDENCOUNTER(null),
     ARENA(null),
     STUDENTHUB(null);
 
-    fun getMarker(): ArrayList<MyMarker>? {
+    fun getMarker(): ArrayList<MarkerData>? {
         return markers
     }
 
-    fun setMarker(setMarker: ArrayList<MyMarker>?){
+    fun setMarker(setMarker: ArrayList<MarkerData>?){
         markers = setMarker
     }
 
@@ -32,16 +32,16 @@ enum class MapSaver(private var markers: ArrayList<MyMarker>?) {
     }
 }
 
-enum class SelectedMarker(private var marker:MyMarker?) {
+enum class SelectedMarker(private var marker:MarkerData?) {
     SELECTEDMARKER(null);
 
-    fun takeMarker(): MyMarker? {
+    fun takeMarker(): MarkerData? {
         val getter = marker
         marker = null
         return getter
     }
 
-    fun setMarker(setMarker: MyMarker?){
+    fun setMarker(setMarker: MarkerData?){
         marker = setMarker
     }
 }

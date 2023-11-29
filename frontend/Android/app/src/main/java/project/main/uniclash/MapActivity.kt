@@ -80,12 +80,12 @@ import java.util.concurrent.TimeUnit
 class MapActivity : ComponentActivity() {
     private lateinit var fusedLocationClient: FusedLocationProviderClient
 
-    val mapLocationViewModel: MapLocationViewModel by viewModels(factoryProducer = {
-        MapLocationViewModel.provideFactory()
-    })
-
     private val locationPermissions = LocationPermissions(this, this)
     private val mapCalculations = MapCalculations()
+
+    val mapLocationViewModel: MapLocationViewModel by viewModels(factoryProducer = {
+        MapLocationViewModel.provideFactory(locationPermissions)
+    })
 
     private var startMapRequested by mutableStateOf(false)
     private var mainLatitude: Double by mutableStateOf(Locations.USERLOCATION.getLocation().latitude) //for gps location
@@ -109,15 +109,21 @@ class MapActivity : ComponentActivity() {
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
 
 
+        var currentUserLocation : MapLocationViewModel.LatandLong = MapLocationViewModel.LatandLong(0.0,0.0)
+        mapLocationViewModel.getUserLocation(this) { location ->
+            currentUserLocation = location
+        }
+
         setContent {
             // todo uistate from viewmodel
+
             UniClashTheme {
                 Surface(
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
                     if (locationPermissions.hasPermissions() || startMapRequested) {
-                        val currentUserLocation = getUserLocation(context = LocalContext.current)
+                        //  val currentUserLocation = mapLocationViewModel.getUserLocation(context = LocalContext.current)
                         if(currentUserLocation.latitude != 0.0 && currentUserLocation.longitude != 0.0) {
                             mainLatitude = currentUserLocation.latitude
                             mainLongitude = currentUserLocation.longitude
@@ -175,6 +181,24 @@ class MapActivity : ComponentActivity() {
     }
 
     @Composable
+    fun MapView(viewModel: MapLocationViewModel) {
+        val context = LocalContext.current
+
+        // Use LaunchedEffect to observe the location updates when the composable is first launched
+        LaunchedEffect(viewModel) {
+            viewModel.getUserLocation(context) { location ->
+                mainLatitude = location.latitude
+                mainLongitude = location.longitude
+                // Handle the updated location here
+                // For example, update UI or perform any other action
+            }
+        }
+
+        // You can add your Map UI here using the provided location data
+        // ...
+    }
+
+    @Composable
     fun Map() {
         LoadFirstWildEncounter()
         LoadWildEncounter()
@@ -183,9 +207,18 @@ class MapActivity : ComponentActivity() {
 
         SettingUpMap()
 
+        val contextForLocation = LocalContext.current
+
         LaunchedEffect(Unit) {
             while (true) {
+
+                mapLocationViewModel.getUserLocation(contextForLocation) { location ->
+                    mainLatitude = location.latitude
+                    mainLongitude = location.longitude
+                }
+
                 val tolerance = 0.0001 //0.0001 before
+
                 if (Math.abs(mainLatitude - cameraState.geoPoint.latitude) > tolerance || Math.abs(
                         mainLongitude - cameraState.geoPoint.longitude
                     ) > tolerance
@@ -491,15 +524,15 @@ class MapActivity : ComponentActivity() {
      * Manages all location related tasks for the app.
      */
 
-//A callback for receiving notifications from the FusedLocationProviderClient.
-    lateinit var locationCallback: LocationCallback
-
-    //The main entry point for interacting with the Fused Location Provider
-    lateinit var locationProvider: FusedLocationProviderClient
-
     companion object {
         private const val LOCATION_TAG = "MyLocationTag"
     }
+
+//A callback for receiving notifications from the FusedLocationProviderClient.
+   /*lateinit var locationCallback: LocationCallback
+
+    //The main entry point for interacting with the Fused Location Provider
+    lateinit var locationProvider: FusedLocationProviderClient
 
     @SuppressLint("MissingPermission")
     @Composable
@@ -604,7 +637,7 @@ class MapActivity : ComponentActivity() {
         } catch (se: SecurityException) {
             Log.e(LOCATION_TAG, "Failed to remove Location Callback.. $se")
         }
-    }
+    }*/
  //BackendStuff
 
     private val uniClashViewModel: UniClashViewModel by viewModels(factoryProducer = {

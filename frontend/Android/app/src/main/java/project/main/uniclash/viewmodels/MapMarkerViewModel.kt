@@ -9,8 +9,10 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import org.osmdroid.util.GeoPoint
+import project.main.uniclash.ArenaActivity
 import project.main.uniclash.R
 import project.main.uniclash.StudentHubActivity
+import project.main.uniclash.datatypes.MarkerArena
 import project.main.uniclash.datatypes.MarkerData
 import project.main.uniclash.datatypes.MarkerStudentHub
 import project.main.uniclash.map.MapCalculations
@@ -27,7 +29,7 @@ sealed interface MarkersStudentHubUIState {
 
 sealed interface MarkersArenaUIState {
     data class HasEntries(
-        val makersArenas: ArrayList<MarkerData?>,
+        val makersArena: ArrayList<MarkerData?>,
         val isLoading: Boolean,
     ) : MarkersArenaUIState
 }
@@ -36,7 +38,8 @@ class MapMarkerViewModel(
     private val studentHubService : StudentHubService,
     private val arenaService : ArenaService,
     private val context : Context,
-    private val studentHubViewModel: StudentHubViewModel
+    private val studentHubViewModel: StudentHubViewModel,
+    private val arenaViewModel : ArenaViewModel
 ) : ViewModel() {
 
     var mapCalculations = MapCalculations()
@@ -50,7 +53,7 @@ class MapMarkerViewModel(
     val markersArena = MutableStateFlow(
         MarkersArenaUIState.HasEntries(
             isLoading = false,
-            makersArenas =   ArrayList<MarkerData?>()
+            makersArena =   ArrayList<MarkerData?>()
         )
     )
 
@@ -95,13 +98,52 @@ class MapMarkerViewModel(
                     markersStudentHub = studentHubMarkerList,
                 )
             }
-            println("size of $studentHubMarkerList in mapMarkerViewmodel")
         }
     }
 
 
     fun initMarkersArena(){
-        var arenas = arenaService.getArenas()
+        if (markersArena.value.isLoading == false) {
+            if(arenaViewModel.arenas.value.arenas.isNotEmpty()) {
+                this@MapMarkerViewModel.markersArena.update {
+                    it.copy(
+                        isLoading = true,
+                    )
+                }
+            }//TODO Dirty solution to avoid while loop
+
+            val arenas = arenaViewModel.arenas.value.arenas
+            var arenasMarkerList = ArrayList<MarkerData?>()
+            var i = 0
+            while (i < arenas.size) {
+                val arena = arenas.get(i)
+                val geoPoint = GeoPoint(arena?.lat!!, arena?.lon!!)
+
+                val icon: Drawable? =
+                    mapCalculations.resizeDrawable(context, R.drawable.arena, 50.0F)
+
+                val myMarker = MarkerArena(
+                    state = geoPoint,
+                    icon = icon,
+                    visible = true,
+                    title = "${arena?.name}",
+                    snippet = "${arena?.description}",
+                    pic = R.drawable.arena,
+                    button = ArenaActivity::class.java,
+                    buttonText = "Go to Hub",
+                    arena = arena
+                )
+
+                arenasMarkerList.add(myMarker)
+                i++
+            }
+            this@MapMarkerViewModel.markersArena.update {
+                it.copy(
+                    //isLoading = false,
+                    makersArena = arenasMarkerList,
+                )
+            }
+        }
     }
 
     fun initWildEncounter(){
@@ -111,6 +153,11 @@ class MapMarkerViewModel(
         viewModelScope.launch {
             studentHubViewModel.studentHubs.collect {
                 initMarkersStudentHub()
+            }
+        }
+        viewModelScope.launch {
+            arenaViewModel.arenas.collect {
+                initMarkersArena()
             }
         }
     }
@@ -123,7 +170,8 @@ class MapMarkerViewModel(
             studentHubService: StudentHubService,
             arenaService : ArenaService,
             context : Context,
-            studentHubViewModel: StudentHubViewModel
+            studentHubViewModel: StudentHubViewModel,
+            arenaViewModel: ArenaViewModel
         ): ViewModelProvider.Factory =
             object : ViewModelProvider.Factory {
                 @Suppress("UNCHECKED_CAST")
@@ -134,6 +182,7 @@ class MapMarkerViewModel(
                         arenaService,
                         context,
                         studentHubViewModel,
+                        arenaViewModel,
                     ) as T
                 }
             }

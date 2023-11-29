@@ -72,7 +72,9 @@ class ArenaActivity : ComponentActivity() {
                                     .padding(16.dp)
                             ) {
                                 items(arenas) { arena ->
-                                    ArenaListItem(arena = arena)
+                                    if (arena != null) {
+                                        ArenaListItem(arena = arena)
+                                    } //add not null check due to map activity changes
                                 }
                             }
                         }

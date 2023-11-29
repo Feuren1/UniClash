@@ -65,6 +65,7 @@ import project.main.uniclash.retrofit.ArenaService
 import project.main.uniclash.retrofit.CritterService
 import project.main.uniclash.retrofit.StudentHubService
 import project.main.uniclash.ui.theme.UniClashTheme
+import project.main.uniclash.viewmodels.ArenaViewModel
 import project.main.uniclash.viewmodels.MapLocationViewModel
 import project.main.uniclash.viewmodels.MapMarkerViewModel
 import project.main.uniclash.viewmodels.StudentHubViewModel
@@ -88,8 +89,12 @@ class MapActivity : ComponentActivity() {
         StudentHubViewModel.provideFactory(StudentHubService.getInstance(this))
     })
 
+    private val arenaViewModel: ArenaViewModel by viewModels(factoryProducer = {
+        ArenaViewModel.provideFactory(ArenaService.getInstance(this))
+    })
+
     private val mapMarkerViewModel: MapMarkerViewModel by viewModels(factoryProducer = {
-        MapMarkerViewModel.provideFactory(CritterService.getInstance(this), StudentHubService.getInstance(this), ArenaService.getInstance(this),this, studentHubViewModel)
+        MapMarkerViewModel.provideFactory(CritterService.getInstance(this), StudentHubService.getInstance(this), ArenaService.getInstance(this),this, studentHubViewModel, arenaViewModel)
     })
 
 
@@ -120,11 +125,19 @@ class MapActivity : ComponentActivity() {
                 studentHubViewModel.loadStudentHubs()
                 val markersStudentHubUIState by mapMarkerViewModel.markersStudentHub.collectAsState()
                 val studentHubMarkers = markersStudentHubUIState.markersStudentHub
-
                 addListOfMarkersQ(studentHubMarkers)
             } else{
                 addListOfMarkers(MapSaver.STUDENTHUB.getMarker()!!)
-            }
+            } //TODO mapsaver are always empty
+
+            if(MapSaver.ARENA.getMarker() == null) {
+                arenaViewModel.loadArenas()
+                val markersArenaUIState by mapMarkerViewModel.markersArena.collectAsState()
+                val arenaMarkers = markersArenaUIState.makersArena
+                addListOfMarkersQ(arenaMarkers)
+            } else{
+                addListOfMarkers(MapSaver.STUDENTHUB.getMarker()!!)
+            } //TODO mapsaver are always empty
 
 
             UniClashTheme {

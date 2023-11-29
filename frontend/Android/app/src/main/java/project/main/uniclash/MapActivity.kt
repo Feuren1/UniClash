@@ -39,6 +39,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.lifecycleScope
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
 import com.utsman.osmandcompose.CameraState
@@ -48,6 +49,7 @@ import com.utsman.osmandcompose.OpenStreetMap
 import com.utsman.osmandcompose.rememberCameraState
 import com.utsman.osmandcompose.rememberMarkerState
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import org.osmdroid.util.GeoPoint
 import project.main.uniclash.datatypes.Counter
 import project.main.uniclash.datatypes.CritterUsable
@@ -57,9 +59,9 @@ import project.main.uniclash.datatypes.MapSettings
 import project.main.uniclash.datatypes.MarkerData
 import project.main.uniclash.datatypes.MarkerWildEncounter
 import project.main.uniclash.datatypes.SelectedMarker
-import project.main.uniclash.datatypes.StudentHub
 import project.main.uniclash.map.LocationPermissions
 import project.main.uniclash.map.MapCalculations
+import project.main.uniclash.map.MarkerList
 import project.main.uniclash.map.WildEncounterLogic
 import project.main.uniclash.retrofit.ArenaService
 import project.main.uniclash.retrofit.CritterService
@@ -97,13 +99,14 @@ class MapActivity : ComponentActivity() {
         MapMarkerViewModel.provideFactory(CritterService.getInstance(this), StudentHubService.getInstance(this), ArenaService.getInstance(this),this, studentHubViewModel, arenaViewModel)
     })
 
+    var markerList = MarkerList()
 
     private var startMapRequested by mutableStateOf(false)
     private var mainLatitude: Double by mutableStateOf(Locations.USERLOCATION.getLocation().latitude) //for gps location
     private var mainLongitude: Double by mutableStateOf(Locations.USERLOCATION.getLocation().longitude)//"
 
-    private var markerList = ArrayList<MarkerData>()
-    private var markersLoaded by mutableStateOf(false)
+    //private var markerList = ArrayList<MarkerData>()
+    private var reloadMap by mutableStateOf(true)
     private var movingCamera : Boolean ? = true
 
     private var shouldLoadFirstWildEncounter by mutableStateOf(false)
@@ -115,6 +118,14 @@ class MapActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
 
+        lifecycleScope.launch {
+            markerList.markerList.collect {
+               reloadMap = false
+                reloadMap = true
+            }
+        }
+
+
         mapLocationViewModel.getUserLocation(this) { location ->
             Locations.USERLOCATION.setLocation(GeoPoint(location.latitude,location.longitude))
         }
@@ -125,18 +136,18 @@ class MapActivity : ComponentActivity() {
                 studentHubViewModel.loadStudentHubs()
                 val markersStudentHubUIState by mapMarkerViewModel.markersStudentHub.collectAsState()
                 val studentHubMarkers = markersStudentHubUIState.markersStudentHub
-                addListOfMarkersQ(studentHubMarkers)
+                markerList.addListOfMarkersQ(studentHubMarkers)
             } else{
-                addListOfMarkers(MapSaver.STUDENTHUB.getMarker()!!)
+                markerList.addListOfMarkers(MapSaver.STUDENTHUB.getMarker()!!)
             } //TODO mapsaver are always empty
 
             if(MapSaver.ARENA.getMarker() == null) {
                 arenaViewModel.loadArenas()
                 val markersArenaUIState by mapMarkerViewModel.markersArena.collectAsState()
                 val arenaMarkers = markersArenaUIState.makersArena
-                addListOfMarkersQ(arenaMarkers)
+                markerList.addListOfMarkersQ(arenaMarkers)
             } else{
-                addListOfMarkers(MapSaver.STUDENTHUB.getMarker()!!)
+                markerList.addListOfMarkers(MapSaver.STUDENTHUB.getMarker()!!)
             } //TODO mapsaver are always empty
 
 
@@ -214,6 +225,7 @@ class MapActivity : ComponentActivity() {
 
         LaunchedEffect(Unit) {
             while (true) {
+                println("${markerList.getMarkerList().size} die Size der Liste")
 
                 mapLocationViewModel.getUserLocation(contextForLocation) { location ->
                     mainLatitude = location.latitude
@@ -266,7 +278,7 @@ class MapActivity : ComponentActivity() {
         }
 
         // Use camera state and location in your OpenStreetMap Composable
-        if (!markersLoaded) {
+        if (reloadMap) {
             var critterVisibility : Int
             if(MapSettings.CRITTERBINOCULARS.getMapSetting()){
                 critterVisibility = 1000
@@ -279,7 +291,7 @@ class MapActivity : ComponentActivity() {
                 cameraState = cameraState
             ) {
                 // Add markers and other map components here s)
-                markerList.forEach { marker ->
+                markerList.getMarkerList().forEach() { marker ->
                     val distance = mapCalculations.haversineDistance(marker.state.latitude, marker.state.longitude, Locations.USERLOCATION.getLocation().latitude, Locations.USERLOCATION.getLocation().longitude)
                     Log.d(
                         LOCATION_TAG,
@@ -412,7 +424,7 @@ class MapActivity : ComponentActivity() {
                 Log.d(LOCATION_TAG, "Excecuted first loadwildencounter")
                 var critterUsables = WildEncounter(uniClashViewModel)
                 println("${critterUsables.size} size")
-                    addListOfMarkers(wildEncounterLogic.initMarkers(critterUsables))
+                    markerList.addListOfMarkers(wildEncounterLogic.initMarkers(critterUsables))
                 shouldLoadFirstWildEncounter = false
                 if(critterUsables.isEmpty()){
                     Counter.FIRSTSPAWN.setCounter(2)
@@ -426,14 +438,12 @@ class MapActivity : ComponentActivity() {
     fun LoadWildEncounter(){
         if(shouldLoadWildEncounter) {
             Log.d(LOCATION_TAG, "Excecuted second loadwildencounter")
-            //addListOfMarkers(wildEncounterLogic.initMarkers())
-            //shouldLoadWildEncounter = false
             val intent = Intent(this,MapActivity::class.java)
             this.startActivity(intent, null)
         }
     }
 
-    fun addMarker(marker: MarkerData) {
+    /*fun addMarker(marker: MarkerData) {
         if(!(markerList.contains(marker))) {
             markerList.add(marker)
             updateMapMarkers()
@@ -481,7 +491,7 @@ class MapActivity : ComponentActivity() {
     private fun updateMapMarkers() {
         markersLoaded = true
         markersLoaded = false;
-    }
+    }*/
 
     companion object {
         private const val LOCATION_TAG = "MyLocationTag"

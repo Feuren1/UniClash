@@ -4,8 +4,6 @@ import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
-import android.graphics.Bitmap
-import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.Drawable
 import android.os.Bundle
 import android.os.Looper
@@ -13,7 +11,6 @@ import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
-import androidx.annotation.DrawableRes
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -46,7 +43,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.core.graphics.drawable.toBitmap
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationCallback
 import com.google.android.gms.location.LocationRequest
@@ -71,6 +67,7 @@ import project.main.uniclash.datatypes.MarkerWildEncounter
 import project.main.uniclash.datatypes.SelectedMarker
 import project.main.uniclash.datatypes.StudentHub
 import project.main.uniclash.map.LocationPermissions
+import project.main.uniclash.map.MapCalculations
 import project.main.uniclash.map.WildEncounterLogic
 import project.main.uniclash.retrofit.CritterService
 import project.main.uniclash.retrofit.StudentHubService
@@ -78,12 +75,7 @@ import project.main.uniclash.ui.theme.UniClashTheme
 import project.main.uniclash.viewmodels.MapLocationViewModel
 import project.main.uniclash.viewmodels.StudentHubViewModel
 import project.main.uniclash.viewmodels.UniClashViewModel
-import java.lang.Math.atan2
-import java.lang.Math.cos
-import java.lang.Math.sin
-import java.lang.Math.sqrt
 import java.util.concurrent.TimeUnit
-import kotlin.math.pow
 
 class MapActivity : ComponentActivity() {
     private lateinit var fusedLocationClient: FusedLocationProviderClient
@@ -93,6 +85,7 @@ class MapActivity : ComponentActivity() {
     })
 
     private val locationPermissions = LocationPermissions(this, this)
+    private val mapCalculations = MapCalculations()
 
     private var startMapRequested by mutableStateOf(false)
     private var mainLatitude: Double by mutableStateOf(Locations.USERLOCATION.getLocation().latitude) //for gps location
@@ -202,7 +195,7 @@ class MapActivity : ComponentActivity() {
                         "$mainLatitude and ${cameraState.geoPoint.latitude} ---- $mainLongitude and ${cameraState.geoPoint.longitude}"
                     )
                     gpsLocation.geoPoint = GeoPoint(mainLatitude, mainLongitude)
-                    gpsLocation.rotation = calculateDirection(GeoPoint(cameraState.geoPoint.latitude,cameraState.geoPoint.longitude), GeoPoint(mainLatitude,mainLongitude))+270F
+                    gpsLocation.rotation = mapCalculations.calculateDirection(GeoPoint(cameraState.geoPoint.latitude,cameraState.geoPoint.longitude), GeoPoint(mainLatitude,mainLongitude))+270F
                     if (MapSettings.MOVINGCAMERA.getMapSetting()) {
                         cameraState.geoPoint = GeoPoint(mainLatitude, mainLongitude)
                         cameraState.zoom = 20.0
@@ -241,7 +234,7 @@ class MapActivity : ComponentActivity() {
 
         // define marker icon
         val arrow: Drawable? by remember {
-            mutableStateOf(resizeDrawableTo50x50(context, R.drawable.arrow, 50.0F))
+            mutableStateOf(mapCalculations.resizeDrawableTo50x50(context, R.drawable.arrow, 50.0F))
         }
 
         // Use camera state and location in your OpenStreetMap Composable
@@ -259,7 +252,7 @@ class MapActivity : ComponentActivity() {
             ) {
                 // Add markers and other map components here s)
                 markerList.forEach { marker ->
-                    val distance = haversineDistance(marker.state.latitude, marker.state.longitude, Locations.USERLOCATION.getLocation().latitude, Locations.USERLOCATION.getLocation().longitude)
+                    val distance = mapCalculations.haversineDistance(marker.state.latitude, marker.state.longitude, Locations.USERLOCATION.getLocation().latitude, Locations.USERLOCATION.getLocation().longitude)
                     Log.d(
                         LOCATION_TAG,
                         "set marker"
@@ -332,7 +325,7 @@ class MapActivity : ComponentActivity() {
     @Composable
     fun OpenActivityButton(marker : MarkerData) {
         val context = LocalContext.current
-        val distance = haversineDistance(marker.state.latitude, marker.state.longitude, Locations.USERLOCATION.getLocation().latitude, Locations.USERLOCATION.getLocation().longitude)
+        val distance = mapCalculations.haversineDistance(marker.state.latitude, marker.state.longitude, Locations.USERLOCATION.getLocation().latitude, Locations.USERLOCATION.getLocation().longitude)
         if(distance < 76) {
             Button(
                 onClick = {
@@ -441,7 +434,7 @@ class MapActivity : ComponentActivity() {
                 val geoPoint = GeoPoint(studentHub?.lat!!, studentHub?.lon!!)
 
                 val icon: Drawable? by remember {
-                    mutableStateOf(resizeDrawableTo50x50(context, R.drawable.store, 50.0F))
+                    mutableStateOf(mapCalculations.resizeDrawableTo50x50(context, R.drawable.store, 50.0F))
                 }
 
                 val myMarker = MarkerStudentHub(
@@ -492,48 +485,6 @@ class MapActivity : ComponentActivity() {
         markersLoaded = true
         markersLoaded = false;
     }
-
-    private fun resizeDrawableTo50x50(context: Context, @DrawableRes drawableRes: Int, pixelSize : Float): Drawable? {
-        val originalDrawable: Drawable? = context.getDrawable(drawableRes)
-
-        val originalBitmap = originalDrawable?.toBitmap()
-        val originalWidth = originalBitmap?.width ?: 1
-        val originalHeight = originalBitmap?.height ?: 1
-
-        val scaleRatio = pixelSize / originalHeight.toFloat()
-
-        val scaledWidth = (originalWidth * scaleRatio).toInt()
-        val scaledHeight : Int = pixelSize.toInt()
-
-        val scaledBitmap =
-            originalBitmap?.let { Bitmap.createScaledBitmap(it, scaledWidth, scaledHeight, true) }
-
-        return BitmapDrawable(context.resources, scaledBitmap)
-    }
-
-    private fun calculateDirection(startpoint: GeoPoint, endpoint: GeoPoint): Float {
-        val dX = endpoint.longitude - startpoint.longitude
-        val dY = endpoint.latitude - startpoint.latitude
-
-        val winkel = Math.toDegrees(atan2(dY, dX)).toFloat()
-        return if (winkel < 0) {
-            (winkel + 360) % 360 // like: *-1
-        } else {
-            winkel
-        }
-    }
-
-    private fun haversineDistance(lat1: Double, lon1: Double, lat2: Double, lon2: Double): Double {
-        val radius = 6371000 // radius of the earth in meters
-
-        val dLat = Math.toRadians(lat2 - lat1)
-        val dLon = Math.toRadians(lon2 - lon1)
-        val a = sin(dLat / 2).pow(2) + cos(Math.toRadians(lat1)) * cos(Math.toRadians(lat2)) * sin(dLon / 2).pow(2)
-        val c = 2 * atan2(sqrt(a), sqrt(1 - a))
-
-        return radius * c
-    }
-
 
     //gps stuff
     /**

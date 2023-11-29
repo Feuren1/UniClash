@@ -1,11 +1,9 @@
 package project.main.uniclash
 
-import android.Manifest
 import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
-import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.Drawable
@@ -48,8 +46,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.core.app.ActivityCompat
-import androidx.core.content.ContextCompat
 import androidx.core.graphics.drawable.toBitmap
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationCallback
@@ -75,13 +71,13 @@ import project.main.uniclash.datatypes.MarkerWildEncounter
 import project.main.uniclash.datatypes.SelectedMarker
 import project.main.uniclash.datatypes.StudentHub
 import project.main.uniclash.map.LocationPermissions
+import project.main.uniclash.map.WildEncounterLogic
 import project.main.uniclash.retrofit.CritterService
 import project.main.uniclash.retrofit.StudentHubService
 import project.main.uniclash.ui.theme.UniClashTheme
 import project.main.uniclash.viewmodels.MapLocationViewModel
 import project.main.uniclash.viewmodels.StudentHubViewModel
 import project.main.uniclash.viewmodels.UniClashViewModel
-import project.main.uniclash.map.WildEncounterLogic
 import java.lang.Math.atan2
 import java.lang.Math.cos
 import java.lang.Math.sin
@@ -187,7 +183,6 @@ class MapActivity : ComponentActivity() {
 
     @Composable
     fun Map() {
-        LoadMarkers()
         LoadFirstWildEncounter()
         LoadWildEncounter()
         LoadStudentHubs()
@@ -246,7 +241,7 @@ class MapActivity : ComponentActivity() {
 
         // define marker icon
         val arrow: Drawable? by remember {
-            mutableStateOf(resizeDrawableTo50x50(context, R.drawable.arrow))
+            mutableStateOf(resizeDrawableTo50x50(context, R.drawable.arrow, 50.0F))
         }
 
         // Use camera state and location in your OpenStreetMap Composable
@@ -332,7 +327,6 @@ class MapActivity : ComponentActivity() {
             }
         }
         NewCrittersAdvice()
-        //WildEncounter(uniClashViewModel = uniClashViewModel)
     }
 
     @Composable
@@ -385,28 +379,6 @@ class MapActivity : ComponentActivity() {
     fun NewCrittersAdvice(){
         if(newCritterNotification<11){
             Text(text = "New Critters will spawn soon!",color = Color.Red, fontWeight = FontWeight.Bold)
-        }
-    }
-
-    @Composable
-    fun LoadMarkers(){
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(16.dp),
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            val drawableImage = painterResource(id = R.drawable.icon)
-            Image(
-                painter = drawableImage,
-                contentDescription = null,
-                modifier = Modifier.size(240.dp)
-            )
-            Text(
-                text = "\nMap has problems to load",
-                color = Color.Red,
-                fontWeight = FontWeight.Bold
-            )
         }
     }
 
@@ -469,7 +441,7 @@ class MapActivity : ComponentActivity() {
                 val geoPoint = GeoPoint(studentHub?.lat!!, studentHub?.lon!!)
 
                 val icon: Drawable? by remember {
-                    mutableStateOf(resizeDrawableTo50x50(context, R.drawable.store))
+                    mutableStateOf(resizeDrawableTo50x50(context, R.drawable.store, 50.0F))
                 }
 
                 val myMarker = MarkerStudentHub(
@@ -521,35 +493,17 @@ class MapActivity : ComponentActivity() {
         markersLoaded = false;
     }
 
-    private fun resizeDrawableTo50x50(context: Context, @DrawableRes drawableRes: Int): Drawable? {
+    private fun resizeDrawableTo50x50(context: Context, @DrawableRes drawableRes: Int, pixelSize : Float): Drawable? {
         val originalDrawable: Drawable? = context.getDrawable(drawableRes)
 
         val originalBitmap = originalDrawable?.toBitmap()
         val originalWidth = originalBitmap?.width ?: 1
         val originalHeight = originalBitmap?.height ?: 1
 
-        val scaleRatio = 50.0f / originalHeight.toFloat()
+        val scaleRatio = pixelSize / originalHeight.toFloat()
 
         val scaledWidth = (originalWidth * scaleRatio).toInt()
-        val scaledHeight = 50
-
-        val scaledBitmap =
-            originalBitmap?.let { Bitmap.createScaledBitmap(it, scaledWidth, scaledHeight, true) }
-
-        return BitmapDrawable(context.resources, scaledBitmap)
-    }
-
-    private fun resizeDrawableTo60x60(context: Context, @DrawableRes drawableRes: Int): Drawable? {
-        val originalDrawable: Drawable? = context.getDrawable(drawableRes)
-
-        val originalBitmap = originalDrawable?.toBitmap()
-        val originalWidth = originalBitmap?.width ?: 1
-        val originalHeight = originalBitmap?.height ?: 1
-
-        val scaleRatio = 60.0f / originalHeight.toFloat()
-
-        val scaledWidth = (originalWidth * scaleRatio).toInt()
-        val scaledHeight = 60
+        val scaledHeight : Int = pixelSize.toInt()
 
         val scaledBitmap =
             originalBitmap?.let { Bitmap.createScaledBitmap(it, scaledWidth, scaledHeight, true) }
@@ -702,15 +656,13 @@ class MapActivity : ComponentActivity() {
     }
  //BackendStuff
 
-    val uniClashViewModel: UniClashViewModel by viewModels(factoryProducer = {
+    private val uniClashViewModel: UniClashViewModel by viewModels(factoryProducer = {
         UniClashViewModel.provideFactory(CritterService.getInstance(this))
     })
 
-    val studentHubViewModel: StudentHubViewModel by viewModels(factoryProducer = {
+    private val studentHubViewModel: StudentHubViewModel by viewModels(factoryProducer = {
         StudentHubViewModel.provideFactory(StudentHubService.getInstance(this))
     })
-
-
 
     @Composable
     fun WildEncounter(uniClashViewModel: UniClashViewModel):List<CritterUsable?> {

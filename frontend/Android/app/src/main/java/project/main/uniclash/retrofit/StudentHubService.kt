@@ -30,8 +30,9 @@ interface StudentHubService {
     fun updateItemQuantityByTemplateId(
         @Path("id") id: Int,
         @Query("itemTemplateId") itemTemplateId: Int,
-        @Query("quantity") quantity: Int
-    ): Call<ItemForStudent>
+        @Body itemForStudent: ItemForStudent): Call<ItemForStudent>
+    @GET("/students/{id}/items")
+    fun getItemsFromStudent(@Path("id") id: Int) : Call<List<ItemForStudent>>
 
     companion object {
         private var studentHubService: StudentHubService? = null

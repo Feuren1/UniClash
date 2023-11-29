@@ -38,11 +38,18 @@ sealed interface ItemTemplatesUIState {
     ) : ItemTemplatesUIState
 }
 
-sealed interface ItemForStudentUIState {
+sealed interface PostItemForStudentUIState {
     data class HasEntries(
         val itemForStudent: ItemForStudent?,
         val isLoading: Boolean,
-    ) : ItemForStudentUIState
+    ) : PostItemForStudentUIState
+}
+
+sealed interface ItemsForStudentUIState {
+    data class HasEntries(
+        val itemsForStudent: List<ItemForStudent>,
+        val isLoading: Boolean,
+    ) : ItemsForStudentUIState
 }
 
 class StudentHubViewModel(
@@ -72,9 +79,16 @@ class StudentHubViewModel(
     )
 
     val itemForStudent = MutableStateFlow(
-        ItemForStudentUIState.HasEntries(
+        PostItemForStudentUIState.HasEntries(
             isLoading = false,
             itemForStudent = null
+        )
+    )
+
+    val itemsForStudent = MutableStateFlow(
+        ItemsForStudentUIState.HasEntries(
+            emptyList(),
+            isLoading = false
         )
     )
 
@@ -160,6 +174,32 @@ class StudentHubViewModel(
         }
     }
 
+    fun loadItemsForStudent() {
+        viewModelScope.launch {
+            itemsForStudent.update { it.copy(isLoading = true) }
+            try {
+                val response = studentHubService.getItemsFromStudent(3).enqueue()
+                Log.d(TAG, "loadItemsForStudent: $response")
+                if (response.isSuccessful) {
+                    Log.d(TAG, "loadItemsForStudent: success")
+                    //creates an item list based on the fetched data
+                    val itemsForStudent = response.body()!!
+                    Log.d(TAG, "loadItemsForStudent: $itemsForStudent")
+                    //replaces the critters list inside the UI state with the fetched data
+                    this@StudentHubViewModel.itemsForStudent.update {
+                        it.copy(
+                            itemsForStudent = itemsForStudent,
+                            isLoading = false
+                        )
+                    }
+                }
+            } catch (e: Exception) {
+                Log.e(TAG, "items: error")
+                e.printStackTrace()
+            }
+        }
+    }
+
 
     fun buyItem(itemTemplateId: Int) {
 
@@ -194,10 +234,33 @@ class StudentHubViewModel(
             }
         } else {
 
+            //TODO: !!!Before doing all this work,
+            // I should first try whether it works, by giving this part of the load function a hardcoded ItemForStudent!!!
+
+            //TODO: I need to get a list of all ItemForStudent, filter it for the itemTemplateId,
+            // increase its quantity, and then place it in the response.body,
+            // where it replaces old data with the new.
+
+            //TODO: Do the calculations of the quantity and filter in a separate logic file.
+
+            //TODO: ***The problem here is that the value itemForStudent null is***,
+            // so it has no values to PATCH into the DB. Or something.
+            // I'll need to give this vvv the itemForStudent from the get method. Maybe.
+            // As such I need to filter for the correct ItemForStudent to give?
+
+            //TODO: I could also, after creating the logic class for the filter and quantity increase,
+            // pass over an ItemForStudent instead of an ItemTemplateId,
+            // I then would have to first call the function of the logic class to filter the correct ItemForStudent Data class,
+            // per the ItemTemplateId I'll pass over to it.
+            // **Possible problem could be that I can't call the function from the composable function?**.
+
+            //TODO: If nothing else works, I could try @PATCH, though it isn'T available yet.
+
             viewModelScope.launch {
                 itemForStudent.update { it.copy(isLoading = true) }
                 try {
-                    val response = studentHubService.updateItemQuantityByTemplateId(3, itemTemplateId, 1).enqueue()
+                    var itemForStudent = ItemForStudent(1,itemTemplateId, 3)
+                    val response = studentHubService.updateItemQuantityByTemplateId(3, itemTemplateId, itemForStudent).enqueue()
                     println(itemForStudent)
                     Log.d(TAG, "loadUpdateItemQuantity: $response")
                     if (response.isSuccessful) {
@@ -210,6 +273,7 @@ class StudentHubViewModel(
                         println(itemForStudent)
                     } else {
                         Log.d(TAG, "Failed")
+                        println(itemForStudent)
                     }
                 } catch (e: Exception) {
                     e.printStackTrace()

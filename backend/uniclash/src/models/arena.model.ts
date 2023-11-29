@@ -1,4 +1,4 @@
-import {Entity, model, property, belongsTo} from '@loopback/repository';
+import {Entity, belongsTo, model, property} from '@loopback/repository';
 import {Student} from './student.model';
 
 @model()
@@ -23,14 +23,14 @@ export class Arena extends Entity {
   description?: string;
 
   @property({
-    type: 'number',
+    type: 'string',
   })
-  lat?: number;
+  lat?: string;
 
   @property({
-    type: 'number',
+    type: 'string',
   })
-  lon?: number;
+  lon?: string;
 
   @belongsTo(() => Student)
   studentId: number;

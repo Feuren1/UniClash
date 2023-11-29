@@ -7,6 +7,8 @@ data class CritterTemplate(
     val baseAttack: Int,
     val baseDefence: Int,
     val baseSpeed: Int,
+    val evolesAt: Int,
+    val evolvesIntoTemplateId: Int,
 ){
 
 }

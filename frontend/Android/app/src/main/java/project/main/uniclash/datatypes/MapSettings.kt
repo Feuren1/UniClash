@@ -14,16 +14,16 @@ enum class MapSettings(private var selection : Boolean){
         selection = setSelection
     }
 }
-enum class MapSaver(private var markers: ArrayList<MarkerData>?) {
-    WILDENCOUNTER(null),
-    ARENA(null),
-    STUDENTHUB(null);
+enum class MapSaver(private var markers: ArrayList<MarkerData?>) {
+    WILDENCOUNTER(ArrayList<MarkerData?>()),
+    ARENA(ArrayList<MarkerData?>()),
+    STUDENTHUB(ArrayList<MarkerData?>());
 
-    fun getMarker(): ArrayList<MarkerData>? {
+    fun getMarker(): ArrayList<MarkerData?> {
         return markers
     }
 
-    fun setMarker(setMarker: ArrayList<MarkerData>?){
+    fun setMarker(setMarker: ArrayList<MarkerData?>){
         markers = setMarker
     }
 

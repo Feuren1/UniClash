@@ -42,8 +42,8 @@ import java.lang.Math.sqrt
              wildEncounterMax = wildEncounterMax + usableCritters
          }
          userLocation = Locations.USERLOCATION.getLocation()
-         if(MapSaver.WILDENCOUNTER.getMarker() == null) {
-             var randomLocation = generateRandomGeoPoints(userLocation, 2.0, 800) //400 pro km
+        // if(MapSaver.WILDENCOUNTER.getMarker() == null) {
+             var randomLocation = generateRandomGeoPoints(userLocation, 2.0, 800) //400 per km
              var i = 0
              val wildEncounter = wildEncounterMax
 
@@ -63,11 +63,11 @@ import java.lang.Math.sqrt
                  i++
              }
              // add more markers
-             MapSaver.WILDENCOUNTER.setMarker(markerList)
+            // MapSaver.WILDENCOUNTER.setMarker(markerList)
              return markerList
-         } else {
-             return MapSaver.WILDENCOUNTER.getMarker()!!
-         }
+         //} else {
+             //return MapSaver.WILDENCOUNTER.getMarker()!!
+         //}
     }
 
     private fun generateRandomGeoPoints(center: GeoPoint, radiusInKm: Double, times : Int): ArrayList<GeoPoint> {

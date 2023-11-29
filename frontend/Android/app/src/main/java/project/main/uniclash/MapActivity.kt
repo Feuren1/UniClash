@@ -95,18 +95,21 @@ class MapActivity : ComponentActivity() {
         ArenaViewModel.provideFactory(ArenaService.getInstance(this))
     })
 
-    private val mapMarkerViewModel: MapMarkerViewModel by viewModels(factoryProducer = {
-        MapMarkerViewModel.provideFactory(CritterService.getInstance(this), StudentHubService.getInstance(this), ArenaService.getInstance(this),this, studentHubViewModel, arenaViewModel)
+    private val critterViewModel: UniClashViewModel by viewModels(factoryProducer = {
+        UniClashViewModel.provideFactory(CritterService.getInstance(this))
     })
 
-    var markerList = MarkerList()
+    private val mapMarkerViewModel: MapMarkerViewModel by viewModels(factoryProducer = {
+        MapMarkerViewModel.provideFactory(CritterService.getInstance(this), StudentHubService.getInstance(this), ArenaService.getInstance(this),this, studentHubViewModel, arenaViewModel, critterViewModel)
+    })
+
+    private var markerList = MarkerList()
+    private var reloadMap by mutableStateOf(true)
 
     private var startMapRequested by mutableStateOf(false)
     private var mainLatitude: Double by mutableStateOf(Locations.USERLOCATION.getLocation().latitude) //for gps location
     private var mainLongitude: Double by mutableStateOf(Locations.USERLOCATION.getLocation().longitude)//"
 
-    //private var markerList = ArrayList<MarkerData>()
-    private var reloadMap by mutableStateOf(true)
     private var movingCamera : Boolean ? = true
 
     private var shouldLoadFirstWildEncounter by mutableStateOf(false)
@@ -132,23 +135,35 @@ class MapActivity : ComponentActivity() {
 
         setContent {
             // todo uistate from viewmodel
-            if(MapSaver.STUDENTHUB.getMarker() == null) {
+            if(MapSaver.STUDENTHUB.getMarker().isEmpty()) {
                 studentHubViewModel.loadStudentHubs()
                 val markersStudentHubUIState by mapMarkerViewModel.markersStudentHub.collectAsState()
                 val studentHubMarkers = markersStudentHubUIState.markersStudentHub
                 markerList.addListOfMarkersQ(studentHubMarkers)
+                MapSaver.STUDENTHUB.setMarker(studentHubMarkers)
             } else{
-                markerList.addListOfMarkers(MapSaver.STUDENTHUB.getMarker()!!)
-            } //TODO mapsaver are always empty
+                markerList.addListOfMarkersQ(MapSaver.STUDENTHUB.getMarker()!!)
+            }
 
-            if(MapSaver.ARENA.getMarker() == null) {
+            if(MapSaver.ARENA.getMarker().isEmpty()) {
                 arenaViewModel.loadArenas()
                 val markersArenaUIState by mapMarkerViewModel.markersArena.collectAsState()
                 val arenaMarkers = markersArenaUIState.makersArena
                 markerList.addListOfMarkersQ(arenaMarkers)
+                MapSaver.ARENA.setMarker(arenaMarkers)
             } else{
-                markerList.addListOfMarkers(MapSaver.STUDENTHUB.getMarker()!!)
-            } //TODO mapsaver are always empty
+                markerList.addListOfMarkersQ(MapSaver.ARENA.getMarker()!!)
+            }
+
+            if(MapSaver.WILDENCOUNTER.getMarker().isEmpty()) {
+                critterViewModel.loadCritterUsables(1)
+                val markersWildEncounterUIState by mapMarkerViewModel.markersWildEncounter.collectAsState()
+                val wildEncounterMarkers = markersWildEncounterUIState.markersWildEncounter
+                markerList.addListOfMarkersQ(wildEncounterMarkers)
+                MapSaver.WILDENCOUNTER.setMarker(wildEncounterMarkers)
+            } else{
+                markerList.addListOfMarkersQ(MapSaver.WILDENCOUNTER.getMarker()!!)
+            }
 
 
             UniClashTheme {
@@ -262,7 +277,7 @@ class MapActivity : ComponentActivity() {
                 }
 
                 if(Counter.WILDENCOUNTERREFRESHER.getCounter() <1){
-                    MapSaver.WILDENCOUNTER.setMarker(null)
+                    MapSaver.WILDENCOUNTER.setMarker(ArrayList<MarkerData?>())
                     shouldLoadWildEncounter = true
                     Counter.WILDENCOUNTERREFRESHER.setCounter(60)
                 }
@@ -406,7 +421,7 @@ class MapActivity : ComponentActivity() {
         }
     }
 
-    private val wildEncounterLogic = WildEncounterLogic(context = this)
+    //private val wildEncounterLogic = WildEncounterLogic(context = this)
 
     @Composable
     fun NewCrittersAdvice(){
@@ -424,7 +439,8 @@ class MapActivity : ComponentActivity() {
                 Log.d(LOCATION_TAG, "Excecuted first loadwildencounter")
                 var critterUsables = WildEncounter(uniClashViewModel)
                 println("${critterUsables.size} size")
-                    markerList.addListOfMarkers(wildEncounterLogic.initMarkers(critterUsables))
+                    //markerList.addListOfMarkers(wildEncounterLogic.initMarkers(critterUsables))
+                     markerList.addListOfMarkersQ(MapSaver.WILDENCOUNTER.getMarker())
                 shouldLoadFirstWildEncounter = false
                 if(critterUsables.isEmpty()){
                     Counter.FIRSTSPAWN.setCounter(2)

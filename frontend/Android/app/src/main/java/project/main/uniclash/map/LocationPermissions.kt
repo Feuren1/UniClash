@@ -32,7 +32,7 @@ class LocationPermissions(private val context: Context,private val activity: Act
         grantResults: IntArray
     ) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-        // Handle permission results if neededA
+        // Handle permission results if needed
     }
 
     fun hasPermissions(): Boolean {

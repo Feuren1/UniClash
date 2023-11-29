@@ -130,7 +130,7 @@ class MapMarkerViewModel(
                     snippet = "${arena?.description}",
                     pic = R.drawable.arena,
                     button = ArenaActivity::class.java,
-                    buttonText = "Go to Hub",
+                    buttonText = "Enter arena",
                     arena = arena
                 )
 

@@ -247,7 +247,7 @@ class MapActivity : ComponentActivity() {
 
         // define marker icon
         val arrow: Drawable? by remember {
-            mutableStateOf(mapCalculations.resizeDrawableTo50x50(context, R.drawable.arrow, 50.0F))
+            mutableStateOf(mapCalculations.resizeDrawable(context, R.drawable.arrow, 50.0F))
         }
 
         // Use camera state and location in your OpenStreetMap Composable
@@ -447,7 +447,7 @@ class MapActivity : ComponentActivity() {
                 val geoPoint = GeoPoint(studentHub?.lat!!, studentHub?.lon!!)
 
                 val icon: Drawable? by remember {
-                    mutableStateOf(mapCalculations.resizeDrawableTo50x50(context, R.drawable.store, 50.0F))
+                    mutableStateOf(mapCalculations.resizeDrawable(context, R.drawable.store, 50.0F))
                 }
 
                 val myMarker = MarkerStudentHub(

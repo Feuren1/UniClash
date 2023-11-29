@@ -11,7 +11,7 @@ import kotlin.math.pow
 
 class MapCalculations {
 
-    fun resizeDrawableTo50x50(context: Context, @DrawableRes drawableRes: Int, pixelSize : Float): Drawable? {
+    fun resizeDrawable(context: Context, @DrawableRes drawableRes: Int, pixelSize : Float): Drawable? {
         val originalDrawable: Drawable? = context.getDrawable(drawableRes)
 
         val originalBitmap = originalDrawable?.toBitmap()

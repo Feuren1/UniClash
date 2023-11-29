@@ -23,11 +23,6 @@ import java.lang.Math.sqrt
 
 
  class WildEncounterLogic(private val context: Context){
-
-
-
-
-    val wildEncounters: ArrayList<CritterUsable> = ArrayList()
     //TODO set max amount of wildCritters
     var userLocation = Locations.USERLOCATION.getLocation()
     private var markerList = ArrayList<MarkerData>()
@@ -37,18 +32,15 @@ import java.lang.Math.sqrt
      }
 
     fun initMarkers(usableCritters : List<CritterUsable?>) : ArrayList<MarkerData> {
+        var mapCalculations = MapCalculations()
          if(usableCritters.isEmpty()){
              //throw IllegalArgumentException("Database contains no Critters")
              return markerList
          }
-         Log.d(WILDENCOUNTERLOGIC_TAG, "--------")
-         Log.d(WILDENCOUNTERLOGIC_TAG, "executed")
          var wildEncounterMax = usableCritters
          while(wildEncounterMax.size < 801){
-             Log.d(WILDENCOUNTERLOGIC_TAG, "loop :) ${wildEncounterMax.size}")
              wildEncounterMax = wildEncounterMax + usableCritters
          }
-         Log.d(WILDENCOUNTERLOGIC_TAG, "executed2")
          userLocation = Locations.USERLOCATION.getLocation()
          if(MapSaver.WILDENCOUNTER.getMarker() == null) {
              var randomLocation = generateRandomGeoPoints(userLocation, 2.0, 800) //400 pro km
@@ -58,7 +50,7 @@ import java.lang.Math.sqrt
              while (i < 800) {
                  var myMarker = MarkerWildEncounter(
                      state = GeoPoint(randomLocation.get(i).latitude, randomLocation.get(i).longitude),
-                     icon = resizeDrawableTo50x50(context, CritterPic.MUSK.searchDrawableM("${wildEncounter.get(i)?.name}M")),
+                     icon = mapCalculations.resizeDrawable(context, CritterPic.MUSK.searchDrawableM("${wildEncounter.get(i)?.name}M"),50.0F),
                      visible = true,
                      title = "${wildEncounter.get(i)?.name}",
                      snippet = "Level: ${wildEncounter.get(i)?.level}",
@@ -78,34 +70,11 @@ import java.lang.Math.sqrt
          }
     }
 
-    fun getMarkerList(): ArrayList<MarkerData> {
-        return markerList
-    }
-
-    private fun resizeDrawableTo50x50(context: Context, @DrawableRes drawableRes: Int): Drawable? {
-        val originalDrawable: Drawable? = context.getDrawable(drawableRes)
-
-        val originalBitmap = originalDrawable?.toBitmap()
-        val originalWidth = originalBitmap?.width ?: 1 // Verhindert Division durch Null
-        val originalHeight = originalBitmap?.height ?: 1
-
-        val scaleRatio = 50.0f / originalHeight.toFloat()
-
-        val scaledWidth = (originalWidth * scaleRatio).toInt()
-        val scaledHeight = 50
-
-        val scaledBitmap =
-            originalBitmap?.let { Bitmap.createScaledBitmap(it, scaledWidth, scaledHeight, true) }
-
-        return BitmapDrawable(context.resources, scaledBitmap)
-    }
-
     private fun generateRandomGeoPoints(center: GeoPoint, radiusInKm: Double, times : Int): ArrayList<GeoPoint> {
             val random = java.util.Random()
             var counter = times
             var geoLocations = ArrayList<GeoPoint>()
             while (counter > 0) {
-                Log.d(WildEncounterLogic.WILDENCOUNTERLOGIC_TAG, "new Random Location")
                 // Convert radius from kilometers to degrees
                 val radiusInDegrees = radiusInKm / 111.32
 
@@ -126,7 +95,4 @@ import java.lang.Math.sqrt
             }
             return geoLocations
     }
-
-     val attack1 = Attack(1, "Tackle", 1)
-     val attack2 = Attack(2, "Scratch",2)
 }

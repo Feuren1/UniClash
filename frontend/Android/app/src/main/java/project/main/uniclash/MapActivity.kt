@@ -74,6 +74,7 @@ import project.main.uniclash.datatypes.MarkerStudentHub
 import project.main.uniclash.datatypes.MarkerWildEncounter
 import project.main.uniclash.datatypes.SelectedMarker
 import project.main.uniclash.datatypes.StudentHub
+import project.main.uniclash.map.LocationPermissions
 import project.main.uniclash.retrofit.CritterService
 import project.main.uniclash.retrofit.StudentHubService
 import project.main.uniclash.ui.theme.UniClashTheme
@@ -95,11 +96,14 @@ class MapActivity : ComponentActivity() {
         MapLocationViewModel.provideFactory()
     })
 
-    private val locationPermissions = arrayOf(
+    /*private val locationPermissions = arrayOf(
         //array ONLY for location Permissions!!!
         Manifest.permission.ACCESS_COARSE_LOCATION,
         Manifest.permission.ACCESS_FINE_LOCATION,
-    )
+    )*/
+
+    private val locationPermissions = LocationPermissions(this, this)
+
     private var startMapRequested by mutableStateOf(false)
     private var mainLatitude: Double by mutableStateOf(Locations.USERLOCATION.getLocation().latitude) //for gps location
     private var mainLongitude: Double by mutableStateOf(Locations.USERLOCATION.getLocation().longitude)//"
@@ -129,7 +133,7 @@ class MapActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    if (hasPermissions() || startMapRequested) {
+                    if (locationPermissions.hasPermissions() || startMapRequested) {
                         val currentUserLocation = getUserLocation(context = LocalContext.current)
                         if(currentUserLocation.latitude != 0.0 && currentUserLocation.longitude != 0.0) {
                             mainLatitude = currentUserLocation.latitude
@@ -162,8 +166,8 @@ class MapActivity : ComponentActivity() {
 
                             // Add a button to request location permissions and start the map
                             Button(onClick = {
-                                requestLocationPermissions()
-                                if (hasPermissions()) {
+                                locationPermissions.requestLocationPermissions()
+                                if (locationPermissions.hasPermissions()) {
                                     startMapRequested = true
                                 }
                             }) {
@@ -584,7 +588,7 @@ class MapActivity : ComponentActivity() {
 
 
     //gps stuff
-    private fun requestLocationPermissions() {
+    /*private fun requestLocationPermissions() {
         for (permission in locationPermissions) {
             if (ContextCompat.checkSelfPermission(this, permission)
                 != PackageManager.PERMISSION_GRANTED
@@ -612,7 +616,7 @@ class MapActivity : ComponentActivity() {
             }
         }
         return true
-    }
+    }*/
 
     //new gps stuff
     /**
@@ -675,10 +679,10 @@ class MapActivity : ComponentActivity() {
                 }
             }
             //2
-            if (hasPermissions()) {
+            if (locationPermissions.hasPermissions()) {
                 locationUpdate()
             } else {
-                requestLocationPermissions()
+                locationPermissions.requestLocationPermissions()
             }
             //3
             onDispose {

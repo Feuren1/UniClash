@@ -118,13 +118,13 @@ class MapActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
 
+        //markerList observer and updater
         lifecycleScope.launch {
             markerList.markerList.collect {
                reloadMap = false
                 reloadMap = true
             }
         }
-
 
         mapLocationViewModel.getUserLocation(this) { location ->
             Locations.USERLOCATION.setLocation(GeoPoint(location.latitude,location.longitude))
@@ -442,56 +442,6 @@ class MapActivity : ComponentActivity() {
             this.startActivity(intent, null)
         }
     }
-
-    /*fun addMarker(marker: MarkerData) {
-        if(!(markerList.contains(marker))) {
-            markerList.add(marker)
-            updateMapMarkers()
-        }
-    }
-
-    private fun addListOfMarkers(markers: ArrayList<MarkerData>) {
-        if(!(markerList.containsAll(markers))) {
-            if (!markersLoaded!!) {
-                for (marker in markers) {
-                    markerList.add(marker)
-                }
-            }
-            updateMapMarkers()
-        }
-    }
-
-    private fun addListOfMarkersQ(markers: ArrayList<MarkerData?>) {
-        val convertedMarkers = ArrayList<MarkerData>()
-
-        for (marker in markers) {
-            marker?.let {
-                convertedMarkers.add(it)
-            }
-        }
-
-        if (!markerList.containsAll(convertedMarkers)) {
-            if (!markersLoaded!!) {
-                for (marker in convertedMarkers) {
-                    markerList.add(marker)
-                }
-            }
-            updateMapMarkers()
-        }
-    }
-
-
-    private fun removeMarker(marker: MarkerData) {
-        print("${markerList.size} markers")
-        markerList.remove(marker)
-        print("${markerList.size} markers")
-        updateMapMarkers()
-    }
-
-    private fun updateMapMarkers() {
-        markersLoaded = true
-        markersLoaded = false;
-    }*/
 
     companion object {
         private const val LOCATION_TAG = "MyLocationTag"

@@ -96,12 +96,6 @@ class MapActivity : ComponentActivity() {
         MapLocationViewModel.provideFactory()
     })
 
-    /*private val locationPermissions = arrayOf(
-        //array ONLY for location Permissions!!!
-        Manifest.permission.ACCESS_COARSE_LOCATION,
-        Manifest.permission.ACCESS_FINE_LOCATION,
-    )*/
-
     private val locationPermissions = LocationPermissions(this, this)
 
     private var startMapRequested by mutableStateOf(false)
@@ -588,37 +582,6 @@ class MapActivity : ComponentActivity() {
 
 
     //gps stuff
-    /*private fun requestLocationPermissions() {
-        for (permission in locationPermissions) {
-            if (ContextCompat.checkSelfPermission(this, permission)
-                != PackageManager.PERMISSION_GRANTED
-            ) {
-                ActivityCompat.requestPermissions(this, locationPermissions, 0)
-            }
-        }
-    }
-
-    override fun onRequestPermissionsResult(
-        requestCode: Int,
-        permissions: Array<out String>,
-        grantResults: IntArray
-    ) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-        // Handle permission results if neededA
-    }
-
-    private fun hasPermissions(): Boolean {
-        for (permission in locationPermissions) {
-            if (ContextCompat.checkSelfPermission(this, permission)
-                != PackageManager.PERMISSION_GRANTED
-            ) {
-                return false
-            }
-        }
-        return true
-    }*/
-
-    //new gps stuff
     /**
      * Manages all location related tasks for the app.
      */

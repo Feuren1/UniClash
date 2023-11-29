@@ -70,6 +70,8 @@ import project.main.uniclash.datatypes.Locations
 import project.main.uniclash.datatypes.MapSaver
 import project.main.uniclash.datatypes.MapSettings
 import project.main.uniclash.datatypes.MarkerData
+import project.main.uniclash.datatypes.MarkerStudentHub
+import project.main.uniclash.datatypes.MarkerWildEncounter
 import project.main.uniclash.datatypes.SelectedMarker
 import project.main.uniclash.datatypes.StudentHub
 import project.main.uniclash.retrofit.CritterService
@@ -78,7 +80,7 @@ import project.main.uniclash.ui.theme.UniClashTheme
 import project.main.uniclash.viewmodels.MapLocationViewModel
 import project.main.uniclash.viewmodels.StudentHubViewModel
 import project.main.uniclash.viewmodels.UniClashViewModel
-import project.main.uniclash.wildencounter.WildEncounterLogic
+import project.main.uniclash.map.WildEncounterLogic
 import java.lang.Math.atan2
 import java.lang.Math.cos
 import java.lang.Math.sin
@@ -279,7 +281,7 @@ class MapActivity : ComponentActivity() {
                         icon = marker.icon,
                         title = marker.title,
                         snippet = marker.snippet,
-                        visible = if(marker.critterUsable != null && distance > critterVisibility){false}else{marker.visible},
+                        visible = if(marker is MarkerWildEncounter && distance > critterVisibility){false}else{marker.visible},
                     ) {
                         if (distance < 501) {
                             Column(
@@ -472,7 +474,7 @@ class MapActivity : ComponentActivity() {
                     mutableStateOf(resizeDrawableTo50x50(context, R.drawable.store))
                 }
 
-                val myMarker = MarkerData(
+                val myMarker = MarkerStudentHub(
                     state = geoPoint,
                     icon = icon,
                     visible = true,

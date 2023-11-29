@@ -1,4 +1,4 @@
-package project.main.uniclash.wildencounter
+package project.main.uniclash.map
 
 import android.content.Context
 import android.graphics.Bitmap
@@ -6,9 +6,7 @@ import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.Drawable
 import android.util.Log
 import androidx.annotation.DrawableRes
-import androidx.compose.runtime.Composable
 import androidx.core.graphics.drawable.toBitmap
-import com.utsman.osmandcompose.rememberMarkerState
 import org.osmdroid.util.GeoPoint
 import project.main.uniclash.WildEncounterActivity
 import project.main.uniclash.datatypes.Attack
@@ -17,6 +15,7 @@ import project.main.uniclash.datatypes.CritterUsable
 import project.main.uniclash.datatypes.Locations
 import project.main.uniclash.datatypes.MapSaver
 import project.main.uniclash.datatypes.MarkerData
+import project.main.uniclash.datatypes.MarkerWildEncounter
 import java.lang.Math.PI
 import java.lang.Math.cos
 import java.lang.Math.sin
@@ -24,6 +23,8 @@ import java.lang.Math.sqrt
 
 
  class WildEncounterLogic(private val context: Context){
+
+
 
 
     val wildEncounters: ArrayList<CritterUsable> = ArrayList()
@@ -55,7 +56,7 @@ import java.lang.Math.sqrt
              val wildEncounter = wildEncounterMax
 
              while (i < 800) {
-                 var myMarker = MarkerData(
+                 var myMarker = MarkerWildEncounter(
                      state = GeoPoint(randomLocation.get(i).latitude, randomLocation.get(i).longitude),
                      icon = resizeDrawableTo50x50(context, CritterPic.MUSK.searchDrawableM("${wildEncounter.get(i)?.name}M")),
                      visible = true,

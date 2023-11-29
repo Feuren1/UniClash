@@ -123,7 +123,9 @@ class MenuActivity : ComponentActivity() {
                             )
                             MenuCard(listOf(Category("Student Hub", painterResource(R.drawable.store), 8)))
                             MenuCard(listOf(Category("Camera", painterResource(R.drawable.swords), 9)))
-                            MenuCard(listOf(Category("Log in", painterResource(R.drawable.profile), 10),Category("Register", painterResource(R.drawable.profile), 11)))
+                            MenuCard(listOf(Category("Log in", painterResource(R.drawable.profile), 14),Category("Register", painterResource(R.drawable.profile), 15)))
+                            MenuCard(listOf(Category("Arena", painterResource(R.drawable.arena), 10)))
+                            MenuCard(listOf(Category("Poké", painterResource(R.drawable.studentassistance), 11)))
                         }
                     }
                 }
@@ -178,15 +180,26 @@ class MenuActivity : ComponentActivity() {
                 buttonRequest = 0
             }
             if(buttonRequest == 10) {
-                val intent = Intent(this, LoginAcitivity::class.java)
+                val intent = Intent(this, ArenaActivity::class.java)
                 this.startActivity(intent)
                 buttonRequest = 0
             }
             if(buttonRequest == 11) {
+                val intent = Intent(this, PokéActivity::class.java)
+                this.startActivity(intent)
+                buttonRequest = 0
+            }
+            if(buttonRequest == 14) {
+                val intent = Intent(this, LoginActivity::class.java)
+                this.startActivity(intent)
+                buttonRequest = 0
+            }
+            if(buttonRequest == 15) {
                 val intent = Intent(this, RegisterActivity::class.java)
                 this.startActivity(intent)
                 buttonRequest = 0
             }
+
         }
     }
 

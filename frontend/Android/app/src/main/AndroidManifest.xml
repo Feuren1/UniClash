@@ -29,7 +29,21 @@
         <activity
             android:name=".LoginAcitivity"
             android:exported="false"
-            android:label="@string/title_activity_login_acitivity"
+            android:label="@string/title_activity_login_acitivity"/>
+        <activity
+            android:name=".PokéActivity"
+            android:exported="false"
+            android:label="@string/title_activity_poké"
+            android:theme="@style/Theme.UniClash" />
+        <activity
+            android:name=".ArenaActivity"
+            android:exported="false"
+            android:label="@string/title_activity_arena"
+            android:theme="@style/Theme.UniClash" />
+        <activity
+            android:name=".InventoryActivity"
+            android:exported="false"
+            android:label="@string/title_activity_inventory"
             android:theme="@style/Theme.UniClash" />
         <activity
             android:name=".CritterProfileActivity"

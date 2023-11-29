@@ -60,3 +60,4 @@ Raphael Klause<br>
 Elias Meier Scrum Master<br>
 Marius Thimm<br>
 Matthis van Treek<br>
+Daniel Filimonov<br>

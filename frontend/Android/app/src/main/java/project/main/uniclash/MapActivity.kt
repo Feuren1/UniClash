@@ -69,10 +69,12 @@ import project.main.uniclash.datatypes.StudentHub
 import project.main.uniclash.map.LocationPermissions
 import project.main.uniclash.map.MapCalculations
 import project.main.uniclash.map.WildEncounterLogic
+import project.main.uniclash.retrofit.ArenaService
 import project.main.uniclash.retrofit.CritterService
 import project.main.uniclash.retrofit.StudentHubService
 import project.main.uniclash.ui.theme.UniClashTheme
 import project.main.uniclash.viewmodels.MapLocationViewModel
+import project.main.uniclash.viewmodels.MapMarkerViewModel
 import project.main.uniclash.viewmodels.StudentHubViewModel
 import project.main.uniclash.viewmodels.UniClashViewModel
 import java.util.concurrent.TimeUnit
@@ -86,6 +88,19 @@ class MapActivity : ComponentActivity() {
     private val mapLocationViewModel: MapLocationViewModel by viewModels(factoryProducer = {
         MapLocationViewModel.provideFactory(locationPermissions)
     })
+
+    private val uniClashViewModel: UniClashViewModel by viewModels(factoryProducer = {
+        UniClashViewModel.provideFactory(CritterService.getInstance(this))
+    })
+
+    private val studentHubViewModel: StudentHubViewModel by viewModels(factoryProducer = {
+        StudentHubViewModel.provideFactory(StudentHubService.getInstance(this))
+    })
+
+    private val mapMarkerViewModel: MapMarkerViewModel by viewModels(factoryProducer = {
+        MapMarkerViewModel.provideFactory(CritterService.getInstance(this), StudentHubService.getInstance(this), ArenaService.getInstance(this),this, studentHubViewModel)
+    })
+
 
     private var startMapRequested by mutableStateOf(false)
     private var mainLatitude: Double by mutableStateOf(Locations.USERLOCATION.getLocation().latitude) //for gps location
@@ -114,6 +129,13 @@ class MapActivity : ComponentActivity() {
 
         setContent {
             // todo uistate from viewmodel
+            studentHubViewModel.loadStudentHubs()
+            val markersStudentHubUIState by mapMarkerViewModel.markersStudentHub.collectAsState()
+            val studentHubMarkers = markersStudentHubUIState.markersStudentHub
+
+            addListOfMarkersQ(studentHubMarkers)
+            println("size of $studentHubMarkers in activity")
+
 
             UniClashTheme {
                 Surface(
@@ -182,8 +204,8 @@ class MapActivity : ComponentActivity() {
     fun Map() {
         LoadFirstWildEncounter()
         LoadWildEncounter()
-        LoadStudentHubs()
-        InitStudentHubMarker()
+        //LoadStudentHubs()
+        //InitStudentHubMarker()
 
         SettingUpMap()
 
@@ -419,7 +441,7 @@ class MapActivity : ComponentActivity() {
     }
 
 
-    fun LoadStudentHubs(){
+    /*fun LoadStudentHubs(){
         if(shouldLoadStudentHubs) {
             println("trying to load student hubs ${MapSaver.STUDENTHUB.getMarker().toString()}")
             if (MapSaver.STUDENTHUB.getMarker() != null && MapSaver.STUDENTHUB.getMarker()!!
@@ -432,9 +454,9 @@ class MapActivity : ComponentActivity() {
                 shouldLoadStudentHubs = false
             }
         }
-    }
+    }*/
 
-    @Composable
+    /*@Composable
     fun InitStudentHubMarker() {
         if(shouldInitStudentHubs) {
             val context = LocalContext.current
@@ -467,7 +489,7 @@ class MapActivity : ComponentActivity() {
             MapSaver.STUDENTHUB.setMarker(studentHubMarkerList)
             shouldInitStudentHubs = false
         }
-    }
+    }*/
 
     fun addMarker(marker: MarkerData) {
         if(!(markerList.contains(marker))) {
@@ -486,6 +508,26 @@ class MapActivity : ComponentActivity() {
             updateMapMarkers()
         }
     }
+
+    fun addListOfMarkersQ(markers: ArrayList<MarkerData?>) {
+        val convertedMarkers = ArrayList<MarkerData>()
+
+        for (marker in markers) {
+            marker?.let {
+                convertedMarkers.add(it)
+            }
+        }
+
+        if (!markerList.containsAll(convertedMarkers)) {
+            if (!markersLoaded!!) {
+                for (marker in convertedMarkers) {
+                    markerList.add(marker)
+                }
+            }
+            updateMapMarkers()
+        }
+    }
+
 
     fun removeMarker(marker: MarkerData) {
         print("${markerList.size} markers")
@@ -509,14 +551,6 @@ class MapActivity : ComponentActivity() {
     }
 
  //BackendStuff
-
-    private val uniClashViewModel: UniClashViewModel by viewModels(factoryProducer = {
-        UniClashViewModel.provideFactory(CritterService.getInstance(this))
-    })
-
-    private val studentHubViewModel: StudentHubViewModel by viewModels(factoryProducer = {
-        StudentHubViewModel.provideFactory(StudentHubService.getInstance(this))
-    })
 
     @Composable
     fun WildEncounter(uniClashViewModel: UniClashViewModel):List<CritterUsable?> {

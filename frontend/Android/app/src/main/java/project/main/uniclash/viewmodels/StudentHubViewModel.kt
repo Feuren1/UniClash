@@ -81,7 +81,7 @@ class StudentHubViewModel(
     init {
         viewModelScope.launch {
             Log.d(TAG, "Fetching initial studentHub data: ")
-            loadItemTemplates()
+            loadItemTemplates() //TODO lässt tenplates immer laden auf wenn z.b. map ausfeührt wird.
         }
     }
 
@@ -108,6 +108,7 @@ class StudentHubViewModel(
 
     //loads all StudentHubs inside the database
     fun loadStudentHubs() {
+        println("try to load hubs")
         viewModelScope.launch {
             studentHubs.update { it.copy(isLoading = true) }
             try {

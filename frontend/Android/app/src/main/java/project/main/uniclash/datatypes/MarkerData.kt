@@ -14,9 +14,6 @@ open class MarkerData(
     open var pic : Int = 0,
     open var button : Class<out Activity> = MainActivity::class.java,
     open var buttonText : String? = "button",
-    //var critterUsable: CritterUsable ? = null,
-    //var studentHub : StudentHub ? = null
-    //todo drei data data class die extenden.
     )
 
 data class MarkerWildEncounter(
@@ -47,4 +44,16 @@ data class MarkerStudentHub(
     state,icon,visible,title,snippet,pic,button, buttonText
 )
 
-//TODO data class MarkerArena
+data class MarkerArena(
+    override var state : GeoPoint,
+    override var icon : Drawable? = null,
+    override var visible : Boolean = true,
+    override var title :String? = "marker",
+    override var snippet : String? = null,
+    override var pic : Int = 0,
+    override var button : Class<out Activity> = MainActivity::class.java,
+    override var buttonText : String? = "button",
+    var arena : Arena ? = null
+) : MarkerData(
+    state,icon,visible,title,snippet,pic,button, buttonText
+)

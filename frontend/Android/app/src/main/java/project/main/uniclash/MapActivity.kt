@@ -83,7 +83,7 @@ class MapActivity : ComponentActivity() {
     private val locationPermissions = LocationPermissions(this, this)
     private val mapCalculations = MapCalculations()
 
-    val mapLocationViewModel: MapLocationViewModel by viewModels(factoryProducer = {
+    private val mapLocationViewModel: MapLocationViewModel by viewModels(factoryProducer = {
         MapLocationViewModel.provideFactory(locationPermissions)
     })
 
@@ -108,10 +108,8 @@ class MapActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
 
-
-        var currentUserLocation : MapLocationViewModel.LatandLong = MapLocationViewModel.LatandLong(0.0,0.0)
         mapLocationViewModel.getUserLocation(this) { location ->
-            currentUserLocation = location
+            Locations.USERLOCATION.setLocation(GeoPoint(location.latitude,location.longitude))
         }
 
         setContent {
@@ -122,12 +120,12 @@ class MapActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
+                    var currentUserLocation : MapLocationViewModel.LatandLong = MapLocationViewModel.LatandLong(Locations.USERLOCATION.getLocation().latitude,Locations.USERLOCATION.getLocation().longitude)
                     if (locationPermissions.hasPermissions() || startMapRequested) {
                         //  val currentUserLocation = mapLocationViewModel.getUserLocation(context = LocalContext.current)
                         if(currentUserLocation.latitude != 0.0 && currentUserLocation.longitude != 0.0) {
                             mainLatitude = currentUserLocation.latitude
                             mainLongitude = currentUserLocation.longitude
-                            Locations.USERLOCATION.setLocation(GeoPoint(currentUserLocation.latitude, currentUserLocation.longitude))
                         }
                         Map()
                     } else {
@@ -178,24 +176,6 @@ class MapActivity : ComponentActivity() {
          gpsLocation = rememberMarkerState()
          cameraState = rememberCameraState()
         alreadySetedUpMap = true
-    }
-
-    @Composable
-    fun MapView(viewModel: MapLocationViewModel) {
-        val context = LocalContext.current
-
-        // Use LaunchedEffect to observe the location updates when the composable is first launched
-        LaunchedEffect(viewModel) {
-            viewModel.getUserLocation(context) { location ->
-                mainLatitude = location.latitude
-                mainLongitude = location.longitude
-                // Handle the updated location here
-                // For example, update UI or perform any other action
-            }
-        }
-
-        // You can add your Map UI here using the provided location data
-        // ...
     }
 
     @Composable
@@ -330,7 +310,7 @@ class MapActivity : ComponentActivity() {
                 Marker(
                     state = gpsLocation,
                     icon = arrow,
-                    title = "NamePlaceholder",
+                    title = "Go to your profile",
                     snippet = ":)"
                 ) {
                     Column(
@@ -528,116 +508,6 @@ class MapActivity : ComponentActivity() {
         private const val LOCATION_TAG = "MyLocationTag"
     }
 
-//A callback for receiving notifications from the FusedLocationProviderClient.
-   /*lateinit var locationCallback: LocationCallback
-
-    //The main entry point for interacting with the Fused Location Provider
-    lateinit var locationProvider: FusedLocationProviderClient
-
-    @SuppressLint("MissingPermission")
-    @Composable
-    fun getUserLocation(context: Context): LatandLong {
-
-        // The Fused Location Provider provides access to location APIs.
-        locationProvider = LocationServices.getFusedLocationProviderClient(context)
-
-        var currentUserLocation by remember { mutableStateOf(LatandLong()) }
-
-        DisposableEffect(key1 = locationProvider) {
-            locationCallback = object : LocationCallback() {
-                //1
-                override fun onLocationResult(result: LocationResult) {
-                    /**
-                     * Option 1
-                     * This option returns the locations computed, ordered from oldest to newest.
-                     * */
-                    for (location in result.locations) {
-                        // Update data class with location data
-                        currentUserLocation = LatandLong(location.latitude, location.longitude)
-
-                        Log.d(LOCATION_TAG, "${location.latitude},${location.longitude}")
-                    }
-
-
-                    /**
-                     * Option 2
-                     * This option returns the most recent historical location currently available.
-                     * Will return null if no historical location is available
-                     * */
-                    locationProvider.lastLocation
-                        .addOnSuccessListener { location ->
-                            location?.let {
-                                val lat = location.latitude
-                                val long = location.longitude
-                                // Update data class with location data
-                                currentUserLocation =
-                                    LatandLong(latitude = lat, longitude = long)
-                            }
-                        }
-                        .addOnFailureListener {
-                            Log.e("Location_error", "${it.message}")
-                        }
-                }
-            }
-            //2
-            if (locationPermissions.hasPermissions()) {
-                locationUpdate()
-            } else {
-                locationPermissions.requestLocationPermissions()
-            }
-            //3
-            onDispose {
-                stopLocationUpdate()
-            }
-        }
-        //4
-        return currentUserLocation
-    }
-
-    //data class to store the user Latitude and longitude
-    data class LatandLong( //set the first maker
-        val latitude: Double = 0.0,
-        val longitude: Double = 0.0
-    )
-
-    @SuppressLint("MissingPermission")
-    fun locationUpdate() {
-        locationCallback.let {
-            println("locationUpdate tries updating")
-            //An encapsulation of various parameters for requesting
-            // location through FusedLocationProviderClient.
-            val locationRequest: LocationRequest =
-                LocationRequest.create().apply {
-                    interval = TimeUnit.SECONDS.toMillis(5) //TimeUnit.SECONDS.toMillis(60)
-                    fastestInterval = TimeUnit.SECONDS.toMillis(3) //TimeUnit.SECONDS.toMillis(30)
-                    maxWaitTime = TimeUnit.SECONDS.toMillis(5) //TimeUnit.MINUTES.toMillis(2)
-                    priority = LocationRequest.PRIORITY_HIGH_ACCURACY
-                }
-            //use FusedLocationProviderClient to request location update
-            locationProvider.requestLocationUpdates(
-                locationRequest,
-                it,
-                Looper.getMainLooper()
-            )
-        }
-
-    }
-
-    fun stopLocationUpdate() {
-        try {
-            //Removes all location updates for the given callback.
-            val removeTask = locationProvider.removeLocationUpdates(locationCallback)
-            removeTask.addOnCompleteListener { task ->
-                if (task.isSuccessful) {
-                    Log.d(LOCATION_TAG, "Location Callback removed.")
-                } else {
-                    Log.d(LOCATION_TAG, "Failed to remove Location Callback.")
-                }
-            }
-        } catch (se: SecurityException) {
-            Log.e(LOCATION_TAG, "Failed to remove Location Callback.. $se")
-        }
-    }*/
  //BackendStuff
 
     private val uniClashViewModel: UniClashViewModel by viewModels(factoryProducer = {

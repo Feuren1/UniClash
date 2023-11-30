@@ -103,7 +103,7 @@ class MapActivity : ComponentActivity() {
         MapMarkerViewModel.provideFactory(CritterService.getInstance(this), StudentHubService.getInstance(this), ArenaService.getInstance(this),this, studentHubViewModel, arenaViewModel, critterViewModel)
     })
 
-    private var markerList = MarkerList()
+    private var markerList = MarkerList()//dependency injection
     private var reloadMap by mutableStateOf(true)
 
     private var startMapRequested by mutableStateOf(false)

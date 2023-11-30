@@ -40,6 +40,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import project.main.uniclash.datatypes.ActivitySaver
 import project.main.uniclash.datatypes.MapSettings
 import project.main.uniclash.ui.theme.UniClashTheme
 
@@ -140,9 +141,11 @@ class MenuActivity : ComponentActivity() {
                 buttonRequest == 0
             }
             if(buttonRequest == 3) {
-                val intent = Intent(this, CritterDexActivity::class.java)
+                ActivitySaver.CRITTERDEX.setIntent(Intent(this, CritterDexActivity::class.java))
+                // val intent = Intent(this, CritterDexActivity::class.java)
+                val intent = ActivitySaver.CRITTERDEX.getIntent()
                 this.startActivity(intent)
-                buttonRequest == 0
+                buttonRequest = 0
             }
             if(buttonRequest == 10) {
                 MapSettings.CRITTERBINOCULARS.setMapSetting(!MapSettings.CRITTERBINOCULARS.getMapSetting())
@@ -160,7 +163,9 @@ class MenuActivity : ComponentActivity() {
                 buttonRequest = 0
             }
             if(buttonRequest == 7) {
-                val intent = Intent(this, MapActivity::class.java)
+                ActivitySaver.MAP.setIntent(Intent(this, MapActivity::class.java))
+                //val intent = Intent(this, MapActivity::class.java)
+                val intent = ActivitySaver.MAP.getIntent()
                 this.startActivity(intent)
                 buttonRequest = 0
             }

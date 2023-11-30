@@ -1,5 +1,6 @@
 package project.main.uniclash.datatypes
 
+import android.content.Intent
 import org.osmdroid.util.GeoPoint
 
 enum class MapSettings(private var selection : Boolean){
@@ -82,3 +83,19 @@ enum class Counter(private var count : Int){
         count += plusCounter
     }
 }
+
+enum class ActivitySaver(private var intent: Intent?){
+    CRITTERDEX(null),
+    MAP(null);
+
+    fun getIntent(): Intent? {
+        return intent
+    }
+
+    fun setIntent(intent : Intent){
+        if(this.intent == null) {
+            this.intent = intent
+        }
+    }
+}
+

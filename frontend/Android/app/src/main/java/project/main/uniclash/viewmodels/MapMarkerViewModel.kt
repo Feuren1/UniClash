@@ -1,7 +1,9 @@
 package project.main.uniclash.viewmodels
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.graphics.drawable.Drawable
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
@@ -13,23 +15,34 @@ import project.main.uniclash.ArenaActivity
 import project.main.uniclash.R
 import project.main.uniclash.StudentHubActivity
 import project.main.uniclash.WildEncounterActivity
+import project.main.uniclash.datatypes.Arena
 import project.main.uniclash.datatypes.CritterPic
+import project.main.uniclash.datatypes.CritterUsable
 import project.main.uniclash.datatypes.Locations
 import project.main.uniclash.datatypes.MapSaver
 import project.main.uniclash.datatypes.MarkerArena
 import project.main.uniclash.datatypes.MarkerData
 import project.main.uniclash.datatypes.MarkerStudentHub
 import project.main.uniclash.datatypes.MarkerWildEncounter
+import project.main.uniclash.datatypes.StudentHub
 import project.main.uniclash.map.MapCalculations
 import project.main.uniclash.retrofit.ArenaService
 import project.main.uniclash.retrofit.CritterService
 import project.main.uniclash.retrofit.StudentHubService
+import project.main.uniclash.retrofit.enqueue
 
 sealed interface MarkersStudentHubUIState {
     data class HasEntries(
         val markersStudentHub: ArrayList<MarkerData?>,
         val isLoading: Boolean,
     ) : MarkersStudentHubUIState
+}
+
+sealed interface StudentHubsForMapUIState {
+    data class HasEntries(
+        val studentHubs: List<StudentHub>,
+        val isLoading: Boolean,
+    ) : StudentHubsForMapUIState
 }
 
 sealed interface MarkersArenaUIState {
@@ -39,20 +52,31 @@ sealed interface MarkersArenaUIState {
     ) : MarkersArenaUIState
 }
 
+sealed interface ArenasForMapUIState {
+    data class HasEntries(
+        val arenas: List<Arena?>,
+        val isLoading: Boolean,
+    ) : ArenasForMapUIState
+}
+
 sealed interface MarkersWildEncounterUIState {
     data class HasEntries(
         val markersWildEncounter: ArrayList<MarkerData?>,
         val isLoading: Boolean,
     ) : MarkersWildEncounterUIState
 }
+
+sealed interface CritterUsablesForMapUIState {
+    data class HasEntries(
+        val critterUsables: List<CritterUsable?>,
+        val isLoading: Boolean,
+    ) : CritterUsablesForMapUIState
+}
 class MapMarkerViewModel(
     private val critterService: CritterService,
     private val studentHubService : StudentHubService,
     private val arenaService : ArenaService,
     private val context : Context,
-    private val studentHubViewModel: StudentHubViewModel,
-    private val arenaViewModel : ArenaViewModel,
-    private val critterViewModel: UniClashViewModel
 ) : ViewModel() {
 
     var mapCalculations = MapCalculations()
@@ -63,10 +87,32 @@ class MapMarkerViewModel(
             markersStudentHub =  ArrayList<MarkerData?>()
         )
     )
+
+    val studentHubs = MutableStateFlow(
+        StudentHubsForMapUIState.HasEntries(
+            emptyList(),
+            isLoading = false
+        )
+    )
+
     val markersArena = MutableStateFlow(
         MarkersArenaUIState.HasEntries(
             isLoading = false,
             makersArena =   ArrayList<MarkerData?>()
+        )
+    )
+
+    val arenas = MutableStateFlow(
+        ArenasForMapUIState.HasEntries(
+            arenas = emptyList(),
+            isLoading = false,
+        )
+    )
+
+    val critterUsables = MutableStateFlow(
+        CritterUsablesForMapUIState.HasEntries(
+            emptyList(),
+            isLoading = false
         )
     )
 
@@ -77,17 +123,38 @@ class MapMarkerViewModel(
         )
     )
 
+    fun loadStudentHubs() {
+        println("try to load hubs")
+        viewModelScope.launch {
+            studentHubs.update { it.copy(isLoading = true) }
+            try {
+                val response = studentHubService.getStudentHubs().enqueue()
+                if (response.isSuccessful) {
+                    //creates an item list based on the fetched data
+                    val studentHubs = response.body()!!
+                    //replaces the critters list inside the UI state with the fetched data
+                    this@MapMarkerViewModel.studentHubs.update {
+                        it.copy(
+                            studentHubs = studentHubs,
+                            isLoading = false
+                        )
+                    }
+                }
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
+        }
+    }
+
     fun initMarkersStudentHub() {
-        if (markersStudentHub.value.isLoading == false) {
-            if(studentHubViewModel.studentHubs.value.studentHubs.isNotEmpty()) {
+            if(studentHubs.value.studentHubs.isNotEmpty()) {
                 this@MapMarkerViewModel.markersStudentHub.update {
                     it.copy(
                         isLoading = true,
                     )
                 }
-            }//TODO Dirty solution to avoid while loop
 
-            val studentHubs = studentHubViewModel.studentHubs.value.studentHubs
+            val studentHubs = studentHubs.value.studentHubs
             var studentHubMarkerList = ArrayList<MarkerData?>()
             var i = 0
             while (i < studentHubs.size) {
@@ -122,17 +189,35 @@ class MapMarkerViewModel(
     }
 
 
+    fun loadArenas(){
+        viewModelScope.launch {
+            arenas.update {it.copy(isLoading = true)  }
+            try {
+                val response = arenaService.getArenas().enqueue()
+                if (response.isSuccessful) {
+                    val arenas = response.body()!!
+                    this@MapMarkerViewModel.arenas.update {
+                        it.copy(
+                            arenas = arenas,
+                            isLoading = false
+                        )
+                    }
+                }
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
+        }
+    }
+
     fun initMarkersArena(){
-        if (markersArena.value.isLoading == false) {
-            if(arenaViewModel.arenas.value.arenas.isNotEmpty()) {
+            if(arenas.value.arenas.isNotEmpty()) {
                 this@MapMarkerViewModel.markersArena.update {
                     it.copy(
                         isLoading = true,
                     )
                 }
-            }//TODO Dirty solution to avoid while loop
 
-            val arenas = arenaViewModel.arenas.value.arenas
+            val arenas = arenas.value.arenas
             var arenasMarkerList = ArrayList<MarkerData?>()
             var i = 0
             while (i < arenas.size) {
@@ -166,24 +251,48 @@ class MapMarkerViewModel(
         }
     }
 
+    @SuppressLint("MissingPermission")
+    fun loadCritterUsables(id: Int) {
+        viewModelScope.launch {
+            critterUsables.update { it.copy(isLoading = true) }
+            try {
+                val response = critterService.getCritterUsables(id).enqueue()
+                if (response.isSuccessful) {
+                    val crittersUsables = response.body()!!
+                    critterUsables.update {
+                        it.copy(
+                            critterUsables = crittersUsables,
+                            isLoading = false
+                        )
+                    }
+                }
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
+        }
+    }
+
     fun initWildEncounter(){
-        if(markersArena.value.isLoading == false){
-            if(critterViewModel.critterUsables.value.critterUsables.isNotEmpty()){
+            if(critterUsables.value.critterUsables.isNotEmpty()){
                 this@MapMarkerViewModel.markersWildEncounter.update {
                     it.copy(
                         isLoading = true,
                     )
                 }
-            }//TODO Dirty solution to avoid while loop
             var wildEncounterMarkerList = ArrayList<MarkerData?>()
-            val usableCritters = critterViewModel.critterUsables.value.critterUsables
+            println("step1")
+            val usableCritters = critterUsables.value.critterUsables
+            println("step2")
             var mapCalculations = MapCalculations()
+            println("step3")
             var wildEncounterMax = usableCritters
-            while(wildEncounterMax.size < 801){
+            println("step4 ${wildEncounterMax.size} size")
+            while(wildEncounterMax.size < 801 && wildEncounterMax.isNotEmpty()){
                 wildEncounterMax = wildEncounterMax + usableCritters
             }
+            println("step5")
             val userLocation = Locations.USERLOCATION.getLocation()
-            if(MapSaver.WILDENCOUNTER.getMarker().isEmpty()) {
+            if(MapSaver.WILDENCOUNTER.getMarker().isEmpty() &&wildEncounterMax.isNotEmpty()) {
                 var randomLocation = generateRandomGeoPoints(userLocation, 2.0, 800) //400 per km
                 var i = 0
                 val wildEncounter = wildEncounterMax
@@ -246,19 +355,19 @@ class MapMarkerViewModel(
 
     init {
         viewModelScope.launch {
-            studentHubViewModel.studentHubs.collect {
+            studentHubs.collect {
                 initMarkersStudentHub()
             }
         }
         viewModelScope.launch {
-            arenaViewModel.arenas.collect {
+            arenas.collect {
                 initMarkersArena()
             }
         }
 
         viewModelScope.launch {
-            critterViewModel.critterUsables.collect{
-                //initWildEncounter()
+            critterUsables.collect{
+                initWildEncounter()
             }
         }
     }
@@ -271,9 +380,6 @@ class MapMarkerViewModel(
             studentHubService: StudentHubService,
             arenaService : ArenaService,
             context : Context,
-            studentHubViewModel: StudentHubViewModel,
-            arenaViewModel: ArenaViewModel,
-            critterViewModel : UniClashViewModel
         ): ViewModelProvider.Factory =
             object : ViewModelProvider.Factory {
                 @Suppress("UNCHECKED_CAST")
@@ -283,9 +389,6 @@ class MapMarkerViewModel(
                         studentHubService,
                         arenaService,
                         context,
-                        studentHubViewModel,
-                        arenaViewModel,
-                        critterViewModel
                     ) as T
                 }
             }

@@ -87,20 +87,8 @@ class MapActivity : ComponentActivity() {
         UniClashViewModel.provideFactory(CritterService.getInstance(this))
     })
 
-    private val studentHubViewModel: StudentHubViewModel by viewModels(factoryProducer = {
-        StudentHubViewModel.provideFactory(StudentHubService.getInstance(this))
-    })
-
-    private val arenaViewModel: ArenaViewModel by viewModels(factoryProducer = {
-        ArenaViewModel.provideFactory(ArenaService.getInstance(this))
-    })
-
-    private val critterViewModel: UniClashViewModel by viewModels(factoryProducer = {
-        UniClashViewModel.provideFactory(CritterService.getInstance(this))
-    })
-
     private val mapMarkerViewModel: MapMarkerViewModel by viewModels(factoryProducer = {
-        MapMarkerViewModel.provideFactory(CritterService.getInstance(this), StudentHubService.getInstance(this), ArenaService.getInstance(this),this, studentHubViewModel, arenaViewModel, critterViewModel)
+        MapMarkerViewModel.provideFactory(CritterService.getInstance(this), StudentHubService.getInstance(this), ArenaService.getInstance(this),this,)
     })
 
     private var markerList = MarkerList()//dependency injection
@@ -136,7 +124,7 @@ class MapActivity : ComponentActivity() {
         setContent {
             // todo uistate from viewmodel
             if(MapSaver.STUDENTHUB.getMarker().isEmpty()) {
-                studentHubViewModel.loadStudentHubs()
+                mapMarkerViewModel.loadStudentHubs()
                 val markersStudentHubUIState by mapMarkerViewModel.markersStudentHub.collectAsState()
                 val studentHubMarkers = markersStudentHubUIState.markersStudentHub
                 markerList.addListOfMarkersQ(studentHubMarkers)
@@ -146,7 +134,7 @@ class MapActivity : ComponentActivity() {
             }
 
             if(MapSaver.ARENA.getMarker().isEmpty()) {
-                arenaViewModel.loadArenas()
+                mapMarkerViewModel.loadArenas()
                 val markersArenaUIState by mapMarkerViewModel.markersArena.collectAsState()
                 val arenaMarkers = markersArenaUIState.makersArena
                 markerList.addListOfMarkersQ(arenaMarkers)
@@ -156,7 +144,7 @@ class MapActivity : ComponentActivity() {
             }
 
             if(MapSaver.WILDENCOUNTER.getMarker().isEmpty()) {
-                critterViewModel.loadCritterUsables(1)
+                mapMarkerViewModel.loadCritterUsables(1)
                 val markersWildEncounterUIState by mapMarkerViewModel.markersWildEncounter.collectAsState()
                 val wildEncounterMarkers = markersWildEncounterUIState.markersWildEncounter
                 markerList.addListOfMarkersQ(wildEncounterMarkers)

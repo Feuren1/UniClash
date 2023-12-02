@@ -24,13 +24,6 @@ sealed interface StudentHubUIState {
     ) : StudentHubUIState
 }
 
-sealed interface StudentHubsUIState {
-    data class HasEntries(
-        val studentHubs: List<StudentHub>,
-        val isLoading: Boolean,
-    ) : StudentHubsUIState
-}
-
 sealed interface ItemTemplatesUIState {
     data class HasEntries(
         val itemTemplates: List<ItemTemplate>,
@@ -54,13 +47,6 @@ class StudentHubViewModel(
         StudentHubUIState.HasEntries(
             isLoading = false,
             studentHub = null
-        )
-    )
-
-    val studentHubs = MutableStateFlow(
-        StudentHubsUIState.HasEntries(
-            emptyList(),
-            isLoading = false
         )
     )
 
@@ -101,34 +87,6 @@ class StudentHubViewModel(
                     }
                 }
             } catch (e: Exception) {
-                e.printStackTrace()
-            }
-        }
-    }
-
-    //loads all StudentHubs inside the database
-    fun loadStudentHubs() {
-        println("try to load hubs")
-        viewModelScope.launch {
-            studentHubs.update { it.copy(isLoading = true) }
-            try {
-                val response = studentHubService.getStudentHubs().enqueue()
-                Log.d(TAG, "loadStudentHubs: $response")
-                if (response.isSuccessful) {
-                    Log.d(TAG, "loadStudentHubs: success")
-                    //creates an item list based on the fetched data
-                    val studentHubs = response.body()!!
-                    Log.d(TAG, "loadStudentHubs: $studentHubs")
-                    //replaces the critters list inside the UI state with the fetched data
-                    this@StudentHubViewModel.studentHubs.update {
-                        it.copy(
-                            studentHubs = studentHubs,
-                            isLoading = false
-                        )
-                    }
-                }
-            } catch (e: Exception) {
-                Log.e(TAG, "items: error")
                 e.printStackTrace()
             }
         }

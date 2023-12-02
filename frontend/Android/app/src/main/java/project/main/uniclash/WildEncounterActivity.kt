@@ -107,11 +107,13 @@ class WildEncounterActivity : ComponentActivity() {
             if(runaway){
                 val intent = Intent(this, MapActivity::class.java)
                 this.startActivity(intent)
+                finish()
             }
             if(catchCritter){
                 wildEncounterActivity.addWildEncounterToUser()
                 val intent = Intent(this, MapActivity::class.java)
                 this.startActivity(intent)
+                finish()
             }
         }
     }

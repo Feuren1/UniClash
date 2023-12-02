@@ -124,7 +124,7 @@ class MenuActivity : ComponentActivity() {
                             )
                             MenuCard(listOf(Category("Student Hub", painterResource(R.drawable.store), 8)))
                             MenuCard(listOf(Category("Camera", painterResource(R.drawable.swords), 9)))
-                            MenuCard(listOf(Category("Arena", painterResource(R.drawable.arena), 10)))
+                            MenuCard(listOf(Category("Arena", painterResource(R.drawable.arena), 12)))
                             MenuCard(listOf(Category("Poké", painterResource(R.drawable.studentassistance), 11)))
                         }
                     }
@@ -133,11 +133,13 @@ class MenuActivity : ComponentActivity() {
             if(buttonRequest == 1) {
                 val intent = Intent(this, CritterListActivity::class.java)
                 this.startActivity(intent)
+                finish()
                 buttonRequest == 0
             }
             if(buttonRequest == 2) {
                 val intent = Intent(this, RegisterActivity::class.java)
                 this.startActivity(intent)
+                finish()
                 buttonRequest == 0
             }
             if(buttonRequest == 3) {
@@ -145,21 +147,25 @@ class MenuActivity : ComponentActivity() {
                 // val intent = Intent(this, CritterDexActivity::class.java)
                 val intent = ActivitySaver.CRITTERDEX.getIntent()
                 this.startActivity(intent)
+                finish()
                 buttonRequest = 0
             }
             if(buttonRequest == 10) {
                 MapSettings.CRITTERBINOCULARS.setMapSetting(!MapSettings.CRITTERBINOCULARS.getMapSetting())
                 val intent = Intent(this, MenuActivity::class.java)
                 this.startActivity(intent)
+                finish()
             }
             if(buttonRequest == 6) {
                 val intent = Intent(this, Battle::class.java)
                 this.startActivity(intent)
+                finish()
                 buttonRequest = 0
             }
             if(buttonRequest == 9) {
                 val intent = Intent(this, CameraActivity::class.java)
                 this.startActivity(intent)
+                finish()
                 buttonRequest = 0
             }
             if(buttonRequest == 7) {
@@ -167,27 +173,32 @@ class MenuActivity : ComponentActivity() {
                 //val intent = Intent(this, MapActivity::class.java)
                 val intent = ActivitySaver.MAP.getIntent()
                 this.startActivity(intent)
+                finish()
                 buttonRequest = 0
             }
             if(buttonRequest == 8) {
                 val intent = Intent(this, StudentHubActivity::class.java)
                 this.startActivity(intent)
+                finish()
                 buttonRequest = 0
             }
             if(buttonRequest == 4){
                 MapSettings.MOVINGCAMERA.setMapSetting(!MapSettings.MOVINGCAMERA.getMapSetting())
                 val intent = Intent(this, MenuActivity::class.java)
                 this.startActivity(intent)
+                finish()
                 buttonRequest = 0
             }
-            if(buttonRequest == 10) {
+            if(buttonRequest == 12) {
                 val intent = Intent(this, ArenaActivity::class.java)
                 this.startActivity(intent)
+                finish()
                 buttonRequest = 0
             }
             if(buttonRequest == 11) {
                 val intent = Intent(this, PokéActivity::class.java)
                 this.startActivity(intent)
+                finish()
                 buttonRequest = 0
             }
         }
@@ -214,6 +225,7 @@ class MenuActivity : ComponentActivity() {
         if(buttonRequest == 6) {
             val intent = Intent(this, Battle::class.java)
             this.startActivity(intent)
+            finish()
             buttonRequest = 0
         }
     }
@@ -237,14 +249,6 @@ class MenuActivity : ComponentActivity() {
         )*/
     }
 
-   /* @Composable
-    fun OpenBattleActivity() {
-        if(buttonRequest == 6) {
-            val intent = Intent(this, Battle::class.java)
-            this.startActivity(intent)
-            buttonRequest = 0
-        }
-    }*/
 
     @Composable
     fun OpenBattleActivityButton() {

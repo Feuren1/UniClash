@@ -62,15 +62,12 @@ import project.main.uniclash.datatypes.SelectedMarker
 import project.main.uniclash.map.LocationPermissions
 import project.main.uniclash.map.MapCalculations
 import project.main.uniclash.map.MarkerList
-import project.main.uniclash.map.WildEncounterLogic
 import project.main.uniclash.retrofit.ArenaService
 import project.main.uniclash.retrofit.CritterService
 import project.main.uniclash.retrofit.StudentHubService
 import project.main.uniclash.ui.theme.UniClashTheme
-import project.main.uniclash.viewmodels.ArenaViewModel
 import project.main.uniclash.viewmodels.MapLocationViewModel
 import project.main.uniclash.viewmodels.MapMarkerViewModel
-import project.main.uniclash.viewmodels.StudentHubViewModel
 import project.main.uniclash.viewmodels.UniClashViewModel
 
 class MapActivity : ComponentActivity() {
@@ -147,9 +144,9 @@ class MapActivity : ComponentActivity() {
                 mapMarkerViewModel.loadCritterUsables(1)
                 val markersWildEncounterUIState by mapMarkerViewModel.markersWildEncounter.collectAsState()
                 val wildEncounterMarkers = markersWildEncounterUIState.markersWildEncounter
-                markerList.addListOfMarkersQ(wildEncounterMarkers)
+                //markerList.addListOfMarkersQ(wildEncounterMarkers) //should be set in LoadFirstWildEncounter
                 MapSaver.WILDENCOUNTER.setMarker(wildEncounterMarkers)
-            } else{
+            } else if (Counter.FIRSTSPAWN.getCounter() < 1){ //to avoid that wildencounter will spawn before time times to zero
                 markerList.addListOfMarkersQ(MapSaver.WILDENCOUNTER.getMarker()!!)
             }
 
@@ -248,10 +245,10 @@ class MapActivity : ComponentActivity() {
                     gpsLocation.geoPoint = GeoPoint(mainLatitude, mainLongitude)
                     gpsLocation.rotation = mapCalculations.calculateDirection(GeoPoint(cameraState.geoPoint.latitude,cameraState.geoPoint.longitude), GeoPoint(mainLatitude,mainLongitude))+270F
                     if (MapSettings.MOVINGCAMERA.getMapSetting()) {
-                        cameraState.geoPoint = GeoPoint(mainLatitude, mainLongitude)
+                        cameraState.geoPoint = GeoPoint(mainLatitude,mainLongitude)
                         cameraState.zoom = 20.0
                     } else if (movingCamera == true) {
-                        cameraState.geoPoint = GeoPoint(mainLatitude, mainLongitude)
+                        cameraState.geoPoint = GeoPoint(mainLatitude,mainLongitude)
                         cameraState.zoom = 20.0
                         movingCamera = false
                     }
@@ -376,6 +373,7 @@ class MapActivity : ComponentActivity() {
                     SelectedMarker.SELECTEDMARKER.setMarker(marker)
                     val intent = Intent(context,marker.button)
                     this.startActivity(intent, null)
+                    finish()
                 },
                 modifier = Modifier
                     .padding(2.dp)
@@ -398,6 +396,7 @@ class MapActivity : ComponentActivity() {
                 // Handle the button click to open the new activity here
                 val intent = Intent(context,activity)
                 this.startActivity(intent, null)
+                finish()
             },
             modifier = Modifier
                 .padding(2.dp)
@@ -427,7 +426,6 @@ class MapActivity : ComponentActivity() {
                 Log.d(LOCATION_TAG, "Excecuted first loadwildencounter")
                 var critterUsables = WildEncounter(uniClashViewModel)
                 println("${critterUsables.size} size")
-                    //markerList.addListOfMarkers(wildEncounterLogic.initMarkers(critterUsables))
                      markerList.addListOfMarkersQ(MapSaver.WILDENCOUNTER.getMarker())
                 shouldLoadFirstWildEncounter = false
                 if(critterUsables.isEmpty()){
@@ -444,6 +442,7 @@ class MapActivity : ComponentActivity() {
             Log.d(LOCATION_TAG, "Excecuted second loadwildencounter")
             val intent = Intent(this,MapActivity::class.java)
             this.startActivity(intent, null)
+            finish()
         }
     }
 

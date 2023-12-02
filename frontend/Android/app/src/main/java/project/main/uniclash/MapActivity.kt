@@ -52,7 +52,6 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import org.osmdroid.util.GeoPoint
 import project.main.uniclash.datatypes.Counter
-import project.main.uniclash.datatypes.CritterUsable
 import project.main.uniclash.datatypes.Locations
 import project.main.uniclash.datatypes.MapSaver
 import project.main.uniclash.datatypes.MapSettings
@@ -68,7 +67,6 @@ import project.main.uniclash.retrofit.StudentHubService
 import project.main.uniclash.ui.theme.UniClashTheme
 import project.main.uniclash.viewmodels.MapLocationViewModel
 import project.main.uniclash.viewmodels.MapMarkerViewModel
-import project.main.uniclash.viewmodels.UniClashViewModel
 
 class MapActivity : ComponentActivity() {
     private lateinit var fusedLocationClient: FusedLocationProviderClient
@@ -78,10 +76,6 @@ class MapActivity : ComponentActivity() {
 
     private val mapLocationViewModel: MapLocationViewModel by viewModels(factoryProducer = {
         MapLocationViewModel.provideFactory(locationPermissions)
-    })
-
-    private val uniClashViewModel: UniClashViewModel by viewModels(factoryProducer = {
-        UniClashViewModel.provideFactory(CritterService.getInstance(this))
     })
 
     private val mapMarkerViewModel: MapMarkerViewModel by viewModels(factoryProducer = {
@@ -424,11 +418,9 @@ class MapActivity : ComponentActivity() {
         if(shouldLoadFirstWildEncounter) {
             if(alreadyLoaded == false) {
                 Log.d(LOCATION_TAG, "Excecuted first loadwildencounter")
-                var critterUsables = WildEncounter(uniClashViewModel)
-                println("${critterUsables.size} size")
                      markerList.addListOfMarkersQ(MapSaver.WILDENCOUNTER.getMarker())
                 shouldLoadFirstWildEncounter = false
-                if(critterUsables.isEmpty()){
+                if(MapSaver.WILDENCOUNTER.getMarker().isEmpty()){
                     Counter.FIRSTSPAWN.setCounter(2)
                 } else {
                     alreadyLoaded = true
@@ -448,16 +440,5 @@ class MapActivity : ComponentActivity() {
 
     companion object {
         private const val LOCATION_TAG = "MyLocationTag"
-    }
-
- //BackendStuff
-
-    @Composable
-    fun WildEncounter(uniClashViewModel: UniClashViewModel):List<CritterUsable?> {
-        val uniClashUiStateCritterUsables by uniClashViewModel.critterUsables.collectAsState()
-        uniClashViewModel.loadCritterUsables(1)
-        var critterUsables : List<CritterUsable?> = uniClashUiStateCritterUsables.critterUsables
-        println("${critterUsables.size} size in methode")
-        return critterUsables
     }
 }

@@ -190,7 +190,7 @@ class MenuActivity : ComponentActivity() {
                 buttonRequest = 0
             }
             if(buttonRequest == 14) {
-                val intent = Intent(this, LoginActivity::class.java)
+                val intent = Intent(this, LoginAcitivity::class.java)
                 this.startActivity(intent)
                 buttonRequest = 0
             }

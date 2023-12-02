@@ -1,4 +1,4 @@
-// LoginAcitivity.kt
+// LoginActivity.kt
 package project.main.uniclash
 
 import android.app.Application
@@ -40,7 +40,6 @@ import androidx.compose.ui.unit.dp
 import project.main.uniclash.retrofit.UserService
 import project.main.uniclash.ui.theme.UniClashTheme
 import project.main.uniclash.viewmodels.LoginViewModel
-import project.main.uniclash.viewmodels.UserIDCallback
 
 @OptIn(ExperimentalComposeUiApi::class)
 class LoginAcitivity : ComponentActivity() {

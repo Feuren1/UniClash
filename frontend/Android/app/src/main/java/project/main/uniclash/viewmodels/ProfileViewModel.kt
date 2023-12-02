@@ -35,6 +35,7 @@ class ProfileViewModel (private val userService: UserService, application: Appli
     private val TAG = LoginViewModel::class.java.simpleName
     private val context: Application = application
     val text: MutableStateFlow<String> = MutableStateFlow("")
+    val hasStudent: MutableStateFlow<Boolean?> = MutableStateFlow(null)
 
     val user = MutableStateFlow(
         UserUIState.HasEntries(
@@ -57,10 +58,16 @@ class ProfileViewModel (private val userService: UserService, application: Appli
                         }
                         saveStudentIdToSharedPreferences(response.body()!!.id,context)
                     }
-
+                    hasStudent.value= true
+                    text.value = "Game progress loaded successfully"
                     Log.d(TAG, "Student/Game-progress has been loaded ${user.value.user}")
+                }else{
+                    hasStudent.value= false
+                    text.value = "Loading Game Progress failed, Have you created a Student yet?"
                 }
             } catch (e: Exception) {
+                hasStudent.value= false
+                text.value = "Loading Game Progress failed, Have you created a Student yet?"
                 e.printStackTrace()
             }
         }

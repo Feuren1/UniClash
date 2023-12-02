@@ -3,13 +3,16 @@ package project.main.uniclash.viewmodels
 import android.app.Application
 import android.content.Context
 import android.util.Log
+import androidx.datastore.dataStoreFile
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.google.gson.JsonObject
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.update
+import project.main.uniclash.dataStore
 import project.main.uniclash.datatypes.UserLoginRequest
 import project.main.uniclash.retrofit.UserService
+import project.main.uniclash.userDataManager.UserDataManager
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -27,6 +30,9 @@ class LoginViewModel (private val userService: UserService, application: Applica
 
     private val TAG = LoginViewModel::class.java.simpleName
     private val context: Application = application
+    private val userDataManager: UserDataManager by lazy {
+        UserDataManager(application)
+    }
     val text: MutableStateFlow<String> = MutableStateFlow("")
 
     val login = MutableStateFlow(
@@ -55,9 +61,9 @@ class LoginViewModel (private val userService: UserService, application: Applica
                     // Save the JWT token securely
                     val jsonObject = response.body()
                     val jwtToken = jsonObject?.get("token")?.asString
-
                     if (jwtToken != null) {
                         // Save the token to SharedPreferences
+
                         saveTokenToSharedPreferences(jwtToken,context)
 
                         // Update userData with the response if needed

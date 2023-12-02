@@ -47,6 +47,10 @@ class ProfileActivity : ComponentActivity() {
 @Composable
 fun PlayerProfile(profileViewModel: ProfileViewModel) {
     val userUIState by profileViewModel.user.collectAsState()
+    val responseText by profileViewModel.text.collectAsState()
+    val hasStudent by profileViewModel.hasStudent.collectAsState()
+    val text by profileViewModel.text.collectAsState()
+
 
     Column(
         modifier = Modifier
@@ -64,7 +68,24 @@ fun PlayerProfile(profileViewModel: ProfileViewModel) {
         Text("Credits: ${userUIState.user?.student?.credits}")
 
         // Display other game progress details as needed
+        if(hasStudent==true){
+        // Display button to go back to the menu
+        }
+        if(hasStudent==false){
+            // Display button to go back to the menu
+            Button(
+                onClick = {
 
+
+                },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .clip(MaterialTheme.shapes.medium)
+            ) {
+                Text("Start your journey and create your Student")
+            }
+        }
+        Text(text)
         // Add a button or action to navigate to edit profile or other features
         Button(
             onClick = {

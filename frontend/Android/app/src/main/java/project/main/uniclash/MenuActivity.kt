@@ -125,6 +125,8 @@ class MenuActivity : ComponentActivity() {
                             MenuCard(listOf(Category("Camera", painterResource(R.drawable.swords), 9)))
                             MenuCard(listOf(Category("Arena", painterResource(R.drawable.arena), 10)))
                             MenuCard(listOf(Category("Poké", painterResource(R.drawable.studentassistance), 11)))
+                            MenuCard(listOf(Category("BattleTutorial", painterResource(R.drawable.prc2duck), 15)))
+                            MenuCard(listOf(Category("BattleTutorialAdvanced", painterResource(R.drawable.prc2duck), 16)))
                         }
                     }
                 }
@@ -182,6 +184,16 @@ class MenuActivity : ComponentActivity() {
             }
             if(buttonRequest == 11) {
                 val intent = Intent(this, PokéActivity::class.java)
+                this.startActivity(intent)
+                buttonRequest = 0
+            }
+            if(buttonRequest == 15) {
+                val intent = Intent(this, BattleTutorialActivity::class.java)
+                this.startActivity(intent)
+                buttonRequest = 0
+            }
+            if(buttonRequest == 16) {
+                val intent = Intent(this, BattleTutorialAdvancedActivity::class.java)
                 this.startActivity(intent)
                 buttonRequest = 0
             }

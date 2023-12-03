@@ -11,4 +11,6 @@
     <string name="title_activity_critter_profile">CritterProfileActivity</string>
     <string name="title_activity_inventory">InventoryActivity</string>
     <string name="title_activity_poké">PokéActivity</string>
+    <string name="title_activity_battle_tutorial">BattleTutorialActivity</string>
+    <string name="title_activity_battle_tutorial_advanced">BattleTutorialAdvancedActivity</string>
 </resources>

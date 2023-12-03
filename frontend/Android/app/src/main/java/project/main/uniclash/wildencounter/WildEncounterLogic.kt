@@ -12,6 +12,7 @@ import com.utsman.osmandcompose.rememberMarkerState
 import org.osmdroid.util.GeoPoint
 import project.main.uniclash.WildEncounterActivity
 import project.main.uniclash.datatypes.Attack
+import project.main.uniclash.datatypes.AttackType
 import project.main.uniclash.datatypes.CritterPic
 import project.main.uniclash.datatypes.CritterUsable
 import project.main.uniclash.datatypes.Locations
@@ -138,6 +139,6 @@ import java.lang.Math.sqrt
             return geoLocations
     }
 
-     val attack1 = Attack(1, "Tackle", 1)
-     val attack2 = Attack(2, "Scratch",2)
+     val attack1 = Attack(1, "Tackle", 1,AttackType.DEF_DeBuff)
+     val attack2 = Attack(2, "Scratch",2,AttackType.DEF_DeBuff)
 }

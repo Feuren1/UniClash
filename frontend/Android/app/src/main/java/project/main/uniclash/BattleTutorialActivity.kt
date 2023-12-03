@@ -30,8 +30,10 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Icon
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontFamily
@@ -112,6 +114,8 @@ fun CritterBattleTutorialIntro(battleTutorialViewModel: BattleTutorialViewModel 
     val cpuInputUIState by battleTutorialViewModel.cpuInput.collectAsState()
     val currentTutorialStep by battleTutorialViewModel.tutorialDialogStep.collectAsState()
     val tutorialDialogMessage = battleTutorialViewModel.getTutorialMessage(currentTutorialStep)
+    val isPlayerTurn by battleTutorialViewModel.isPlayerTurn.collectAsState()
+    val playerWon by battleTutorialViewModel.playerWon.collectAsState()
 
     val playerMaxHealth by remember {
         mutableStateOf(battleViewPlayerUIState.playerCritter?.hp ?: 0)
@@ -120,14 +124,19 @@ fun CritterBattleTutorialIntro(battleTutorialViewModel: BattleTutorialViewModel 
     val cpuMaxHealth by remember {
         mutableStateOf(battleViewcpuCritterUIState.cpuCritter?.hp ?: 0)
     }
-
+    if(playerWon==null){
     Column(
         modifier = Modifier
             .fillMaxSize()
             .padding(16.dp)
     ) {
         Row(
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier
+                .fillMaxWidth()
+                .background(
+                    color = Color.Gray.copy(alpha = 0.2f), // Adjust the alpha value for transparency
+                    shape = RoundedCornerShape(8.dp) // Optional: Add rounded corners
+                )
         ) {
             // Image for CPU Critter
             val context = LocalContext.current
@@ -139,7 +148,7 @@ fun CritterBattleTutorialIntro(battleTutorialViewModel: BattleTutorialViewModel 
                     painter = picture,
                     contentDescription = null,
                     modifier = Modifier
-                        .size(120.dp)
+                        .size(60.dp)
                 )
             } else {
                 Text("Image not found for $name")
@@ -156,26 +165,33 @@ fun CritterBattleTutorialIntro(battleTutorialViewModel: BattleTutorialViewModel 
                     maxHealth = cpuMaxHealth,
                     barColor = Color.Red
                 )
-                CpuCritterInfoText(battleViewcpuCritterUIState.cpuCritter!!)
+                CpuCritterAdvancedTutorialInfoText(battleViewcpuCritterUIState.cpuCritter!!)
             }
         }
+
 
         Spacer(modifier = Modifier.height(5.dp)) // Add vertical space
 
         Row(
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier
+                .fillMaxWidth()
+                .background(
+                    color = Color.Gray.copy(alpha = 0.2f), // Adjust the alpha value for transparency
+                    shape = RoundedCornerShape(8.dp) // Optional: Add rounded corners
+                )
         ) {
             // Image for Player Critter
             val context = LocalContext.current
             val playerName: String = battleViewPlayerUIState.playerCritter!!.name.lowercase()
-            val playerResourceId = context.resources.getIdentifier(playerName, "drawable", context.packageName)
+            val playerResourceId =
+                context.resources.getIdentifier(playerName, "drawable", context.packageName)
             if (playerResourceId != 0) {
                 val playerPicture = painterResource(id = playerResourceId)
                 Image(
                     painter = playerPicture,
                     contentDescription = null,
                     modifier = Modifier
-                        .size(120.dp)
+                        .size(60.dp)
                 )
             } else {
                 Text("Image not found for $playerName")
@@ -192,9 +208,10 @@ fun CritterBattleTutorialIntro(battleTutorialViewModel: BattleTutorialViewModel 
                     maxHealth = playerMaxHealth,
                     barColor = Color.Green
                 )
-                PlayerCritterInfoText(battleViewPlayerUIState.playerCritter!!)
+                PlayerCritterAdvancedTutorialInfoText(battleViewPlayerUIState.playerCritter!!)
             }
         }
+
 
         Spacer(modifier = Modifier.height(6.dp)) // Add more vertical space
 
@@ -215,7 +232,7 @@ fun CritterBattleTutorialIntro(battleTutorialViewModel: BattleTutorialViewModel 
                         // First row with two attacks side by side
                         LazyRow(
                             modifier = Modifier.fillMaxWidth(),
-                            contentPadding = PaddingValues(8.dp),
+                            contentPadding = PaddingValues(2.dp),
                         ) {
                             items(2) {
                                 ClickableAttackTutorial(
@@ -233,7 +250,7 @@ fun CritterBattleTutorialIntro(battleTutorialViewModel: BattleTutorialViewModel 
                         // Second row with two attacks side by side
                         LazyRow(
                             modifier = Modifier.fillMaxWidth(),
-                            contentPadding = PaddingValues(8.dp)
+                            contentPadding = PaddingValues(2.dp)
                         ) {
                             items(2) {
                                 ClickableAttackTutorial(
@@ -249,52 +266,92 @@ fun CritterBattleTutorialIntro(battleTutorialViewModel: BattleTutorialViewModel 
                 }
                 // WHEN TUTORIAL LETS THE PLAYER PLAY
                 TutorialStep.LetPlayerPlay -> {
-                    item {
-                        // First row with two attacks side by side
-                        LazyRow(
-                            modifier = Modifier.fillMaxWidth(),
-                            contentPadding = PaddingValues(8.dp),
-                        ) {
-                            items(2) {
-                                ClickableAttackTutorial(
-                                    attack = battleViewPlayerUIState.playerCritter!!.attacks[it],
-                                    onAttackClicked = { selectedAttack ->
-                                        battleTutorialViewModel.selectPlayerAttack(selectedAttack)
-                                    },
-                                    isClickable = true // Make buttons not clickable during the introduction
-                                )
+                    if (!isPlayerTurn) {
+                        item {
+                            // First row with two attacks side by side
+                            LazyRow(
+                                modifier = Modifier.fillMaxWidth(),
+                                contentPadding = PaddingValues(2.dp),
+                            ) {
+                                items(2) {
+                                    ClickableAttackAdvancedTutorial(
+                                        attack = battleViewPlayerUIState.playerCritter!!.attacks[it],
+                                        onAttackClicked = { selectedAttack ->
+                                            battleTutorialViewModel.selectPlayerAttack(
+                                                selectedAttack
+                                            )
+                                        },
+                                        isClickable = false // Make buttons not clickable during the introduction
+                                    )
+                                }
                             }
                         }
-                    }
-                    item {
-                        // Second row with two attacks side by side
-                        LazyRow(
-                            modifier = Modifier.fillMaxWidth(),
-                            contentPadding = PaddingValues(8.dp)
-                        ) {
-                            items(2) {
-                                ClickableAttackTutorial(
-                                    attack = battleViewPlayerUIState.playerCritter!!.attacks[it + 2],
-                                    onAttackClicked = { selectedAttack ->
-                                        battleTutorialViewModel.selectPlayerAttack(selectedAttack)
-                                    },
-                                    isClickable = true // Make buttons not clickable during the introduction
-                                )
+                        item {
+                            // Second row with two attacks side by side
+                            LazyRow(
+                                modifier = Modifier.fillMaxWidth(),
+                                contentPadding = PaddingValues(2.dp)
+                            ) {
+                                items(2) {
+                                    ClickableAttackAdvancedTutorial(
+                                        attack = battleViewPlayerUIState.playerCritter!!.attacks[it + 2],
+                                        onAttackClicked = { selectedAttack ->
+                                            battleTutorialViewModel.selectPlayerAttack(
+                                                selectedAttack
+                                            )
+                                        },
+                                        isClickable = false // Make buttons not clickable during the introduction
+                                    )
+                                }
+                            }
+                        }
+                    } else {
+                        item {
+                            // First row with two attacks side by side
+                            LazyRow(
+                                modifier = Modifier.fillMaxWidth(),
+                                contentPadding = PaddingValues(2.dp),
+                            ) {
+                                items(2) {
+                                    ClickableAttackAdvancedTutorial(
+                                        attack = battleViewPlayerUIState.playerCritter!!.attacks[it],
+                                        onAttackClicked = { selectedAttack ->
+                                            battleTutorialViewModel.selectPlayerAttack(
+                                                selectedAttack
+                                            )
+                                        },
+                                        isClickable = true // Make buttons not clickable during the introduction
+                                    )
+                                }
+                            }
+                        }
+                        item {
+                            // Second row with two attacks side by side
+                            LazyRow(
+                                modifier = Modifier.fillMaxWidth(),
+                                contentPadding = PaddingValues(2.dp)
+                            ) {
+                                items(2) {
+                                    ClickableAttackAdvancedTutorial(
+                                        attack = battleViewPlayerUIState.playerCritter!!.attacks[it + 2],
+                                        onAttackClicked = { selectedAttack ->
+                                            battleTutorialViewModel.selectPlayerAttack(
+                                                selectedAttack
+                                            )
+                                        },
+                                        isClickable = true // Make buttons not clickable during the introduction
+                                    )
+                                }
                             }
                         }
                     }
                 }
-                // Add other cases for different tutorial steps
-                //TutorialStep.SelectAttack -> {
-
-                //}
-                // WHEN TUTORIAL IS AT ANY OTHER PART DISABLE ALL ATTACK BUTTONS:
                 else -> {
                     item {
                         // First row with two attacks side by side
                         LazyRow(
                             modifier = Modifier.fillMaxWidth(),
-                            contentPadding = PaddingValues(8.dp),
+                            contentPadding = PaddingValues(2.dp),
                         ) {
                             items(2) {
                                 ClickableAttackTutorial(
@@ -312,7 +369,7 @@ fun CritterBattleTutorialIntro(battleTutorialViewModel: BattleTutorialViewModel 
                         // Second row with two attacks side by side
                         LazyRow(
                             modifier = Modifier.fillMaxWidth(),
-                            contentPadding = PaddingValues(8.dp)
+                            contentPadding = PaddingValues(2.dp)
                         ) {
                             items(2) {
                                 ClickableAttackTutorial(
@@ -328,44 +385,56 @@ fun CritterBattleTutorialIntro(battleTutorialViewModel: BattleTutorialViewModel 
                 }
             }
         }
-        when(battleTutorialViewModel.tutorialStep){
-            TutorialStep.LetPlayerPlay ->{
+        when (battleTutorialViewModel.tutorialStep) {
+            TutorialStep.LetPlayerPlay -> {
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(2.dp)
                         .clickable {
-                                    if (playerInputUIState.isPlayerAttackSelected) {
-                                        battleTutorialViewModel.executePlayerAttack()
-                                    }
-                                    if (cpuInputUIState.isCpuAttackSelected) {
-                                        battleTutorialViewModel.executeCpuAttack()
-                                    }
+                            if (playerInputUIState.isPlayerAttackSelected && isPlayerTurn) {
+                                battleTutorialViewModel.executePlayerAttack()
                             }
-                         // Handle click to execute attack
-                ) {
-                    Text(
-                        text = if (playerInputUIState.isPlayerAttackSelected) {
-                            "${battleViewPlayerUIState.playerCritter!!.name} attacks with ${playerInputUIState.selectedPlayerAttack!!.name}!"
-                        } else if (cpuInputUIState.isCpuAttackSelected) {
-                            "${battleViewcpuCritterUIState.cpuCritter!!.name} attacks with ${cpuInputUIState.selectedCpuAttack!!.name}!"
+                            if (!playerInputUIState.isPlayerAttackSelected && !cpuInputUIState.isCpuAttackSelected && !isPlayerTurn) {
+                                battleTutorialViewModel.selectCpuAttack()
+                            }
+                            if (cpuInputUIState.isCpuAttackSelected && !isPlayerTurn) {
+                                battleTutorialViewModel.executeCpuAttack()
+                            }
                         }
-                        else {
-                            battleTutorialViewModel.battleText.value
-                        },
+                    // Handle click to execute attack
+                ) {
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.Center,
                         modifier = Modifier
-                            .padding(16.dp)
+                            .padding(8.dp)
                             .background(
                                 color = Color.Gray,
                                 shape = RoundedCornerShape(16.dp)
                             )
-                            .padding(16.dp),
-                        fontFamily = FontFamily.Default, // Replace with your custom font
-                        fontSize = 18.sp,
-                        color = Color.White
-                    )
+                            .padding(8.dp)
+                            .fillMaxWidth()
+                    ) {
+                        Text(
+                            text = battleText,
+                            fontFamily = FontFamily.Default, // Replace with your custom font
+                            fontSize = 16.sp,
+                            color = Color.White
+                        )
+                        Spacer(modifier = Modifier.width(4.dp))
+                        Icon(
+                            painter = painterResource(id = R.drawable.arrow), // Replace with your arrow icon
+                            contentDescription = null,
+                            tint = Color.Red,
+                            modifier = Modifier
+                                .graphicsLayer(rotationX = 180f) // Flip the icon upside down
+                                .size(8.dp)
+                        )
+                    }
                 }
             }
+
             else -> {
                 //Battle Dialog:
                 Box(
@@ -379,6 +448,7 @@ fun CritterBattleTutorialIntro(battleTutorialViewModel: BattleTutorialViewModel 
                                         battleTutorialViewModel.executePlayerAttack()
                                     }
                                 }
+
                                 TutorialStep.ExecuteCpuAttack -> {
                                     if (cpuInputUIState.isCpuAttackSelected) {
                                         battleTutorialViewModel.executeCpuAttack()
@@ -387,28 +457,36 @@ fun CritterBattleTutorialIntro(battleTutorialViewModel: BattleTutorialViewModel 
 
                                 else -> {}
                             }
-                        } // Handle click to execute attack
-                ) {
-                    Text(
-                        text = if (playerInputUIState.isPlayerAttackSelected) {
-                            "${battleViewPlayerUIState.playerCritter!!.name} attacks with ${playerInputUIState.selectedPlayerAttack!!.name}!"
-                        } else if (cpuInputUIState.isCpuAttackSelected) {
-                            "${battleViewcpuCritterUIState.cpuCritter!!.name} attacks with ${cpuInputUIState.selectedCpuAttack!!.name}!"
                         }
-                        else {
-                            battleTutorialViewModel.battleText.value
-                        },
+                ) {
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.Center,
                         modifier = Modifier
-                            .padding(16.dp)
+                            .padding(8.dp)
                             .background(
                                 color = Color.Gray,
                                 shape = RoundedCornerShape(16.dp)
                             )
-                            .padding(16.dp),
-                        fontFamily = FontFamily.Default, // Replace with your custom font
-                        fontSize = 18.sp,
-                        color = Color.White
-                    )
+                            .padding(8.dp)
+                            .fillMaxWidth()
+                    ) {
+                        Text(
+                            text = battleText,
+                            fontFamily = FontFamily.Default, // Replace with your custom font
+                            fontSize = 16.sp,
+                            color = Color.White
+                        )
+                        Spacer(modifier = Modifier.width(4.dp))
+                        Icon(
+                            painter = painterResource(id = R.drawable.arrow), // Replace with your arrow icon
+                            contentDescription = null,
+                            tint = Color.Red,
+                            modifier = Modifier
+                                .graphicsLayer(rotationX = 180f) // Flip the icon upside down
+                                .size(8.dp)
+                        )
+                    }
                 }
             }
         }
@@ -425,18 +503,23 @@ fun CritterBattleTutorialIntro(battleTutorialViewModel: BattleTutorialViewModel 
             Text(
                 text = battleTutorialViewModel.getTutorialMessage(currentTutorialStep),
                 modifier = Modifier
-                    .padding(16.dp)
+                    .padding(10.dp)
                     .background(
                         color = Color(0xFF800080),
                         shape = RoundedCornerShape(16.dp)
                     )
-                    .padding(16.dp),
+                    .padding(10.dp),
                 fontFamily = FontFamily.Default, // Replace with your custom font
-                fontSize = 18.sp,
+                fontSize = 13.sp,
                 color = Color.White
             )
         }
 
+    }
+}else if(playerWon==true){
+        Text("YOU WON!")
+    }else if(playerWon==false){
+        Text("YOU LOST!")
     }
 }
 

@@ -18,32 +18,20 @@ import project.main.uniclash.datatypes.AttackType
 
 sealed class AdvancedTutorialStep(val associatedDialogStep: AdvancedTutorialDialogStep) {
     object Introduction : AdvancedTutorialStep(AdvancedTutorialDialogStep.Welcome)
-    object WinCondition : AdvancedTutorialStep(AdvancedTutorialDialogStep.ExplainCombat)
-    object PlayerHP : AdvancedTutorialStep(AdvancedTutorialDialogStep.ExplainPlayerHP)
-    object CpuHP: AdvancedTutorialStep(AdvancedTutorialDialogStep.ExplainCpuHP)
-    object Level : AdvancedTutorialStep(AdvancedTutorialDialogStep.ExplainLevel)
-    object Attacks : AdvancedTutorialStep(AdvancedTutorialDialogStep.ExplainAttacks)
-    object Stats : AdvancedTutorialStep(AdvancedTutorialDialogStep.ExplainStats)
-    object SelectAttack : AdvancedTutorialStep(AdvancedTutorialDialogStep.ExplainSelectAttack)
-    object ExecuteAttack : AdvancedTutorialStep(AdvancedTutorialDialogStep.ExplainExecuteAttack)
-    object ExecuteCpuAttack: AdvancedTutorialStep(AdvancedTutorialDialogStep.ExplainExecuteCpuAttack)
-    object LetPlayerPlay: AdvancedTutorialStep(AdvancedTutorialDialogStep.LetPlayerPlay)
-    object FinishTutorial: AdvancedTutorialStep(AdvancedTutorialDialogStep.FinishTutorial)
+    object TypesOfAttacks : AdvancedTutorialStep(AdvancedTutorialDialogStep.ExplainTypesOfAttacks)
+    object Buffs : AdvancedTutorialStep(AdvancedTutorialDialogStep.ExplainBuffs)
+    object Debuffs : AdvancedTutorialStep(AdvancedTutorialDialogStep.ExplainDebuffs)
+    object Usage: AdvancedTutorialStep(AdvancedTutorialDialogStep.ExplainUsage)
+
 }
 
 sealed interface AdvancedTutorialDialogStep {
     object Welcome : AdvancedTutorialDialogStep
-    object ExplainCombat : AdvancedTutorialDialogStep
-    object ExplainPlayerHP : AdvancedTutorialDialogStep
-    object ExplainCpuHP : AdvancedTutorialDialogStep
-    object ExplainLevel : AdvancedTutorialDialogStep
-    object ExplainAttacks : AdvancedTutorialDialogStep
-    object ExplainStats : AdvancedTutorialDialogStep
-    object ExplainSelectAttack : AdvancedTutorialDialogStep
-    object ExplainExecuteAttack : AdvancedTutorialDialogStep
-    object ExplainExecuteCpuAttack: AdvancedTutorialDialogStep
-    object LetPlayerPlay: AdvancedTutorialDialogStep
-    object FinishTutorial: AdvancedTutorialDialogStep
+    object ExplainTypesOfAttacks : AdvancedTutorialDialogStep
+    object ExplainBuffs : AdvancedTutorialDialogStep
+    object ExplainDebuffs : AdvancedTutorialDialogStep
+    object ExplainUsage : AdvancedTutorialDialogStep
+
     // Add more steps as needed
 }
 
@@ -56,6 +44,8 @@ class BattleTutorialAdvancedViewModel(
     private val _battleText = MutableStateFlow("Battle started!")
     private val _tutorialDialogStep = MutableStateFlow<TutorialDialogStep>(TutorialDialogStep.Welcome)
     val tutorialDialogStep = MutableStateFlow<AdvancedTutorialDialogStep>(AdvancedTutorialDialogStep.Welcome)
+    val isPlayerTurn = MutableStateFlow<Boolean>(false)
+    val playerWon = MutableStateFlow<Boolean?>(null)
     val battleText: MutableStateFlow<String> get() = _battleText
     var advancedTutorialStep by mutableStateOf<AdvancedTutorialStep>(AdvancedTutorialStep.Introduction)
         private set
@@ -94,67 +84,39 @@ class BattleTutorialAdvancedViewModel(
         viewModelScope.launch {
             Log.d(TAG, "Fetching initial critters data: ")
 
-            val playerAttack1 = Attack(1, "Splash", 50, AttackType.DAMAGE_DEALER)
-            val playerAttack2 = Attack(2, "Tackle", 60, AttackType.DAMAGE_DEALER)
-            val playerAttack3 = Attack(3, "Defence Break", 10, AttackType.DEF_DeBuff)
-            val playerAttack4 = Attack(4, "Beak Sharpener", 10, AttackType.ATK_Buff)
+            val playerAttack1 = Attack(1, "Splash", 80, AttackType.DAMAGE_DEALER)
+            val playerAttack2 = Attack(2, "Tackle", 80, AttackType.DAMAGE_DEALER)
+            val playerAttack3 = Attack(3, "Defence Break", 25, AttackType.DEF_DeBuff)
+            val playerAttack4 = Attack(4, "Beak Sharpener", 20, AttackType.ATK_Buff)
             val listOfPlayerAttacks = listOf(playerAttack1, playerAttack2, playerAttack3, playerAttack4)
-            val playerTutorialCritter = CritterUsable(20, "Coolduck", 100, 50, 50, 50, listOfPlayerAttacks,1, 1)
+            val playerTutorialCritter = CritterUsable(24, "Coolduck", 100, 70, 50, 50, listOfPlayerAttacks,1, 1)
 
             playerCritter.update { state ->
                 state.copy(playerCritter = playerTutorialCritter, isLoading = false)
             }
 
-            val cpuAttack1 = Attack(1, "Splash", 50, AttackType.DAMAGE_DEALER)
-            val cpuAttack2 = Attack(2, "Tackle", 60, AttackType.DAMAGE_DEALER)
-            val cpuAttack3 = Attack(3, "Fire Blast", 80, AttackType.DAMAGE_DEALER)
-            val cpuAttack4 = Attack(4, "Thunderbolt", 75, AttackType.DAMAGE_DEALER)
+            val cpuAttack1 = Attack(1, "Rollout", 70, AttackType.DAMAGE_DEALER)
+            val cpuAttack2 = Attack(2, "SuperGuard", 15, AttackType.DEF_Buff)
+            val cpuAttack3 = Attack(3, "ShieldBreak", 15, AttackType.DEF_DeBuff)
+            val cpuAttack4 = Attack(4, "SkullCrush", 70, AttackType.DAMAGE_DEALER)
             val listOfCpuAttacks = listOf(cpuAttack1, cpuAttack2, cpuAttack3, cpuAttack4)
-            val cpuTutorialCritter = CritterUsable(20, "Coolduck", 100, 50, 50, 50, listOfCpuAttacks,1, 1)
+            val cpuTutorialCritter = CritterUsable(23, "Quizizzdragon", 130, 35, 130, 30, listOfCpuAttacks,1, 1)
 
             cpuCritter.update { state ->
                 state.copy(cpuCritter = cpuTutorialCritter, isLoading = false)
             }
         }
+        doesPlayerStart()
     }
 
     fun nextTutorialStep() {
         val currentStep = advancedTutorialStep
         val nextStep = when (currentStep) {
-            AdvancedTutorialStep.Introduction -> AdvancedTutorialStep.WinCondition
-            AdvancedTutorialStep.WinCondition -> AdvancedTutorialStep.PlayerHP
-            AdvancedTutorialStep.PlayerHP -> AdvancedTutorialStep.CpuHP
-            AdvancedTutorialStep.CpuHP -> AdvancedTutorialStep.Level
-            AdvancedTutorialStep.Level -> AdvancedTutorialStep.Stats
-            AdvancedTutorialStep.Stats -> AdvancedTutorialStep.Attacks
-            AdvancedTutorialStep.Attacks -> AdvancedTutorialStep.SelectAttack
-            AdvancedTutorialStep.SelectAttack -> {
-                if (playerInput.value.isPlayerAttackSelected) {
-                    AdvancedTutorialStep.ExecuteAttack
-                } else {
-                    AdvancedTutorialStep.SelectAttack
-                }
-            }
-            AdvancedTutorialStep.ExecuteAttack -> {
-                if (!playerInput.value.isPlayerAttackSelected) {
-                    AdvancedTutorialStep.ExecuteCpuAttack
-                } else {
-                    AdvancedTutorialStep.ExecuteAttack
-                }
-            }
-            AdvancedTutorialStep.ExecuteCpuAttack ->
-                if (cpuInput.value.isCpuAttackSelected) {
-                    AdvancedTutorialStep.ExecuteCpuAttack
-                } else {
-                    AdvancedTutorialStep.LetPlayerPlay
-                }
-            AdvancedTutorialStep.LetPlayerPlay ->
-                if(checkResult() == BattleResult.NOTOVER){
-                    AdvancedTutorialStep.LetPlayerPlay
-                } else {
-                    AdvancedTutorialStep.FinishTutorial
-                }
-            AdvancedTutorialStep.FinishTutorial -> AdvancedTutorialStep.FinishTutorial
+            AdvancedTutorialStep.Introduction -> AdvancedTutorialStep.TypesOfAttacks
+            AdvancedTutorialStep.TypesOfAttacks -> AdvancedTutorialStep.Buffs
+            AdvancedTutorialStep.Buffs -> AdvancedTutorialStep.Debuffs
+            AdvancedTutorialStep.Debuffs -> AdvancedTutorialStep.Usage
+            AdvancedTutorialStep.Usage -> AdvancedTutorialStep.Usage
         }
         advancedTutorialStep = nextStep
         tutorialDialogStep.value = nextStep.associatedDialogStep
@@ -163,28 +125,15 @@ class BattleTutorialAdvancedViewModel(
 
     fun getTutorialMessage(step: AdvancedTutorialDialogStep): String {
         return when (step) {
-            AdvancedTutorialDialogStep.Welcome -> "Welcome to the Basic Tutorial. Here you are going to learn how to battle " +
-                    "against other Critters!"
-            AdvancedTutorialDialogStep.ExplainCombat -> "The goal for each Critter is to bring the other Critters Health points (Hp) to Zero, " +
-                    "effectively knocking out the poor thing... " +
-                    "You and the enemy will exchange attacks until one of you goes down first. Thus deciding the winner! "
-            AdvancedTutorialDialogStep.ExplainPlayerHP -> "Now let's talk about HP. This is your health. " +
-                    "Based on your level and what kind of critter you are using to battle " +
-                    "the hp will be different. You can see your HP at the top of the screen (Green bar) or below in a text format (HP:100)"
-            AdvancedTutorialDialogStep.ExplainCpuHP -> "You can see the enemy's HP right below represented by a Red bar or again as text below"
-            AdvancedTutorialDialogStep.ExplainLevel -> "Moving on to the LEVEL. It determines the strength of your Critter. " +
-                    "As a rule of thumb: Everything from a range of -3 or +3 Levels is usually a fair battle"
-            AdvancedTutorialDialogStep.ExplainAttacks -> "Now let's learn about Attacks. These are what damage the Enemy. Each Critter has a maximum of four attacks" +
-                    "There are different types of attacks:"
-            AdvancedTutorialDialogStep.ExplainStats -> "Let's dive into the Stats of your Critter. Each Critter has its own strengths and weaknesses" +
-                    ""
-            AdvancedTutorialDialogStep.ExplainSelectAttack -> "Lets select an attack now!"
-            AdvancedTutorialDialogStep.ExplainExecuteAttack -> "Now click on the box to execute your attack!"
-            AdvancedTutorialDialogStep.ExplainExecuteCpuAttack -> "Now its your enemy's turn, click on the box to " +
-                    "execute the enemy's attack"
-            AdvancedTutorialDialogStep.LetPlayerPlay -> "Okay, I explained the basics now its your turn to finish the battle, good luck"
-            // Add more cases as needed
-            AdvancedTutorialDialogStep.FinishTutorial -> "Congrats(or not) you finished the tutorial. You can now move on to the next one"
+            AdvancedTutorialDialogStep.Welcome -> "Welcome to the advanced Tutorial. Here you are going to learn more advanced mechanics."
+            AdvancedTutorialDialogStep.ExplainTypesOfAttacks -> "In Uniclash there are 3 types of attacks. First there are normal attacks that deal damage to your oppnent." +
+                    "Second there are so called Buffs, These will increase your Critters Attack or Defence during the battle. And third there are Debuffs which will decrease" +
+                    "your opponents Defence or Attack"
+            AdvancedTutorialDialogStep.ExplainBuffs -> "Buffs can be easily spotted by the green sword/shield next to the attack"
+            AdvancedTutorialDialogStep.ExplainDebuffs -> "DeBuffs on the other hand are displayed by the Red sword/shield next to the attack"
+            AdvancedTutorialDialogStep.ExplainUsage -> "You might ask yourself: Why should I use buffs/Debuffs when I can just deal damage instead... " +
+                    "And you are right, but this little dragon over there is a Tanky boy. He has a Defence stat of 130 and 130 HP. So it Might be a good idea to lower that defence first."
+
             else -> {return "null"}
         }
     }
@@ -213,7 +162,7 @@ class BattleTutorialAdvancedViewModel(
                 }
             }
         }
-        chooseCpuAttack()?.let { selectCpuAttack(it) }
+        isPlayerTurn.value = false
     }
 
     fun executeCpuAttack() {
@@ -239,6 +188,7 @@ class BattleTutorialAdvancedViewModel(
                 }
             }
         }
+        isPlayerTurn.value = true
     }
 
 
@@ -254,46 +204,49 @@ class BattleTutorialAdvancedViewModel(
         _battleText.value = "${playerCritter.value.playerCritter!!.name} attacks with ${playerInput.value.selectedPlayerAttack!!.name}!"
     }
 
-    private fun selectCpuAttack(attack: Attack) {
-        viewModelScope.launch() {
-            cpuInput.update { currentState ->
-                currentState.copy(
-                    isCpuAttackSelected = true,
-                    selectedCpuAttack = attack,
-                )
+    fun selectCpuAttack() {
+        val cpuCritter = cpuCritter.value.cpuCritter
+        cpuCritter?.let {
+            val randomIndex = (0 until it.attacks.size).random()
+            val attack = it.attacks[randomIndex]
+
+            viewModelScope.launch() {
+                cpuInput.update { currentState ->
+                    currentState.copy(
+                        isCpuAttackSelected = true,
+                        selectedCpuAttack = attack,
+                    )
+                }
             }
+            _battleText.value = "${cpuCritter.name} attacks with ${attack.name}!"
         }
-        _battleText.value = "${cpuCritter.value.cpuCritter!!.name} attacks with ${cpuCritter.value.cpuCritter!!.name}!"
     }
 
-    fun doesPlayerStart(): Boolean{
+
+    fun doesPlayerStart(){
         if(playerCritter.value.playerCritter!!.spd>cpuCritter.value.cpuCritter!!.spd){
-            return true
+            isPlayerTurn.value = true
         }
         if (playerCritter.value.playerCritter!!.spd==cpuCritter.value.cpuCritter!!.spd){
-            return true;
+            isPlayerTurn.value = true
         }
         if(playerCritter.value.playerCritter!!.spd<cpuCritter.value.cpuCritter!!.spd) {
-            return false
-        } else {
-            return false
+            isPlayerTurn.value = false
         }
     }
 
     private fun chooseCpuAttack(): Attack? {
-        val cpuCritter = cpuCritter.value.cpuCritter
-        cpuCritter?.let {
-            val randomIndex = (0 until it.attacks.size).random()
-            return  it.attacks[randomIndex]
-        }
+
         return null
     }
 
     fun checkResult(): BattleResult {
         if(playerCritter.value.playerCritter!!.hp<=0){
+            playerWon.value = false
             return BattleResult.CPU_WINS;
         }
         if(cpuCritter.value.cpuCritter!!.hp<=0){
+            playerWon.value = true
             return BattleResult.PLAYER_WINS
         }
         return BattleResult.NOTOVER
@@ -326,29 +279,74 @@ class BattleTutorialAdvancedViewModel(
         }
     }
 
-    private fun applyDebuffToPlayer(attack: Attack){
-        if(attack.attackType==AttackType.ATK_DeBuff) {
-            viewModelScope.launch() {
-                playerCritter.update { currentState ->
-                    currentState.copy(
-                        playerCritter = currentState.playerCritter?.copy(
-                            atk = playerCritter.value.playerCritter!!.atk - attack.strength
-                        ),
+    private fun applyDebuffToPlayer(attack: Attack) {
+        viewModelScope.launch {
+            playerCritter.update { currentState ->
+                val currentAtk = currentState.playerCritter?.atk ?: 0
+                val currentDef = currentState.playerCritter?.def ?: 0
+
+                val newAtk = if (attack.attackType == AttackType.ATK_DeBuff) {
+                    (currentAtk - attack.strength).coerceAtLeast(1)
+                } else currentAtk
+
+                val newDef = if (attack.attackType == AttackType.DEF_DeBuff) {
+                    (currentDef - attack.strength).coerceAtLeast(1)
+                } else currentDef
+
+                currentState.copy(
+                    playerCritter = currentState.playerCritter?.copy(
+                        atk = newAtk,
+                        def = newDef
                     )
-                }
-                _battleText.value = "${playerCritter.value.playerCritter!!.name}´s Attack fell!"
+                )
+            }
+
+            _battleText.value = when {
+                attack.attackType == AttackType.ATK_DeBuff && playerCritter.value.playerCritter!!.atk == 1 ->
+                    "${playerCritter.value.playerCritter!!.name}'s Attack can't be decreased any further!"
+                attack.attackType == AttackType.ATK_DeBuff ->
+                    "${playerCritter.value.playerCritter!!.name}'s Attack fell!"
+                attack.attackType == AttackType.DEF_DeBuff && playerCritter.value.playerCritter!!.def == 1 ->
+                    "${playerCritter.value.playerCritter!!.name}'s Defence can't be decreased any further!"
+                attack.attackType == AttackType.DEF_DeBuff ->
+                    "${playerCritter.value.playerCritter!!.name}'s Defence fell!"
+                else -> ""
             }
         }
-        if(attack.attackType==AttackType.DEF_DeBuff) {
-            viewModelScope.launch() {
-                playerCritter.update { currentState ->
-                    currentState.copy(
-                        playerCritter = currentState.playerCritter?.copy(
-                            def = playerCritter.value.playerCritter!!.def - attack.strength
-                        ),
+    }
+
+    private fun applyDebuffToCpu(attack: Attack) {
+        viewModelScope.launch {
+            cpuCritter.update { currentState ->
+                val currentAtk = currentState.cpuCritter?.atk ?: 0
+                val currentDef = currentState.cpuCritter?.def ?: 0
+
+                val newAtk = if (attack.attackType == AttackType.ATK_DeBuff) {
+                    (currentAtk - attack.strength).coerceAtLeast(1)
+                } else currentAtk
+
+                val newDef = if (attack.attackType == AttackType.DEF_DeBuff) {
+                    (currentDef - attack.strength).coerceAtLeast(1)
+                } else currentDef
+
+                currentState.copy(
+                    cpuCritter = currentState.cpuCritter?.copy(
+                        atk = newAtk,
+                        def = newDef
                     )
-                }
-                _battleText.value = "${playerCritter.value.playerCritter!!.name}´s Defence fell!"
+                )
+            }
+
+            _battleText.value = when {
+                attack.attackType == AttackType.ATK_DeBuff && cpuCritter.value.cpuCritter!!.atk == 1 ->
+                    "${cpuCritter.value.cpuCritter!!.name}'s Attack can't be decreased any further!"
+                attack.attackType == AttackType.ATK_DeBuff ->
+                    "${cpuCritter.value.cpuCritter!!.name}'s Attack fell"
+                attack.attackType == AttackType.DEF_DeBuff && cpuCritter.value.cpuCritter!!.def == 1 ->
+                    "${cpuCritter.value.cpuCritter!!.name}'s Defence can't be decreased any further!"
+                attack.attackType == AttackType.DEF_DeBuff ->
+                    "${cpuCritter.value.cpuCritter!!.name}'s Defence fell"
+                else -> ""
             }
         }
     }
@@ -381,32 +379,7 @@ class BattleTutorialAdvancedViewModel(
 
     }
 
-    private fun applyDebuffToCpu(attack: Attack){
-        if(attack.attackType==AttackType.ATK_DeBuff) {
-            viewModelScope.launch() {
-                cpuCritter.update { currentState ->
-                    currentState.copy(
-                        cpuCritter = currentState.cpuCritter?.copy(
-                            atk = cpuCritter.value.cpuCritter!!.atk - attack.strength
-                        ),
-                    )
-                }
-                _battleText.value = "${cpuCritter.value.cpuCritter!!.name}´s Attack fell"
-            }
-        }
-        if(attack.attackType==AttackType.DEF_DeBuff) {
-            viewModelScope.launch() {
-                cpuCritter.update { currentState ->
-                    currentState.copy(
-                        cpuCritter = currentState.cpuCritter?.copy(
-                            def = cpuCritter.value.cpuCritter!!.def - attack.strength
-                        ),
-                    )
-                }
-                _battleText.value = "${cpuCritter.value.cpuCritter!!.name}´s Defence fell"
-            }
-        }
-    }
+
 
 
     private fun applyDamageToPlayer(damage: Int) {

@@ -87,6 +87,8 @@ class BattleTutorialViewModel(
     private val _tutorialDialogStep = MutableStateFlow<TutorialDialogStep>(TutorialDialogStep.Welcome)
     val tutorialDialogStep = MutableStateFlow<TutorialDialogStep>(TutorialDialogStep.Welcome)
     val battleText: MutableStateFlow<String> get() = _battleText
+    val isPlayerTurn = MutableStateFlow<Boolean>(false)
+    val playerWon = MutableStateFlow<Boolean?>(null)
     var tutorialStep by mutableStateOf<TutorialStep>(TutorialStep.Introduction)
         private set
 
@@ -146,6 +148,7 @@ class BattleTutorialViewModel(
                 state.copy(cpuCritter = cpuTutorialCritter, isLoading = false)
             }
         }
+        doesPlayerStart()
     }
 
     fun nextTutorialStep() {
@@ -235,7 +238,7 @@ class BattleTutorialViewModel(
                 }
             }
         }
-        chooseCpuAttack()?.let { selectCpuAttack(it) }
+        isPlayerTurn.value = false
     }
 
     fun executeCpuAttack() {
@@ -253,6 +256,7 @@ class BattleTutorialViewModel(
                 }
             }
         }
+        isPlayerTurn.value = true
     }
 
 
@@ -268,46 +272,44 @@ class BattleTutorialViewModel(
         _battleText.value = "${playerCritter.value.playerCritter!!.name} attacks with ${playerInput.value.selectedPlayerAttack!!.name}!"
     }
 
-    fun selectCpuAttack(attack: Attack) {
-        viewModelScope.launch() {
-            cpuInput.update { currentState ->
-                currentState.copy(
-                    isCpuAttackSelected = true,
-                    selectedCpuAttack = attack,
-                )
-            }
-        }
-        _battleText.value = "${cpuCritter.value.cpuCritter!!.name} attacks with ${cpuCritter.value.cpuCritter!!.name}!"
-    }
-
-    fun doesPlayerStart(): Boolean{
-        if(playerCritter.value.playerCritter!!.spd>cpuCritter.value.cpuCritter!!.spd){
-            return true
-        }
-        if (playerCritter.value.playerCritter!!.spd==cpuCritter.value.cpuCritter!!.spd){
-            return true;
-        }
-        if(playerCritter.value.playerCritter!!.spd<cpuCritter.value.cpuCritter!!.spd) {
-            return false
-        } else {
-            return false
-        }
-    }
-
-    fun chooseCpuAttack(): Attack? {
+    fun selectCpuAttack() {
         val cpuCritter = cpuCritter.value.cpuCritter
         cpuCritter?.let {
             val randomIndex = (0 until it.attacks.size).random()
-            return  it.attacks[randomIndex]
+            val attack = it.attacks[randomIndex]
+
+            viewModelScope.launch() {
+                cpuInput.update { currentState ->
+                    currentState.copy(
+                        isCpuAttackSelected = true,
+                        selectedCpuAttack = attack,
+                    )
+                }
+            }
+            _battleText.value = "${cpuCritter.name} attacks with ${attack.name}!"
         }
-        return null
     }
+
+    fun doesPlayerStart(){
+        if(playerCritter.value.playerCritter!!.spd>cpuCritter.value.cpuCritter!!.spd){
+            isPlayerTurn.value = true
+        }
+        if (playerCritter.value.playerCritter!!.spd==cpuCritter.value.cpuCritter!!.spd){
+            isPlayerTurn.value = true
+        }
+        if(playerCritter.value.playerCritter!!.spd<cpuCritter.value.cpuCritter!!.spd) {
+            isPlayerTurn.value = false
+        }
+    }
+
 
     fun checkResult(): BattleResult {
         if(playerCritter.value.playerCritter!!.hp<=0){
+            playerWon.value = false
             return BattleResult.CPU_WINS;
         }
         if(cpuCritter.value.cpuCritter!!.hp<=0){
+            playerWon.value = true
             return BattleResult.PLAYER_WINS
         }
         return BattleResult.NOTOVER

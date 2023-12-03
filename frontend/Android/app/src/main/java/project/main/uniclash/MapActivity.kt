@@ -10,11 +10,17 @@ import androidx.activity.compose.setContent
 import androidx.activity.viewModels
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -110,6 +116,8 @@ class MapActivity : ComponentActivity() {
 
         mapLocationViewModel.getUserLocation(this) { location ->
             Locations.USERLOCATION.setLocation(GeoPoint(location.latitude,location.longitude))
+            reloadMap = false
+            reloadMap = true
         }
 
         setContent {
@@ -157,6 +165,7 @@ class MapActivity : ComponentActivity() {
                             mainLatitude = currentUserLocation.latitude
                             mainLongitude = currentUserLocation.longitude
                         }
+                        SettingUpMap()
                         Map()
                     } else {
                         Column(
@@ -205,15 +214,15 @@ class MapActivity : ComponentActivity() {
         if(!alreadySetedUpMap)
          gpsLocation = rememberMarkerState()
          cameraState = rememberCameraState()
+        cameraState.zoom = 20.0
         alreadySetedUpMap = true
+        println("exce")
     }
 
     @Composable
     fun Map() {
         LoadFirstWildEncounter()
         LoadWildEncounter()
-
-        SettingUpMap()
 
         val contextForLocation = LocalContext.current
 
@@ -240,10 +249,8 @@ class MapActivity : ComponentActivity() {
                     gpsLocation.rotation = mapCalculations.calculateDirection(GeoPoint(cameraState.geoPoint.latitude,cameraState.geoPoint.longitude), GeoPoint(mainLatitude,mainLongitude))+270F
                     if (MapSettings.MOVINGCAMERA.getMapSetting()) {
                         cameraState.geoPoint = GeoPoint(mainLatitude,mainLongitude)
-                        cameraState.zoom = 20.0
                     } else if (movingCamera == true) {
                         cameraState.geoPoint = GeoPoint(mainLatitude,mainLongitude)
-                        cameraState.zoom = 20.0
                         movingCamera = false
                     }
                 }
@@ -331,31 +338,124 @@ class MapActivity : ComponentActivity() {
                 Marker(
                     state = gpsLocation,
                     icon = arrow,
-                    title = "Go to your profile",
-                    snippet = ":)"
-                ) {
-                    Column(
-                        modifier = Modifier
-                            .size(250.dp)
-                            .background(
-                                color = Color.Black.copy(alpha = 0.75f),
-                                shape = RoundedCornerShape(7.dp)
-                            ),
-                        verticalArrangement = Arrangement.Center,
-                        horizontalAlignment = Alignment.CenterHorizontally
-                    ) {
-                        Text(text = it.title, fontSize = 20.sp, color = Color.White)
-                        Text(text = it.snippet, fontSize = 15.sp, color = Color.White)
-                        Spacer(modifier = Modifier.height(8.dp))
-
-                        OpenActivityButton(MenuActivity::class.java, "User Menu")
-                    }
-                }
+                )
             }
         }
-        NewCrittersAdvice()
+        MenuTaskBar()
     }
 
+    @Composable
+    fun MenuTaskBar() {
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(16.dp),
+            contentAlignment = Alignment.BottomStart
+        ) {
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(50.dp)
+                    .background(Color.LightGray, shape = RoundedCornerShape(8.dp))
+            ) {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(65.dp),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Spacer(modifier = Modifier.width(16.dp))
+
+                    // Timer
+                    val drawableTimer = painterResource(id = R.drawable.hourglass)
+                    Image(
+                        painter = drawableTimer,
+                        contentDescription = null,
+                        modifier = Modifier
+                            .size(40.dp)
+                            .offset(x = 140.dp)
+                    )
+                    var minutes: Int = newCritterNotification / 20
+                    Text(//newCritterNotification *3 = seconds
+                        text = if (newCritterNotification < 20) {
+                            "${newCritterNotification * 3} sec"
+                        } else {
+                            "${minutes}:${newCritterNotification * 3 - minutes * 60}min"
+                        },
+                        color = Color.White,
+                        fontWeight = FontWeight.Bold,
+                        modifier = Modifier
+                            .padding(end = 24.dp)
+                            .offset(x = (15).dp)
+                    )
+                }
+            }
+            val drawableImage = painterResource(id = R.drawable.profile)
+            val drawableBinoculars = painterResource(id = R.drawable.binoculars)
+            val drawableLocation = painterResource(id = R.drawable.location)
+            val drawableZoomIn = painterResource(id = R.drawable.zoom)
+            val drawableZoomOut = painterResource(id = R.drawable.zoomout)
+            Image(
+                painter = drawableImage,
+                contentDescription = null,
+                modifier = Modifier
+                    .size(60.dp)
+                    .offset(y = (-10).dp)
+                    .clickable { OpenActivityButton(MenuActivity::class.java) }
+            )
+            Image(
+                painter = drawableBinoculars,
+                contentDescription = null,
+                modifier = Modifier
+                    .size(40.dp)
+                    .offset(x = (130).dp)
+                    .offset(y = (-5).dp)
+                    .clickable {
+                        MapSettings.CRITTERBINOCULARS.setMapSetting(!MapSettings.CRITTERBINOCULARS.getMapSetting())
+                        reloadMap = false
+                        reloadMap = true
+                    }
+            )
+            Image(
+                painter = drawableLocation,
+                contentDescription = null,
+                modifier = Modifier
+                    .size(40.dp)
+                    .offset(x = (180).dp)
+                    .offset(y = (-5).dp)
+                    .clickable {
+                        MapSettings.MOVINGCAMERA.setMapSetting(!MapSettings.MOVINGCAMERA.getMapSetting())
+                    }
+            )
+
+            Column(
+                modifier = Modifier
+                    .fillMaxHeight()
+                    .fillMaxWidth()
+                    .padding(end = 16.dp),
+                verticalArrangement = Arrangement.Center,
+                horizontalAlignment = Alignment.End
+            ) {
+                Image(
+                    painter = drawableZoomIn,
+                    contentDescription = null,
+                    modifier = Modifier
+                        .size(60.dp)
+                        .offset(y = (-5).dp)
+                        .clickable { cameraState.zoom = cameraState.zoom + 1.0 }
+                )
+                Image(
+                    painter = drawableZoomOut,
+                    contentDescription = null,
+                    modifier = Modifier
+                        .size(60.dp)
+                        .offset(y = (-5).dp)
+                        .clickable { cameraState.zoom = cameraState.zoom - 1.0 }
+                )
+            }
+        }
+    }
     @Composable
     fun OpenActivityButton(marker : MarkerData) {
         val context = LocalContext.current
@@ -382,33 +482,11 @@ class MapActivity : ComponentActivity() {
         }
     }
 
-    @Composable
-    fun OpenActivityButton(activity: Class<out Activity> = MenuActivity::class.java, text  : String) {
-        val context = LocalContext.current
-        Button(
-            onClick = {
+    fun OpenActivityButton(activity: Class<out Activity> = MenuActivity::class.java) {
                 // Handle the button click to open the new activity here
-                val intent = Intent(context,activity)
+                val intent = Intent(this,activity)
                 this.startActivity(intent, null)
                 finish()
-            },
-            modifier = Modifier
-                .padding(2.dp)
-                .width(200.dp)
-                .height(50.dp)
-
-        ) {
-            Text("$text")
-        }
-    }
-
-    //private val wildEncounterLogic = WildEncounterLogic(context = this)
-
-    @Composable
-    fun NewCrittersAdvice(){
-        if(newCritterNotification<11){
-            Text(text = "New Critters will spawn soon!",color = Color.Red, fontWeight = FontWeight.Bold)
-        }
     }
 
     var alreadyLoaded = false //for LoadWildEncounter firstLoad

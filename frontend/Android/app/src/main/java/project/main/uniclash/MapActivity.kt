@@ -373,7 +373,7 @@ class MapActivity : ComponentActivity() {
                         contentDescription = null,
                         modifier = Modifier
                             .size(40.dp)
-                            .offset(x = 140.dp)
+                            .offset(x = 130.dp)
                     )
                     var minutes: Int = newCritterNotification / 20
                     Text(//newCritterNotification *3 = seconds

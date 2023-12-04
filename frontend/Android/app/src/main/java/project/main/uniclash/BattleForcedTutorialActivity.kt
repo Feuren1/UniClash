@@ -517,6 +517,14 @@ fun AttackBox(
                     battleForcedTutorialViewModel.executePlayerAttack()
                 }
             }
+            TutorialStep.SelectAttack ->{
+                if (!playerInputUIState.isPlayerAttackSelected && !cpuInputUIState.isCpuAttackSelected && !isPlayerTurn) {
+                    battleForcedTutorialViewModel.selectCpuAttack()
+                }
+                if (cpuInputUIState.isCpuAttackSelected && !isPlayerTurn) {
+                    battleForcedTutorialViewModel.executeCpuAttack()
+                }
+            }
 
             else -> {
                 when {

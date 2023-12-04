@@ -22,6 +22,18 @@ sealed class AdvancedTutorialStep(val associatedDialogStep: AdvancedTutorialDial
     object Buffs : AdvancedTutorialStep(AdvancedTutorialDialogStep.ExplainBuffs)
     object Debuffs : AdvancedTutorialStep(AdvancedTutorialDialogStep.ExplainDebuffs)
     object Usage: AdvancedTutorialStep(AdvancedTutorialDialogStep.ExplainUsage)
+    object SelectDefenseDebuff: AdvancedTutorialStep(AdvancedTutorialDialogStep.ExplainSelectDefenseDebuff)
+    object ExecuteDefenseDebuff: AdvancedTutorialStep(AdvancedTutorialDialogStep.ExplainExecuteDefenseDebuff)
+    object DefenseDebuffResult: AdvancedTutorialStep(AdvancedTutorialDialogStep.ExplainDefenseDebuffResult)
+    object SelectDefenseDebuff2: AdvancedTutorialStep(AdvancedTutorialDialogStep.ExplainSelectDefenseDebuff2)
+    object ExecuteDefenseDebuff2: AdvancedTutorialStep(AdvancedTutorialDialogStep.ExplainExecuteDefenseDebuff2)
+    object DefenseDebuffResult2: AdvancedTutorialStep(AdvancedTutorialDialogStep.ExplainDefenseDebuffResult2)
+    object SelectAttackBuff: AdvancedTutorialStep(AdvancedTutorialDialogStep.ExplainSelectAttackBuff)
+    object ExecuteAttackBuff: AdvancedTutorialStep(AdvancedTutorialDialogStep.ExplainExecuteAttackBuff)
+    object AttackBuffResult: AdvancedTutorialStep(AdvancedTutorialDialogStep.ExplainAttackBuffResult)
+    object SelectAttack: AdvancedTutorialStep(AdvancedTutorialDialogStep.ExplainSelectAttack)
+    object LetplayerPlay: AdvancedTutorialStep(AdvancedTutorialDialogStep.ExplainLetPlayerPlay)
+
 
 }
 
@@ -31,6 +43,19 @@ sealed interface AdvancedTutorialDialogStep {
     object ExplainBuffs : AdvancedTutorialDialogStep
     object ExplainDebuffs : AdvancedTutorialDialogStep
     object ExplainUsage : AdvancedTutorialDialogStep
+    object ExplainSelectDefenseDebuff : AdvancedTutorialDialogStep
+    object ExplainExecuteDefenseDebuff : AdvancedTutorialDialogStep
+    object ExplainDefenseDebuffResult : AdvancedTutorialDialogStep
+    object ExplainSelectDefenseDebuff2 : AdvancedTutorialDialogStep
+    object ExplainExecuteDefenseDebuff2 : AdvancedTutorialDialogStep
+    object ExplainDefenseDebuffResult2 : AdvancedTutorialDialogStep
+    object ExplainSelectAttackBuff : AdvancedTutorialDialogStep
+    object ExplainExecuteAttackBuff : AdvancedTutorialDialogStep
+    object ExplainAttackBuffResult : AdvancedTutorialDialogStep
+    object ExplainSelectAttack: AdvancedTutorialDialogStep
+    object ExplainLetPlayerPlay: AdvancedTutorialDialogStep
+
+
 
     // Add more steps as needed
 }
@@ -85,7 +110,7 @@ class BattleTutorialAdvancedViewModel(
             Log.d(TAG, "Fetching initial critters data: ")
 
             val playerAttack1 = Attack(1, "Splash", 80, AttackType.DAMAGE_DEALER)
-            val playerAttack2 = Attack(2, "Tackle", 80, AttackType.DAMAGE_DEALER)
+            val playerAttack2 = Attack(2, "HyperBeam", 90, AttackType.DAMAGE_DEALER)
             val playerAttack3 = Attack(3, "Defence Break", 25, AttackType.DEF_DeBuff)
             val playerAttack4 = Attack(4, "Beak Sharpener", 20, AttackType.ATK_Buff)
             val listOfPlayerAttacks = listOf(playerAttack1, playerAttack2, playerAttack3, playerAttack4)
@@ -116,7 +141,18 @@ class BattleTutorialAdvancedViewModel(
             AdvancedTutorialStep.TypesOfAttacks -> AdvancedTutorialStep.Buffs
             AdvancedTutorialStep.Buffs -> AdvancedTutorialStep.Debuffs
             AdvancedTutorialStep.Debuffs -> AdvancedTutorialStep.Usage
-            AdvancedTutorialStep.Usage -> AdvancedTutorialStep.Usage
+            AdvancedTutorialStep.Usage -> AdvancedTutorialStep.SelectDefenseDebuff
+            AdvancedTutorialStep.SelectDefenseDebuff -> AdvancedTutorialStep.ExecuteDefenseDebuff
+            AdvancedTutorialStep.ExecuteDefenseDebuff -> AdvancedTutorialStep.DefenseDebuffResult
+            AdvancedTutorialStep.DefenseDebuffResult -> AdvancedTutorialStep.SelectDefenseDebuff2
+            AdvancedTutorialStep.SelectDefenseDebuff2 -> AdvancedTutorialStep.ExecuteDefenseDebuff2
+            AdvancedTutorialStep.ExecuteDefenseDebuff2 -> AdvancedTutorialStep.DefenseDebuffResult2
+            AdvancedTutorialStep.DefenseDebuffResult2 -> AdvancedTutorialStep.SelectAttackBuff
+            AdvancedTutorialStep.SelectAttackBuff -> AdvancedTutorialStep.ExecuteAttackBuff
+            AdvancedTutorialStep.ExecuteAttackBuff -> AdvancedTutorialStep.AttackBuffResult
+            AdvancedTutorialStep.AttackBuffResult -> AdvancedTutorialStep.SelectAttack
+            AdvancedTutorialStep.SelectAttack -> AdvancedTutorialStep.LetplayerPlay
+            AdvancedTutorialStep.LetplayerPlay -> AdvancedTutorialStep.LetplayerPlay
         }
         advancedTutorialStep = nextStep
         tutorialDialogStep.value = nextStep.associatedDialogStep
@@ -127,12 +163,26 @@ class BattleTutorialAdvancedViewModel(
         return when (step) {
             AdvancedTutorialDialogStep.Welcome -> "Welcome to the advanced Tutorial. Here you are going to learn more advanced mechanics."
             AdvancedTutorialDialogStep.ExplainTypesOfAttacks -> "In Uniclash there are 3 types of attacks. First there are normal attacks that deal damage to your oppnent." +
-                    "Second there are so called Buffs, These will increase your Critters Attack or Defence during the battle. And third there are Debuffs which will decrease" +
+                    "Second there are so called Buffs, These will increase your Critters Attack or Defence during the battle. And last there are Debuffs which will decrease" +
                     "your opponents Defence or Attack"
             AdvancedTutorialDialogStep.ExplainBuffs -> "Buffs can be easily spotted by the green sword/shield next to the attack"
             AdvancedTutorialDialogStep.ExplainDebuffs -> "DeBuffs on the other hand are displayed by the Red sword/shield next to the attack"
             AdvancedTutorialDialogStep.ExplainUsage -> "You might ask yourself: Why should I use buffs/Debuffs when I can just deal damage instead... " +
                     "And you are right, but this little dragon over there is a Tanky boy. He has a Defence stat of 130 and 130 HP. So it Might be a good idea to lower that defence first."
+            AdvancedTutorialDialogStep.ExplainSelectDefenseDebuff -> "So lets do it then! Select Shield Break"
+            AdvancedTutorialDialogStep.ExplainExecuteDefenseDebuff -> "Now Execute it!"
+            AdvancedTutorialDialogStep.ExplainDefenseDebuffResult -> "As You can see the BattleLog says that the Dinos Defence Dropped. But this particular Dragon has such a high " +
+                    "Defence that it might be a good idea to do it again!"
+            AdvancedTutorialDialogStep.ExplainSelectDefenseDebuff2 -> "So lets do it then! Select Shield Break"
+            AdvancedTutorialDialogStep.ExplainExecuteDefenseDebuff2 -> "Now Execute it!"
+            AdvancedTutorialDialogStep.ExplainDefenseDebuffResult2 -> "Okay now we are talking this looks like a manageable amount of Defense!"
+
+            AdvancedTutorialDialogStep.ExplainSelectAttackBuff -> "Okay now that we have lowered the dragons defence Quite a bit, Lets raise our Attack so that we deal even more Damage! " +
+                    "Select Beak Sharpener"
+            AdvancedTutorialDialogStep.ExplainExecuteAttackBuff -> "And execute it!"
+            AdvancedTutorialDialogStep.ExplainAttackBuffResult -> "As you can see our Attack is now higher than before. Now its time to finish him off!"
+            AdvancedTutorialDialogStep.ExplainSelectAttack -> "Select HyperBeam now to finish him off!"
+            AdvancedTutorialDialogStep.ExplainLetPlayerPlay -> "Okay now its your turn. Be carefull tho the dino might increase its defence again. Read the BattleLog carefully"
 
             else -> {return "null"}
         }
@@ -286,11 +336,11 @@ class BattleTutorialAdvancedViewModel(
                 val currentDef = currentState.playerCritter?.def ?: 0
 
                 val newAtk = if (attack.attackType == AttackType.ATK_DeBuff) {
-                    (currentAtk - attack.strength).coerceAtLeast(1)
+                    (currentAtk - attack.strength).coerceAtLeast(20)
                 } else currentAtk
 
                 val newDef = if (attack.attackType == AttackType.DEF_DeBuff) {
-                    (currentDef - attack.strength).coerceAtLeast(1)
+                    (currentDef - attack.strength).coerceAtLeast(20)
                 } else currentDef
 
                 currentState.copy(
@@ -322,11 +372,11 @@ class BattleTutorialAdvancedViewModel(
                 val currentDef = currentState.cpuCritter?.def ?: 0
 
                 val newAtk = if (attack.attackType == AttackType.ATK_DeBuff) {
-                    (currentAtk - attack.strength).coerceAtLeast(1)
+                    (currentAtk - attack.strength).coerceAtLeast(20)
                 } else currentAtk
 
                 val newDef = if (attack.attackType == AttackType.DEF_DeBuff) {
-                    (currentDef - attack.strength).coerceAtLeast(1)
+                    (currentDef - attack.strength).coerceAtLeast(20)
                 } else currentDef
 
                 currentState.copy(

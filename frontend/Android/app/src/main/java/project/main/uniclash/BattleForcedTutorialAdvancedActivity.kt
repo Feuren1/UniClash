@@ -47,6 +47,7 @@ import project.main.uniclash.battle.BattleResult
 import project.main.uniclash.datatypes.Attack
 import project.main.uniclash.datatypes.CritterUsable
 import project.main.uniclash.retrofit.CritterService
+import project.main.uniclash.viewmodels.AdvancedTutorialStep
 import project.main.uniclash.viewmodels.BattleForcedAdvancedTutorialViewModel
 import project.main.uniclash.viewmodels.BattleForcedTutorialViewModel
 import project.main.uniclash.viewmodels.BattleTutorialViewModel
@@ -284,40 +285,6 @@ fun CpuCritterForcedTutorialAdvancedInfoText(critter: CritterUsable, battleForce
                     fontWeight = FontWeight.Bold,
                     color = Color.Black
                 )
-                when (battleForcedAdvancedTutorialViewModel.tutorialStep) {
-                    TutorialStep.CpuHP ->
-                        Text(
-                            text = buildAnnotatedString {
-                                withStyle(style = SpanStyle(color = Color.Black)) {
-                                    append("LVL: ")
-                                }
-                                withStyle(style = SpanStyle(color = Color.Black)) {
-                                    append("${critter.level}")
-                                }
-                                withStyle(
-                                    style = SpanStyle(
-                                        fontWeight = FontWeight.Bold,
-                                        fontSize = 22.sp,
-                                        color = Color.Black
-                                    )
-                                ) {
-                                    append(" HP: ")
-                                }
-                                withStyle(
-                                    style = SpanStyle(
-                                        fontWeight = FontWeight.Bold,
-                                        fontSize = 22.sp,
-                                        color = Color.Black
-                                    )
-                                ) {
-                                    append("${critter.hp}")
-                                }
-                            },
-                            fontSize = 18.sp,
-                            color = Color.White
-                        )
-
-                    else -> {
                         Text(
                             text = buildAnnotatedString {
                                 withStyle(style = SpanStyle(color = Color.Black)) {
@@ -327,9 +294,6 @@ fun CpuCritterForcedTutorialAdvancedInfoText(critter: CritterUsable, battleForce
                             fontSize = 18.sp,
                             color = Color.White
                         )
-                    }
-                }
-
             }
             Text(
                 text = buildAnnotatedString {
@@ -367,45 +331,6 @@ fun PlayerCritterForcedTutorialAdvancedInfoText(critter: CritterUsable, battleFo
                     fontWeight = FontWeight.Bold,
                     color = Color.Black
                 )
-                when (battleForcedAdvancedTutorialViewModel.tutorialStep) {
-                    TutorialStep.PlayerHP ->
-                        Text( text = buildAnnotatedString {
-                            withStyle(style = SpanStyle(color = Color.Black)) {
-                                append("LVL: ")
-                            }
-                            withStyle(style = SpanStyle(color = Color.Black)) {
-                                append("${critter.level}")
-                            }
-                            withStyle(style = SpanStyle(fontWeight = FontWeight.Bold, fontSize = 22.sp, color = Color.Black)) {
-                                append(" HP: ")
-                            }
-                            withStyle(style = SpanStyle(fontWeight = FontWeight.Bold, fontSize = 22.sp, color = Color.Black)) {
-                                append("${critter.hp}")
-                            }
-                        },
-                            fontSize = 18.sp,
-                            color = Color.White
-                        )
-                    TutorialStep.Level ->
-                        Text( text = buildAnnotatedString {
-                            withStyle(style = SpanStyle(fontWeight = FontWeight.Bold, fontSize = 22.sp, color = Color.Black)) {
-                                append("LVL: ")
-                            }
-                            withStyle(style = SpanStyle(fontWeight = FontWeight.Bold, fontSize = 22.sp, color = Color.Black)) {
-                                append("${critter.level}")
-                            }
-                            withStyle(style = SpanStyle(color = Color.Black)) {
-                                append(" HP: ")
-                            }
-                            withStyle(style = SpanStyle(color = Color.Black)) {
-                                append("${critter.hp}")
-                            }
-                        },
-                            fontSize = 18.sp,
-                            color = Color.White
-                        )
-
-                    else -> {
                         Text(
                             text = buildAnnotatedString {
                                 withStyle(style = SpanStyle(color = Color.Black)) {
@@ -415,24 +340,7 @@ fun PlayerCritterForcedTutorialAdvancedInfoText(critter: CritterUsable, battleFo
                             fontSize = 18.sp,
                             color = Color.White
                         )
-                    }
-                }
-
             }
-            when (battleForcedAdvancedTutorialViewModel.tutorialStep){
-                TutorialStep.Stats ->
-                    Text(
-                        text = buildAnnotatedString {
-                            withStyle(style = SpanStyle(color = Color.Black)) {
-                                append("ATK: ${critter.atk} DEF: ${critter.def} SPD: ${critter.spd}")
-                            }
-                        },
-                        fontSize = 14.sp,
-                        fontWeight = FontWeight.Bold,
-                        color = Color.White
-                    )
-
-                else -> {
                     Text(
                         text = buildAnnotatedString {
                             withStyle(style = SpanStyle(color = Color.Black)) {
@@ -442,8 +350,8 @@ fun PlayerCritterForcedTutorialAdvancedInfoText(critter: CritterUsable, battleFo
                         fontSize = 10.sp,
                         color = Color.White
                     )
-                }
-            }
+
+
         }
     }
 }
@@ -455,8 +363,8 @@ fun AttackSelectionAdvancedTutorial(
     val battleViewPlayerUIState by battleForcedAdvancedTutorialViewModel.playerCritter.collectAsState()
     val isPlayerTurn by battleForcedAdvancedTutorialViewModel.isPlayerTurn.collectAsState()
     val playerInputUIState by battleForcedAdvancedTutorialViewModel.playerInput.collectAsState()
-    when (battleForcedAdvancedTutorialViewModel.tutorialStep) {
-        TutorialStep.SelectAttack, TutorialStep.LetPlayerPlay ->
+    when (battleForcedAdvancedTutorialViewModel.advancedTutorialStep) {
+        AdvancedTutorialStep.SelectAttack, AdvancedTutorialStep.SelectAttackBuff, AdvancedTutorialStep.SelectDefenseDebuff,AdvancedTutorialStep.SelectDefenseDebuff2, AdvancedTutorialStep.LetplayerPlay ->
             if (isPlayerTurn && !playerInputUIState.isPlayerAttackSelected) {
                 AttackRowAdvancedTutorial(battleForcedAdvancedTutorialViewModel, true)
                 AttackRowAdvancedTutorial(battleForcedAdvancedTutorialViewModel, true, offset = 2)
@@ -488,14 +396,75 @@ fun AttackRowAdvancedTutorial(
             val attackIndex = it + offset
             val attack = battleViewPlayerUIState.playerCritter?.attacks?.get(attackIndex)
             if (attack != null) {
+                when (battleForcedAdvancedTutorialViewModel.advancedTutorialStep) {
+                    AdvancedTutorialStep.SelectAttackBuff -> {
+                        if(attack.name!="Beak Sharpener"){
+                            ClickableAttackAdvancedTutorial(
+                                attack = attack,
+                                onAttackClicked = { selectedAttack ->
+                                    battleForcedAdvancedTutorialViewModel.selectPlayerAttack(selectedAttack)
+                                },
+                                isClickable = false
+                            )
+                        } else {
+                            ClickableAttackAdvancedTutorial(
+                                attack = attack,
+                                onAttackClicked = { selectedAttack ->
+                                    battleForcedAdvancedTutorialViewModel.selectPlayerAttack(selectedAttack)
+                                },
+                                isClickable = isClickable
+                            )
+                        }
+                    }
+                    AdvancedTutorialStep.SelectDefenseDebuff, AdvancedTutorialStep.SelectDefenseDebuff2 -> {
+                        if(attack.name!="Defence Break"){
+                            ClickableAttackAdvancedTutorial(
+                                attack = attack,
+                                onAttackClicked = { selectedAttack ->
+                                    battleForcedAdvancedTutorialViewModel.selectPlayerAttack(selectedAttack)
+                                },
+                                isClickable = false
+                            )
+                        } else {
+                            ClickableAttackAdvancedTutorial(
+                                attack = attack,
+                                onAttackClicked = { selectedAttack ->
+                                    battleForcedAdvancedTutorialViewModel.selectPlayerAttack(selectedAttack)
+                                },
+                                isClickable = isClickable
+                            )
+                        }
+                    }
+                    AdvancedTutorialStep.SelectAttack-> {
+                        if(attack.name!="HyperBeam"){
+                            ClickableAttackAdvancedTutorial(
+                                attack = attack,
+                                onAttackClicked = { selectedAttack ->
+                                    battleForcedAdvancedTutorialViewModel.selectPlayerAttack(selectedAttack)
+                                },
+                                isClickable = false
+                            )
+                        } else {
+                            ClickableAttackAdvancedTutorial(
+                                attack = attack,
+                                onAttackClicked = { selectedAttack ->
+                                    battleForcedAdvancedTutorialViewModel.selectPlayerAttack(selectedAttack)
+                                },
+                                isClickable = isClickable
+                            )
+                        }
+                    }
+                    else -> {
+                        ClickableAttackAdvancedTutorial(
+                            attack = attack,
+                            onAttackClicked = { selectedAttack ->
+                                battleForcedAdvancedTutorialViewModel.selectPlayerAttack(selectedAttack)
+                            },
+                            isClickable = isClickable
+                        )
+                    }
+                }
 
-                ClickableAttackTutorial(
-                    attack = attack,
-                    onAttackClicked = { selectedAttack ->
-                        battleForcedAdvancedTutorialViewModel.selectPlayerAttack(selectedAttack)
-                    },
-                    isClickable = isClickable
-                )
             }
         }
     }
@@ -512,25 +481,44 @@ fun AttackBoxAdvancedTutorial(
     val battleText by battleForcedAdvancedTutorialViewModel.battleText.collectAsState()
 
     val handleAttackClick: () -> Unit = {
-        when (battleForcedAdvancedTutorialViewModel.tutorialStep) {
-            TutorialStep.ExecuteAttack -> {
-                if (playerInputUIState.isPlayerAttackSelected) {
+        when (battleForcedAdvancedTutorialViewModel.advancedTutorialStep) {
+            AdvancedTutorialStep.ExecuteAttackBuff,AdvancedTutorialStep.ExecuteDefenseDebuff,AdvancedTutorialStep.ExecuteDefenseDebuff2 -> {
+                if (playerInputUIState.isPlayerAttackSelected && isPlayerTurn) {
                     battleForcedAdvancedTutorialViewModel.executePlayerAttack()
+                }
+
+            }
+            AdvancedTutorialStep.DefenseDebuffResult,AdvancedTutorialStep.DefenseDebuffResult2,AdvancedTutorialStep.AttackBuffResult ->{
+                if (!playerInputUIState.isPlayerAttackSelected && !cpuInputUIState.isCpuAttackSelected && !isPlayerTurn) {
+                    battleForcedAdvancedTutorialViewModel.selectCpuAttack()
+                }
+                if (cpuInputUIState.isCpuAttackSelected && !isPlayerTurn) {
+                    battleForcedAdvancedTutorialViewModel.executeCpuAttack()
+                }
+            }
+            AdvancedTutorialStep.SelectAttackBuff,AdvancedTutorialStep.SelectAttack,AdvancedTutorialStep.SelectDefenseDebuff,AdvancedTutorialStep.SelectDefenseDebuff2 ->{
+                if (!playerInputUIState.isPlayerAttackSelected && !cpuInputUIState.isCpuAttackSelected && !isPlayerTurn) {
+                    battleForcedAdvancedTutorialViewModel.selectCpuAttack()
+                }
+                if (cpuInputUIState.isCpuAttackSelected && !isPlayerTurn) {
+                    battleForcedAdvancedTutorialViewModel.executeCpuAttack()
+                }
+
+            }
+            AdvancedTutorialStep.LetplayerPlay -> {
+                if (playerInputUIState.isPlayerAttackSelected && isPlayerTurn) {
+                    battleForcedAdvancedTutorialViewModel.executePlayerAttack()
+                }
+                if (!playerInputUIState.isPlayerAttackSelected && !cpuInputUIState.isCpuAttackSelected && !isPlayerTurn) {
+                    battleForcedAdvancedTutorialViewModel.selectCpuAttack()
+                }
+                if (cpuInputUIState.isCpuAttackSelected && !isPlayerTurn) {
+                    battleForcedAdvancedTutorialViewModel.executeCpuAttack()
                 }
             }
 
             else -> {
-                when {
-                    playerInputUIState.isPlayerAttackSelected && isPlayerTurn -> {
-                        battleForcedAdvancedTutorialViewModel.executePlayerAttack()
-                    }
-                    !playerInputUIState.isPlayerAttackSelected && !cpuInputUIState.isCpuAttackSelected && !isPlayerTurn -> {
-                        battleForcedAdvancedTutorialViewModel.selectCpuAttack()
-                    }
-                    cpuInputUIState.isCpuAttackSelected && !isPlayerTurn -> {
-                        battleForcedAdvancedTutorialViewModel.executeCpuAttack()
-                    }
-                }
+
             }
 
         }

@@ -16,70 +16,7 @@ import project.main.uniclash.battle.BattleResult
 import project.main.uniclash.datatypes.Attack
 import project.main.uniclash.datatypes.AttackType
 
-sealed class TutorialStep(val associatedDialogStep: TutorialDialogStep) {
-    object Introduction : TutorialStep(TutorialDialogStep.Welcome)
-    object WinCondition : TutorialStep(TutorialDialogStep.ExplainCombat)
-    object PlayerHP : TutorialStep(TutorialDialogStep.ExplainPlayerHP)
-    object CpuHP: TutorialStep(TutorialDialogStep.ExplainCpuHP)
-    object Level : TutorialStep(TutorialDialogStep.ExplainLevel)
-    object Attacks : TutorialStep(TutorialDialogStep.ExplainAttacks)
-    object Stats : TutorialStep(TutorialDialogStep.ExplainStats)
-    object battleLog: TutorialStep(TutorialDialogStep.ExplainBattleLog)
-    object SelectAttack : TutorialStep(TutorialDialogStep.ExplainSelectAttack)
-    object ExecuteAttack : TutorialStep(TutorialDialogStep.ExplainExecuteAttack)
-    object ExecuteCpuAttack: TutorialStep(TutorialDialogStep.ExplainExecuteCpuAttack)
-    object LetPlayerPlay: TutorialStep(TutorialDialogStep.LetPlayerPlay)
-    object FinishTutorial: TutorialStep(TutorialDialogStep.FinishTutorial)
-}
-
-sealed interface TutorialDialogStep {
-    object Welcome : TutorialDialogStep
-    object ExplainCombat : TutorialDialogStep
-    object ExplainPlayerHP : TutorialDialogStep
-    object ExplainCpuHP : TutorialDialogStep
-    object ExplainLevel : TutorialDialogStep
-    object ExplainAttacks : TutorialDialogStep
-    object ExplainStats : TutorialDialogStep
-    object ExplainBattleLog : TutorialDialogStep
-    object ExplainSelectAttack : TutorialDialogStep
-    object ExplainExecuteAttack : TutorialDialogStep
-    object ExplainExecuteCpuAttack: TutorialDialogStep
-    object LetPlayerPlay: TutorialDialogStep
-    object FinishTutorial: TutorialDialogStep
-    // Add more steps as needed
-}
-
-sealed interface PlayerCritterTutorialUIState {
-    data class HasEntries(
-        val playerCritter: CritterUsable?,
-        val isLoading: Boolean,
-        var hasTurn: Boolean,
-    ) : PlayerCritterTutorialUIState
-}
-
-sealed interface CpuCritterTutorialUIState {
-    data class HasEntries(
-        val cpuCritter: CritterUsable?,
-        val isLoading: Boolean,
-        var hasTurn: Boolean,
-    ) : CpuCritterTutorialUIState
-}
-
-sealed interface PlayerInputTutorialUIState {
-    data class HasEntries(
-        val isPlayerAttackSelected: Boolean,
-        val selectedPlayerAttack: Attack?,
-    ) : PlayerInputTutorialUIState
-}
-
-sealed interface CpuInputTutorialUIState {
-    data class HasEntries(
-        val isCpuAttackSelected: Boolean,
-        val selectedCpuAttack: Attack?,
-    ) : CpuInputTutorialUIState
-}
-
-class BattleTutorialViewModel(
+class BattleForcedAdvancedTutorialViewModel(
     private val critterService: CritterService,
     private var playerTurn: Boolean,
 ) : ViewModel() {
@@ -376,7 +313,7 @@ class BattleTutorialViewModel(
             object : ViewModelProvider.Factory {
                 @Suppress("UNCHECKED_CAST")
                 override fun <T : ViewModel> create(modelClass: Class<T>): T {
-                    return BattleTutorialViewModel(
+                    return BattleForcedAdvancedTutorialViewModel(
                         critterService,
                         false
                     ) as T

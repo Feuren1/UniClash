@@ -13,4 +13,7 @@
     <string name="title_activity_poké">PokéActivity</string>
     <string name="title_activity_battle_tutorial">BattleTutorialActivity</string>
     <string name="title_activity_battle_tutorial_advanced">BattleTutorialAdvancedActivity</string>
+    <string name="title_activity_battle_forced_tutorial_advanced">
+        BattleForcedTutorialAdvancedActivity
+    </string>
 </resources>

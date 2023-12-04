@@ -443,7 +443,8 @@ fun PlayerCritterAdvancedTutorialInfoText(critter: CritterUsable) {
 }
 
 @Composable
-fun CpuCritterAdvancedTutorialInfoText(critter: CritterUsable) {    Box(
+fun CpuCritterAdvancedTutorialInfoText(critter: CritterUsable) {
+    Box(
     modifier = Modifier
         .background(Color.LightGray, RoundedCornerShape(4.dp))
         .padding(2.dp)

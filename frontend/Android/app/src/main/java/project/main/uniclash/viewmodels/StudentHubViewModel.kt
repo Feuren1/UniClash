@@ -200,22 +200,47 @@ class StudentHubViewModel(
         }
     }
 
+    //helper method to only have to do the iteration as few times as possible
+    private fun getSelectedItemForStudent(itemTemplateId: Int): ItemForStudent {
 
-    fun buyItem(itemTemplateId: Int) {
+        val itemListIterator = itemsForStudent.value.itemsForStudent.listIterator()
 
-        println("Buy button was pressed in the ViewModel")
+        //iterates over the list
+        while (itemListIterator.hasNext()) {
+            val currentItem = itemListIterator.next()
+            println("currentItem, first call: $currentItem.")
 
-//        studentHubService.postStudentItem(studentId ,ItemForStudent(quantity = quantity, itemTemplateId = itemTemplateId, studentId = studentId))
+            //checks if the itemTemplate is already in the DB by iterating over the list
+            if (currentItem.itemTemplateId == itemTemplateId) {
+                println("currentItem, itemTemplateID exists: $currentItem.")
+                return currentItem
+            }
+        }
 
-        val boolean = false
+        //returns a standard ItemForStudent to be posted to the students DB
+        return ItemForStudent(1, itemTemplateId, 4)
+    }
 
-        if(boolean == true /*StudentItem ItemTemplateId doesn't exist = POST a new one*/) {
+    fun buyItem(itemTemplateId: Int, cost: Int) {
 
+        println("Buy button was pressed in the ViewModel.")
+
+        //loads all the ItemForStudent from the DB to have them saved in the viewModel
+        loadItemsForStudent()
+        println("loadItemsForStudent was called.")
+
+        //calls the iterator method to get the same item as the selected one by the user
+        val item = getSelectedItemForStudent(itemTemplateId)
+
+        //See if the Item already exists in the DB
+        if(item.itemTemplateId != itemTemplateId /*As @PATCH does not work =*/ || item.itemTemplateId == itemTemplateId) {
+
+            //@POST the ItemForStudent to the student DB
             viewModelScope.launch {
                 itemForStudent.update { it.copy(isLoading = true) }
                 try {
-                    var itemForStudent = ItemForStudent(1,itemTemplateId, 2)
-                    val response = studentHubService.postStudentItem(2, itemForStudent).enqueue()
+                    var itemForStudent = item
+                    val response = studentHubService.postStudentItem(4, itemForStudent).enqueue()
                     println(itemForStudent)
                     Log.d(TAG, "loadBuyItem: $response")
                     if (response.isSuccessful) {
@@ -232,35 +257,14 @@ class StudentHubViewModel(
                     e.printStackTrace()
                 }
             }
-        } else {
+        } else { //Otherwise uses @PATCH to increase the quantity by 1
 
-            //TODO: !!!Before doing all this work,
-            // I should first try whether it works, by giving this part of the load function a hardcoded ItemForStudent!!!
-
-            //TODO: I need to get a list of all ItemForStudent, filter it for the itemTemplateId,
-            // increase its quantity, and then place it in the response.body,
-            // where it replaces old data with the new.
-
-            //TODO: Do the calculations of the quantity and filter in a separate logic file.
-
-            //TODO: ***The problem here is that the value itemForStudent null is***,
-            // so it has no values to PATCH into the DB. Or something.
-            // I'll need to give this vvv the itemForStudent from the get method. Maybe.
-            // As such I need to filter for the correct ItemForStudent to give?
-
-            //TODO: I could also, after creating the logic class for the filter and quantity increase,
-            // pass over an ItemForStudent instead of an ItemTemplateId,
-            // I then would have to first call the function of the logic class to filter the correct ItemForStudent Data class,
-            // per the ItemTemplateId I'll pass over to it.
-            // **Possible problem could be that I can't call the function from the composable function?**.
-
-            //TODO: If nothing else works, I could try @PATCH, though it isn'T available yet.
-
+            //@PATCH of the existing ItemForStudent, increasing its quantity
             viewModelScope.launch {
                 itemForStudent.update { it.copy(isLoading = true) }
                 try {
-                    var itemForStudent = ItemForStudent(1,itemTemplateId, 3)
-                    val response = studentHubService.updateItemQuantityByTemplateId(3, itemTemplateId, itemForStudent).enqueue()
+                    var itemForStudent = ItemForStudent(item.quantity + 1, itemTemplateId, 4)
+                    val response = studentHubService.updateItemQuantityByTemplateId(4, itemTemplateId, itemForStudent).enqueue()
                     println(itemForStudent)
                     Log.d(TAG, "loadUpdateItemQuantity: $response")
                     if (response.isSuccessful) {

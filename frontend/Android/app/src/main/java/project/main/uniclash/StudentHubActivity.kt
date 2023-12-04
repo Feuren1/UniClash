@@ -117,7 +117,7 @@ fun StudentHubScreen(modifier: Modifier = Modifier,
                 println("ID: ${itemTemplate.id}, Name: ${itemTemplate.name}, Cost: ${itemTemplate.cost}")
                 boughtItemName = itemTemplate.name
                 println("Before buyItem")
-                studentHubViewModel.buyItem(itemTemplate.id)
+                studentHubViewModel.buyItem(itemTemplate.id, itemTemplate.cost)
                 println("After buyItem")
                 println("Buy item clicked in StudentHub")
             })

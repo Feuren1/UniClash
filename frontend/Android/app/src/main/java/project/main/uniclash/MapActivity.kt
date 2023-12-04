@@ -216,7 +216,6 @@ class MapActivity : ComponentActivity() {
          cameraState = rememberCameraState()
         cameraState.zoom = 20.0
         alreadySetedUpMap = true
-        println("exce")
     }
 
     @Composable
@@ -279,18 +278,18 @@ class MapActivity : ComponentActivity() {
         }
 
         // Use camera state and location in your OpenStreetMap Composable
-        if (reloadMap) {
-            var critterVisibility : Int
-            if(MapSettings.CRITTERBINOCULARS.getMapSetting()){
-                critterVisibility = 1000
-            } else {
-                critterVisibility = 250
-            }
-
             OpenStreetMap(
                 modifier = Modifier.fillMaxSize(),
                 cameraState = cameraState
             ) {
+                if (reloadMap) {
+                var critterVisibility : Int
+                if(MapSettings.CRITTERBINOCULARS.getMapSetting()){
+                    critterVisibility = 1000
+                } else {
+                    critterVisibility = 250
+                }
+
                 // Add markers and other map components here s)
                 markerList.getMarkerList().forEach() { marker ->
                     val distance = mapCalculations.haversineDistance(marker.state.latitude, marker.state.longitude, Locations.USERLOCATION.getLocation().latitude, Locations.USERLOCATION.getLocation().longitude)

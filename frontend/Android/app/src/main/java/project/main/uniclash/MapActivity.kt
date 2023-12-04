@@ -64,6 +64,7 @@ import project.main.uniclash.datatypes.MapSettings
 import project.main.uniclash.datatypes.MarkerData
 import project.main.uniclash.datatypes.MarkerWildEncounter
 import project.main.uniclash.datatypes.SelectedMarker
+import project.main.uniclash.map.GeoCodingHelper
 import project.main.uniclash.map.LocationPermissions
 import project.main.uniclash.map.MapCalculations
 import project.main.uniclash.map.MarkerList
@@ -79,6 +80,7 @@ class MapActivity : ComponentActivity() {
 
     private val locationPermissions = LocationPermissions(this, this)
     private val mapCalculations = MapCalculations()
+    private val geoCodingHelper = GeoCodingHelper(this)
 
     private val mapLocationViewModel: MapLocationViewModel by viewModels(factoryProducer = {
         MapLocationViewModel.provideFactory(locationPermissions)
@@ -312,7 +314,7 @@ class MapActivity : ComponentActivity() {
                         if (distance < 501) {
                             Column(
                                 modifier = Modifier
-                                    .size(340.dp)
+                                    .size(350.dp)
                                     .background(
                                         color = Color.Black.copy(alpha = 0.75f),
                                         shape = RoundedCornerShape(7.dp)
@@ -322,12 +324,13 @@ class MapActivity : ComponentActivity() {
                             ) {
                                 Text(text = marker.title!!, fontSize = 20.sp, color = Color.White)
                                 Text(text = marker.snippet!!, fontSize = 15.sp, color = Color.White)
+                                Text(text = "${geoCodingHelper.getAddressFromLocation(marker.state.latitude,marker.state.longitude)}", fontSize = 15.sp, color = Color.White)
                                 Spacer(modifier = Modifier.height(8.dp))
                                 val drawableImage = painterResource(id = marker.pic)
                                 Image(
                                     painter = drawableImage,
                                     contentDescription = null, // Provide a proper content description if needed
-                                    modifier = Modifier.size(220.dp) // Adjust size as needed
+                                    modifier = Modifier.size(200.dp) // Adjust size as needed
                                 )
                                 OpenActivityButton(marker)
                             }

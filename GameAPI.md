@@ -103,3 +103,5 @@ And how many building: 2<br>
 Needed Level to create new Buildings: 10<br>
 And how many building: +2<br>
 Legendary critter can not set in arenas.<br>
+
+jeder user bekommt 100 credits zum start

@@ -95,6 +95,12 @@
             android:noHistory="true"
             android:theme="@style/Theme.UniClash" />
         <activity
+            android:name=".NewBuildingActivity"
+            android:exported="false"
+            android:label="@string/title_activity_new_building"
+            android:noHistory="true"
+            android:theme="@style/Theme.UniClash" />
+        <activity
             android:name=".WildEncounterActivity"
             android:exported="false"
             android:label="WildEncounter"

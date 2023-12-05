@@ -53,6 +53,8 @@ android {
 }
 
 dependencies {
+    implementation("androidx.datastore:datastore-preferences:1.0.0")
+    implementation("androidx.datastore:datastore:1.0.0")
     implementation ("androidx.lifecycle:lifecycle-viewmodel-compose:2.6.2")
     implementation ("androidx.camera:camera-camera2:1.3.0")
     implementation ("androidx.camera:camera-lifecycle:1.3.0")
@@ -84,8 +86,6 @@ dependencies {
     implementation("androidx.constraintlayout:constraintlayout:2.1.4")
     implementation("androidx.navigation:navigation-fragment-ktx:2.7.4")
     implementation("androidx.navigation:navigation-ui-ktx:2.7.4")
-    implementation(platform("androidx.compose:compose-bom:2023.03.00"))
-    implementation(platform("androidx.compose:compose-bom:2023.03.00"))
     implementation(platform("androidx.compose:compose-bom:2023.03.00"))
     implementation("androidx.datastore:datastore-core:1.0.0")
     implementation("androidx.security:security-crypto:1.0.0")

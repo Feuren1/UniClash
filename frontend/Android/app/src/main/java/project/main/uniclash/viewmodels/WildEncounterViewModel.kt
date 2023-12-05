@@ -44,11 +44,12 @@ class WildEncounterViewModel(
         )
     )
 
-    fun addWildEncounterToUser(){
+    fun addWildEncounterToUser(studentId: Int) {
+
         viewModelScope.launch {
             critters.update { it.copy(isLoading = true) }
             try {
-                val response = critterService.postCatchedCritter(1,
+                val response = critterService.postCatchedCritter(studentId,
                     wildEncounterMarker!!.critterUsable!!.critterId).enqueue()
                 Log.d(TAG, "loadCrittersUsable: $response")
                 if (response.isSuccessful) {

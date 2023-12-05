@@ -10,7 +10,6 @@ data class Student(
     var credits: Int,
     var expToNextLevel: Int,
     var userId: String
-
 ){
     override fun toString(): String {
         return "Student(team=$team, id=$id, xp=$xp, level=$level, lat=$lat, lon=$lon, credits=$credits, expToNextLevel=$expToNextLevel, userId='$userId')"

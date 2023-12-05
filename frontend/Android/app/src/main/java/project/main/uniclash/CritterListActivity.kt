@@ -1,5 +1,6 @@
 package project.main.uniclash
 
+import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -101,6 +102,7 @@ class CritterListActivity : ComponentActivity() {
             if (exitRequest) {
                 val intent = Intent(this, MenuActivity::class.java)
                 this.startActivity(intent)
+                finish()
                 exitRequest = false
             }
         }
@@ -170,10 +172,14 @@ class CritterListActivity : ComponentActivity() {
         UniClashViewModel.provideFactory(CritterService.getInstance(this))
     })
 
+
     @Composable
     fun MyCritters(uniClashViewModel: UniClashViewModel):List<CritterUsable?> {
+        val preferences = this.getSharedPreferences("Ids", Context.MODE_PRIVATE)
+        val studentId = preferences.getInt("StudentId", 1) ?: 1
+
         val uniClashUiStateCritterUsables by uniClashViewModel.critterUsables.collectAsState()
-        uniClashViewModel.loadCritterUsables(1)
+        uniClashViewModel.loadCritterUsables(studentId)
         var critterUsables : List<CritterUsable?> = uniClashUiStateCritterUsables.critterUsables
         return critterUsables
     }

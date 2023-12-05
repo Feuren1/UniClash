@@ -14,7 +14,7 @@ import project.main.uniclash.retrofit.enqueue
 
 sealed interface ArenasUIState{
     data class HasEntries(
-        val arenas: List<Arena>?,
+        val arenas: List<Arena?>,
         val isLoading: Boolean,
     ): ArenasUIState
 }
@@ -43,7 +43,7 @@ class ArenaViewModel(
 
     val arenas = MutableStateFlow(
         ArenasUIState.HasEntries(
-            arenas = null,
+            arenas = emptyList(),
             isLoading = false,
         )
     )
@@ -61,11 +61,12 @@ class ArenaViewModel(
                 Log.d(TAG, "LoadAllArenas: $response")
                 if (response.isSuccessful) {
                     Log.d(TAG, "Success: ${response.body()}")
-                    response.body().let {
-                        arenas.update { state ->
-                            state.copy(arenas = it, isLoading = false)
-                        }
-
+                    val arenas = response.body()!!
+                    this@ArenaViewModel.arenas.update {
+                        it.copy(
+                            arenas = arenas,
+                            isLoading = false
+                        )
                     }
                 }
             } catch (e: Exception) {

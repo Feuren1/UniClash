@@ -6,8 +6,6 @@ import android.security.keystore.KeyProperties
 import android.util.Log
 import androidx.security.crypto.EncryptedSharedPreferences
 import androidx.security.crypto.MasterKeys
-import project.main.uniclash.viewmodels.UserViewModel
-import java.io.IOException
 import java.security.*
 import javax.crypto.Cipher
 import javax.crypto.KeyGenerator

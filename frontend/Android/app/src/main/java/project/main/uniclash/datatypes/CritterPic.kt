@@ -37,6 +37,12 @@ enum class CritterPic(private val drawableResId: Int) {
     MUTANTDUCKM(R.drawable.mutantduckm),
     STUDENTASSISTANCE(R.drawable.studentassistance),
     STUDENTASSISTANCEM(R.drawable.studentassistancem),
+    CHARMANDER(R.drawable.charmander),
+    CHARMANDERM(R.drawable.charmanderm),
+    CHARIZARD(R.drawable.charizard),
+    CHARIZARDM(R.drawable.charizardm),
+    CHARMELON(R.drawable.charmeleon),
+    CHARMELONM(R.drawable.charmeleonm),
     CROCODILEDUCK(R.drawable.crocodileduck),
     CROCODILEDUCKM(R.drawable.crocodileduckm);
 
@@ -45,6 +51,15 @@ enum class CritterPic(private val drawableResId: Int) {
     }
 
     fun searchDrawable(searchTerm : String) : Int{
+        if(searchTerm.equals("CHARMANDER")){
+            return CHARMANDER.getDrawable()
+        }
+        if(searchTerm.equals("CHARIZARD")){
+            return CHARIZARD.getDrawable()
+        }
+        if(searchTerm.equals("CHARMELEON")){
+            return CHARMELON.getDrawable()
+        }
         if(searchTerm.equals("PRC2DUCK")){
             return PRC2DUCK.getDrawable()
         }
@@ -103,6 +118,15 @@ enum class CritterPic(private val drawableResId: Int) {
     }
 
     fun searchDrawableM(searchTerm : String) : Int{
+        if(searchTerm.equals("CHARMANDERM")){
+            return CHARMANDERM.getDrawable()
+        }
+        if(searchTerm.equals("CHARIZARDM")){
+            return CHARIZARDM.getDrawable()
+        }
+        if(searchTerm.equals("CHARMELEONM")){
+            return CHARMELONM.getDrawable()
+        }
         if(searchTerm.equals("PRC2DUCKM")){
             return PRC2DUCKM.getDrawable()
         }

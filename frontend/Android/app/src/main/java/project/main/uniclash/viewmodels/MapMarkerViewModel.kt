@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.graphics.drawable.Drawable
 import android.util.Log
+import androidx.compose.ui.text.toUpperCase
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
@@ -295,11 +296,11 @@ class MapMarkerViewModel(
                 while (i < 800) {
                     var myMarker = MarkerWildEncounter(
                         state = GeoPoint(randomLocation.get(i).latitude, randomLocation.get(i).longitude),
-                        icon = mapCalculations.resizeDrawable(context, CritterPic.MUSK.searchDrawableM("${wildEncounter.get(i)?.name}M"),50.0F),
+                        icon = mapCalculations.resizeDrawable(context, CritterPic.MUSK.searchDrawableM("${wildEncounter.get(i)?.name?.toUpperCase()}M"),50.0F),
                         visible = true,
                         title = "${wildEncounter.get(i)?.name}",
                         snippet = "Level: ${wildEncounter.get(i)?.level}",
-                        pic = CritterPic.MUSK.searchDrawable("${wildEncounter.get(i)?.name}"),
+                        pic = CritterPic.MUSK.searchDrawable("${wildEncounter.get(i)?.name?.toUpperCase()}"),
                         button = WildEncounterActivity::class.java,
                         buttonText = "catch Critter",
                         critterUsable = wildEncounter.get(i)

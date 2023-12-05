@@ -11,6 +11,7 @@ import project.main.uniclash.datatypes.ItemForStudent
 import project.main.uniclash.datatypes.ItemTemplate
 import project.main.uniclash.datatypes.Student
 import project.main.uniclash.datatypes.StudentHub
+import project.main.uniclash.datatypes.StudentPatch
 import project.main.uniclash.retrofit.StudentHubService
 import project.main.uniclash.retrofit.enqueue
 
@@ -355,8 +356,8 @@ class StudentHubViewModel(
         viewModelScope.launch {
             student.update { it.copy(isLoading = true) }
             try {
-                var student = currentStudent
-                val newCredits = student.credits - itemCost
+                val newCredits = currentStudent.credits - itemCost
+                var student = StudentPatch(5, 1, 0, 0, newCredits, 0, "f96e0c04-c965-496a-8942-4fb7fcde9c30")
                 println("loadPatchStudentCredit: Updating credits for student ${student.id} to $newCredits")
                 println("loadPatchStudentCredit: student to be past into patch:BEFORE $student")
 
@@ -381,6 +382,38 @@ class StudentHubViewModel(
             }
         }
     }
+
+//    private fun postStudent(currentStudent: Student, itemCost: Int) {
+//
+//        println("loadPostStudentCredits: PostStudentCredits function called")
+//        println("loadPostStudentCredits: currentStudent to be past into patch: $currentStudent")
+//
+//        viewModelScope.launch {
+//            student.update { it.copy(isLoading = true) }
+//            try {
+//                var student = StudentPost(1, 0, 0, 100, 0, "69487be5-d92c-4829-b647-e0343cb24860")
+//                println("loadPostStudentCredits: student to be past into patch:BEFORE $student")
+//
+//                val response = studentHubService.postStudent(student).enqueue()
+//                Log.d(TAG, "loadPostStudentCredits request: $response")
+//
+//                if (response.isSuccessful) {
+//                    Log.d(TAG, "loadPostStudentCredits Success: ${response.body()}")
+//                    response.body()?.let {
+//                        this@StudentHubViewModel.student.update { state ->
+//                            state.copy(student = it, isLoading = false)
+//                        }
+//                    }
+//
+//                } else {
+//                    println("loadPostStudentCredits: student to be past into patch:FAILURE $student")
+//                    Log.d(TAG, "loadPostStudentCredits Failed: ${response.code()}, ${response.message()}")
+//                }
+//            } catch (e: Exception) {
+//                e.printStackTrace()
+//            }
+//        }
+//    }
 
     companion object {
         fun provideFactory(

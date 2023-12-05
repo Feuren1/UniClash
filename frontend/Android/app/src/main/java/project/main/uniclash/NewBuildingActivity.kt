@@ -2,7 +2,9 @@ package project.main.uniclash
 
 import android.app.Application
 import android.content.Intent
+import android.graphics.BitmapFactory
 import android.os.Bundle
+import android.widget.ImageView
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
@@ -54,6 +56,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import project.main.uniclash.NewBuildingLogic.CameraLogic
 import project.main.uniclash.datatypes.ActivitySaver
 import project.main.uniclash.datatypes.CritterPic
 import project.main.uniclash.datatypes.CritterUsable
@@ -84,15 +87,18 @@ class NewBuildingActivity : ComponentActivity() {
     private var long by mutableStateOf(Locations.USERLOCATION.getLocation().longitude)
 
     private var exitRequest by mutableStateOf(false)
+    private var startCamera by mutableStateOf(false)
 
     private val geoCodingHelper by lazy {
         GeoCodingHelper(this)
     }
 
     private lateinit var newBuildingViewModel: NewBuildingViewModel
+    var cameraLogic = CameraLogic()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        
 
         newBuildingViewModel = viewModels<NewBuildingViewModel> {
             NewBuildingViewModel.provideFactory(ArenaService.getInstance(this), StudentHubService.getInstance(this))
@@ -143,7 +149,7 @@ class NewBuildingActivity : ComponentActivity() {
                         Column {
                             TitleAndDescription()
                             SelectBuilding()
-                            //photo
+                            Camera()
                             Location()
                             Confirm()
                         }
@@ -154,6 +160,12 @@ class NewBuildingActivity : ComponentActivity() {
                 val intent = Intent(this, MenuActivity::class.java)
                 this.startActivity(intent)
                 exitRequest = false
+                finish()
+            }
+            if (startCamera) {
+                val intent = Intent(this, CameraActivity::class.java)
+                this.startActivity(intent)
+                startCamera = false
                 finish()
             }
         }
@@ -303,6 +315,47 @@ class NewBuildingActivity : ComponentActivity() {
     }
 
     @Composable
+    fun Camera() {
+        Box(
+            modifier = Modifier
+                .padding(all = 8.dp)
+                .fillMaxWidth() // making box from left to right site
+                .clickable {startCamera = true}
+                .background(
+                    Color.LightGray,
+                    shape = RoundedCornerShape(8.dp)
+                ) // Hintergrundfarbe und abgeflachte Ecken
+
+        ) {
+            Row(modifier = Modifier.padding(all = 8.dp)) {
+                Image(
+                    painter = painterResource(id = R.drawable.camera),
+                    contentDescription = null,
+                    modifier = Modifier
+                        .size(60.dp)
+                )
+                Spacer(modifier = Modifier.width(8.dp))
+                Column {
+                    Spacer(modifier = Modifier.height(18.dp))
+                    Text(
+                        text = "Photo:",
+                        fontSize = 18.sp,
+                        color = MaterialTheme.colorScheme.secondary,
+                        style = MaterialTheme.typography.titleSmall
+                    )
+                    Text(
+                        text = "click to take a photo",
+                        fontSize = 12.sp,
+                        color = MaterialTheme.colorScheme.secondary,
+                        style = MaterialTheme.typography.titleSmall
+                    )
+                    Spacer(modifier = Modifier.height(8.dp))
+                }
+            }
+        }
+    }
+
+    @Composable
     fun Location() {
         val buildingAddress = geoCodingHelper.getAddressFromLocation(Locations.USERLOCATION.getLocation().latitude,Locations.USERLOCATION.getLocation().longitude)
 
@@ -354,11 +407,30 @@ class NewBuildingActivity : ComponentActivity() {
                     Color.LightGray,
                     shape = RoundedCornerShape(8.dp)
                 ) // Hintergrundfarbe und abgeflachte Ecken
-                .clickable {if(confirmRequest){if(building == BuildingType.ARENA){newBuildingViewModel.addArena(title,description,lat.toString(),long.toString())}else{newBuildingViewModel.addStudentHub(title,description,lat.toString(),long.toString())}
-                    exitRequest = true
-                    MapSaver.ARENA.setMarker(ArrayList<MarkerData?>())
-                    MapSaver.STUDENTHUB.setMarker(ArrayList<MarkerData?>())
-                    finish()}else{}}
+                .clickable {
+                    if (confirmRequest) {
+                        if (building == BuildingType.ARENA) {
+                            newBuildingViewModel.addArena(
+                                title,
+                                description,
+                                lat.toString(),
+                                long.toString()
+                            )
+                        } else {
+                            newBuildingViewModel.addStudentHub(
+                                title,
+                                description,
+                                lat.toString(),
+                                long.toString()
+                            )
+                        }
+                        exitRequest = true
+                        MapSaver.ARENA.setMarker(ArrayList<MarkerData?>())
+                        MapSaver.STUDENTHUB.setMarker(ArrayList<MarkerData?>())
+                        finish()
+                    } else {
+                    }
+                }
 
         ) {
             Row(modifier = Modifier.padding(all = 8.dp)) {

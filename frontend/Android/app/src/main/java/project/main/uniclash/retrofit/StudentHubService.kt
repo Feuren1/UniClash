@@ -4,6 +4,7 @@ import android.content.Context
 import project.main.uniclash.datatypes.Item
 import project.main.uniclash.datatypes.ItemForStudent
 import project.main.uniclash.datatypes.ItemTemplate
+import project.main.uniclash.datatypes.Student
 import project.main.uniclash.datatypes.StudentHub
 import retrofit2.Call
 import retrofit2.create
@@ -33,6 +34,12 @@ interface StudentHubService {
         @Body itemForStudent: ItemForStudent): Call<ItemForStudent>
     @GET("/students/{id}/items")
     fun getItemsFromStudent(@Path("id") id: Int) : Call<List<ItemForStudent>>
+    @GET("/students/{id}")
+    fun getStudent(@Path("id")id : Int): Call<Student>
+    @PATCH("/students/{id}")
+    fun updateStudentCredits(
+        @Path("id") id: Int,
+        @Body student: Student): Call<Student>
 
     companion object {
         private var studentHubService: StudentHubService? = null

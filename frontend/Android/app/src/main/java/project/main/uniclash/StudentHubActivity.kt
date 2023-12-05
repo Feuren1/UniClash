@@ -76,14 +76,28 @@ fun StudentHubScreen(modifier: Modifier = Modifier,
     studentHubViewModel.loadItemTemplates()
     var itemTemplateList = itemTemplatesState.itemTemplates
 
-    // test list of Items
-//    var itemTemplateList = List(20) { i -> ItemTemplate(i,"Item${i + 1}", 5) }
 
-    var boughtItemName by rememberSaveable { mutableStateOf("Nothing") }
+//    //TODO: getting student placeholder.
+//    val studentState by studentHubViewModel.student.collectAsState()
+//    studentHubViewModel.loadStudent(5)
+
+//    //TODO: getting student placeholder.
+//    var student by rememberSaveable { mutableStateOf(studentState.student) }
+    var creditValidation by rememberSaveable { mutableStateOf(true) }
+    var buyingStatus by rememberSaveable { mutableStateOf("nothing") }
 
     Column(modifier = modifier) {
 
-        Text("You have bought $boughtItemName.")
+//        Text("Credits: ${student!!.credits}")
+
+        if (creditValidation) {
+
+            Text("You have last bought: $buyingStatus.")
+
+        } else {
+            buyingStatus = "Not enough credits!"
+            Text("$buyingStatus")
+        }
 
         Button(onClick = {
             println("Items: $itemTemplateList")
@@ -115,9 +129,9 @@ fun StudentHubScreen(modifier: Modifier = Modifier,
         ItemList(itemTemplateList,
             onButtonClicked = { itemTemplate ->
                 println("ID: ${itemTemplate.id}, Name: ${itemTemplate.name}, Cost: ${itemTemplate.cost}")
-                boughtItemName = itemTemplate.name
+                buyingStatus = itemTemplate.name
                 println("Before buyItem")
-                studentHubViewModel.buyItem(itemTemplate.id, itemTemplate.cost)
+                creditValidation = studentHubViewModel.buyItem(5 , itemTemplate.id, itemTemplate.cost)
                 println("After buyItem")
                 println("Buy item clicked in StudentHub")
             })

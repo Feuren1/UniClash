@@ -1,5 +1,6 @@
 package project.main.uniclash
 
+import android.app.Application
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
@@ -42,7 +43,7 @@ class WildEncounterActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
 
         wildEncounterActivity = viewModels<WildEncounterViewModel> {
-            WildEncounterViewModel.provideFactory(CritterService.getInstance(this))
+            WildEncounterViewModel.provideFactory(CritterService.getInstance(this), Application())
         }.value
 
         var wildEncounter = wildEncounterActivity.getWildEncounterMarker()

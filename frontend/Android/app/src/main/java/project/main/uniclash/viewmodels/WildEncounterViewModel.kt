@@ -1,5 +1,6 @@
 package project.main.uniclash.viewmodels
 
+import android.app.Application
 import android.content.ContentValues.TAG
 import android.util.Log
 import androidx.lifecycle.ViewModel
@@ -9,11 +10,11 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import project.main.uniclash.datatypes.CritterUsable
-import project.main.uniclash.datatypes.MarkerData
 import project.main.uniclash.datatypes.MarkerWildEncounter
 import project.main.uniclash.datatypes.SelectedMarker
 import project.main.uniclash.retrofit.CritterService
 import project.main.uniclash.retrofit.enqueue
+import project.main.uniclash.userDataManager.UserDataManager
 
 sealed interface PostCrittersUIState { //TODO: CritterS to Critter?
     data class HasEntries(
@@ -22,11 +23,15 @@ sealed interface PostCrittersUIState { //TODO: CritterS to Critter?
     ) : PostCrittersUIState
 }
 class WildEncounterViewModel(
-    private val critterService: CritterService
+    private val critterService: CritterService,
+    application: Application
 ) : ViewModel() {
 
     private val markerData = SelectedMarker.SELECTEDMARKER.takeMarker()
     private val wildEncounterMarker = if(markerData is MarkerWildEncounter){markerData} else {null}
+    private val userDataManager: UserDataManager by lazy {
+        UserDataManager(application)
+    }
 
     init {
         viewModelScope.launch {
@@ -44,7 +49,7 @@ class WildEncounterViewModel(
         )
     )
 
-    fun addWildEncounterToUser(studentId: Int) {
+     fun addWildEncounterToUser(studentId: Int) {
 
         viewModelScope.launch {
             critters.update { it.copy(isLoading = true) }
@@ -90,12 +95,14 @@ class WildEncounterViewModel(
     companion object {
         fun provideFactory(
             critterService: CritterService,
+            application: Application,
         ): ViewModelProvider.Factory =
             object : ViewModelProvider.Factory {
                 @Suppress("UNCHECKED_CAST")
                 override fun <T : ViewModel> create(modelClass: Class<T>): T {
                     return WildEncounterViewModel(
                         critterService,
+                        application
                     ) as T
                 }
             }

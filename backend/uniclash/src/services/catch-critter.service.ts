@@ -38,12 +38,12 @@ export class CatchCritterService {
       id: undefined,
     })));
 
-   // await this.increaseStudentCredits(studentId, 10);
+    await this.increaseStudentCredits(studentId, 10);
 
     return this.critterStatsService.createCritterUsable(savedCritterCopy.id)
   }
 
-  /*async increaseStudentCredits(studentId: number, creditsToAdd: number): Promise<void> {
+  async increaseStudentCredits(studentId: number, creditsToAdd: number): Promise<void> {
     const student: Student = await this.studentRepository.findById(studentId);
     if (!student) {
       throw new Error(`Student with ID ${studentId} not found.`);
@@ -51,6 +51,6 @@ export class CatchCritterService {
     student.credits = (student.credits || 0) + creditsToAdd;
 
     await this.studentRepository.update(student);
-  }*/
+  }
 }
 

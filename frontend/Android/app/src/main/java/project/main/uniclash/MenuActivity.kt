@@ -40,6 +40,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import project.main.uniclash.datatypes.ActivitySaver
 import project.main.uniclash.datatypes.MapSettings
 import project.main.uniclash.ui.theme.UniClashTheme
 
@@ -138,55 +139,69 @@ class MenuActivity : ComponentActivity() {
             if(buttonRequest == 1) {
                 val intent = Intent(this, CritterListActivity::class.java)
                 this.startActivity(intent)
+                finish()
                 buttonRequest == 0
             }
             if(buttonRequest == 2) {
                 buttonRequest == 0
             }
             if(buttonRequest == 3) {
-                val intent = Intent(this, CritterDexActivity::class.java)
+                ActivitySaver.CRITTERDEX.setIntent(Intent(this, CritterDexActivity::class.java))
+                // val intent = Intent(this, CritterDexActivity::class.java)
+                val intent = ActivitySaver.CRITTERDEX.getIntent()
                 this.startActivity(intent)
-                buttonRequest == 0
+                finish()
+                buttonRequest = 0
             }
             if(buttonRequest == 10) {
                 MapSettings.CRITTERBINOCULARS.setMapSetting(!MapSettings.CRITTERBINOCULARS.getMapSetting())
                 val intent = Intent(this, MenuActivity::class.java)
                 this.startActivity(intent)
+                finish()
             }
             if(buttonRequest == 6) {
                 val intent = Intent(this, Battle::class.java)
                 this.startActivity(intent)
+                finish()
                 buttonRequest = 0
             }
             if(buttonRequest == 9) {
                 val intent = Intent(this, CameraActivity::class.java)
                 this.startActivity(intent)
+                finish()
                 buttonRequest = 0
             }
             if(buttonRequest == 7) {
-                val intent = Intent(this, MapActivity::class.java)
+                ActivitySaver.MAP.setIntent(Intent(this, MapActivity::class.java))
+                //val intent = Intent(this, MapActivity::class.java)
+                val intent = ActivitySaver.MAP.getIntent()
                 this.startActivity(intent)
+                finish()
                 buttonRequest = 0
             }
             if(buttonRequest == 8) {
                 val intent = Intent(this, StudentHubActivity::class.java)
                 this.startActivity(intent)
+                finish()
                 buttonRequest = 0
             }
             if(buttonRequest == 4){
                 MapSettings.MOVINGCAMERA.setMapSetting(!MapSettings.MOVINGCAMERA.getMapSetting())
                 val intent = Intent(this, MenuActivity::class.java)
                 this.startActivity(intent)
+                finish()
                 buttonRequest = 0
             }
-            if(buttonRequest == 10) {
+            if(buttonRequest == 12) {
                 val intent = Intent(this, ArenaActivity::class.java)
                 this.startActivity(intent)
+                finish()
                 buttonRequest = 0
             }
             if(buttonRequest == 11) {
                 val intent = Intent(this, PokéActivity::class.java)
                 this.startActivity(intent)
+                finish()
                 buttonRequest = 0
             }
             if(buttonRequest == 14) {
@@ -224,6 +239,7 @@ class MenuActivity : ComponentActivity() {
         if(buttonRequest == 6) {
             val intent = Intent(this, Battle::class.java)
             this.startActivity(intent)
+            finish()
             buttonRequest = 0
         }
     }
@@ -247,14 +263,6 @@ class MenuActivity : ComponentActivity() {
         )*/
     }
 
-   /* @Composable
-    fun OpenBattleActivity() {
-        if(buttonRequest == 6) {
-            val intent = Intent(this, Battle::class.java)
-            this.startActivity(intent)
-            buttonRequest = 0
-        }
-    }*/
 
     @Composable
     fun OpenBattleActivityButton() {

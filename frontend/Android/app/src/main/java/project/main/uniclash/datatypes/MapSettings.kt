@@ -1,5 +1,6 @@
 package project.main.uniclash.datatypes
 
+import android.content.Intent
 import org.osmdroid.util.GeoPoint
 
 enum class MapSettings(private var selection : Boolean){
@@ -14,16 +15,16 @@ enum class MapSettings(private var selection : Boolean){
         selection = setSelection
     }
 }
-enum class MapSaver(private var markers: ArrayList<MarkerData>?) {
-    WILDENCOUNTER(null),
-    ARENA(null),
-    STUDENTHUB(null);
+enum class MapSaver(private var markers: ArrayList<MarkerData?>) {
+    WILDENCOUNTER(ArrayList<MarkerData?>()),
+    ARENA(ArrayList<MarkerData?>()),
+    STUDENTHUB(ArrayList<MarkerData?>());
 
-    fun getMarker(): ArrayList<MarkerData>? {
+    fun getMarker(): ArrayList<MarkerData?> {
         return markers
     }
 
-    fun setMarker(setMarker: ArrayList<MarkerData>?){
+    fun setMarker(setMarker: ArrayList<MarkerData?>){
         markers = setMarker
     }
 
@@ -82,3 +83,19 @@ enum class Counter(private var count : Int){
         count += plusCounter
     }
 }
+
+enum class ActivitySaver(private var intent: Intent?){
+    CRITTERDEX(null),
+    MAP(null);
+
+    fun getIntent(): Intent? {
+        return intent
+    }
+
+    fun setIntent(intent : Intent){
+        if(this.intent == null) {
+            this.intent = intent
+        }
+    }
+}
+

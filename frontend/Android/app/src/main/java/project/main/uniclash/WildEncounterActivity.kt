@@ -93,6 +93,7 @@ class WildEncounterActivity : ComponentActivity() {
             if(runaway){
                 val intent = Intent(this, MapActivity::class.java)
                 this.startActivity(intent)
+                finish()
             }
             if(catchCritter){
                 val preferences = this.getSharedPreferences("Ids", Context.MODE_PRIVATE)
@@ -101,6 +102,7 @@ class WildEncounterActivity : ComponentActivity() {
                 wildEncounterActivity.addWildEncounterToUser(studentId)
                 val intent = Intent(this, MapActivity::class.java)
                 this.startActivity(intent)
+                finish()
             }
         }
     }

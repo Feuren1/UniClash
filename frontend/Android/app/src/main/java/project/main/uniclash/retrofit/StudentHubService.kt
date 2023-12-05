@@ -4,6 +4,7 @@ import android.content.Context
 import project.main.uniclash.datatypes.Item
 import project.main.uniclash.datatypes.ItemForStudent
 import project.main.uniclash.datatypes.ItemTemplate
+import project.main.uniclash.datatypes.NewStudentHub
 import project.main.uniclash.datatypes.StudentHub
 import retrofit2.Call
 import retrofit2.create
@@ -16,6 +17,8 @@ interface StudentHubService {
 
     @GET("/student-hubs/{id}")
     fun getStudentHub(@Path("id") id: Int): Call<StudentHub>
+    @POST("/student-hubs")
+    fun postStudentHub(@Body studentHub: NewStudentHub) : Call<StudentHub>
     @GET("/student-hubs")
     fun getStudentHubs(): Call<List<StudentHub>>
     @GET("/item-templates")

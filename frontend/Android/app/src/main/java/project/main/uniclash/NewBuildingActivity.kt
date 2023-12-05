@@ -1,9 +1,11 @@
 package project.main.uniclash
 
+import android.app.Application
 import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.activity.viewModels
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -53,8 +55,19 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import project.main.uniclash.datatypes.ActivitySaver
+import project.main.uniclash.datatypes.CritterPic
+import project.main.uniclash.datatypes.CritterUsable
+import project.main.uniclash.datatypes.Locations
+import project.main.uniclash.datatypes.MapSaver
 import project.main.uniclash.datatypes.MapSettings
+import project.main.uniclash.datatypes.MarkerData
+import project.main.uniclash.map.GeoCodingHelper
+import project.main.uniclash.retrofit.ArenaService
+import project.main.uniclash.retrofit.CritterService
+import project.main.uniclash.retrofit.StudentHubService
 import project.main.uniclash.ui.theme.UniClashTheme
+import project.main.uniclash.viewmodels.NewBuildingViewModel
+import project.main.uniclash.viewmodels.WildEncounterViewModel
 
 
 enum class BuildingType(){
@@ -66,12 +79,39 @@ class NewBuildingActivity : ComponentActivity() {
     private var title by mutableStateOf("")
     private var description by mutableStateOf("")
     private var building by mutableStateOf(BuildingType.ARENA)
+    private var confirmRequest by mutableStateOf(false)
+    private var lat by mutableStateOf(Locations.USERLOCATION.getLocation().latitude)
+    private var long by mutableStateOf(Locations.USERLOCATION.getLocation().longitude)
 
     private var exitRequest by mutableStateOf(false)
 
+    private val geoCodingHelper by lazy {
+        GeoCodingHelper(this)
+    }
+
+    private lateinit var newBuildingViewModel: NewBuildingViewModel
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        newBuildingViewModel = viewModels<NewBuildingViewModel> {
+            NewBuildingViewModel.provideFactory(ArenaService.getInstance(this), StudentHubService.getInstance(this))
+        }.value
+
         setContent {
+            if(!(title.isNullOrEmpty()) && title.length < 31&&!(description.isNullOrEmpty())&&description.length<61&&lat!=0.0&&long!=0.0){
+                confirmRequest = true
+                println("correct")
+                println("${description.length} die länge")
+            } else {
+                confirmRequest = false
+                println("incorrect")
+                println("${description.length} die länge")
+            }
+
+            geoCodingHelper.getAddressFromLocation(
+                lat,long
+            )
             Column {
                 Box(
                     modifier = Modifier
@@ -104,7 +144,8 @@ class NewBuildingActivity : ComponentActivity() {
                             TitleAndDescription()
                             SelectBuilding()
                             //photo
-                            //verify
+                            Location()
+                            Confirm()
                         }
                     }
                 }
@@ -184,7 +225,7 @@ class NewBuildingActivity : ComponentActivity() {
                             // Add an input box (TextField) here
                             OutlinedTextField(
                                 value = description,
-                                onValueChange = { title = it },
+                                onValueChange = { description = it },
                                 label = { Text("Description") },
                                 keyboardOptions = KeyboardOptions.Default.copy(
                                     keyboardType = KeyboardType.Text,
@@ -241,7 +282,7 @@ class NewBuildingActivity : ComponentActivity() {
                                         .size(175.dp) // Adjust the size as needed
                                         .padding(horizontal = 8.dp)
                                         .clickable { building = BuildingType.ARENA }
-                                        .offset(x = (35).dp)
+                                        .offset(x = (1).dp)
                                 )
 
                                 Image(
@@ -251,11 +292,98 @@ class NewBuildingActivity : ComponentActivity() {
                                         .size(175.dp) // Adjust the size as needed
                                         .padding(horizontal = 8.dp)
                                         .clickable { building = BuildingType.STUDENTHUB }
-                                        .offset(x = (35).dp)
+                                        .offset(x = (1).dp)
                                 )
                             }
                         }
                     }
+                }
+            }
+        }
+    }
+
+    @Composable
+    fun Location() {
+        val buildingAddress = geoCodingHelper.getAddressFromLocation(Locations.USERLOCATION.getLocation().latitude,Locations.USERLOCATION.getLocation().longitude)
+
+        Box(
+            modifier = Modifier
+                .padding(all = 8.dp)
+                .fillMaxWidth() // making box from left to right site
+                .background(
+                    Color.LightGray,
+                    shape = RoundedCornerShape(8.dp)
+                ) // Hintergrundfarbe und abgeflachte Ecken
+
+        ) {
+            Row(modifier = Modifier.padding(all = 8.dp)) {
+                Image(
+                    painter = if(lat!= 0.0 && long != 0.0){painterResource(id = R.drawable.location)} else {painterResource(id = R.drawable.warning)},
+                    contentDescription = null,
+                    modifier = Modifier
+                        .size(60.dp)
+                )
+                Spacer(modifier = Modifier.width(8.dp))
+                Column {
+                    Spacer(modifier = Modifier.height(18.dp))
+                    Text(
+                        text = "Location of your building",
+                        fontSize = 18.sp,
+                        color = MaterialTheme.colorScheme.secondary,
+                        style = MaterialTheme.typography.titleSmall
+                    )
+                    Text(
+                        text = if(lat!= 0.0 && long != 0.0){"Your building will be placed at:\n$buildingAddress\nWe will use your latest location on the map."} else {"Location is invalid!\nGo to map and load your current location."},
+                        fontSize = 12.sp,
+                        color = MaterialTheme.colorScheme.secondary,
+                        style = MaterialTheme.typography.titleSmall
+                    )
+                    Spacer(modifier = Modifier.height(8.dp))
+                }
+            }
+        }
+    }
+    @Composable
+    fun Confirm() {
+        val buildingAddress = geoCodingHelper.getAddressFromLocation(Locations.USERLOCATION.getLocation().latitude,Locations.USERLOCATION.getLocation().longitude)
+        Box(
+            modifier = Modifier
+                .padding(all = 8.dp)
+                .fillMaxWidth() // making box from left to right site
+                .background(
+                    Color.LightGray,
+                    shape = RoundedCornerShape(8.dp)
+                ) // Hintergrundfarbe und abgeflachte Ecken
+                .clickable {if(confirmRequest){if(building == BuildingType.ARENA){newBuildingViewModel.addArena(title,description,lat.toString(),long.toString())}else{newBuildingViewModel.addStudentHub(title,description,lat.toString(),long.toString())}
+                    exitRequest = true
+                    MapSaver.ARENA.setMarker(ArrayList<MarkerData?>())
+                    MapSaver.STUDENTHUB.setMarker(ArrayList<MarkerData?>())
+                    finish()}else{}}
+
+        ) {
+            Row(modifier = Modifier.padding(all = 8.dp)) {
+                Image(
+                    painter = if(confirmRequest){painterResource(id = R.drawable.checked)} else {painterResource(id = R.drawable.warning)},
+                    contentDescription = null,
+                    modifier = Modifier
+                        .size(60.dp)
+                )
+                Spacer(modifier = Modifier.width(8.dp))
+                Column {
+                    Spacer(modifier = Modifier.height(18.dp))
+                    Text(
+                        text = "Confirm new building:",
+                        fontSize = 18.sp,
+                        color = MaterialTheme.colorScheme.secondary,
+                        style = MaterialTheme.typography.titleSmall
+                    )
+                    Text(
+                        text = "Title (max 30char.): $title\nDescription (max 60 char.): $description\nBuilding Type: ${if(building== BuildingType.STUDENTHUB){"Student Hub"} else {"Arena"}}\nLocations: $buildingAddress",
+                        fontSize = 12.sp,
+                        color = MaterialTheme.colorScheme.secondary,
+                        style = MaterialTheme.typography.titleSmall
+                    )
+                    Spacer(modifier = Modifier.height(8.dp))
                 }
             }
         }

@@ -10,6 +10,7 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import project.main.uniclash.datatypes.CritterUsable
 import project.main.uniclash.datatypes.MarkerData
+import project.main.uniclash.datatypes.MarkerWildEncounter
 import project.main.uniclash.datatypes.SelectedMarker
 import project.main.uniclash.retrofit.CritterService
 import project.main.uniclash.retrofit.enqueue
@@ -23,13 +24,16 @@ sealed interface PostCrittersUIState { //TODO: CritterS to Critter?
 class WildEncounterViewModel(
     private val critterService: CritterService
 ) : ViewModel() {
-    private val wildEncounterMarker = SelectedMarker.SELECTEDMARKER.takeMarker()
+
+    private val markerData = SelectedMarker.SELECTEDMARKER.takeMarker()
+    private val wildEncounterMarker = if(markerData is MarkerWildEncounter){markerData} else {null}
+
     init {
         viewModelScope.launch {
             Log.d(TAG, "Fetching WildEncounterViewModel ")
         }
     }
-    fun getWildEncounterMarker(): MarkerData?{
+    fun getWildEncounterMarker(): MarkerWildEncounter?{
         return wildEncounterMarker
     }
 

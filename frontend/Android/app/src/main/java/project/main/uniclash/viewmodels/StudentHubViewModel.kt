@@ -24,13 +24,6 @@ sealed interface StudentHubUIState {
     ) : StudentHubUIState
 }
 
-sealed interface StudentHubsUIState {
-    data class HasEntries(
-        val studentHubs: List<StudentHub>,
-        val isLoading: Boolean,
-    ) : StudentHubsUIState
-}
-
 sealed interface ItemTemplatesUIState {
     data class HasEntries(
         val itemTemplates: List<ItemTemplate>,
@@ -57,13 +50,6 @@ class StudentHubViewModel(
         )
     )
 
-    val studentHubs = MutableStateFlow(
-        StudentHubsUIState.HasEntries(
-            emptyList(),
-            isLoading = false
-        )
-    )
-
     val itemTemplates = MutableStateFlow(
         ItemTemplatesUIState.HasEntries(
             emptyList(),
@@ -81,7 +67,7 @@ class StudentHubViewModel(
     init {
         viewModelScope.launch {
             Log.d(TAG, "Fetching initial studentHub data: ")
-            loadItemTemplates()
+            loadItemTemplates() //TODO lässt tenplates immer laden auf wenn z.b. map ausfeührt wird.
         }
     }
 
@@ -101,33 +87,6 @@ class StudentHubViewModel(
                     }
                 }
             } catch (e: Exception) {
-                e.printStackTrace()
-            }
-        }
-    }
-
-    //loads all StudentHubs inside the database
-    fun loadStudentHubs() {
-        viewModelScope.launch {
-            studentHubs.update { it.copy(isLoading = true) }
-            try {
-                val response = studentHubService.getStudentHubs().enqueue()
-                Log.d(TAG, "loadStudentHubs: $response")
-                if (response.isSuccessful) {
-                    Log.d(TAG, "loadStudentHubs: success")
-                    //creates an item list based on the fetched data
-                    val studentHubs = response.body()!!
-                    Log.d(TAG, "loadStudentHubs: $studentHubs")
-                    //replaces the critters list inside the UI state with the fetched data
-                    this@StudentHubViewModel.studentHubs.update {
-                        it.copy(
-                            studentHubs = studentHubs,
-                            isLoading = false
-                        )
-                    }
-                }
-            } catch (e: Exception) {
-                Log.e(TAG, "items: error")
                 e.printStackTrace()
             }
         }

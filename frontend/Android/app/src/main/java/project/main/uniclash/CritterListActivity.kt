@@ -101,6 +101,7 @@ class CritterListActivity : ComponentActivity() {
             if (exitRequest) {
                 val intent = Intent(this, MenuActivity::class.java)
                 this.startActivity(intent)
+                finish()
                 exitRequest = false
             }
         }

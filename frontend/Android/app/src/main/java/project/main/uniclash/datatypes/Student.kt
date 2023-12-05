@@ -5,6 +5,7 @@ data class Student(
     var level: Int,
     var lat: Int,
     var lon: Int,
+    var xp: Int,
     var credits: Int,
     var expToNextLevel: Int,
     var userId: String

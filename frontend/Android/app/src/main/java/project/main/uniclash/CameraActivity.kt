@@ -22,9 +22,14 @@ import androidx.camera.video.Recording
 import androidx.camera.video.VideoCapture
 import androidx.core.content.ContextCompat
 import project.main.uniclash.databinding.ActivityCameraBinding
+import java.io.File
 import java.util.Locale
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
+import java.util.Base64
+import java.nio.file.Files
+import java.nio.file.Paths
+import java.nio.file.StandardOpenOption
 
 class CameraActivity : AppCompatActivity() {
     private lateinit var viewBinding: ActivityCameraBinding
@@ -86,14 +91,43 @@ class CameraActivity : AppCompatActivity() {
                 }
 
                 override fun onImageSaved(output: ImageCapture.OutputFileResults) {
-                    // Hier wird der Pfad des gespeicherten Bildes aktualisiert
-                    capturedImagePath = output.savedUri?.path
-                    val msg = "Photo capture succeeded: $capturedImagePath"
+                    val msg = "Photo capture succeeded: ${output.savedUri}"
                     Toast.makeText(baseContext, msg, Toast.LENGTH_SHORT).show()
                     Log.d(TAG, msg)
+
+                    // Konvertieren Sie das Bild in einen Base64-String
+                    val base64Image = output.savedUri?.let { uri ->
+                        contentResolver.openInputStream(uri)?.use { inputStream ->
+                            val byteArray = inputStream.readBytes()
+                            Base64.getEncoder().encodeToString(byteArray)
+                        }
+                    }
+
+                    // Nachdem das Bild aufgenommen wurde, können Sie zum Beispiel zur NewBuildingActivity wechseln
+                    val intent = Intent(this@CameraActivity, NewBuildingActivity::class.java)
+
+                    // Erstellen Sie ein Bundle und fügen Sie den Base64-String hinzu
+                    val bundle = Bundle().apply {
+                        putString("base64Image", base64Image)
+                    }
+
+                    // Fügen Sie das Bundle dem Intent hinzu
+                    intent.putExtra("myBundle", bundle)
+
+                    // Starten Sie die Aktivität mit dem Intent
+                    startActivity(intent)
+
+                    // Beenden Sie die CameraActivity, wenn Sie möchten
+                    finish()
                 }
             }
         )
+    }
+
+    fun convertImageToBase64(imagePath: String): String {
+        val file = File(imagePath)
+        val fileContent = Files.readAllBytes(file.toPath())
+        return Base64.getEncoder().encodeToString(fileContent)
     }
 
 

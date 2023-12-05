@@ -122,6 +122,7 @@ dependencies {
     implementation ("com.google.android.gms:play-services-location:17.1.0")
     implementation ("androidx.activity:activity-ktx:1.4.0")
     implementation ("androidx.activity:activity-compose:1.4.0-alpha01")
+    implementation ("io.coil-kt:coil-compose:1.3.2")
     implementation ("androidx.lifecycle:lifecycle-viewmodel-ktx:2.3.1")
     implementation(platform("com.google.firebase:firebase-bom:32.5.0"))
     implementation("com.google.firebase:firebase-analytics")

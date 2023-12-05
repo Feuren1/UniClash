@@ -9,6 +9,10 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
 import androidx.compose.foundation.Image
+import android.util.Base64
+import java.io.FileOutputStream
+import java.io.File
+import java.io.IOException
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -56,6 +60,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import coil.compose.rememberImagePainter
 import project.main.uniclash.NewBuildingLogic.CameraLogic
 import project.main.uniclash.datatypes.ActivitySaver
 import project.main.uniclash.datatypes.CritterPic
@@ -94,11 +99,11 @@ class NewBuildingActivity : ComponentActivity() {
     }
 
     private lateinit var newBuildingViewModel: NewBuildingViewModel
-    var cameraLogic = CameraLogic()
+    private var restoredImagePath by mutableStateOf<String?>(null)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        
+
 
         newBuildingViewModel = viewModels<NewBuildingViewModel> {
             NewBuildingViewModel.provideFactory(ArenaService.getInstance(this), StudentHubService.getInstance(this))
@@ -113,6 +118,19 @@ class NewBuildingActivity : ComponentActivity() {
                 confirmRequest = false
                 println("incorrect")
                 println("${description.length} die länge")
+            }
+
+            val receivedIntent = intent
+            val receivedBundle = receivedIntent.getBundleExtra("myBundle")
+
+            if (receivedBundle != null) {
+                // Extrahieren Sie den Base64-String des aufgenommenen Bilds
+                val base64Image = receivedBundle.getString("base64Image")
+
+                // Konvertieren Sie den Base64-String zurück in ein Bild, wenn vorhanden
+                if (!base64Image.isNullOrBlank()) {
+                    convertBase64ToImage(base64Image)
+                }
             }
 
             geoCodingHelper.getAddressFromLocation(
@@ -350,11 +368,34 @@ class NewBuildingActivity : ComponentActivity() {
                         style = MaterialTheme.typography.titleSmall
                     )
                     Spacer(modifier = Modifier.height(8.dp))
+                    if (!restoredImagePath.isNullOrBlank()) {
+                        // Zeigen Sie hier das wiederhergestellte Foto an
+                        Image(
+                            painter = rememberImagePainter(data = restoredImagePath),
+                            contentDescription = null,
+                            modifier = Modifier
+                                .size(200.dp)
+                                .padding(8.dp)
+                        )
+                    }
                 }
             }
         }
     }
 
+    fun convertBase64ToImage(base64String: String) {
+        try {
+            val fileContent = Base64.decode(base64String, Base64.DEFAULT)
+            val outputPath = "your_output_path.jpg" // Passen Sie den Dateipfad nach Bedarf an
+            val outputStream = FileOutputStream(outputPath)
+            outputStream.write(fileContent)
+            outputStream.close()
+            restoredImagePath = outputPath
+        } catch (e: IOException) {
+            e.printStackTrace()
+            restoredImagePath = null
+        }
+    }
     @Composable
     fun Location() {
         val buildingAddress = geoCodingHelper.getAddressFromLocation(Locations.USERLOCATION.getLocation().latitude,Locations.USERLOCATION.getLocation().longitude)

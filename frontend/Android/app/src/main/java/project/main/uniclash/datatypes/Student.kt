@@ -1,7 +1,6 @@
 package project.main.uniclash.datatypes
 
 data class Student(
-    var team: ArrayList<Critter>,
     var id: Int,
     var xp: Int,
     var level: Int,
@@ -13,6 +12,6 @@ data class Student(
 
 ){
     override fun toString(): String {
-        return "Student(team=$team, id=$id, xp=$xp, level=$level, lat=$lat, lon=$lon, credits=$credits, expToNextLevel=$expToNextLevel, userId='$userId')"
+        return "Student(id=$id, xp=$xp, level=$level, lat=$lat, lon=$lon, credits=$credits, expToNextLevel=$expToNextLevel, userId='$userId')"
     }
 }

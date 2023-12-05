@@ -76,19 +76,15 @@ fun StudentHubScreen(modifier: Modifier = Modifier,
     studentHubViewModel.loadItemTemplates()
     var itemTemplateList = itemTemplatesState.itemTemplates
 
+    val studentState by studentHubViewModel.student.collectAsState()
+    studentHubViewModel.loadStudent(5)
 
-//    //TODO: getting student placeholder.
-//    val studentState by studentHubViewModel.student.collectAsState()
-//    studentHubViewModel.loadStudent(5)
-
-//    //TODO: getting student placeholder.
-//    var student by rememberSaveable { mutableStateOf(studentState.student) }
     var creditValidation by rememberSaveable { mutableStateOf(true) }
     var buyingStatus by rememberSaveable { mutableStateOf("nothing") }
 
     Column(modifier = modifier) {
 
-//        Text("Credits: ${student!!.credits}")
+        Text("Credits: ${studentState.student?.credits}")
 
         if (creditValidation) {
 
@@ -131,7 +127,7 @@ fun StudentHubScreen(modifier: Modifier = Modifier,
                 println("ID: ${itemTemplate.id}, Name: ${itemTemplate.name}, Cost: ${itemTemplate.cost}")
                 buyingStatus = itemTemplate.name
                 println("Before buyItem")
-                creditValidation = studentHubViewModel.buyItem(5 , itemTemplate.id, itemTemplate.cost)
+                creditValidation = studentHubViewModel.buyItem(studentState.student , itemTemplate.id, itemTemplate.cost)
                 println("After buyItem")
                 println("Buy item clicked in StudentHub")
             })

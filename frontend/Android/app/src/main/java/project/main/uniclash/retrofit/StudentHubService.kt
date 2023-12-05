@@ -13,7 +13,6 @@ import retrofit2.http.GET
 import retrofit2.http.PATCH
 import retrofit2.http.POST
 import retrofit2.http.Path
-import retrofit2.http.Query
 
 interface StudentHubService {
 
@@ -27,19 +26,13 @@ interface StudentHubService {
     fun getItems(): Call<List<Item>>
     @POST("/students/{id}/items")
     fun postStudentItem(@Path("id") id: Int, @Body itemForStudent: ItemForStudent) : Call<ItemForStudent>
-    @PATCH("/students/{id}/items")
-    fun updateItemQuantityByTemplateId(
-        @Path("id") id: Int,
-        @Query("itemTemplateId") itemTemplateId: Int,
-        @Body itemForStudent: ItemForStudent): Call<ItemForStudent>
     @GET("/students/{id}/items")
     fun getItemsFromStudent(@Path("id") id: Int) : Call<List<ItemForStudent>>
     @GET("/students/{id}")
     fun getStudent(@Path("id")id : Int): Call<Student>
     @PATCH("/students/{id}")
-    fun updateStudentCredits(
-        @Path("id") id: Int,
-        @Body student: Student): Call<Student>
+    fun updateStudentCredits(@Path("id") id: Int, @Body student: Student): Call<Student>
+
 
     companion object {
         private var studentHubService: StudentHubService? = null

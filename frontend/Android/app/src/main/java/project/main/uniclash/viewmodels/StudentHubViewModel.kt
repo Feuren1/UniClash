@@ -182,7 +182,7 @@ class StudentHubViewModel(
         loadItemsForStudent(currentStudent!!.id)
 //        println("loadItemsForStudent was called.")
 
-        val studentCredits = 100 //student.value.student!!.credits
+        val studentCredits = student.value.student!!.credits
 
         //checking if the student has enough money
         if (studentCredits >= itemCost) {

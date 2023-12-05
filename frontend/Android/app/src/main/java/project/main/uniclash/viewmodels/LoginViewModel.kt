@@ -9,6 +9,7 @@ import androidx.lifecycle.ViewModelProvider
 import com.google.gson.JsonObject
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.runBlocking
 import project.main.uniclash.dataStore
 import project.main.uniclash.datatypes.UserLoginRequest
 import project.main.uniclash.retrofit.UserService
@@ -62,10 +63,10 @@ class LoginViewModel (private val userService: UserService, application: Applica
                     val jsonObject = response.body()
                     val jwtToken = jsonObject?.get("token")?.asString
                     if (jwtToken != null) {
-                        // Save the token to SharedPreferences
-
-                        saveTokenToSharedPreferences(jwtToken,context)
-
+                        // Save the token to Datastore
+                        runBlocking {
+                            userDataManager.storeJWTToken(jwtToken)
+                        }
                         // Update userData with the response if needed
                         // Invoke the callback with success
                         callback(UserLoginTokenCallback(true, jwtToken))
@@ -99,11 +100,6 @@ class LoginViewModel (private val userService: UserService, application: Applica
                 text.value = "Something went wrong contacting the server, do you have an internet connection?"
             }
         })
-    }
-
-    private fun saveTokenToSharedPreferences(token: String, context: Context) {
-        val preferences = context.getSharedPreferences("Token", Context.MODE_PRIVATE)
-        preferences.edit().putString("JWT-Token", token).apply()
     }
 
     companion object {

@@ -5,6 +5,7 @@ import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.intPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import project.main.uniclash.dataStore
 
@@ -19,12 +20,12 @@ class UserDataManager(context: Context) {
         }
     }
 
-    fun getUserId(): Flow<String?> {
+    suspend fun getUserId(): String? {
         val USER_ID = stringPreferencesKey("user_id")
         return dataStore.data
             .map { preferences ->
                 preferences[USER_ID]
-            }
+            }.first()
     }
 
     suspend fun storeJWTToken(token: String) {
@@ -34,12 +35,12 @@ class UserDataManager(context: Context) {
         }
     }
 
-    fun getJWTToken(): Flow<String?> {
+    suspend fun getJWTToken(): String? {
         val USER_TOKEN = stringPreferencesKey("user_token")
         return dataStore.data
             .map { preferences ->
                 preferences[USER_TOKEN]
-            }
+            }.first()
     }
 
     suspend fun storeStudentId(id: Int) {
@@ -49,11 +50,11 @@ class UserDataManager(context: Context) {
         }
     }
 
-    fun getStudentId(): Flow<Int?> {
+    suspend fun getStudentId(): Int? {
         val STUDENT_ID = intPreferencesKey("student_id")
         return dataStore.data
             .map { preferences ->
                 preferences[STUDENT_ID]
-            }
+            }.first()
     }
 }

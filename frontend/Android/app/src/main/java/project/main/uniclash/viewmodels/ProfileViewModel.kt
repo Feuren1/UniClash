@@ -10,10 +10,12 @@ import com.google.gson.JsonObject
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 import project.main.uniclash.JWT.TokenManager
 import project.main.uniclash.datatypes.User
 import project.main.uniclash.retrofit.UserService
 import project.main.uniclash.retrofit.enqueue
+import project.main.uniclash.userDataManager.UserDataManager
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -36,6 +38,9 @@ class ProfileViewModel (private val userService: UserService, application: Appli
     private val context: Application = application
     val text: MutableStateFlow<String> = MutableStateFlow("")
     val hasStudent: MutableStateFlow<Boolean?> = MutableStateFlow(null)
+    private val userDataManager: UserDataManager by lazy {
+        UserDataManager(application)
+    }
 
     val user = MutableStateFlow(
         UserUIState.HasEntries(
@@ -51,12 +56,13 @@ class ProfileViewModel (private val userService: UserService, application: Appli
                 val response = userService.getStudent(id).enqueue()
                 Log.d(TAG, "Load Student of User: $response")
                 if (response.isSuccessful) {
+
                     Log.d(TAG, "Success: ${response.body()}")
                     response.body()?.let { student ->
                         user.update { state ->
                             state.copy(user = state.user!!.copy(student = student), isLoading = false)
                         }
-                        saveStudentIdToSharedPreferences(response.body()!!.id,context)
+                        userDataManager.storeStudentId(response.body()!!.id)
                     }
                     hasStudent.value= true
                     text.value = "Game progress loaded successfully"
@@ -99,11 +105,13 @@ class ProfileViewModel (private val userService: UserService, application: Appli
                                 }
                                 getStudent(response.body()!!.id)
                             }
-                            saveUserIdToSharedPreferences(user.value.user!!.id, context)
+                            runBlocking {
+                                userDataManager.storeUserId(user.value.user!!.id)
+                            }
                             callback(UserCallback(true, response.body()))
                             text.value = "You are logged in!"
                         } else{
-                            Log.d(TAG, "Who Am I: FAILED" + response.body().toString())
+                            Log.d(TAG, "Who Am I: FAILED" + response.message())
                         }
                     }
                     override fun onFailure(call: Call<User>, t: Throwable) {
@@ -121,16 +129,6 @@ class ProfileViewModel (private val userService: UserService, application: Appli
                 text.value = "Error during whoAmI request"
             }
         }
-    }
-
-    private fun saveUserIdToSharedPreferences(id: String, context: Context) {
-        val preferences = context.getSharedPreferences("Ids", Context.MODE_PRIVATE)
-        preferences.edit().putString("UserId", id).apply()
-    }
-
-    private fun saveStudentIdToSharedPreferences(id: Int, context: Context){
-        val preferences = context.getSharedPreferences("Ids", Context.MODE_PRIVATE)
-        preferences.edit().putInt("StudentId", id).apply()
     }
 
     fun refresh() {

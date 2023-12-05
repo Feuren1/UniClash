@@ -2,18 +2,19 @@ package project.main.uniclash.retrofit
 
 import android.content.Context
 import com.google.gson.GsonBuilder
+import kotlinx.coroutines.runBlocking
 import okhttp3.Interceptor
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.internal.http2.Http2Reader.Companion.logger
+import project.main.uniclash.userDataManager.UserDataManager
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import java.io.IOException
-import java.lang.String
 import java.net.HttpURLConnection
 import java.time.Instant
 import kotlin.coroutines.resume
@@ -51,19 +52,26 @@ class Retrofit {
 }
 
 internal class AuthInterceptor(private val context: Context) : Interceptor {
+    private val userDataManager: UserDataManager by lazy {
+        UserDataManager(context)
+    }
     override fun intercept(chain: Interceptor.Chain): okhttp3.Response {
         var request = chain.request()
-        val preferences = context.getSharedPreferences("Token", Context.MODE_PRIVATE)
-
+        //val preferences = context.getSharedPreferences("Token", Context.MODE_PRIVATE)
+        //
         // Retrieve the token from SharedPreferences
-        val token = preferences.getString("JWT-Token", "") ?: ""
+        //val token = preferences.getString("JWT-Token", "") ?: ""
+        val token : String?
+        runBlocking {
+            token = userDataManager.getJWTToken()
+        }
 
-        if (token.isNotEmpty()) {
+        println(token)
             // Add Authorization header only if the token is not empty
             request = request.newBuilder()
                 .addHeader("Authorization", "Bearer $token")
                 .build()
-        }
+
 
         println("Request headers: ${request.headers}")
         //var response = chain.proceed(request)

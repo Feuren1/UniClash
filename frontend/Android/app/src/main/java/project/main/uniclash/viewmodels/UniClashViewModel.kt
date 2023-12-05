@@ -43,14 +43,6 @@ sealed interface CritterUsablesUIState {
         val isLoading: Boolean,
     ) : CritterUsablesUIState
 }
-sealed interface CritterTemplatesUIState {
-    data class HasEntries(
-        val critterTemplates: List<CritterTemplate?>,
-        val isLoading: Boolean,
-    ) : CritterTemplatesUIState
-}
-
-
 
 class UniClashViewModel(
     private val critterService: CritterService,
@@ -82,13 +74,6 @@ class UniClashViewModel(
 
     val critterUsables = MutableStateFlow(
         CritterUsablesUIState.HasEntries(
-            emptyList(),
-            isLoading = false
-        )
-    )
-
-    val critterTemplates = MutableStateFlow(
-        CritterTemplatesUIState.HasEntries(
             emptyList(),
             isLoading = false
         )
@@ -137,30 +122,6 @@ class UniClashViewModel(
                                 isLoading = false
                             )
                         }
-                }
-            } catch (e: Exception) {
-                e.printStackTrace()
-            }
-        }
-    }
-
-    @SuppressLint("MissingPermission")
-    fun loadCritterTemplates() {
-        viewModelScope.launch {
-            critterTemplates.update { it.copy(isLoading = true) }
-            try {
-                val response = critterService.getCrittersTemplates().enqueue()
-                Log.d(TAG, "loadCrittersTemplates: $response")
-                if (response.isSuccessful) {
-                    Log.d(TAG, "loadCrittersTemplates: success")
-                    val crittersTemplates = response.body()!!
-                    Log.d(TAG, "loadCrittersTemplates: $crittersTemplates")
-                    critterTemplates.update {
-                        it.copy(
-                            critterTemplates = crittersTemplates,
-                            isLoading = false
-                        )
-                    }
                 }
             } catch (e: Exception) {
                 e.printStackTrace()

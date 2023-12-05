@@ -182,12 +182,12 @@ class StudentHubViewModel(
         loadItemsForStudent(currentStudent!!.id)
 //        println("loadItemsForStudent was called.")
 
-        val studentCredits = student.value.student!!.credits
+        val newCredits = currentStudent.credits - itemCost
 
         //checking if the student has enough money
-        if (studentCredits >= itemCost) {
+        if (newCredits >= itemCost) {
 
-            patchStudentCredits(currentStudent, itemCost) //reduces credits of the student
+            patchStudentCredits(newCredits, itemCost) //reduces credits of the student
 
             //calls the iterator method to get the same item as the selected one by the user
             val item = getSelectedItemForStudent(currentStudent!!.id, itemTemplateId)
@@ -307,15 +307,13 @@ class StudentHubViewModel(
         return true
     }
 
-    private fun patchStudentCredits(currentStudent: Student, itemCost: Int) {
+    private fun patchStudentCredits(newCredits: Int, itemCost: Int) {
 
         println("loadPatchStudentCredit: patchStudentCredits function called")
-        println("loadPatchStudentCredit: currentStudent to be past into patch: $currentStudent")
 
         viewModelScope.launch {
             student.update { it.copy(isLoading = true) }
             try {
-                val newCredits = currentStudent.credits - itemCost
                 var student = StudentPatch(5, 1, 0, 0, newCredits, 0, "f96e0c04-c965-496a-8942-4fb7fcde9c30")
                 println("loadPatchStudentCredit: Updating credits for student ${student.id} to $newCredits")
                 println("loadPatchStudentCredit: student to be past into patch:BEFORE $student")

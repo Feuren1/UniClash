@@ -49,6 +49,7 @@ import project.main.uniclash.datatypes.CritterUsable
 import project.main.uniclash.retrofit.CritterService
 import project.main.uniclash.viewmodels.BattleForcedTutorialViewModel
 import project.main.uniclash.viewmodels.BattleTutorialViewModel
+import project.main.uniclash.viewmodels.ForcedTutorialStep
 import project.main.uniclash.viewmodels.TutorialStep
 
 class BattleForcedTutorialActivity : ComponentActivity() {
@@ -118,7 +119,7 @@ fun CritterBattleForcedTutorialIntro(battleForcedTutorialViewModel: BattleForced
     val battleText by battleForcedTutorialViewModel.battleText.collectAsState()
     val playerInputUIState by battleForcedTutorialViewModel.playerInput.collectAsState()
     val cpuInputUIState by battleForcedTutorialViewModel.cpuInput.collectAsState()
-    val currentTutorialStep by battleForcedTutorialViewModel.tutorialDialogStep.collectAsState()
+    val currentTutorialStep by battleForcedTutorialViewModel.forcedTutorialDialogStep.collectAsState()
     val tutorialDialogMessage = battleForcedTutorialViewModel.getTutorialMessage(currentTutorialStep)
     val isPlayerTurn by battleForcedTutorialViewModel.isPlayerTurn.collectAsState()
     val playerWon by battleForcedTutorialViewModel.playerWon.collectAsState()
@@ -283,8 +284,8 @@ fun CpuCritterForcedTutorialInfoText(critter: CritterUsable, battleForcedTutoria
                     fontWeight = FontWeight.Bold,
                     color = Color.Black
                 )
-                when (battleForcedTutorialViewModel.tutorialStep) {
-                    TutorialStep.CpuHP ->
+                when (battleForcedTutorialViewModel.forcedTutorialStep) {
+                    ForcedTutorialStep.CpuHP ->
                         Text(
                             text = buildAnnotatedString {
                                 withStyle(style = SpanStyle(color = Color.Black)) {
@@ -366,8 +367,8 @@ fun PlayerCritterForcedTutorialInfoText(critter: CritterUsable, battleForcedTuto
                     fontWeight = FontWeight.Bold,
                     color = Color.Black
                 )
-                when (battleForcedTutorialViewModel.tutorialStep) {
-                    TutorialStep.PlayerHP ->
+                when (battleForcedTutorialViewModel.forcedTutorialStep) {
+                    ForcedTutorialStep.PlayerHP ->
                         Text( text = buildAnnotatedString {
                             withStyle(style = SpanStyle(color = Color.Black)) {
                                 append("LVL: ")
@@ -385,7 +386,7 @@ fun PlayerCritterForcedTutorialInfoText(critter: CritterUsable, battleForcedTuto
                         fontSize = 18.sp,
                         color = Color.White
                     )
-                    TutorialStep.Level ->
+                    ForcedTutorialStep.Level ->
                         Text( text = buildAnnotatedString {
                             withStyle(style = SpanStyle(fontWeight = FontWeight.Bold, fontSize = 22.sp, color = Color.Black)) {
                                 append("LVL: ")
@@ -418,8 +419,8 @@ fun PlayerCritterForcedTutorialInfoText(critter: CritterUsable, battleForcedTuto
                 }
 
             }
-            when (battleForcedTutorialViewModel.tutorialStep){
-                TutorialStep.Stats ->
+            when (battleForcedTutorialViewModel.forcedTutorialStep){
+                ForcedTutorialStep.Stats ->
                     Text(
                         text = buildAnnotatedString {
                             withStyle(style = SpanStyle(color = Color.Black)) {
@@ -454,8 +455,8 @@ fun AttackSelectionTutorial(
     val battleViewPlayerUIState by battleForcedTutorialViewModel.playerCritter.collectAsState()
     val isPlayerTurn by battleForcedTutorialViewModel.isPlayerTurn.collectAsState()
     val playerInputUIState by battleForcedTutorialViewModel.playerInput.collectAsState()
-    when (battleForcedTutorialViewModel.tutorialStep) {
-        TutorialStep.SelectAttack, TutorialStep.LetPlayerPlay ->
+    when (battleForcedTutorialViewModel.forcedTutorialStep) {
+        ForcedTutorialStep.SelectAttack, ForcedTutorialStep.LetPlayerPlay ->
             if (isPlayerTurn && !playerInputUIState.isPlayerAttackSelected) {
                 AttackRowTutorial(battleForcedTutorialViewModel, true)
                 AttackRowTutorial(battleForcedTutorialViewModel, true, offset = 2)
@@ -511,13 +512,13 @@ fun AttackBox(
     val battleText by battleForcedTutorialViewModel.battleText.collectAsState()
 
     val handleAttackClick: () -> Unit = {
-        when (battleForcedTutorialViewModel.tutorialStep) {
-            TutorialStep.ExecuteAttack -> {
+        when (battleForcedTutorialViewModel.forcedTutorialStep) {
+            ForcedTutorialStep.ExecuteAttack -> {
                 if (playerInputUIState.isPlayerAttackSelected) {
                     battleForcedTutorialViewModel.executePlayerAttack()
                 }
             }
-            TutorialStep.SelectAttack ->{
+            ForcedTutorialStep.SelectAttack ->{
                 if (!playerInputUIState.isPlayerAttackSelected && !cpuInputUIState.isCpuAttackSelected && !isPlayerTurn) {
                     battleForcedTutorialViewModel.selectCpuAttack()
                 }

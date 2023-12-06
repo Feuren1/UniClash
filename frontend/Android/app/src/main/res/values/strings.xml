@@ -16,4 +16,5 @@
     <string name="title_activity_battle_forced_tutorial_advanced">
         BattleForcedTutorialAdvancedActivity
     </string>
+    <string name="title_activity_final_battle">FinalBattleActivity</string>
 </resources>

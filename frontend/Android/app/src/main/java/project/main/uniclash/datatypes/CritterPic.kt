@@ -17,7 +17,7 @@ enum class CritterPic(private val drawableResId: Int) {
     QUIZIZZDRAGONM(R.drawable.quizizzdragonm),
     FONTYS(R.drawable.fontys),
     FONTYSM(R.drawable.fontysm),
-    LINUXPINGIUN(R.drawable.linuxpingiun),
+    LINUXPINGIUN(R.drawable.linuxpenguin),
     LINUXPINGIUNM(R.drawable.linuxpingiunm),
     KNIFETURTLE(R.drawable.knifeturtle),
     KNIFETURTLEM(R.drawable.knifeturtlem),

@@ -1,9 +1,6 @@
 package project.main.uniclash.viewmodels
 
 import android.util.Log
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
@@ -16,61 +13,27 @@ import project.main.uniclash.battle.BattleResult
 import project.main.uniclash.datatypes.Attack
 import project.main.uniclash.datatypes.AttackType
 
-sealed class AdvancedForcedTutorialStep(val associatedDialogStep: AdvancedForcedTutorialDialogStep) {
-    object Introduction : AdvancedForcedTutorialStep(AdvancedForcedTutorialDialogStep.Welcome)
-    object TypesOfAttacks : AdvancedForcedTutorialStep(AdvancedForcedTutorialDialogStep.ExplainTypesOfAttacks)
-    object Buffs : AdvancedForcedTutorialStep(AdvancedForcedTutorialDialogStep.ExplainBuffs)
-    object Debuffs : AdvancedForcedTutorialStep(AdvancedForcedTutorialDialogStep.ExplainDebuffs)
-    object Usage: AdvancedForcedTutorialStep(AdvancedForcedTutorialDialogStep.ExplainUsage)
-    object SelectDefenseDebuff: AdvancedForcedTutorialStep(AdvancedForcedTutorialDialogStep.ExplainSelectDefenseDebuff)
-    object ExecuteDefenseDebuff: AdvancedForcedTutorialStep(AdvancedForcedTutorialDialogStep.ExplainExecuteDefenseDebuff)
-    object DefenseDebuffResult: AdvancedForcedTutorialStep(AdvancedForcedTutorialDialogStep.ExplainDefenseDebuffResult)
-    object SelectDefenseDebuff2: AdvancedForcedTutorialStep(AdvancedForcedTutorialDialogStep.ExplainSelectDefenseDebuff2)
-    object ExecuteDefenseDebuff2: AdvancedForcedTutorialStep(AdvancedForcedTutorialDialogStep.ExplainExecuteDefenseDebuff2)
-    object DefenseDebuffResult2: AdvancedForcedTutorialStep(AdvancedForcedTutorialDialogStep.ExplainDefenseDebuffResult2)
-    object SelectAttackBuff: AdvancedForcedTutorialStep(AdvancedForcedTutorialDialogStep.ExplainSelectAttackBuff)
-    object ExecuteAttackBuff: AdvancedForcedTutorialStep(AdvancedForcedTutorialDialogStep.ExplainExecuteAttackBuff)
-    object AttackBuffResult: AdvancedForcedTutorialStep(AdvancedForcedTutorialDialogStep.ExplainAttackBuffResult)
-    object SelectAttack: AdvancedForcedTutorialStep(AdvancedForcedTutorialDialogStep.ExplainSelectAttack)
-    object LetplayerPlay: AdvancedForcedTutorialStep(AdvancedForcedTutorialDialogStep.ExplainLetPlayerPlay)
 
 
-}
-sealed interface AdvancedForcedTutorialDialogStep {
-    object Welcome : AdvancedForcedTutorialDialogStep
-    object ExplainTypesOfAttacks : AdvancedForcedTutorialDialogStep
-    object ExplainBuffs : AdvancedForcedTutorialDialogStep
-    object ExplainDebuffs : AdvancedForcedTutorialDialogStep
-    object ExplainUsage : AdvancedForcedTutorialDialogStep
-    object ExplainSelectDefenseDebuff : AdvancedForcedTutorialDialogStep
-    object ExplainExecuteDefenseDebuff : AdvancedForcedTutorialDialogStep
-    object ExplainDefenseDebuffResult : AdvancedForcedTutorialDialogStep
-    object ExplainSelectDefenseDebuff2 : AdvancedForcedTutorialDialogStep
-    object ExplainExecuteDefenseDebuff2 : AdvancedForcedTutorialDialogStep
-    object ExplainDefenseDebuffResult2 : AdvancedForcedTutorialDialogStep
-    object ExplainSelectAttackBuff : AdvancedForcedTutorialDialogStep
-    object ExplainExecuteAttackBuff : AdvancedForcedTutorialDialogStep
-    object ExplainAttackBuffResult : AdvancedForcedTutorialDialogStep
-    object ExplainSelectAttack: AdvancedForcedTutorialDialogStep
-    object ExplainLetPlayerPlay: AdvancedForcedTutorialDialogStep
-
-
-
-    // Add more steps as needed
-}
-class BattleForcedAdvancedTutorialViewModel(
+class FinalBattleViewModel(
     private val critterService: CritterService,
     private var playerTurn: Boolean,
 ) : ViewModel() {
     //TAG for logging
     private val TAG = BattleTutorialViewModel::class.java.simpleName
     private val _battleText = MutableStateFlow("Battle started!")
-    val forcedTutorialDialogStep = MutableStateFlow<AdvancedForcedTutorialDialogStep>(AdvancedForcedTutorialDialogStep.Welcome)
-    val battleText: MutableStateFlow<String> get() = _battleText
     val isPlayerTurn = MutableStateFlow<Boolean>(false)
     val playerWon = MutableStateFlow<Boolean?>(null)
-    var advancedForcedTutorialStep by mutableStateOf<AdvancedForcedTutorialStep>(AdvancedForcedTutorialStep.Introduction)
-        private set
+    private val cpuAttackOrder = listOf(
+    Attack(1, "Dive Attack", 70, AttackType.DAMAGE_DEALER),
+    Attack(2, "SuperGuard", 15, AttackType.DEF_Buff),
+    Attack(3, "ShieldBreak", 15, AttackType.DEF_DeBuff),
+    Attack(4, "Beak Sharpener", 20, AttackType.ATK_Buff),
+    )
+
+    private var cpuAttackIndex = 0
+
+    val battleText: MutableStateFlow<String> get() = _battleText
 
     val playerCritter = MutableStateFlow(
         PlayerCritterTutorialUIState.HasEntries(
@@ -106,23 +69,23 @@ class BattleForcedAdvancedTutorialViewModel(
         viewModelScope.launch {
             Log.d(TAG, "Fetching initial critters data: ")
 
-            val playerAttack1 = Attack(1, "Splash", 80, AttackType.DAMAGE_DEALER)
-            val playerAttack2 = Attack(2, "HyperBeam", 90, AttackType.DAMAGE_DEALER)
-            val playerAttack3 = Attack(3, "Defence Break", 25, AttackType.DEF_DeBuff)
-            val playerAttack4 = Attack(4, "Beak Sharpener", 20, AttackType.ATK_Buff)
+            val playerAttack1 = Attack(1, "Attack Break", 15, AttackType.ATK_DeBuff)
+            val playerAttack2 = Attack(2, "Hyper Beam", 90, AttackType.DAMAGE_DEALER)
+            val playerAttack3 = Attack(3, "Super Guard", 15, AttackType.DEF_Buff)
+            val playerAttack4 = Attack(4, "Beak Sharpener", 15, AttackType.ATK_Buff)
             val listOfPlayerAttacks = listOf(playerAttack1, playerAttack2, playerAttack3, playerAttack4)
-            val playerTutorialCritter = CritterUsable(24, "Coolduck", 100, 70, 50, 50, listOfPlayerAttacks,1, 1)
+            val playerTutorialCritter = CritterUsable(40, "Prc2Duck", 160, 70, 80, 50, listOfPlayerAttacks,1, 1)
 
             playerCritter.update { state ->
                 state.copy(playerCritter = playerTutorialCritter, isLoading = false)
             }
 
-            val cpuAttack1 = Attack(1, "Rollout", 70, AttackType.DAMAGE_DEALER)
-            val cpuAttack2 = Attack(2, "SuperGuard", 15, AttackType.DEF_Buff)
-            val cpuAttack3 = Attack(3, "ShieldBreak", 15, AttackType.DEF_DeBuff)
-            val cpuAttack4 = Attack(4, "SkullCrush", 70, AttackType.DAMAGE_DEALER)
+            val cpuAttack1 = Attack(1, "Dive Attack", 70, AttackType.DAMAGE_DEALER)
+            val cpuAttack2 = Attack(2, "Super Guard", 15, AttackType.DEF_Buff)
+            val cpuAttack3 = Attack(3, "Shield Break", 15, AttackType.DEF_DeBuff)
+            val cpuAttack4 = Attack(4, "Beak Sharpener", 15, AttackType.ATK_Buff)
             val listOfCpuAttacks = listOf(cpuAttack1, cpuAttack2, cpuAttack3, cpuAttack4)
-            val cpuTutorialCritter = CritterUsable(23, "Quizizzdragon", 130, 35, 130, 30, listOfCpuAttacks,1, 1)
+            val cpuTutorialCritter = CritterUsable(40, "Linuxpenguin", 130, 100, 65, 70, listOfCpuAttacks,1, 1)
 
             cpuCritter.update { state ->
                 state.copy(cpuCritter = cpuTutorialCritter, isLoading = false)
@@ -130,101 +93,6 @@ class BattleForcedAdvancedTutorialViewModel(
         }
         doesPlayerStart()
     }
-
-    fun nextTutorialStep() {
-        val currentStep = advancedForcedTutorialStep
-        val nextStep = when (currentStep) {
-            AdvancedForcedTutorialStep.Introduction -> AdvancedForcedTutorialStep.TypesOfAttacks
-            AdvancedForcedTutorialStep.TypesOfAttacks -> AdvancedForcedTutorialStep.Buffs
-            AdvancedForcedTutorialStep.Buffs -> AdvancedForcedTutorialStep.Debuffs
-            AdvancedForcedTutorialStep.Debuffs -> AdvancedForcedTutorialStep.Usage
-            AdvancedForcedTutorialStep.Usage -> AdvancedForcedTutorialStep.SelectDefenseDebuff
-            AdvancedForcedTutorialStep.SelectDefenseDebuff ->
-                if (playerInput.value.isPlayerAttackSelected) {
-                    AdvancedForcedTutorialStep.ExecuteDefenseDebuff
-                } else {
-                    AdvancedForcedTutorialStep.SelectDefenseDebuff
-                }
-            AdvancedForcedTutorialStep.ExecuteDefenseDebuff ->
-                if (!playerInput.value.isPlayerAttackSelected) {
-                    AdvancedForcedTutorialStep.DefenseDebuffResult
-            } else {
-                    AdvancedForcedTutorialStep.ExecuteDefenseDebuff
-            }
-            AdvancedForcedTutorialStep.DefenseDebuffResult ->
-                if(!playerInput.value.isPlayerAttackSelected&&!cpuInput.value.isCpuAttackSelected){
-                    AdvancedForcedTutorialStep.SelectDefenseDebuff2
-                }else{
-                    AdvancedForcedTutorialStep.DefenseDebuffResult
-                }
-
-            AdvancedForcedTutorialStep.SelectDefenseDebuff2 ->
-                if (playerInput.value.isPlayerAttackSelected) {
-                    AdvancedForcedTutorialStep.ExecuteDefenseDebuff2
-                } else {
-                    AdvancedForcedTutorialStep.SelectDefenseDebuff2
-                }
-            AdvancedForcedTutorialStep.ExecuteDefenseDebuff2 ->
-                if (!playerInput.value.isPlayerAttackSelected) {
-                    AdvancedForcedTutorialStep.DefenseDebuffResult2
-                } else {
-                    AdvancedForcedTutorialStep.ExecuteDefenseDebuff2
-                }
-            AdvancedForcedTutorialStep.DefenseDebuffResult2 -> AdvancedForcedTutorialStep.SelectAttackBuff
-            AdvancedForcedTutorialStep.SelectAttackBuff ->
-                if (playerInput.value.isPlayerAttackSelected) {
-                    AdvancedForcedTutorialStep.ExecuteAttackBuff
-            } else {
-                    AdvancedForcedTutorialStep.SelectAttackBuff
-            }
-            AdvancedForcedTutorialStep.ExecuteAttackBuff ->
-                if (!playerInput.value.isPlayerAttackSelected) {
-                    AdvancedForcedTutorialStep.AttackBuffResult
-                } else {
-                    AdvancedForcedTutorialStep.ExecuteAttackBuff
-                }
-            AdvancedForcedTutorialStep.AttackBuffResult -> AdvancedForcedTutorialStep.SelectAttack
-            AdvancedForcedTutorialStep.SelectAttack ->
-                if (playerInput.value.isPlayerAttackSelected) {
-                    AdvancedForcedTutorialStep.LetplayerPlay
-                } else {
-                    AdvancedForcedTutorialStep.SelectAttack
-                }
-            AdvancedForcedTutorialStep.LetplayerPlay -> AdvancedForcedTutorialStep.LetplayerPlay
-        }
-        advancedForcedTutorialStep = nextStep
-        forcedTutorialDialogStep.value = nextStep.associatedDialogStep
-    }
-
-
-    fun getTutorialMessage(step: AdvancedForcedTutorialDialogStep): String {
-        return when (step) {
-            AdvancedForcedTutorialDialogStep.Welcome -> "Welcome to the advanced Tutorial. Here you are going to learn more advanced mechanics."
-            AdvancedForcedTutorialDialogStep.ExplainTypesOfAttacks -> "In Uniclash there are 3 types of attacks. First there are normal attacks that deal damage to your oppnent." +
-                    "Second there are so called Buffs, These will increase your Critters Attack or Defence during the battle. And last there are Debuffs which will decrease" +
-                    "your opponents Defence or Attack"
-            AdvancedForcedTutorialDialogStep.ExplainBuffs -> "Buffs can be easily spotted by the green sword/shield next to the attack"
-            AdvancedForcedTutorialDialogStep.ExplainDebuffs -> "DeBuffs on the other hand are displayed by the Red sword/shield next to the attack"
-            AdvancedForcedTutorialDialogStep.ExplainUsage -> "You might ask yourself: Why should I use buffs/Debuffs when I can just deal damage instead... " +
-                    "And you are right, but this little dragon over there is a Tanky boy. He has a Defence stat of 130 and 130 HP. So it Might be a good idea to lower that defence first."
-            AdvancedForcedTutorialDialogStep.ExplainSelectDefenseDebuff -> "So lets do it then! Select Shield Break"
-            AdvancedForcedTutorialDialogStep.ExplainExecuteDefenseDebuff -> "Now Execute it!"
-            AdvancedForcedTutorialDialogStep.ExplainDefenseDebuffResult -> "As You can see the BattleLog says that the Dinos Defence Dropped. But this particular Dragon has such a high " +
-                    "Defence that it might be a good idea to do it again!"
-            AdvancedForcedTutorialDialogStep.ExplainSelectDefenseDebuff2 -> "So lets do it then! Select Shield Break"
-            AdvancedForcedTutorialDialogStep.ExplainExecuteDefenseDebuff2 -> "Now Execute it!"
-            AdvancedForcedTutorialDialogStep.ExplainDefenseDebuffResult2 -> "Okay now we are talking this looks like a manageable amount of Defense!"
-
-            AdvancedForcedTutorialDialogStep.ExplainSelectAttackBuff -> "Okay now that we have lowered the dragons defence Quite a bit, Lets raise our Attack so that we deal even more Damage! " +
-                    "Select Beak Sharpener"
-            AdvancedForcedTutorialDialogStep.ExplainExecuteAttackBuff -> "And execute it!"
-            AdvancedForcedTutorialDialogStep.ExplainAttackBuffResult -> "As you can see our Attack is now higher than before. Now its time to finish him off!"
-            AdvancedForcedTutorialDialogStep.ExplainSelectAttack -> "Select HyperBeam now to finish him off!"
-            AdvancedForcedTutorialDialogStep.ExplainLetPlayerPlay -> "Okay now its your turn. Be carefull tho the dino might increase its defence again. Read the BattleLog carefully"
-            else -> {return "null"}
-        }
-    }
-
 
     fun executePlayerAttack() {
         if (playerInput.value.isPlayerAttackSelected) {
@@ -278,7 +146,6 @@ class BattleForcedAdvancedTutorialViewModel(
         isPlayerTurn.value = true
     }
 
-
     fun selectPlayerAttack(attack: Attack) {
         viewModelScope.launch() {
             playerInput.update { currentState ->
@@ -294,8 +161,13 @@ class BattleForcedAdvancedTutorialViewModel(
     fun selectCpuAttack() {
         val cpuCritter = cpuCritter.value.cpuCritter
         cpuCritter?.let {
-            val randomIndex = (0 until it.attacks.size).random()
-            val attack = it.attacks[randomIndex]
+            val attack = if (cpuAttackIndex < cpuAttackOrder.size) {
+                cpuAttackOrder[cpuAttackIndex]
+            } else {
+                // If the predefined attack order is exhausted, choose a random attack or handle as needed
+                // For simplicity, this example chooses a random attack
+                it.attacks.random()
+            }
 
             viewModelScope.launch() {
                 cpuInput.update { currentState ->
@@ -304,8 +176,11 @@ class BattleForcedAdvancedTutorialViewModel(
                         selectedCpuAttack = attack,
                     )
                 }
+
+                _battleText.value = "${cpuCritter.name} attacks with ${attack.name}!"
             }
-            _battleText.value = "${cpuCritter.name} attacks with ${attack.name}!"
+
+            cpuAttackIndex++
         }
     }
 
@@ -320,11 +195,6 @@ class BattleForcedAdvancedTutorialViewModel(
         if(playerCritter.value.playerCritter!!.spd<cpuCritter.value.cpuCritter!!.spd) {
             isPlayerTurn.value = false
         }
-    }
-
-    private fun chooseCpuAttack(): Attack? {
-
-        return null
     }
 
     fun checkResult(): BattleResult {
@@ -466,9 +336,6 @@ class BattleForcedAdvancedTutorialViewModel(
 
     }
 
-
-
-
     private fun applyDamageToPlayer(damage: Int) {
         var damageAfterCalculation = calculatePlayerDamage(damage)
         viewModelScope.launch() {
@@ -527,7 +394,7 @@ class BattleForcedAdvancedTutorialViewModel(
             object : ViewModelProvider.Factory {
                 @Suppress("UNCHECKED_CAST")
                 override fun <T : ViewModel> create(modelClass: Class<T>): T {
-                    return BattleForcedAdvancedTutorialViewModel(
+                    return FinalBattleViewModel(
                         critterService,
                         false
                     ) as T

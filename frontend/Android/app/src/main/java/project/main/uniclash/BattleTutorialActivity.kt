@@ -36,13 +36,20 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import project.main.uniclash.battle.BattleResult
 import project.main.uniclash.datatypes.Attack
+import project.main.uniclash.datatypes.CritterUsable
 import project.main.uniclash.retrofit.CritterService
+import project.main.uniclash.viewmodels.BattleForcedTutorialViewModel
 import project.main.uniclash.viewmodels.BattleTutorialViewModel
+import project.main.uniclash.viewmodels.ForcedTutorialStep
 import project.main.uniclash.viewmodels.TutorialStep
 
 class BattleTutorialActivity : ComponentActivity() {
@@ -165,7 +172,7 @@ fun CritterBattleTutorialIntro(battleTutorialViewModel: BattleTutorialViewModel 
                     maxHealth = cpuMaxHealth,
                     barColor = Color.Red
                 )
-                CpuCritterAdvancedTutorialInfoText(battleViewcpuCritterUIState.cpuCritter!!)
+                CpuCritterTutorialInfoText(battleViewcpuCritterUIState.cpuCritter!!,battleTutorialViewModel)
             }
         }
 
@@ -208,7 +215,7 @@ fun CritterBattleTutorialIntro(battleTutorialViewModel: BattleTutorialViewModel 
                     maxHealth = playerMaxHealth,
                     barColor = Color.Green
                 )
-                PlayerCritterAdvancedTutorialInfoText(battleViewPlayerUIState.playerCritter!!)
+                PlayerCritterTutorialInfoText(battleViewPlayerUIState.playerCritter!!, battleTutorialViewModel)
             }
         }
 
@@ -225,269 +232,132 @@ fun CritterBattleTutorialIntro(battleTutorialViewModel: BattleTutorialViewModel 
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
 
-            when (battleTutorialViewModel.tutorialStep) {
-                TutorialStep.SelectAttack -> {
-                    // WHEN TUTORIAL IS AT SELECT ATTACK:
-                    item {
-                        // First row with two attacks side by side
-                        LazyRow(
-                            modifier = Modifier.fillMaxWidth(),
-                            contentPadding = PaddingValues(2.dp),
-                        ) {
-                            items(2) {
-                                ClickableAttackTutorial(
-                                    attack = battleViewPlayerUIState.playerCritter!!.attacks[it],
-                                    onAttackClicked = { selectedAttack ->
-                                        battleTutorialViewModel.selectPlayerAttack(selectedAttack)
-                                    },
-                                    isClickable = true // Make buttons not clickable during the introduction
-                                )
-                            }
-                        }
-                    }
-
-                    item {
-                        // Second row with two attacks side by side
-                        LazyRow(
-                            modifier = Modifier.fillMaxWidth(),
-                            contentPadding = PaddingValues(2.dp)
-                        ) {
-                            items(2) {
-                                ClickableAttackTutorial(
-                                    attack = battleViewPlayerUIState.playerCritter!!.attacks[it + 2],
-                                    onAttackClicked = { selectedAttack ->
-                                        battleTutorialViewModel.selectPlayerAttack(selectedAttack)
-                                    },
-                                    isClickable = true // Make buttons not clickable during the introduction
-                                )
-                            }
+            if (!isPlayerTurn) {
+                item {
+                    // First row with two attacks side by side
+                    LazyRow(
+                        modifier = Modifier.fillMaxWidth(),
+                        contentPadding = PaddingValues(2.dp),
+                    ) {
+                        items(2) {
+                            ClickableAttackAdvancedTutorial(
+                                attack = battleViewPlayerUIState.playerCritter!!.attacks[it],
+                                onAttackClicked = { selectedAttack ->
+                                    battleTutorialViewModel.selectPlayerAttack(
+                                        selectedAttack
+                                    )
+                                },
+                                isClickable = false // Make buttons not clickable during the introduction
+                            )
                         }
                     }
                 }
-                // WHEN TUTORIAL LETS THE PLAYER PLAY
-                TutorialStep.LetPlayerPlay -> {
-                    if (!isPlayerTurn) {
-                        item {
-                            // First row with two attacks side by side
-                            LazyRow(
-                                modifier = Modifier.fillMaxWidth(),
-                                contentPadding = PaddingValues(2.dp),
-                            ) {
-                                items(2) {
-                                    ClickableAttackAdvancedTutorial(
-                                        attack = battleViewPlayerUIState.playerCritter!!.attacks[it],
-                                        onAttackClicked = { selectedAttack ->
-                                            battleTutorialViewModel.selectPlayerAttack(
-                                                selectedAttack
-                                            )
-                                        },
-                                        isClickable = false // Make buttons not clickable during the introduction
+                item {
+                    // Second row with two attacks side by side
+                    LazyRow(
+                        modifier = Modifier.fillMaxWidth(),
+                        contentPadding = PaddingValues(2.dp)
+                    ) {
+                        items(2) {
+                            ClickableAttackAdvancedTutorial(
+                                attack = battleViewPlayerUIState.playerCritter!!.attacks[it + 2],
+                                onAttackClicked = { selectedAttack ->
+                                    battleTutorialViewModel.selectPlayerAttack(
+                                        selectedAttack
                                     )
-                                }
-                            }
-                        }
-                        item {
-                            // Second row with two attacks side by side
-                            LazyRow(
-                                modifier = Modifier.fillMaxWidth(),
-                                contentPadding = PaddingValues(2.dp)
-                            ) {
-                                items(2) {
-                                    ClickableAttackAdvancedTutorial(
-                                        attack = battleViewPlayerUIState.playerCritter!!.attacks[it + 2],
-                                        onAttackClicked = { selectedAttack ->
-                                            battleTutorialViewModel.selectPlayerAttack(
-                                                selectedAttack
-                                            )
-                                        },
-                                        isClickable = false // Make buttons not clickable during the introduction
-                                    )
-                                }
-                            }
-                        }
-                    } else {
-                        item {
-                            // First row with two attacks side by side
-                            LazyRow(
-                                modifier = Modifier.fillMaxWidth(),
-                                contentPadding = PaddingValues(2.dp),
-                            ) {
-                                items(2) {
-                                    ClickableAttackAdvancedTutorial(
-                                        attack = battleViewPlayerUIState.playerCritter!!.attacks[it],
-                                        onAttackClicked = { selectedAttack ->
-                                            battleTutorialViewModel.selectPlayerAttack(
-                                                selectedAttack
-                                            )
-                                        },
-                                        isClickable = true // Make buttons not clickable during the introduction
-                                    )
-                                }
-                            }
-                        }
-                        item {
-                            // Second row with two attacks side by side
-                            LazyRow(
-                                modifier = Modifier.fillMaxWidth(),
-                                contentPadding = PaddingValues(2.dp)
-                            ) {
-                                items(2) {
-                                    ClickableAttackAdvancedTutorial(
-                                        attack = battleViewPlayerUIState.playerCritter!!.attacks[it + 2],
-                                        onAttackClicked = { selectedAttack ->
-                                            battleTutorialViewModel.selectPlayerAttack(
-                                                selectedAttack
-                                            )
-                                        },
-                                        isClickable = true // Make buttons not clickable during the introduction
-                                    )
-                                }
-                            }
+                                },
+                                isClickable = false // Make buttons not clickable during the introduction
+                            )
                         }
                     }
                 }
-                else -> {
-                    item {
-                        // First row with two attacks side by side
-                        LazyRow(
-                            modifier = Modifier.fillMaxWidth(),
-                            contentPadding = PaddingValues(2.dp),
-                        ) {
-                            items(2) {
-                                ClickableAttackTutorial(
-                                    attack = battleViewPlayerUIState.playerCritter!!.attacks[it],
-                                    onAttackClicked = { selectedAttack ->
-                                        battleTutorialViewModel.selectPlayerAttack(selectedAttack)
-                                    },
-                                    isClickable = false // Make buttons not clickable during the introduction
-                                )
-                            }
+            } else {
+                item {
+                    // First row with two attacks side by side
+                    LazyRow(
+                        modifier = Modifier.fillMaxWidth(),
+                        contentPadding = PaddingValues(2.dp),
+                    ) {
+                        items(2) {
+                            ClickableAttackAdvancedTutorial(
+                                attack = battleViewPlayerUIState.playerCritter!!.attacks[it],
+                                onAttackClicked = { selectedAttack ->
+                                    battleTutorialViewModel.selectPlayerAttack(
+                                        selectedAttack
+                                    )
+                                },
+                                isClickable = true // Make buttons not clickable during the introduction
+                            )
                         }
                     }
-
-                    item {
-                        // Second row with two attacks side by side
-                        LazyRow(
-                            modifier = Modifier.fillMaxWidth(),
-                            contentPadding = PaddingValues(2.dp)
-                        ) {
-                            items(2) {
-                                ClickableAttackTutorial(
-                                    attack = battleViewPlayerUIState.playerCritter!!.attacks[it + 2],
-                                    onAttackClicked = { selectedAttack ->
-                                        battleTutorialViewModel.selectPlayerAttack(selectedAttack)
-                                    },
-                                    isClickable = false // Make buttons not clickable during the introduction
-                                )
-                            }
+                }
+                item {
+                    // Second row with two attacks side by side
+                    LazyRow(
+                        modifier = Modifier.fillMaxWidth(),
+                        contentPadding = PaddingValues(2.dp)
+                    ) {
+                        items(2) {
+                            ClickableAttackAdvancedTutorial(
+                                attack = battleViewPlayerUIState.playerCritter!!.attacks[it + 2],
+                                onAttackClicked = { selectedAttack ->
+                                    battleTutorialViewModel.selectPlayerAttack(
+                                        selectedAttack
+                                    )
+                                },
+                                isClickable = true // Make buttons not clickable during the introduction
+                            )
                         }
                     }
                 }
             }
         }
-        when (battleTutorialViewModel.tutorialStep) {
-            TutorialStep.LetPlayerPlay -> {
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(2.dp)
-                        .clickable {
-                            if (playerInputUIState.isPlayerAttackSelected && isPlayerTurn) {
-                                battleTutorialViewModel.executePlayerAttack()
-                            }
-                            if (!playerInputUIState.isPlayerAttackSelected && !cpuInputUIState.isCpuAttackSelected && !isPlayerTurn) {
-                                battleTutorialViewModel.selectCpuAttack()
-                            }
-                            if (cpuInputUIState.isCpuAttackSelected && !isPlayerTurn) {
-                                battleTutorialViewModel.executeCpuAttack()
-                            }
-                        }
-                    // Handle click to execute attack
-                ) {
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.Center,
-                        modifier = Modifier
-                            .padding(8.dp)
-                            .background(
-                                color = Color.Gray,
-                                shape = RoundedCornerShape(16.dp)
-                            )
-                            .padding(8.dp)
-                            .fillMaxWidth()
-                    ) {
-                        Text(
-                            text = battleText,
-                            fontFamily = FontFamily.Default, // Replace with your custom font
-                            fontSize = 16.sp,
-                            color = Color.White
-                        )
-                        Spacer(modifier = Modifier.width(4.dp))
-                        Icon(
-                            painter = painterResource(id = R.drawable.arrow), // Replace with your arrow icon
-                            contentDescription = null,
-                            tint = Color.Red,
-                            modifier = Modifier
-                                .graphicsLayer(rotationX = 180f) // Flip the icon upside down
-                                .size(8.dp)
-                        )
+
+
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(2.dp)
+                .clickable {
+                    if (playerInputUIState.isPlayerAttackSelected && isPlayerTurn) {
+                        battleTutorialViewModel.executePlayerAttack()
+                    }
+                    if (!playerInputUIState.isPlayerAttackSelected && !cpuInputUIState.isCpuAttackSelected && !isPlayerTurn) {
+                        battleTutorialViewModel.selectCpuAttack()
+                    }
+                    if (cpuInputUIState.isCpuAttackSelected && !isPlayerTurn) {
+                        battleTutorialViewModel.executeCpuAttack()
                     }
                 }
-            }
-
-            else -> {
-                //Battle Dialog:
-                Box(
+            // Handle click to execute attack
+        ) {
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.Center,
+                modifier = Modifier
+                    .padding(8.dp)
+                    .background(
+                        color = Color.Gray,
+                        shape = RoundedCornerShape(16.dp)
+                    )
+                    .padding(8.dp)
+                    .fillMaxWidth()
+            ) {
+                Text(
+                    text = battleText,
+                    fontFamily = FontFamily.Default, // Replace with your custom font
+                    fontSize = 16.sp,
+                    color = Color.White
+                )
+                Spacer(modifier = Modifier.width(4.dp))
+                Icon(
+                    painter = painterResource(id = R.drawable.arrow), // Replace with your arrow icon
+                    contentDescription = null,
+                    tint = Color.Red,
                     modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(2.dp)
-                        .clickable {
-                            when (battleTutorialViewModel.tutorialStep) {
-                                TutorialStep.ExecuteAttack -> {
-                                    if (playerInputUIState.isPlayerAttackSelected) {
-                                        battleTutorialViewModel.executePlayerAttack()
-                                    }
-                                }
-
-                                TutorialStep.ExecuteCpuAttack -> {
-                                    if (cpuInputUIState.isCpuAttackSelected) {
-                                        battleTutorialViewModel.executeCpuAttack()
-                                    }
-                                }
-
-                                else -> {}
-                            }
-                        }
-                ) {
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.Center,
-                        modifier = Modifier
-                            .padding(8.dp)
-                            .background(
-                                color = Color.Gray,
-                                shape = RoundedCornerShape(16.dp)
-                            )
-                            .padding(8.dp)
-                            .fillMaxWidth()
-                    ) {
-                        Text(
-                            text = battleText,
-                            fontFamily = FontFamily.Default, // Replace with your custom font
-                            fontSize = 16.sp,
-                            color = Color.White
-                        )
-                        Spacer(modifier = Modifier.width(4.dp))
-                        Icon(
-                            painter = painterResource(id = R.drawable.arrow), // Replace with your arrow icon
-                            contentDescription = null,
-                            tint = Color.Red,
-                            modifier = Modifier
-                                .graphicsLayer(rotationX = 180f) // Flip the icon upside down
-                                .size(8.dp)
-                        )
-                    }
-                }
+                        .graphicsLayer(rotationX = 180f) // Flip the icon upside down
+                        .size(8.dp)
+                )
             }
         }
 
@@ -514,15 +384,199 @@ fun CritterBattleTutorialIntro(battleTutorialViewModel: BattleTutorialViewModel 
                 color = Color.White
             )
         }
-
     }
-}else if(playerWon==true){
+    }
+else if(playerWon==true){
         Text("YOU WON!")
     }else if(playerWon==false){
         Text("YOU LOST!")
     }
 }
 
+@Composable
+fun CpuCritterTutorialInfoText(critter: CritterUsable, battleTutorialViewModel: BattleTutorialViewModel) {
+
+    Box(
+        modifier = Modifier
+            .background(Color.LightGray, RoundedCornerShape(4.dp))
+            .padding(2.dp)
+    ) {
+        Column(
+            modifier = Modifier.padding(6.dp)
+        ) {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                Text(
+                    text = critter.name,
+                    fontSize = 18.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = Color.Black
+                )
+                when (battleTutorialViewModel.tutorialStep) {
+                    TutorialStep.CpuHP ->
+                        Text(
+                            text = buildAnnotatedString {
+                                withStyle(style = SpanStyle(color = Color.Black)) {
+                                    append("LVL: ")
+                                }
+                                withStyle(style = SpanStyle(color = Color.Black)) {
+                                    append("${critter.level}")
+                                }
+                                withStyle(
+                                    style = SpanStyle(
+                                        fontWeight = FontWeight.Bold,
+                                        fontSize = 22.sp,
+                                        color = Color.Black
+                                    )
+                                ) {
+                                    append(" HP: ")
+                                }
+                                withStyle(
+                                    style = SpanStyle(
+                                        fontWeight = FontWeight.Bold,
+                                        fontSize = 22.sp,
+                                        color = Color.Black
+                                    )
+                                ) {
+                                    append("${critter.hp}")
+                                }
+                            },
+                            fontSize = 18.sp,
+                            color = Color.White
+                        )
+
+                    else -> {
+                        Text(
+                            text = buildAnnotatedString {
+                                withStyle(style = SpanStyle(color = Color.Black)) {
+                                    append("LVL: ${critter.level} HP: ${critter.hp}")
+                                }
+                            },
+                            fontSize = 18.sp,
+                            color = Color.White
+                        )
+                    }
+                }
+
+            }
+            Text(
+                text = buildAnnotatedString {
+                    withStyle(style = SpanStyle(color = Color.Black)) {
+                        append("ATK: ${critter.atk} DEF: ${critter.def} SPD: ${critter.spd}")
+                    }
+                },
+                fontSize = 10.sp,
+                color = Color.White
+            )
+
+        }
+
+    }
+}
+
+
+@Composable
+fun PlayerCritterTutorialInfoText(critter: CritterUsable, battleTutorialViewModel: BattleTutorialViewModel) {
+    Box(
+        modifier = Modifier
+            .background(Color.LightGray, RoundedCornerShape(4.dp))
+            .padding(2.dp)
+    ) {
+        Column(
+            modifier = Modifier.padding(6.dp)
+        ) {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                Text(
+                    text = critter.name,
+                    fontSize = 18.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = Color.Black
+                )
+                when (battleTutorialViewModel.tutorialStep) {
+                    TutorialStep.PlayerHP ->
+                        Text( text = buildAnnotatedString {
+                            withStyle(style = SpanStyle(color = Color.Black)) {
+                                append("LVL: ")
+                            }
+                            withStyle(style = SpanStyle(color = Color.Black)) {
+                                append("${critter.level}")
+                            }
+                            withStyle(style = SpanStyle(fontWeight = FontWeight.Bold, fontSize = 22.sp, color = Color.Black)) {
+                                append(" HP: ")
+                            }
+                            withStyle(style = SpanStyle(fontWeight = FontWeight.Bold, fontSize = 22.sp, color = Color.Black)) {
+                                append("${critter.hp}")
+                            }
+                        },
+                            fontSize = 18.sp,
+                            color = Color.White
+                        )
+                    TutorialStep.Level ->
+                        Text( text = buildAnnotatedString {
+                            withStyle(style = SpanStyle(fontWeight = FontWeight.Bold, fontSize = 22.sp, color = Color.Black)) {
+                                append("LVL: ")
+                            }
+                            withStyle(style = SpanStyle(fontWeight = FontWeight.Bold, fontSize = 22.sp, color = Color.Black)) {
+                                append("${critter.level}")
+                            }
+                            withStyle(style = SpanStyle(color = Color.Black)) {
+                                append(" HP: ")
+                            }
+                            withStyle(style = SpanStyle(color = Color.Black)) {
+                                append("${critter.hp}")
+                            }
+                        },
+                            fontSize = 18.sp,
+                            color = Color.White
+                        )
+
+                    else -> {
+                        Text(
+                            text = buildAnnotatedString {
+                                withStyle(style = SpanStyle(color = Color.Black)) {
+                                    append("LVL: ${critter.level} HP: ${critter.hp}")
+                                }
+                            },
+                            fontSize = 18.sp,
+                            color = Color.White
+                        )
+                    }
+                }
+
+            }
+            when (battleTutorialViewModel.tutorialStep){
+                TutorialStep.Stats ->
+                    Text(
+                        text = buildAnnotatedString {
+                            withStyle(style = SpanStyle(color = Color.Black)) {
+                                append("ATK: ${critter.atk} DEF: ${critter.def} SPD: ${critter.spd}")
+                            }
+                        },
+                        fontSize = 14.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = Color.White
+                    )
+
+                else -> {
+                    Text(
+                        text = buildAnnotatedString {
+                            withStyle(style = SpanStyle(color = Color.Black)) {
+                                append("ATK: ${critter.atk} DEF: ${critter.def} SPD: ${critter.spd}")
+                            }
+                        },
+                        fontSize = 10.sp,
+                        color = Color.White
+                    )
+                }
+            }
+        }
+    }
+}
 
 
 @Composable

@@ -25,11 +25,7 @@ sealed class TutorialStep(val associatedDialogStep: TutorialDialogStep) {
     object Attacks : TutorialStep(TutorialDialogStep.ExplainAttacks)
     object Stats : TutorialStep(TutorialDialogStep.ExplainStats)
     object battleLog: TutorialStep(TutorialDialogStep.ExplainBattleLog)
-    object SelectAttack : TutorialStep(TutorialDialogStep.ExplainSelectAttack)
-    object ExecuteAttack : TutorialStep(TutorialDialogStep.ExplainExecuteAttack)
-    object ExecuteCpuAttack: TutorialStep(TutorialDialogStep.ExplainExecuteCpuAttack)
     object LetPlayerPlay: TutorialStep(TutorialDialogStep.LetPlayerPlay)
-    object FinishTutorial: TutorialStep(TutorialDialogStep.FinishTutorial)
 }
 
 sealed interface TutorialDialogStep {
@@ -41,11 +37,7 @@ sealed interface TutorialDialogStep {
     object ExplainAttacks : TutorialDialogStep
     object ExplainStats : TutorialDialogStep
     object ExplainBattleLog : TutorialDialogStep
-    object ExplainSelectAttack : TutorialDialogStep
-    object ExplainExecuteAttack : TutorialDialogStep
-    object ExplainExecuteCpuAttack: TutorialDialogStep
     object LetPlayerPlay: TutorialDialogStep
-    object FinishTutorial: TutorialDialogStep
     // Add more steps as needed
 }
 
@@ -86,7 +78,6 @@ class BattleTutorialViewModel(
     //TAG for logging
     private val TAG = BattleTutorialViewModel::class.java.simpleName
     private val _battleText = MutableStateFlow("Battle started!")
-    private val _tutorialDialogStep = MutableStateFlow<TutorialDialogStep>(TutorialDialogStep.Welcome)
     val tutorialDialogStep = MutableStateFlow<TutorialDialogStep>(TutorialDialogStep.Welcome)
     val battleText: MutableStateFlow<String> get() = _battleText
     val isPlayerTurn = MutableStateFlow<Boolean>(false)
@@ -163,34 +154,8 @@ class BattleTutorialViewModel(
             TutorialStep.Level -> TutorialStep.Stats
             TutorialStep.Stats -> TutorialStep.battleLog
             TutorialStep.battleLog -> TutorialStep.Attacks
-            TutorialStep.Attacks -> TutorialStep.SelectAttack
-            TutorialStep.SelectAttack -> {
-                if (playerInput.value.isPlayerAttackSelected) {
-                    TutorialStep.ExecuteAttack
-                } else {
-                    TutorialStep.SelectAttack
-                }
-            }
-            TutorialStep.ExecuteAttack -> {
-                if (!playerInput.value.isPlayerAttackSelected) {
-                    TutorialStep.ExecuteCpuAttack
-                } else {
-                    TutorialStep.ExecuteAttack
-                }
-            }
-            TutorialStep.ExecuteCpuAttack ->
-                if (cpuInput.value.isCpuAttackSelected) {
-                    TutorialStep.ExecuteCpuAttack
-                } else {
-                    TutorialStep.LetPlayerPlay
-                }
-            TutorialStep.LetPlayerPlay ->
-                if(checkResult() == BattleResult.NOTOVER){
-                    TutorialStep.LetPlayerPlay
-                } else {
-                    TutorialStep.FinishTutorial
-                }
-            TutorialStep.FinishTutorial -> TutorialStep.FinishTutorial
+            TutorialStep.Attacks -> TutorialStep.LetPlayerPlay
+            TutorialStep.LetPlayerPlay -> TutorialStep.Introduction
         }
         tutorialStep = nextStep
         tutorialDialogStep.value = nextStep.associatedDialogStep
@@ -214,13 +179,8 @@ class BattleTutorialViewModel(
             TutorialDialogStep.ExplainBattleLog -> "Right above this Tutorial text, you can see the BattleLog this will show what is happening during the battle."
             TutorialDialogStep.ExplainAttacks -> "Now let's learn about Attacks. These are what lower the Enemy's Health-points . Each Critter has a maximum of four attacks. " +
                     "Next to the name of the Attack you can see the strength. The higher this stat is, the more damage it will deal."
-            TutorialDialogStep.ExplainSelectAttack -> "But enough talking, lets select an attack now!"
-            TutorialDialogStep.ExplainExecuteAttack -> "Now you can see that the BattleLog shows that you have selected an attack. Click on the BattleLog to execute your attack! "
-            TutorialDialogStep.ExplainExecuteCpuAttack -> "Now its your enemy's turn, click on the BattleLog to " +
-                    "execute the enemy's attack"
             TutorialDialogStep.LetPlayerPlay -> "Okay, I explained the basics. Now its your turn to finish the battle, good luck"
             // Add more cases as needed
-            TutorialDialogStep.FinishTutorial -> "Congrats(or not) you finished the tutorial. You can now move on to the next one"
             else -> {return "null"}
         }
     }

@@ -129,7 +129,7 @@ class MenuActivity : ComponentActivity() {
                             MenuCard(listOf(Category("BattleForcedTutorialAdvanced", painterResource(R.drawable.prc2duck), 18)))
                             MenuCard(listOf(Category("BattleTutorial", painterResource(R.drawable.prc2duck), 15)))
                             MenuCard(listOf(Category("BattleTutorialAdvanced", painterResource(R.drawable.prc2duck), 16)))
-
+                            MenuCard(listOf(Category("Final Battle Challenge", painterResource(R.drawable.prc2duck), 19)))
 
                         }
                     }
@@ -208,6 +208,11 @@ class MenuActivity : ComponentActivity() {
             }
             if(buttonRequest == 18) {
                 val intent = Intent(this, BattleForcedTutorialAdvancedActivity::class.java)
+                this.startActivity(intent)
+                buttonRequest = 0
+            }
+            if(buttonRequest == 19) {
+                val intent = Intent(this, FinalBattleActivity::class.java)
                 this.startActivity(intent)
                 buttonRequest = 0
             }

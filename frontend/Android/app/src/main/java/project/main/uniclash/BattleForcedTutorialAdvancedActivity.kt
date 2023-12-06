@@ -47,6 +47,7 @@ import project.main.uniclash.battle.BattleResult
 import project.main.uniclash.datatypes.Attack
 import project.main.uniclash.datatypes.CritterUsable
 import project.main.uniclash.retrofit.CritterService
+import project.main.uniclash.viewmodels.AdvancedForcedTutorialStep
 import project.main.uniclash.viewmodels.AdvancedTutorialStep
 import project.main.uniclash.viewmodels.BattleForcedAdvancedTutorialViewModel
 import project.main.uniclash.viewmodels.BattleForcedTutorialViewModel
@@ -120,7 +121,7 @@ fun CritterBattleForcedTutorialAdvancedIntro(battleForcedAdvancedTutorialViewMod
     val battleText by battleForcedAdvancedTutorialViewModel.battleText.collectAsState()
     val playerInputUIState by battleForcedAdvancedTutorialViewModel.playerInput.collectAsState()
     val cpuInputUIState by battleForcedAdvancedTutorialViewModel.cpuInput.collectAsState()
-    val currentTutorialStep by battleForcedAdvancedTutorialViewModel.tutorialDialogStep.collectAsState()
+    val currentTutorialStep by battleForcedAdvancedTutorialViewModel.forcedTutorialDialogStep.collectAsState()
     val tutorialDialogMessage = battleForcedAdvancedTutorialViewModel.getTutorialMessage(currentTutorialStep)
     val isPlayerTurn by battleForcedAdvancedTutorialViewModel.isPlayerTurn.collectAsState()
     val playerWon by battleForcedAdvancedTutorialViewModel.playerWon.collectAsState()
@@ -363,8 +364,8 @@ fun AttackSelectionAdvancedTutorial(
     val battleViewPlayerUIState by battleForcedAdvancedTutorialViewModel.playerCritter.collectAsState()
     val isPlayerTurn by battleForcedAdvancedTutorialViewModel.isPlayerTurn.collectAsState()
     val playerInputUIState by battleForcedAdvancedTutorialViewModel.playerInput.collectAsState()
-    when (battleForcedAdvancedTutorialViewModel.advancedTutorialStep) {
-        AdvancedTutorialStep.SelectAttack, AdvancedTutorialStep.SelectAttackBuff, AdvancedTutorialStep.SelectDefenseDebuff,AdvancedTutorialStep.SelectDefenseDebuff2, AdvancedTutorialStep.LetplayerPlay ->
+    when (battleForcedAdvancedTutorialViewModel.advancedForcedTutorialStep) {
+        AdvancedForcedTutorialStep.SelectAttack, AdvancedForcedTutorialStep.SelectAttackBuff, AdvancedForcedTutorialStep.SelectDefenseDebuff,AdvancedForcedTutorialStep.SelectDefenseDebuff2, AdvancedForcedTutorialStep.LetplayerPlay ->
             if (isPlayerTurn && !playerInputUIState.isPlayerAttackSelected) {
                 AttackRowAdvancedTutorial(battleForcedAdvancedTutorialViewModel, true)
                 AttackRowAdvancedTutorial(battleForcedAdvancedTutorialViewModel, true, offset = 2)
@@ -396,8 +397,8 @@ fun AttackRowAdvancedTutorial(
             val attackIndex = it + offset
             val attack = battleViewPlayerUIState.playerCritter?.attacks?.get(attackIndex)
             if (attack != null) {
-                when (battleForcedAdvancedTutorialViewModel.advancedTutorialStep) {
-                    AdvancedTutorialStep.SelectAttackBuff -> {
+                when (battleForcedAdvancedTutorialViewModel.advancedForcedTutorialStep) {
+                    AdvancedForcedTutorialStep.SelectAttackBuff -> {
                         if(attack.name!="Beak Sharpener"){
                             ClickableAttackAdvancedTutorial(
                                 attack = attack,
@@ -416,7 +417,7 @@ fun AttackRowAdvancedTutorial(
                             )
                         }
                     }
-                    AdvancedTutorialStep.SelectDefenseDebuff, AdvancedTutorialStep.SelectDefenseDebuff2 -> {
+                    AdvancedForcedTutorialStep.SelectDefenseDebuff, AdvancedForcedTutorialStep.SelectDefenseDebuff2 -> {
                         if(attack.name!="Defence Break"){
                             ClickableAttackAdvancedTutorial(
                                 attack = attack,
@@ -435,7 +436,7 @@ fun AttackRowAdvancedTutorial(
                             )
                         }
                     }
-                    AdvancedTutorialStep.SelectAttack-> {
+                    AdvancedForcedTutorialStep.SelectAttack-> {
                         if(attack.name!="HyperBeam"){
                             ClickableAttackAdvancedTutorial(
                                 attack = attack,
@@ -481,14 +482,14 @@ fun AttackBoxAdvancedTutorial(
     val battleText by battleForcedAdvancedTutorialViewModel.battleText.collectAsState()
 
     val handleAttackClick: () -> Unit = {
-        when (battleForcedAdvancedTutorialViewModel.advancedTutorialStep) {
-            AdvancedTutorialStep.ExecuteAttackBuff,AdvancedTutorialStep.ExecuteDefenseDebuff,AdvancedTutorialStep.ExecuteDefenseDebuff2 -> {
+        when (battleForcedAdvancedTutorialViewModel.advancedForcedTutorialStep) {
+            AdvancedForcedTutorialStep.ExecuteAttackBuff,AdvancedForcedTutorialStep.ExecuteDefenseDebuff,AdvancedForcedTutorialStep.ExecuteDefenseDebuff2 -> {
                 if (playerInputUIState.isPlayerAttackSelected && isPlayerTurn) {
                     battleForcedAdvancedTutorialViewModel.executePlayerAttack()
                 }
 
             }
-            AdvancedTutorialStep.DefenseDebuffResult,AdvancedTutorialStep.DefenseDebuffResult2,AdvancedTutorialStep.AttackBuffResult ->{
+            AdvancedForcedTutorialStep.DefenseDebuffResult,AdvancedForcedTutorialStep.DefenseDebuffResult2,AdvancedForcedTutorialStep.AttackBuffResult ->{
                 if (!playerInputUIState.isPlayerAttackSelected && !cpuInputUIState.isCpuAttackSelected && !isPlayerTurn) {
                     battleForcedAdvancedTutorialViewModel.selectCpuAttack()
                 }
@@ -496,7 +497,7 @@ fun AttackBoxAdvancedTutorial(
                     battleForcedAdvancedTutorialViewModel.executeCpuAttack()
                 }
             }
-            AdvancedTutorialStep.SelectAttackBuff,AdvancedTutorialStep.SelectAttack,AdvancedTutorialStep.SelectDefenseDebuff,AdvancedTutorialStep.SelectDefenseDebuff2 ->{
+            AdvancedForcedTutorialStep.SelectAttackBuff,AdvancedForcedTutorialStep.SelectAttack,AdvancedForcedTutorialStep.SelectDefenseDebuff,AdvancedForcedTutorialStep.SelectDefenseDebuff2 ->{
                 if (!playerInputUIState.isPlayerAttackSelected && !cpuInputUIState.isCpuAttackSelected && !isPlayerTurn) {
                     battleForcedAdvancedTutorialViewModel.selectCpuAttack()
                 }
@@ -505,7 +506,7 @@ fun AttackBoxAdvancedTutorial(
                 }
 
             }
-            AdvancedTutorialStep.LetplayerPlay -> {
+            AdvancedForcedTutorialStep.LetplayerPlay -> {
                 if (playerInputUIState.isPlayerAttackSelected && isPlayerTurn) {
                     battleForcedAdvancedTutorialViewModel.executePlayerAttack()
                 }

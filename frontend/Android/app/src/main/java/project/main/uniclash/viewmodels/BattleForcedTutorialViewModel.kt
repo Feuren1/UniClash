@@ -15,7 +15,37 @@ import kotlinx.coroutines.launch
 import project.main.uniclash.battle.BattleResult
 import project.main.uniclash.datatypes.Attack
 import project.main.uniclash.datatypes.AttackType
-
+sealed class ForcedTutorialStep(val associatedDialogStep: ForcedTutorialDialogStep) {
+    object Introduction : ForcedTutorialStep(ForcedTutorialDialogStep.Welcome)
+    object WinCondition : ForcedTutorialStep(ForcedTutorialDialogStep.ExplainCombat)
+    object PlayerHP : ForcedTutorialStep(ForcedTutorialDialogStep.ExplainPlayerHP)
+    object CpuHP: ForcedTutorialStep(ForcedTutorialDialogStep.ExplainCpuHP)
+    object Level : ForcedTutorialStep(ForcedTutorialDialogStep.ExplainLevel)
+    object Attacks : ForcedTutorialStep(ForcedTutorialDialogStep.ExplainAttacks)
+    object Stats : ForcedTutorialStep(ForcedTutorialDialogStep.ExplainStats)
+    object battleLog: ForcedTutorialStep(ForcedTutorialDialogStep.ExplainBattleLog)
+    object SelectAttack : ForcedTutorialStep(ForcedTutorialDialogStep.ExplainSelectAttack)
+    object ExecuteAttack : ForcedTutorialStep(ForcedTutorialDialogStep.ExplainExecuteAttack)
+    object ExecuteCpuAttack: ForcedTutorialStep(ForcedTutorialDialogStep.ExplainExecuteCpuAttack)
+    object LetPlayerPlay: ForcedTutorialStep(ForcedTutorialDialogStep.LetPlayerPlay)
+    object FinishTutorial: ForcedTutorialStep(ForcedTutorialDialogStep.FinishTutorial)
+}
+sealed interface ForcedTutorialDialogStep {
+    object Welcome : ForcedTutorialDialogStep
+    object ExplainCombat : ForcedTutorialDialogStep
+    object ExplainPlayerHP : ForcedTutorialDialogStep
+    object ExplainCpuHP : ForcedTutorialDialogStep
+    object ExplainLevel : ForcedTutorialDialogStep
+    object ExplainAttacks : ForcedTutorialDialogStep
+    object ExplainStats : ForcedTutorialDialogStep
+    object ExplainBattleLog : ForcedTutorialDialogStep
+    object ExplainSelectAttack : ForcedTutorialDialogStep
+    object ExplainExecuteAttack : ForcedTutorialDialogStep
+    object ExplainExecuteCpuAttack: ForcedTutorialDialogStep
+    object LetPlayerPlay: ForcedTutorialDialogStep
+    object FinishTutorial: ForcedTutorialDialogStep
+    // Add more steps as needed
+}
 class BattleForcedTutorialViewModel(
     private val critterService: CritterService,
     private var playerTurn: Boolean,
@@ -23,12 +53,11 @@ class BattleForcedTutorialViewModel(
     //TAG for logging
     private val TAG = BattleTutorialViewModel::class.java.simpleName
     private val _battleText = MutableStateFlow("Battle started!")
-    private val _tutorialDialogStep = MutableStateFlow<TutorialDialogStep>(TutorialDialogStep.Welcome)
-    val tutorialDialogStep = MutableStateFlow<TutorialDialogStep>(TutorialDialogStep.Welcome)
+    val forcedTutorialDialogStep = MutableStateFlow<ForcedTutorialDialogStep>(ForcedTutorialDialogStep.Welcome)
     val battleText: MutableStateFlow<String> get() = _battleText
     val isPlayerTurn = MutableStateFlow<Boolean>(false)
     val playerWon = MutableStateFlow<Boolean?>(null)
-    var tutorialStep by mutableStateOf<TutorialStep>(TutorialStep.Introduction)
+    var forcedTutorialStep by mutableStateOf<ForcedTutorialStep>(ForcedTutorialStep.Introduction)
         private set
 
     val playerCritter = MutableStateFlow(
@@ -91,73 +120,73 @@ class BattleForcedTutorialViewModel(
     }
 
     fun nextTutorialStep() {
-        val currentStep = tutorialStep
+        val currentStep = forcedTutorialStep
         val nextStep = when (currentStep) {
-            TutorialStep.Introduction -> TutorialStep.WinCondition
-            TutorialStep.WinCondition -> TutorialStep.PlayerHP
-            TutorialStep.PlayerHP -> TutorialStep.CpuHP
-            TutorialStep.CpuHP -> TutorialStep.Level
-            TutorialStep.Level -> TutorialStep.Stats
-            TutorialStep.Stats -> TutorialStep.battleLog
-            TutorialStep.battleLog -> TutorialStep.Attacks
-            TutorialStep.Attacks -> TutorialStep.SelectAttack
-            TutorialStep.SelectAttack -> {
+            ForcedTutorialStep.Introduction -> ForcedTutorialStep.WinCondition
+            ForcedTutorialStep.WinCondition -> ForcedTutorialStep.PlayerHP
+            ForcedTutorialStep.PlayerHP -> ForcedTutorialStep.CpuHP
+            ForcedTutorialStep.CpuHP -> ForcedTutorialStep.Level
+            ForcedTutorialStep.Level -> ForcedTutorialStep.Stats
+            ForcedTutorialStep.Stats -> ForcedTutorialStep.battleLog
+            ForcedTutorialStep.battleLog -> ForcedTutorialStep.Attacks
+            ForcedTutorialStep.Attacks -> ForcedTutorialStep.SelectAttack
+            ForcedTutorialStep.SelectAttack -> {
                 if (playerInput.value.isPlayerAttackSelected) {
-                    TutorialStep.ExecuteAttack
+                    ForcedTutorialStep.ExecuteAttack
                 } else {
-                    TutorialStep.SelectAttack
+                    ForcedTutorialStep.SelectAttack
                 }
             }
-            TutorialStep.ExecuteAttack -> {
+            ForcedTutorialStep.ExecuteAttack -> {
                 if (!playerInput.value.isPlayerAttackSelected) {
-                    TutorialStep.ExecuteCpuAttack
+                    ForcedTutorialStep.ExecuteCpuAttack
                 } else {
-                    TutorialStep.ExecuteAttack
+                    ForcedTutorialStep.ExecuteAttack
                 }
             }
-            TutorialStep.ExecuteCpuAttack ->
+            ForcedTutorialStep.ExecuteCpuAttack ->
                 if (cpuInput.value.isCpuAttackSelected) {
-                    TutorialStep.ExecuteCpuAttack
+                    ForcedTutorialStep.ExecuteCpuAttack
                 } else {
-                    TutorialStep.LetPlayerPlay
+                    ForcedTutorialStep.LetPlayerPlay
                 }
-            TutorialStep.LetPlayerPlay ->
+            ForcedTutorialStep.LetPlayerPlay ->
                 if(checkResult() == BattleResult.NOTOVER){
-                    TutorialStep.LetPlayerPlay
+                    ForcedTutorialStep.LetPlayerPlay
                 } else {
-                    TutorialStep.FinishTutorial
+                    ForcedTutorialStep.FinishTutorial
                 }
-            TutorialStep.FinishTutorial -> TutorialStep.FinishTutorial
+            ForcedTutorialStep.FinishTutorial -> ForcedTutorialStep.FinishTutorial
         }
-        tutorialStep = nextStep
-        tutorialDialogStep.value = nextStep.associatedDialogStep
+        forcedTutorialStep = nextStep
+        forcedTutorialDialogStep.value = nextStep.associatedDialogStep
     }
 
 
-    fun getTutorialMessage(step: TutorialDialogStep): String {
+    fun getTutorialMessage(step: ForcedTutorialDialogStep): String {
         return when (step) {
-            TutorialDialogStep.Welcome -> "Welcome to the Basic Tutorial for Uniclash. Here you are going to learn how to battle!" +
+            ForcedTutorialDialogStep.Welcome -> "Welcome to the Basic Tutorial for Uniclash. Here you are going to learn how to battle!" +
                     " In Uniclash there are creatures, so called Critters which you can catch and use in Battles."
-            TutorialDialogStep.ExplainCombat -> "The goal in a battle is to bring the Enemy's Critters Health points (Hp) to Zero, " +
+            ForcedTutorialDialogStep.ExplainCombat -> "The goal in a battle is to bring the Enemy's Critters Health points (Hp) to Zero, " +
                     "effectively knocking out the poor thing... " +
                     "You and the enemy will exchange attacks until one of you goes down first. Thus deciding the winner! "
-            TutorialDialogStep.ExplainPlayerHP -> "Now let's talk about HP. This is your health. " +
+            ForcedTutorialDialogStep.ExplainPlayerHP -> "Now let's talk about HP. This is your health. " +
                     "Based on your level and what kind of Critter you are using to battle " +
                     "the hp will be different. You can see your Critters HP in the form of a green bar or below in a text format (HP:100)"
-            TutorialDialogStep.ExplainCpuHP -> "The opponent Critter has a red health bar instead. "
-            TutorialDialogStep.ExplainLevel -> "Moving on to the LEVEL. It determines the strength of your Critter. The higher the level of your Critter the higher are its stats. "
-            TutorialDialogStep.ExplainStats -> "Let's dive into the Stats of your Critter. Each Critter has its own strengths and weaknesses. Below the Critters name you can see" +
+            ForcedTutorialDialogStep.ExplainCpuHP -> "The opponent Critter has a red health bar instead. "
+            ForcedTutorialDialogStep.ExplainLevel -> "Moving on to the LEVEL. It determines the strength of your Critter. The higher the level of your Critter the higher are its stats. "
+            ForcedTutorialDialogStep.ExplainStats -> "Let's dive into the Stats of your Critter. Each Critter has its own strengths and weaknesses. Below the Critters name you can see" +
                     " its stats. ATK stands for Attack. The higher the Attack the more damage the Critter will deal. DEF stands for Defence. This decides how much damage the Critter will take."
-            TutorialDialogStep.ExplainBattleLog -> "Right above this Tutorial text, you can see the BattleLog this will show what is happening during the battle."
-            TutorialDialogStep.ExplainAttacks -> "Now let's learn about Attacks. These are what lower the Enemy's Health-points . Each Critter has a maximum of four attacks. " +
+            ForcedTutorialDialogStep.ExplainBattleLog -> "Right above this Tutorial text, you can see the BattleLog this will show what is happening during the battle."
+            ForcedTutorialDialogStep.ExplainAttacks -> "Now let's learn about Attacks. These are what lower the Enemy's Health-points . Each Critter has a maximum of four attacks. " +
                     "Next to the name of the Attack you can see the strength. The higher this stat is, the more damage it will deal."
-            TutorialDialogStep.ExplainSelectAttack -> "But enough talking, lets select an attack now!"
-            TutorialDialogStep.ExplainExecuteAttack -> "Now you can see that the BattleLog shows that you have selected an attack. Click on the BattleLog to execute your attack! "
-            TutorialDialogStep.ExplainExecuteCpuAttack -> "Now its your enemy's turn, click on the BattleLog to " +
+            ForcedTutorialDialogStep.ExplainSelectAttack -> "But enough talking, lets select an attack now!"
+            ForcedTutorialDialogStep.ExplainExecuteAttack -> "Now you can see that the BattleLog shows that you have selected an attack. Click on the BattleLog to execute your attack! "
+            ForcedTutorialDialogStep.ExplainExecuteCpuAttack -> "Now its your enemy's turn, click on the BattleLog to " +
                     "execute the enemy's attack"
-            TutorialDialogStep.LetPlayerPlay -> "Okay, I explained the basics. Now its your turn to finish the battle, good luck"
+            ForcedTutorialDialogStep.LetPlayerPlay -> "Okay, I explained the basics. Now its your turn to finish the battle, good luck"
             // Add more cases as needed
-            TutorialDialogStep.FinishTutorial -> "Congrats(or not) you finished the tutorial. You can now move on to the next one"
+            ForcedTutorialDialogStep.FinishTutorial -> "Congrats(or not) you finished the tutorial. You can now move on to the next one"
             else -> {return "null"}
         }
     }

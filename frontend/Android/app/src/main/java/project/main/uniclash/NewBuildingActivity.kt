@@ -62,6 +62,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.rememberImagePainter
 import project.main.uniclash.NewBuildingLogic.CameraLogic
+import project.main.uniclash.NewBuildingLogic.NewBuildingSingleTon
 import project.main.uniclash.datatypes.ActivitySaver
 import project.main.uniclash.datatypes.CritterPic
 import project.main.uniclash.datatypes.CritterUsable
@@ -84,8 +85,9 @@ enum class BuildingType(){
 }
 
 class NewBuildingActivity : ComponentActivity() {
-    private var title by mutableStateOf("")
-    private var description by mutableStateOf("")
+    private val newBuildingSingleTon = NewBuildingSingleTon.instance
+    private var title by mutableStateOf(newBuildingSingleTon.getTitle())
+    private var description by mutableStateOf(newBuildingSingleTon.getDescription())
     private var building by mutableStateOf(BuildingType.ARENA)
     private var confirmRequest by mutableStateOf(false)
     private var lat by mutableStateOf(Locations.USERLOCATION.getLocation().latitude)
@@ -230,7 +232,7 @@ class NewBuildingActivity : ComponentActivity() {
                             // Add an input box (TextField) here
                             OutlinedTextField(
                                 value = title,
-                                onValueChange = { title = it },
+                                onValueChange = { newBuildingSingleTon.setTitle(it)},
                                 label = { Text("Title") },
                                 keyboardOptions = KeyboardOptions.Default.copy(
                                     keyboardType = KeyboardType.Text,
@@ -255,7 +257,8 @@ class NewBuildingActivity : ComponentActivity() {
                             // Add an input box (TextField) here
                             OutlinedTextField(
                                 value = description,
-                                onValueChange = { description = it },
+                                onValueChange = { description = it
+                                    newBuildingSingleTon.setDescription(it)},
                                 label = { Text("Description") },
                                 keyboardOptions = KeyboardOptions.Default.copy(
                                     keyboardType = KeyboardType.Text,
@@ -311,7 +314,7 @@ class NewBuildingActivity : ComponentActivity() {
                                     modifier = Modifier
                                         .size(175.dp) // Adjust the size as needed
                                         .padding(horizontal = 8.dp)
-                                        .clickable { building = BuildingType.ARENA }
+                                        .clickable {/*newBuildingSingleTon.setBuilding(BuildingType.ARENA)*/}
                                         .offset(x = (1).dp)
                                 )
 
@@ -321,7 +324,7 @@ class NewBuildingActivity : ComponentActivity() {
                                     modifier = Modifier
                                         .size(175.dp) // Adjust the size as needed
                                         .padding(horizontal = 8.dp)
-                                        .clickable { building = BuildingType.STUDENTHUB }
+                                        .clickable {/*newBuildingSingleTon.setBuilding(BuildingType.STUDENTHUB)*/}
                                         .offset(x = (1).dp)
                                 )
                             }
@@ -501,6 +504,4 @@ class NewBuildingActivity : ComponentActivity() {
             }
         }
     }
-
-
 }

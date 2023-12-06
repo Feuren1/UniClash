@@ -35,7 +35,7 @@ class CameraActivity : AppCompatActivity() {
     private lateinit var viewBinding: ActivityCameraBinding
 
     private var imageCapture: ImageCapture? = null
-    var capturedImagePath: String? = null
+    private var capturedImagePath: String? = null
 
     private lateinit var cameraExecutor: ExecutorService
 
@@ -62,26 +62,17 @@ class CameraActivity : AppCompatActivity() {
         // Get a stable reference of the modifiable image capture use case
         val imageCapture = imageCapture ?: return
 
-        // Create time stamped name and MediaStore entry.
-        val name = SimpleDateFormat(FILENAME_FORMAT, Locale.US)
-            .format(System.currentTimeMillis())
-        val contentValues = ContentValues().apply {
-            put(MediaStore.MediaColumns.DISPLAY_NAME, name)
-            put(MediaStore.MediaColumns.MIME_TYPE, "image/jpeg")
-            if (Build.VERSION.SDK_INT > Build.VERSION_CODES.P) {
-                put(MediaStore.Images.Media.RELATIVE_PATH, "Pictures/CameraX-Image")
-            }
-        }
+        // Create time stamped name for the image file
+        val fileName = SimpleDateFormat(FILENAME_FORMAT, Locale.US)
+            .format(System.currentTimeMillis()) + ".jpg"
 
-        // Create output options object which contains file + metadata
-        val outputOptions = ImageCapture.OutputFileOptions
-            .Builder(contentResolver,
-                MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
-                contentValues)
-            .build()
+        // Create file to save the image
+        val photoFile = File(externalMediaDirs.firstOrNull(), fileName)
 
-        // Set up image capture listener, which is triggered after photo has
-        // been taken
+        // Create output options object which contains the file
+        val outputOptions = ImageCapture.OutputFileOptions.Builder(photoFile).build()
+
+        // Set up image capture listener, which is triggered after photo has been taken
         imageCapture.takePicture(
             outputOptions,
             ContextCompat.getMainExecutor(this),
@@ -91,7 +82,10 @@ class CameraActivity : AppCompatActivity() {
                 }
 
                 override fun onImageSaved(output: ImageCapture.OutputFileResults) {
-                    val msg = "Photo capture succeeded: ${output.savedUri}"
+                    // Update the capturedImagePath variable with the file path
+                    capturedImagePath = photoFile.absolutePath
+
+                    val msg = "Photo capture succeeded: $capturedImagePath"
                     Toast.makeText(baseContext, msg, Toast.LENGTH_SHORT).show()
                     Log.d(TAG, msg)
                 }
@@ -99,19 +93,11 @@ class CameraActivity : AppCompatActivity() {
         )
     }
 
-    fun convertImageToBase64(imagePath: String): String {
-        val file = File(imagePath)
-        val fileContent = Files.readAllBytes(file.toPath())
-        return Base64.getEncoder().encodeToString(fileContent)
-    }
-
 
     private fun closeCamera() {
-        val bundle = Bundle().apply {
-            putString("capturedImagePath", capturedImagePath)
+        val intent = Intent(this, NewBuildingActivity::class.java).apply {
+            putExtra("capturedImagePath", capturedImagePath)
         }
-        val intent = Intent(this, NewBuildingActivity::class.java)
-        intent.putExtra("myBundle", bundle)
         startActivity(intent)
     }
 

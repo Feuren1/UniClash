@@ -1,26 +1,19 @@
 package project.main.uniclash
 
-import android.app.Application
+import android.R.attr.path
 import android.content.Intent
 import android.graphics.BitmapFactory
 import android.os.Bundle
-import android.widget.ImageView
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
 import androidx.compose.foundation.Image
-import android.util.Base64
-import java.io.FileOutputStream
-import java.io.File
-import java.io.IOException
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -34,9 +27,7 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Create
-import androidx.compose.material.icons.filled.Email
 import androidx.compose.material.icons.filled.Info
-import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -45,38 +36,26 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.rememberImagePainter
-import project.main.uniclash.NewBuildingLogic.CameraLogic
 import project.main.uniclash.NewBuildingLogic.NewBuildingSingleTon
-import project.main.uniclash.datatypes.ActivitySaver
-import project.main.uniclash.datatypes.CritterPic
-import project.main.uniclash.datatypes.CritterUsable
 import project.main.uniclash.datatypes.Locations
 import project.main.uniclash.datatypes.MapSaver
-import project.main.uniclash.datatypes.MapSettings
 import project.main.uniclash.datatypes.MarkerData
 import project.main.uniclash.map.GeoCodingHelper
 import project.main.uniclash.retrofit.ArenaService
-import project.main.uniclash.retrofit.CritterService
 import project.main.uniclash.retrofit.StudentHubService
-import project.main.uniclash.ui.theme.UniClashTheme
 import project.main.uniclash.viewmodels.NewBuildingViewModel
-import project.main.uniclash.viewmodels.WildEncounterViewModel
 
 
 enum class BuildingType(){
@@ -92,6 +71,7 @@ class NewBuildingActivity : ComponentActivity() {
     private var confirmRequest by mutableStateOf(false)
     private var lat by mutableStateOf(Locations.USERLOCATION.getLocation().latitude)
     private var long by mutableStateOf(Locations.USERLOCATION.getLocation().longitude)
+    private var capturedImagePath by mutableStateOf("")
 
     private var exitRequest by mutableStateOf(false)
     private var startCamera by mutableStateOf(false)
@@ -106,6 +86,9 @@ class NewBuildingActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
+        if(intent.getStringExtra("capturedImagePath") != null) {
+            capturedImagePath = intent.getStringExtra("capturedImagePath")!!
+        }
 
         newBuildingViewModel = viewModels<NewBuildingViewModel> {
             NewBuildingViewModel.provideFactory(ArenaService.getInstance(this), StudentHubService.getInstance(this))
@@ -120,19 +103,6 @@ class NewBuildingActivity : ComponentActivity() {
                 confirmRequest = false
                 println("incorrect")
                 println("${description.length} die länge")
-            }
-
-            val receivedIntent = intent
-            val receivedBundle = receivedIntent.getBundleExtra("myBundle")
-
-            if (receivedBundle != null) {
-                // Extrahieren Sie den Base64-String des aufgenommenen Bilds
-                val base64Image = receivedBundle.getString("base64Image")
-
-                // Konvertieren Sie den Base64-String zurück in ein Bild, wenn vorhanden
-                if (!base64Image.isNullOrBlank()) {
-                    convertBase64ToImage(base64Image)
-                }
             }
 
             geoCodingHelper.getAddressFromLocation(
@@ -315,8 +285,10 @@ class NewBuildingActivity : ComponentActivity() {
                                     modifier = Modifier
                                         .size(175.dp) // Adjust the size as needed
                                         .padding(horizontal = 8.dp)
-                                        .clickable {building = BuildingType.ARENA
-                                            newBuildingSingleTon.setBuilding(BuildingType.ARENA)}
+                                        .clickable {
+                                            building = BuildingType.ARENA
+                                            newBuildingSingleTon.setBuilding(BuildingType.ARENA)
+                                        }
                                         .offset(x = (1).dp)
                                 )
 
@@ -326,8 +298,10 @@ class NewBuildingActivity : ComponentActivity() {
                                     modifier = Modifier
                                         .size(175.dp) // Adjust the size as needed
                                         .padding(horizontal = 8.dp)
-                                        .clickable {building = BuildingType.STUDENTHUB
-                                            newBuildingSingleTon.setBuilding(BuildingType.STUDENTHUB)}
+                                        .clickable {
+                                            building = BuildingType.STUDENTHUB
+                                            newBuildingSingleTon.setBuilding(BuildingType.STUDENTHUB)
+                                        }
                                         .offset(x = (1).dp)
                                 )
                             }
@@ -344,7 +318,7 @@ class NewBuildingActivity : ComponentActivity() {
             modifier = Modifier
                 .padding(all = 8.dp)
                 .fillMaxWidth() // making box from left to right site
-                .clickable {startCamera = true}
+                .clickable { startCamera = true }
                 .background(
                     Color.LightGray,
                     shape = RoundedCornerShape(8.dp)
@@ -368,19 +342,20 @@ class NewBuildingActivity : ComponentActivity() {
                         style = MaterialTheme.typography.titleSmall
                     )
                     Text(
-                        text = "click to take a photo",
+                        text = "click to take a photo\n$capturedImagePath",
                         fontSize = 12.sp,
                         color = MaterialTheme.colorScheme.secondary,
                         style = MaterialTheme.typography.titleSmall
                     )
                     Spacer(modifier = Modifier.height(8.dp))
-                    if (!restoredImagePath.isNullOrBlank()) {
-                        // Zeigen Sie hier das wiederhergestellte Foto an
+                    if (!capturedImagePath.isNullOrBlank()) {
+                        // Zeige das wiederhergestellte Bild direkt an
+                        val bitmap = BitmapFactory.decodeFile(capturedImagePath)
                         Image(
-                            painter = rememberImagePainter(data = restoredImagePath),
+                            painter = rememberImagePainter(bitmap),
                             contentDescription = null,
                             modifier = Modifier
-                                .size(200.dp)
+                                .size(250.dp)
                                 .padding(8.dp)
                         )
                     }
@@ -389,19 +364,6 @@ class NewBuildingActivity : ComponentActivity() {
         }
     }
 
-    private fun convertBase64ToImage(base64String: String) {
-        try {
-            val fileContent = Base64.decode(base64String, Base64.DEFAULT)
-            val outputPath = "your_output_path.jpg" // Passen Sie den Dateipfad nach Bedarf an
-            val outputStream = FileOutputStream(outputPath)
-            outputStream.write(fileContent)
-            outputStream.close()
-            restoredImagePath = outputPath
-        } catch (e: IOException) {
-            e.printStackTrace()
-            restoredImagePath = null
-        }
-    }
     @Composable
     fun Location() {
         val buildingAddress = geoCodingHelper.getAddressFromLocation(Locations.USERLOCATION.getLocation().latitude,Locations.USERLOCATION.getLocation().longitude)

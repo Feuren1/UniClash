@@ -2,7 +2,9 @@ package project.main.uniclash
 
 import android.R.attr.path
 import android.content.Intent
+import android.graphics.Bitmap
 import android.graphics.BitmapFactory
+import android.graphics.Matrix
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -81,7 +83,6 @@ class NewBuildingActivity : ComponentActivity() {
     }
 
     private lateinit var newBuildingViewModel: NewBuildingViewModel
-    private var restoredImagePath by mutableStateOf<String?>(null)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -95,7 +96,7 @@ class NewBuildingActivity : ComponentActivity() {
         }.value
 
         setContent {
-            if(!(title.isNullOrEmpty()) && title.length < 31&&!(description.isNullOrEmpty())&&description.length<61&&lat!=0.0&&long!=0.0){
+            if(!(title.isNullOrEmpty()) && title.length < 31&&!(description.isNullOrEmpty())&&description.length<61&&lat!=0.0&&long!=0.0&&!(capturedImagePath.isNullOrBlank())){
                 confirmRequest = true
                 println("correct")
                 println("${description.length} die länge")
@@ -349,13 +350,12 @@ class NewBuildingActivity : ComponentActivity() {
                     )
                     Spacer(modifier = Modifier.height(8.dp))
                     if (!capturedImagePath.isNullOrBlank()) {
-                        // Zeige das wiederhergestellte Bild direkt an
-                        val bitmap = BitmapFactory.decodeFile(capturedImagePath)
+                        val originalBitmap = BitmapFactory.decodeFile(capturedImagePath)
                         Image(
-                            painter = rememberImagePainter(bitmap),
+                            painter = rememberImagePainter(originalBitmap),
                             contentDescription = null,
                             modifier = Modifier
-                                .size(250.dp)
+                                .size(300.dp)
                                 .padding(8.dp)
                         )
                     }
@@ -433,14 +433,14 @@ class NewBuildingActivity : ComponentActivity() {
                                 long.toString()
                             )
                         }
-                        newBuildingSingleTon.setTitle("")
-                        newBuildingSingleTon.setDescription("")
-                        newBuildingSingleTon.setBuilding(BuildingType.ARENA)
+                            newBuildingSingleTon.setTitle("")
+                            newBuildingSingleTon.setDescription("")
+                            newBuildingSingleTon.setBuilding(BuildingType.ARENA)
 
-                        exitRequest = true
-                        MapSaver.ARENA.setMarker(ArrayList<MarkerData?>())
-                        MapSaver.STUDENTHUB.setMarker(ArrayList<MarkerData?>())
-                        finish()
+                            exitRequest = true
+                            MapSaver.ARENA.setMarker(ArrayList<MarkerData?>())
+                            MapSaver.STUDENTHUB.setMarker(ArrayList<MarkerData?>())
+                            finish()
                     } else {
                     }
                 }
@@ -463,7 +463,7 @@ class NewBuildingActivity : ComponentActivity() {
                         style = MaterialTheme.typography.titleSmall
                     )
                     Text(
-                        text = "Title (max 30char.): $title\nDescription (max 60 char.): $description\nBuilding Type: ${if(building== BuildingType.STUDENTHUB){"Student Hub"} else {"Arena"}}\nLocations: $buildingAddress",
+                        text = "Title (max 30char.): $title\nDescription (max 60 char.): $description\nBuilding Type: ${if(building== BuildingType.STUDENTHUB){"Student Hub"} else {"Arena"}}\nLocations: $buildingAddress\nPicture: ${if(capturedImagePath.isNullOrBlank()){"missing"}else{"available"}}",
                         fontSize = 12.sp,
                         color = MaterialTheme.colorScheme.secondary,
                         style = MaterialTheme.typography.titleSmall

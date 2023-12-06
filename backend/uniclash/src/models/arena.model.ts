@@ -32,6 +32,12 @@ export class Arena extends Entity {
   })
   lon?: string;
 
+  @property({
+    type: 'number',
+    default: '0',
+  })
+  critterId?: number;
+
   @belongsTo(() => Student)
   studentId: number;
 

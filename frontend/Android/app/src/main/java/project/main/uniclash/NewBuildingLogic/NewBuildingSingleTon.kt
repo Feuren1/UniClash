@@ -8,7 +8,7 @@ import project.main.uniclash.BuildingType
 class NewBuildingSingleTon private constructor() {
     private var title by mutableStateOf("")
     private var description by mutableStateOf("")
-    //private var building by mutableStateOf(BuildingType.ARENA)
+    private var building by mutableStateOf(BuildingType.ARENA)
     companion object {
         val instance:NewBuildingSingleTon by lazy {
             NewBuildingSingleTon()
@@ -31,12 +31,12 @@ class NewBuildingSingleTon private constructor() {
     fun setDescription(description :String){
         this.description = description
     }
-    /*@JvmName("getBuildingImpl")
+    @JvmName("getBuildingImpl")
     fun getBuilding():BuildingType{
         return building
     }
     @JvmName("setBuildingImpl")
     fun setBuilding(building : BuildingType){
         this.building = building
-    }*/
+    }
 }

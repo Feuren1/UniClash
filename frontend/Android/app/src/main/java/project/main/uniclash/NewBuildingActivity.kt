@@ -88,7 +88,7 @@ class NewBuildingActivity : ComponentActivity() {
     private val newBuildingSingleTon = NewBuildingSingleTon.instance
     private var title by mutableStateOf(newBuildingSingleTon.getTitle())
     private var description by mutableStateOf(newBuildingSingleTon.getDescription())
-    private var building by mutableStateOf(BuildingType.ARENA)
+    private var building by mutableStateOf(newBuildingSingleTon.getBuilding())
     private var confirmRequest by mutableStateOf(false)
     private var lat by mutableStateOf(Locations.USERLOCATION.getLocation().latitude)
     private var long by mutableStateOf(Locations.USERLOCATION.getLocation().longitude)
@@ -232,7 +232,8 @@ class NewBuildingActivity : ComponentActivity() {
                             // Add an input box (TextField) here
                             OutlinedTextField(
                                 value = title,
-                                onValueChange = { newBuildingSingleTon.setTitle(it)},
+                                onValueChange = { title = it
+                                    newBuildingSingleTon.setTitle(it)},
                                 label = { Text("Title") },
                                 keyboardOptions = KeyboardOptions.Default.copy(
                                     keyboardType = KeyboardType.Text,
@@ -314,7 +315,8 @@ class NewBuildingActivity : ComponentActivity() {
                                     modifier = Modifier
                                         .size(175.dp) // Adjust the size as needed
                                         .padding(horizontal = 8.dp)
-                                        .clickable {/*newBuildingSingleTon.setBuilding(BuildingType.ARENA)*/}
+                                        .clickable {building = BuildingType.ARENA
+                                            newBuildingSingleTon.setBuilding(BuildingType.ARENA)}
                                         .offset(x = (1).dp)
                                 )
 
@@ -324,7 +326,8 @@ class NewBuildingActivity : ComponentActivity() {
                                     modifier = Modifier
                                         .size(175.dp) // Adjust the size as needed
                                         .padding(horizontal = 8.dp)
-                                        .clickable {/*newBuildingSingleTon.setBuilding(BuildingType.STUDENTHUB)*/}
+                                        .clickable {building = BuildingType.STUDENTHUB
+                                            newBuildingSingleTon.setBuilding(BuildingType.STUDENTHUB)}
                                         .offset(x = (1).dp)
                                 )
                             }
@@ -468,6 +471,10 @@ class NewBuildingActivity : ComponentActivity() {
                                 long.toString()
                             )
                         }
+                        newBuildingSingleTon.setTitle("")
+                        newBuildingSingleTon.setDescription("")
+                        newBuildingSingleTon.setBuilding(BuildingType.ARENA)
+
                         exitRequest = true
                         MapSaver.ARENA.setMarker(ArrayList<MarkerData?>())
                         MapSaver.STUDENTHUB.setMarker(ArrayList<MarkerData?>())

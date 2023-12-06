@@ -125,7 +125,7 @@ class MenuActivity : ComponentActivity() {
                             MenuCard(listOf(Category("Student Hub", painterResource(R.drawable.store), 8)))
                             MenuCard(listOf(Category("Camera", painterResource(R.drawable.swords), 9)))
                             MenuCard(listOf(Category("Log in", painterResource(R.drawable.profile), 14),Category("Register", painterResource(R.drawable.profile), 15)))
-                            MenuCard(listOf(Category("Arena", painterResource(R.drawable.arena), 10)))
+                            MenuCard(listOf(Category("Arena", painterResource(R.drawable.arena), 16)))
                             MenuCard(listOf(Category("Poké", painterResource(R.drawable.studentassistance), 11)))
                         }
                     }
@@ -222,7 +222,12 @@ class MenuActivity : ComponentActivity() {
                 buttonRequest = 0
                 finish()
             }
-
+            if(buttonRequest == 16) {
+                val intent = Intent(this, ArenaActivity::class.java)
+                this.startActivity(intent)
+                buttonRequest = 0
+                finish()
+            }
         }
     }
 
@@ -262,13 +267,6 @@ class MenuActivity : ComponentActivity() {
             textAlign = TextAlign.Start,
             modifier = Modifier.padding(vertical = 16.dp) // Add vertical padding
         )
-        /*Text(
-            text = "Coins",
-            fontSize = 18.sp, // Adjust the font size as needed
-            fontWeight = FontWeight.Bold, // Use FontWeight.Bold for bold text
-            textAlign = TextAlign.End,
-            modifier = Modifier.padding(vertical = 16.dp) // Add vertical padding
-        )*/
     }
 
 

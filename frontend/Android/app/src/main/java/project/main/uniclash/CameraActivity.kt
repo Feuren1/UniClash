@@ -94,31 +94,6 @@ class CameraActivity : AppCompatActivity() {
                     val msg = "Photo capture succeeded: ${output.savedUri}"
                     Toast.makeText(baseContext, msg, Toast.LENGTH_SHORT).show()
                     Log.d(TAG, msg)
-
-                    // Konvertieren Sie das Bild in einen Base64-String
-                    val base64Image = output.savedUri?.let { uri ->
-                        contentResolver.openInputStream(uri)?.use { inputStream ->
-                            val byteArray = inputStream.readBytes()
-                            Base64.getEncoder().encodeToString(byteArray)
-                        }
-                    }
-
-                    // Nachdem das Bild aufgenommen wurde, können Sie zum Beispiel zur NewBuildingActivity wechseln
-                    val intent = Intent(this@CameraActivity, NewBuildingActivity::class.java)
-
-                    // Erstellen Sie ein Bundle und fügen Sie den Base64-String hinzu
-                    val bundle = Bundle().apply {
-                        putString("base64Image", base64Image)
-                    }
-
-                    // Fügen Sie das Bundle dem Intent hinzu
-                    intent.putExtra("myBundle", bundle)
-
-                    // Starten Sie die Aktivität mit dem Intent
-                    startActivity(intent)
-
-                    // Beenden Sie die CameraActivity, wenn Sie möchten
-                    finish()
                 }
             }
         )

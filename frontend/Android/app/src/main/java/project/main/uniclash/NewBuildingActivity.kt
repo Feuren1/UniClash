@@ -389,7 +389,7 @@ class NewBuildingActivity : ComponentActivity() {
         }
     }
 
-    fun convertBase64ToImage(base64String: String) {
+    private fun convertBase64ToImage(base64String: String) {
         try {
             val fileContent = Base64.decode(base64String, Base64.DEFAULT)
             val outputPath = "your_output_path.jpg" // Passen Sie den Dateipfad nach Bedarf an

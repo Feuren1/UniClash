@@ -124,12 +124,9 @@ fun StudentHubScreen(modifier: Modifier = Modifier,
 
         ItemList(itemTemplateList,
             onButtonClicked = { itemTemplate ->
-                println("ID: ${itemTemplate.id}, Name: ${itemTemplate.name}, Cost: ${itemTemplate.cost}")
                 buyingStatus = itemTemplate.name
-                println("Before buyItem")
-                creditValidation = studentHubViewModel.buyItem(studentState.student , itemTemplate.id, itemTemplate.cost)
-                println("After buyItem")
-                println("Buy item clicked in StudentHub")
+                val quantityButton = 1 //open for extension = if I want to create ways to buy more than one at a time
+                creditValidation = studentHubViewModel.buyItem(studentState.student , itemTemplate.id, itemTemplate.cost, quantityButton)
             })
     }
 }

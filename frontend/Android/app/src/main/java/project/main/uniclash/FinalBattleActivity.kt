@@ -1,6 +1,8 @@
 package project.main.uniclash
 
 import android.annotation.SuppressLint
+import android.content.Intent
+import android.os.Build.VERSION.SDK_INT
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -33,16 +35,25 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import coil.ImageLoader
+import coil.compose.rememberAsyncImagePainter
+import coil.decode.GifDecoder
+import coil.decode.ImageDecoderDecoder
+import coil.request.ImageRequest
+import coil.size.Size
 import project.main.uniclash.battle.BattleResult
 import project.main.uniclash.datatypes.Attack
 import project.main.uniclash.datatypes.CritterUsable
@@ -54,7 +65,8 @@ import project.main.uniclash.viewmodels.ForcedTutorialStep
 import project.main.uniclash.viewmodels.TutorialStep
 
 class FinalBattleActivity : ComponentActivity() {
-
+    private var repeatRequest by mutableStateOf(false)
+    private var progressRequest by mutableStateOf(false)
     private var exitRequest by mutableStateOf(false)
     //TODO Rename into BattleActivity
     private val finalBattleViewModel by viewModels<FinalBattleViewModel> {
@@ -76,7 +88,8 @@ class FinalBattleActivity : ComponentActivity() {
                     val battleViewcpuCritterUIState by finalBattleViewModel.cpuCritter.collectAsState()
                     var cpuCritter = battleViewcpuCritterUIState.cpuCritter
                     Column {
-                        if (finalBattleViewModel.checkResult() == BattleResult.PLAYER_WINS || finalBattleViewModel.checkResult() == BattleResult.CPU_WINS){
+                        var battleResult = finalBattleViewModel.checkResult()
+                        if (battleResult == BattleResult.PLAYER_WINS){
                             Box(
                                 modifier = Modifier
                                     .fillMaxWidth()
@@ -89,7 +102,26 @@ class FinalBattleActivity : ComponentActivity() {
                                     modifier = Modifier
                                         .size(40.dp)
                                         .clickable {
-                                            exitRequest = true
+                                            progressRequest = true
+                                        }
+                                        .align(Alignment.TopEnd)
+                                )
+                            }
+                        }
+                        if (battleResult == BattleResult.CPU_WINS){
+                            Box(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .background(MaterialTheme.colorScheme.background)
+                                    .padding(16.dp)
+                            ) {
+                                Image(
+                                    painter = painterResource(id = R.drawable.repeat),
+                                    contentDescription = null,
+                                    modifier = Modifier
+                                        .size(40.dp)
+                                        .clickable {
+                                            repeatRequest = true
                                         }
                                         .align(Alignment.TopEnd)
                                 )
@@ -103,7 +135,14 @@ class FinalBattleActivity : ComponentActivity() {
                 }
 
             }
-
+            if(repeatRequest){
+                val intent = Intent(this, this::class.java)
+                this.startActivity(intent)
+            }
+            if(progressRequest){
+                val intent = Intent(this, MenuActivity::class.java)
+                this.startActivity(intent)
+            }
         }
 
     }
@@ -359,13 +398,86 @@ fun FinalBattle(finalBattleViewModel:FinalBattleViewModel = viewModel()) {
                     )
                 }
             }
+
+            GifImage("vibe", Modifier.padding(4.dp))
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(3.dp)
+                    .clickable {
+                    } // Handle click to execute attack
+            ) {
+                Text(
+                    text = "Remember what you learned about Stats, Buffs and Debuffs and beat the final Challenge!",
+                    modifier = Modifier
+                        .padding(8.dp)
+                        .background(
+                            color = Color(0xFFFFEBCD),
+                            shape = RoundedCornerShape(16.dp)
+                        )
+                        .padding(8.dp),
+                    fontFamily = FontFamily.Default, // Replace with your custom font
+                    fontSize = 13.sp,
+                    color = Color.Black
+                )
+            }
         }
     }
-    else if(playerWon==true){
-        Text("YOU WON!")
-    }else if(playerWon==false){
-        Text("YOU LOST!")
+    else if (playerWon == true) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp)
+        ) {
+            Text(
+                text = "YOU WON!",
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(2.dp),
+                style = TextStyle(
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 24.sp,
+                    color = Color.Green
+                )
+            )
+            GifImage(modifier = Modifier
+                .fillMaxSize(0.8f)
+                .padding(0.dp), gifName = "vibe")
+            Text(
+                text = "Please fill in your Post Experiment Questions and please be brutally honest :)\n" +
+                        "Thank you very much for participating!",
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(8.dp),
+                style = TextStyle(
+                    fontSize = 16.sp,
+                    color = Color.Gray
+                )
+            )
+        }
+    } else if (playerWon == false) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp)
+        ) {
+            Text(
+                text = "You Lost! Please try again :)",
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(8.dp),
+                style = TextStyle(
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 24.sp,
+                    color = Color.Red
+                )
+            )
+            GifImage(modifier = Modifier
+                .fillMaxWidth()
+                .padding(8.dp), gifName = "finalbattle")
+        }
     }
+
 }
 
 @Composable
@@ -461,7 +573,43 @@ fun CpuCritterFinalBattleInfoText(critter: CritterUsable, finalBattleViewModel: 
             )
         }
     }
+}
+@Composable
+fun GifImage(
+    gifName: String,
+    modifier: Modifier
+) {
+    val context = LocalContext.current
+    val resourceId = context.resources.getIdentifier(gifName, "drawable", context.packageName)
+
+    if (resourceId == 0) {
+        // Handle the case where the resource is not found
+        // You may want to display a placeholder or provide some default behavior
+        Text(text = "Image not found: $gifName")
+    } else {
+        val imageLoader = ImageLoader.Builder(context)
+            .components {
+                if (SDK_INT >= 28) {
+                    add(ImageDecoderDecoder.Factory())
+                } else {
+                    add(GifDecoder.Factory())
+                }
+            }
+            .build()
+
+        Image(
+            painter = rememberAsyncImagePainter(
+                ImageRequest.Builder(context).data(resourceId).apply {
+                    size(Size.ORIGINAL)
+                }.build(),
+                imageLoader = imageLoader
+            ),
+            contentDescription = null,
+            modifier = modifier.fillMaxWidth(),
+        )
     }
+}
+
 
 
 

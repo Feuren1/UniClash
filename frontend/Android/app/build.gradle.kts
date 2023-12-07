@@ -53,6 +53,8 @@ android {
 }
 
 dependencies {
+    implementation("io.coil-kt:coil-gif:2.5.0")
+    implementation("io.coil-kt:coil-compose:2.5.0")
     implementation("androidx.emoji2:emoji2:1.4.0")
     implementation("androidx.emoji2:emoji2-views:1.4.0")
     implementation("androidx.emoji2:emoji2-views-helper:1.4.0")

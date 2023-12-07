@@ -48,6 +48,7 @@ import androidx.compose.ui.unit.sp
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.viewmodel.compose.viewModel
 import android.content.Context
+import android.content.Intent
 import androidx.core.graphics.drawable.toBitmap
 import project.main.uniclash.battle.BattleResult
 import project.main.uniclash.datatypes.Attack
@@ -62,7 +63,8 @@ import androidx.emoji2.text.EmojiCompat
 
 class BattleTutorialAdvancedActivity : ComponentActivity() {
 
-    private var exitRequest by mutableStateOf(false)
+    private var repeatRequest by mutableStateOf(false)
+    private var progressRequest by mutableStateOf(false)
     //TODO Rename into BattleActivity
     private val battleTutorialAdvancedViewModel by viewModels<BattleTutorialAdvancedViewModel> {
         BattleTutorialAdvancedViewModel.provideFactory(CritterService.getInstance(this))
@@ -83,20 +85,40 @@ class BattleTutorialAdvancedActivity : ComponentActivity() {
                     val battleViewcpuCritterUIState by battleTutorialAdvancedViewModel.cpuCritter.collectAsState()
                     var cpuCritter = battleViewcpuCritterUIState.cpuCritter
                     Column {
-                        if (battleTutorialAdvancedViewModel.checkResult() == BattleResult.PLAYER_WINS || battleTutorialAdvancedViewModel.checkResult() == BattleResult.CPU_WINS){
+                        var battleResult = battleTutorialAdvancedViewModel.checkResult()
+                        if (battleResult.equals(BattleResult.PLAYER_WINS)){
                             Box(
                                 modifier = Modifier
                                     .fillMaxWidth()
                                     .background(MaterialTheme.colorScheme.background)
-                                    .padding(2.dp)
+                                    .padding(16.dp)
                             ) {
                                 Image(
                                     painter = painterResource(id = R.drawable.exit),
                                     contentDescription = null,
                                     modifier = Modifier
-                                        .size(20.dp)
+                                        .size(40.dp)
                                         .clickable {
-                                            exitRequest = true
+                                            progressRequest = true
+                                        }
+                                        .align(Alignment.TopEnd)
+                                )
+                            }
+                        }
+                        if (battleResult.equals(BattleResult.CPU_WINS)){
+                            Box(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .background(MaterialTheme.colorScheme.background)
+                                    .padding(16.dp)
+                            ) {
+                                Image(
+                                    painter = painterResource(id = R.drawable.repeat),
+                                    contentDescription = null,
+                                    modifier = Modifier
+                                        .size(40.dp)
+                                        .clickable {
+                                            repeatRequest = true
                                         }
                                         .align(Alignment.TopEnd)
                                 )
@@ -110,7 +132,14 @@ class BattleTutorialAdvancedActivity : ComponentActivity() {
                 }
 
             }
-
+            if(repeatRequest){
+                val intent = Intent(this, this::class.java)
+                this.startActivity(intent)
+            }
+            if(progressRequest){
+                val intent = Intent(this, FinalBattleActivity::class.java)
+                this.startActivity(intent)
+            }
         }
 
     }
@@ -556,18 +585,20 @@ fun ClickableAttackAdvancedTutorial(
     val shieldDrawable: Int? =  R.drawable.defencebuffsymbol
     val redSwordDrawable: Int? = R.drawable.attackdebuffsymbol
     val redShieldDrawable: Int? = R.drawable.defencedebuffsymbol
+    val attackDrawable: Int? = R.drawable.pow
 
     val drawable = when (attack.attackType) {
         AttackType.ATK_Buff -> swordDrawable
         AttackType.DEF_Buff -> shieldDrawable
         AttackType.ATK_DeBuff -> redSwordDrawable
         AttackType.DEF_DeBuff -> redShieldDrawable
+        AttackType.DAMAGE_DEALER -> attackDrawable
         else -> null // Handle other cases or leave it null
     }
 
     Box(
         modifier = Modifier
-            .padding(5.dp)
+            .padding(6.dp)
             .fillMaxWidth(0.5f)
             .height(40.dp)
             .background(
@@ -589,7 +620,7 @@ fun ClickableAttackAdvancedTutorial(
                 Image(
                     painter = painterResource(id = drawable),
                     contentDescription = null,
-                    modifier = Modifier.size(24.dp)
+                    modifier = Modifier.size(24.dp).background(Color.LightGray)
                 )
                 Spacer(modifier = Modifier.width(2.dp))
             }

@@ -1,6 +1,7 @@
 package project.main.uniclash
 
 import android.annotation.SuppressLint
+import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -47,13 +48,15 @@ import project.main.uniclash.battle.BattleResult
 import project.main.uniclash.datatypes.Attack
 import project.main.uniclash.datatypes.CritterUsable
 import project.main.uniclash.retrofit.CritterService
+import project.main.uniclash.viewmodels.BattleForcedAdvancedTutorialViewModel
 import project.main.uniclash.viewmodels.BattleForcedTutorialViewModel
 import project.main.uniclash.viewmodels.BattleTutorialViewModel
 import project.main.uniclash.viewmodels.ForcedTutorialStep
 import project.main.uniclash.viewmodels.TutorialStep
 
 class BattleForcedTutorialActivity : ComponentActivity() {
-
+    private var repeatRequest by mutableStateOf(false)
+    private var progressRequest by mutableStateOf(false)
     private var exitRequest by mutableStateOf(false)
     //TODO Rename into BattleActivity
     private val battleTutorialViewModel by viewModels<BattleForcedTutorialViewModel> {
@@ -75,7 +78,8 @@ class BattleForcedTutorialActivity : ComponentActivity() {
                     val battleViewcpuCritterUIState by battleTutorialViewModel.cpuCritter.collectAsState()
                     var cpuCritter = battleViewcpuCritterUIState.cpuCritter
                     Column {
-                        if (battleTutorialViewModel.checkResult() == BattleResult.PLAYER_WINS || battleTutorialViewModel.checkResult() == BattleResult.CPU_WINS){
+                        var battleResult = battleTutorialViewModel.checkResult()
+                        if (battleResult == BattleResult.PLAYER_WINS){
                             Box(
                                 modifier = Modifier
                                     .fillMaxWidth()
@@ -88,12 +92,31 @@ class BattleForcedTutorialActivity : ComponentActivity() {
                                     modifier = Modifier
                                         .size(40.dp)
                                         .clickable {
-                                            exitRequest = true
+                                            progressRequest = true
                                         }
                                         .align(Alignment.TopEnd)
                                 )
                             }
-                    }
+                        }
+                        if (battleResult == BattleResult.CPU_WINS){
+                            Box(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .background(MaterialTheme.colorScheme.background)
+                                    .padding(16.dp)
+                            ) {
+                                Image(
+                                    painter = painterResource(id = R.drawable.repeat),
+                                    contentDescription = null,
+                                    modifier = Modifier
+                                        .size(40.dp)
+                                        .clickable {
+                                            repeatRequest = true
+                                        }
+                                        .align(Alignment.TopEnd)
+                                )
+                            }
+                        }
                         Box {
                             CritterBattleForcedTutorialIntro(battleTutorialViewModel)
                         }
@@ -102,7 +125,14 @@ class BattleForcedTutorialActivity : ComponentActivity() {
                 }
 
             }
-
+            if(repeatRequest){
+                val intent = Intent(this, this::class.java)
+                this.startActivity(intent)
+            }
+            if(progressRequest){
+                val intent = Intent(this, BattleForcedTutorialAdvancedActivity::class.java)
+                this.startActivity(intent)
+            }
         }
 
     }
@@ -489,7 +519,7 @@ fun AttackRowTutorial(
             val attack = battleViewPlayerUIState.playerCritter?.attacks?.get(attackIndex)
             if (attack != null) {
 
-                    ClickableAttackTutorial(
+                    ClickableAttackAdvancedTutorial(
                         attack = attack,
                         onAttackClicked = { selectedAttack ->
                             battleForcedTutorialViewModel.selectPlayerAttack(selectedAttack)

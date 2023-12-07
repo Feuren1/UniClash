@@ -165,21 +165,23 @@ class BattleForcedTutorialViewModel(
 
     fun getTutorialMessage(step: ForcedTutorialDialogStep): String {
         return when (step) {
-            ForcedTutorialDialogStep.Welcome -> "Welcome to the Basic Tutorial for Uniclash. Here you are going to learn how to battle!" +
-                    " In Uniclash there are creatures, so called Critters which you can catch and use in Battles."
+            ForcedTutorialDialogStep.Welcome -> "Welcome to the Basic Tutorial for Uniclash. Here you are going to learn how to battle!\n"+
+                    "In Uniclash there are creatures, so called Critters which you can catch and use in Battles."
             ForcedTutorialDialogStep.ExplainCombat -> "The goal in a battle is to bring the Enemy's Critters Health points (Hp) to Zero, " +
-                    "effectively knocking out the poor thing... " +
+                    "effectively knocking out the poor thing...\n" +
                     "You and the enemy will exchange attacks until one of you goes down first. Thus deciding the winner! "
-            ForcedTutorialDialogStep.ExplainPlayerHP -> "Now let's talk about HP. This is your health. " +
-                    "Based on your level and what kind of Critter you are using to battle " +
-                    "the hp will be different. You can see your Critters HP in the form of a green bar or below in a text format (HP:100)"
+            ForcedTutorialDialogStep.ExplainPlayerHP -> "Now let's talk about HP. This is your health.\n" +
+                    "Based on your level and what kind of Critter you are using to battle the hp will be different.\n" +
+                    "You can see your Critters HP in the form of a green bar or below in a text format (HP:100)"
             ForcedTutorialDialogStep.ExplainCpuHP -> "The opponent Critter has a red health bar instead. "
             ForcedTutorialDialogStep.ExplainLevel -> "Moving on to the LEVEL. It determines the strength of your Critter. The higher the level of your Critter the higher are its stats. "
-            ForcedTutorialDialogStep.ExplainStats -> "Let's dive into the Stats of your Critter. Each Critter has its own strengths and weaknesses. Below the Critters name you can see" +
-                    " its stats. ATK stands for Attack. The higher the Attack the more damage the Critter will deal. DEF stands for Defence. This decides how much damage the Critter will take."
+            ForcedTutorialDialogStep.ExplainStats -> "Let's dive into the Stats of your Critter. Each Critter has its own strengths and weaknesses." +
+                    " Below the Critters name you can see its stats.\n" +
+                    "ATK stands for Attack. The higher the Attack the more damage the Critter will deal.\n" +
+                    "DEF stands for Defence. This decides how much damage the Critter will take."
             ForcedTutorialDialogStep.ExplainBattleLog -> "Right above this Tutorial text, you can see the BattleLog this will show what is happening during the battle."
-            ForcedTutorialDialogStep.ExplainAttacks -> "Now let's learn about Attacks. These are what lower the Enemy's Health-points . Each Critter has a maximum of four attacks. " +
-                    "Next to the name of the Attack you can see the strength. The higher this stat is, the more damage it will deal."
+            ForcedTutorialDialogStep.ExplainAttacks -> "Now let's learn about Attacks. These are what lower the Enemy's Health-points." +
+                    "\nEach Critter has a maximum of four attacks. Next to the name of the Attack you can see the strength. The higher this stat is, the more damage it will deal."
             ForcedTutorialDialogStep.ExplainSelectAttack -> "But enough talking, lets select an attack now!"
             ForcedTutorialDialogStep.ExplainExecuteAttack -> "Now you can see that the BattleLog shows that you have selected an attack. Click on the BattleLog to execute your attack! "
             ForcedTutorialDialogStep.ExplainExecuteCpuAttack -> "Now its your enemy's turn, click on the BattleLog to " +

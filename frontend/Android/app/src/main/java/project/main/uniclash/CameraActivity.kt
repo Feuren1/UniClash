@@ -99,6 +99,7 @@ class CameraActivity : AppCompatActivity() {
             putExtra("capturedImagePath", capturedImagePath)
         }
         startActivity(intent)
+        finish()
     }
 
     private fun startCamera() {

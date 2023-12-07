@@ -421,8 +421,8 @@ class NewBuildingActivity : ComponentActivity() {
                 .clickable {
                     if (confirmRequest) {
                         val originalBitmap = BitmapFactory.decodeFile(capturedImagePath)
-                        val targetWidth = 360
-                        val targetHeight = 320
+                        val targetWidth = originalBitmap.width * 400/originalBitmap.height+25
+                        val targetHeight = 400
                         val scaledBitmap = Bitmap.createScaledBitmap(originalBitmap, targetWidth, targetHeight, false)
                         val outputStream = ByteArrayOutputStream()
                         scaledBitmap.compress(Bitmap.CompressFormat.PNG,5,outputStream)

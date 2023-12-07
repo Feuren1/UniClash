@@ -315,7 +315,7 @@ class MapActivity : ComponentActivity() {
                         if (distance < 501) {
                             Column(
                                 modifier = Modifier
-                                    .size(350.dp)
+                                    .size(325.dp,400.dp)
                                     .background(
                                         color = Color.Black.copy(alpha = 0.75f),
                                         shape = RoundedCornerShape(7.dp)
@@ -330,7 +330,7 @@ class MapActivity : ComponentActivity() {
                                 Image(
                                     painter = rememberImagePainter(marker.pic),
                                     contentDescription = null, // Provide a proper content description if needed
-                                    modifier = Modifier.size(200.dp) // Adjust size as needed
+                                    modifier = Modifier.size(235.dp) // Adjust size as needed
                                 )
                                 OpenActivityButton(marker)
                             }

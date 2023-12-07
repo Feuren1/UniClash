@@ -121,8 +121,8 @@ class BattleTutorialViewModel(
 
             val playerAttack1 = Attack(1, "Splash", 50, AttackType.DAMAGE_DEALER)
             val playerAttack2 = Attack(2, "Tackle", 60, AttackType.DAMAGE_DEALER)
-            val playerAttack3 = Attack(3, "Defence Break", 80, AttackType.DAMAGE_DEALER)
-            val playerAttack4 = Attack(4, "Beak Sharpener", 75, AttackType.DAMAGE_DEALER)
+            val playerAttack3 = Attack(3, "Beak attack", 80, AttackType.DAMAGE_DEALER)
+            val playerAttack4 = Attack(4, "Duck Noises", 75, AttackType.DAMAGE_DEALER)
             val listOfPlayerAttacks = listOf(playerAttack1, playerAttack2, playerAttack3, playerAttack4)
             val playerTutorialCritter = CritterUsable(20, "Coolduck", 100, 50, 50, 50, listOfPlayerAttacks,1, 1)
 
@@ -130,12 +130,12 @@ class BattleTutorialViewModel(
                 state.copy(playerCritter = playerTutorialCritter, isLoading = false)
             }
 
-            val cpuAttack1 = Attack(1, "Splash", 50, AttackType.DAMAGE_DEALER)
+            val cpuAttack1 = Attack(1, "High Pitched Scream", 50, AttackType.DAMAGE_DEALER)
             val cpuAttack2 = Attack(2, "Tackle", 60, AttackType.DAMAGE_DEALER)
-            val cpuAttack3 = Attack(3, "Fire Blast", 80, AttackType.DAMAGE_DEALER)
-            val cpuAttack4 = Attack(4, "Thunderbolt", 75, AttackType.DAMAGE_DEALER)
+            val cpuAttack3 = Attack(3, "Splash", 80, AttackType.DAMAGE_DEALER)
+            val cpuAttack4 = Attack(4, "Knife Attack", 75, AttackType.DAMAGE_DEALER)
             val listOfCpuAttacks = listOf(cpuAttack1, cpuAttack2, cpuAttack3, cpuAttack4)
-            val cpuTutorialCritter = CritterUsable(20, "Coolduck", 100, 50, 50, 50, listOfPlayerAttacks,1, 1)
+            val cpuTutorialCritter = CritterUsable(20, "Knifeduck", 100, 50, 50, 50, listOfPlayerAttacks,1, 1)
 
             cpuCritter.update { state ->
                 state.copy(cpuCritter = cpuTutorialCritter, isLoading = false)
@@ -165,20 +165,22 @@ class BattleTutorialViewModel(
     fun getTutorialMessage(step: TutorialDialogStep): String {
         return when (step) {
             TutorialDialogStep.Welcome -> "Welcome to the Basic Tutorial for Uniclash. Here you are going to learn how to battle!\n"+
-                    "In Uniclash there are creatures, so called Critters which you can catch and use in Battles."
+                    "In Uniclash there are creatures, so called Critters which you can catch around the world and use in Battles."
             TutorialDialogStep.ExplainCombat -> "The goal in a battle is to bring the Enemy's Critters Health points (Hp) to Zero, " +
                     "effectively knocking out the poor thing...\n" +
                     "You and the enemy will exchange attacks until one of you goes down first. Thus deciding the winner! "
             TutorialDialogStep.ExplainPlayerHP -> "Now let's talk about HP. This is your health.\n" +
-                    "Based on your level and what kind of Critter you are using to battle the hp will be different.\n" +
-                    "You can see your Critters HP in the form of a green bar or below in a text format (HP:100)"
-            TutorialDialogStep.ExplainCpuHP -> "The opponent Critter has a red health bar instead. "
+                    "Based on your level and what kind of Critter you are using in a battle, the hp will be different.\n" +
+                    "Your Critter is Coolduck! And you can see its HP in the form of a green bar above its name or to the right in a text format (HP:100)"
+            TutorialDialogStep.ExplainCpuHP -> "The opponent Critter the Knifeduck has a red health bar instead. "
             TutorialDialogStep.ExplainLevel -> "Moving on to the LEVEL. It determines the strength of your Critter. The higher the level of your Critter the higher are its stats. "
             TutorialDialogStep.ExplainStats -> "Let's dive into the Stats of your Critter. Each Critter has its own strengths and weaknesses." +
                     " Below the Critters name you can see its stats.\n" +
                     "ATK stands for Attack. The higher the Attack the more damage the Critter will deal.\n" +
                     "DEF stands for Defence. This decides how much damage the Critter will take."
-            TutorialDialogStep.ExplainBattleLog -> "Right above this Tutorial text, you can see the BattleLog this will show what is happening during the battle."
+            TutorialDialogStep.ExplainBattleLog -> "Right above this Tutorial text, you can see the BattleLog this will show what is happening during the battle." +
+                    "You will have to tap on this box whenever you want to execute your selected attack, afterwards you will need to click it again in order to execute the " +
+                    "enemy´s attack. This is very important!"
             TutorialDialogStep.ExplainAttacks -> "Now let's learn about Attacks. These are what lower the Enemy's Health-points." +
                     "\nEach Critter has a maximum of four attacks. Next to the name of the Attack you can see the strength. The higher this stat is, the more damage it will deal."
             TutorialDialogStep.LetPlayerPlay -> "Okay, I explained the basics. Now its your turn to finish the battle, good luck"

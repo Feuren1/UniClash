@@ -277,19 +277,19 @@ class FinalBattleViewModel(
     }
 
     private fun applyDebuffToPlayer(attack: Attack) {
+        var newAtk = 0
+        var newDef = 0
         viewModelScope.launch {
             playerCritter.update { currentState ->
                 val currentAtk = currentState.playerCritter?.atk ?: 0
                 val currentDef = currentState.playerCritter?.def ?: 0
 
-                val newAtk = if (attack.attackType == AttackType.ATK_DeBuff) {
+                newAtk = if (attack.attackType == AttackType.ATK_DeBuff) {
                     (currentAtk - attack.strength).coerceAtLeast(20)
                 } else currentAtk
-
-                val newDef = if (attack.attackType == AttackType.DEF_DeBuff) {
+                newDef = if (attack.attackType == AttackType.DEF_DeBuff) {
                     (currentDef - attack.strength).coerceAtLeast(20)
                 } else currentDef
-
                 currentState.copy(
                     playerCritter = currentState.playerCritter?.copy(
                         atk = newAtk,
@@ -302,27 +302,29 @@ class FinalBattleViewModel(
                 attack.attackType == AttackType.ATK_DeBuff && playerCritter.value.playerCritter!!.atk == 1 ->
                     "${playerCritter.value.playerCritter!!.name}'s Attack can't be decreased any further!"
                 attack.attackType == AttackType.ATK_DeBuff ->
-                    "${playerCritter.value.playerCritter!!.name}'s Attack fell!"
+                    "${playerCritter.value.playerCritter!!.name}'s Attack fell to $newAtk!"
                 attack.attackType == AttackType.DEF_DeBuff && playerCritter.value.playerCritter!!.def == 1 ->
                     "${playerCritter.value.playerCritter!!.name}'s Defence can't be decreased any further!"
                 attack.attackType == AttackType.DEF_DeBuff ->
-                    "${playerCritter.value.playerCritter!!.name}'s Defence fell!"
+                    "${playerCritter.value.playerCritter!!.name}'s Defence fell to $newDef!"
                 else -> ""
             }
         }
     }
 
     private fun applyDebuffToCpu(attack: Attack) {
+        var newAtk = 0
+        var newDef = 0
         viewModelScope.launch {
             cpuCritter.update { currentState ->
                 val currentAtk = currentState.cpuCritter?.atk ?: 0
                 val currentDef = currentState.cpuCritter?.def ?: 0
 
-                val newAtk = if (attack.attackType == AttackType.ATK_DeBuff) {
+                newAtk = if (attack.attackType == AttackType.ATK_DeBuff) {
                     (currentAtk - attack.strength).coerceAtLeast(20)
                 } else currentAtk
 
-                val newDef = if (attack.attackType == AttackType.DEF_DeBuff) {
+                newDef = if (attack.attackType == AttackType.DEF_DeBuff) {
                     (currentDef - attack.strength).coerceAtLeast(20)
                 } else currentDef
 
@@ -338,11 +340,11 @@ class FinalBattleViewModel(
                 attack.attackType == AttackType.ATK_DeBuff && cpuCritter.value.cpuCritter!!.atk == 1 ->
                     "${cpuCritter.value.cpuCritter!!.name}'s Attack can't be decreased any further!"
                 attack.attackType == AttackType.ATK_DeBuff ->
-                    "${cpuCritter.value.cpuCritter!!.name}'s Attack fell"
+                    "${cpuCritter.value.cpuCritter!!.name}'s Attack fell to $newAtk"
                 attack.attackType == AttackType.DEF_DeBuff && cpuCritter.value.cpuCritter!!.def == 1 ->
                     "${cpuCritter.value.cpuCritter!!.name}'s Defence can't be decreased any further!"
                 attack.attackType == AttackType.DEF_DeBuff ->
-                    "${cpuCritter.value.cpuCritter!!.name}'s Defence fell"
+                    "${cpuCritter.value.cpuCritter!!.name}'s Defence fell to $newDef"
                 else -> ""
             }
         }

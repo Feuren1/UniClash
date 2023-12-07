@@ -81,7 +81,7 @@ class MenuActivity : ComponentActivity() {
                             .verticalScroll(rememberScrollState())
                     ) {
                         Column {
-                            MenuCard(listOf(
+                            /*MenuCard(listOf(
                                 Category(
                                     "Critters List",
                                     painterResource(R.drawable.prc2duck),
@@ -125,6 +125,7 @@ class MenuActivity : ComponentActivity() {
                             MenuCard(listOf(Category("Camera", painterResource(R.drawable.swords), 9)))
                             MenuCard(listOf(Category("Arena", painterResource(R.drawable.arena), 10)))
                             MenuCard(listOf(Category("Poké", painterResource(R.drawable.studentassistance), 11)))
+                            */
                             MenuCard(listOf(Category("BattleForcedTutorial", painterResource(R.drawable.prc2duck), 17)))
                             MenuCard(listOf(Category("BattleForcedTutorialAdvanced", painterResource(R.drawable.prc2duck), 18)))
                             MenuCard(listOf(Category("BattleTutorial", painterResource(R.drawable.prc2duck), 15)))

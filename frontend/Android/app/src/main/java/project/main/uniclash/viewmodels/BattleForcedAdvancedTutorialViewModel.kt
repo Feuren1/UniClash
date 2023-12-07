@@ -226,7 +226,7 @@ class BattleForcedAdvancedTutorialViewModel(
         return when (step) {
             AdvancedForcedTutorialDialogStep.Welcome -> "Welcome to the advanced Tutorial. Here you are going to learn more advanced mechanics."
             AdvancedForcedTutorialDialogStep.ExplainTypesOfAttacks -> "In Uniclash there are 3 types of attacks:\n" +
-                    "NORMAL Attacks: These are the normal Attacks that deal DAMAGE to your opponent. You already used them in the Tutorial before.\n" +
+                    "NORMAL Attacks: These are the normal Attacks that deal DAMAGE to your opponent. You already used them in the previous Tutorial.\n" +
                     "BUFFS: These will INCREASE your Critters Attack or Defence during the battle.\n" +
                     "DEBUFFS which will DECREASE your opponents Defence or Attack"
             AdvancedForcedTutorialDialogStep.ExplainBuffs -> "Buffs can be easily spotted by the green sword/shield next to the attack. BUT you cannot buff stats past a certain point\n" +
@@ -235,8 +235,8 @@ class BattleForcedAdvancedTutorialViewModel(
             AdvancedForcedTutorialDialogStep.ExplainDebuffs -> "DeBuffs on the other hand are displayed by a Red sword/shield next to the attack. BUT you cannot debuff stats past a certain point\n" +
                     "Attacks with a red sword will DECREASE the enemy´s Attack stat\n" +
                     "Attacks with a red shield will DECREASE the enemy´s Defence stat"
-            AdvancedForcedTutorialDialogStep.ExplainUsage -> "You might ask yourself: Why should I use Buffs/Debuffs when I can just deal damage instead...\n" +
-                    "And that is partially true, but this little dragon over there is a Tanky dude. He has a DEFENCE stat of 130 and 130 HP. So it Might be a good idea to lower that defence first."
+            AdvancedForcedTutorialDialogStep.ExplainUsage -> "You might ask yourself: Why should I use Buffs and Debuffs when I can just deal damage instead...\n" +
+                    "And you are right, but this little dragon over there is a tanky dude. He has a Defence stat of 130 and 130 HP. So it Might be a good idea to lower that defence first."
             AdvancedForcedTutorialDialogStep.ExplainSelectDefenseDebuff -> "So lets do it then! Select Shield Break"
             AdvancedForcedTutorialDialogStep.ExplainExecuteDefenseDebuff -> "Now Execute it!"
             AdvancedForcedTutorialDialogStep.ExplainDefenseDebuffResult -> "As You can see the BattleLog says that the Dinos Defence Dropped.\n" +
@@ -248,8 +248,8 @@ class BattleForcedAdvancedTutorialViewModel(
                     "Select Beak Sharpener"
             AdvancedForcedTutorialDialogStep.ExplainExecuteAttackBuff -> "And execute it!"
             AdvancedForcedTutorialDialogStep.ExplainAttackBuffResult -> "As you can see our Attack is now higher than before. Now its time to finish him off!"
-            AdvancedForcedTutorialDialogStep.ExplainSelectAttack -> "Select HyperBeam now to finish him off!"
-            AdvancedForcedTutorialDialogStep.ExplainLetPlayerPlay -> "Okay now its your turn. But be careful the Quizizzdragon is also able to use Buffs and Debuffs. Read the BattleLog carefully"
+            AdvancedForcedTutorialDialogStep.ExplainSelectAttack -> "Select HyperBeam to deal damage now!"
+            AdvancedForcedTutorialDialogStep.ExplainLetPlayerPlay -> "Okay now its your turn. But be careful the Quizizzdragon is able to use Buffs and Debuffs as well! Read the BattleLog carefully"
             else -> {return "null"}
         }
     }
@@ -416,19 +416,19 @@ class BattleForcedAdvancedTutorialViewModel(
     }
 
     private fun applyDebuffToPlayer(attack: Attack) {
+        var newAtk = 0
+        var newDef = 0
         viewModelScope.launch {
             playerCritter.update { currentState ->
                 val currentAtk = currentState.playerCritter?.atk ?: 0
                 val currentDef = currentState.playerCritter?.def ?: 0
 
-                val newAtk = if (attack.attackType == AttackType.ATK_DeBuff) {
+                newAtk = if (attack.attackType == AttackType.ATK_DeBuff) {
                     (currentAtk - attack.strength).coerceAtLeast(20)
                 } else currentAtk
-
-                val newDef = if (attack.attackType == AttackType.DEF_DeBuff) {
+                newDef = if (attack.attackType == AttackType.DEF_DeBuff) {
                     (currentDef - attack.strength).coerceAtLeast(20)
                 } else currentDef
-
                 currentState.copy(
                     playerCritter = currentState.playerCritter?.copy(
                         atk = newAtk,
@@ -441,27 +441,29 @@ class BattleForcedAdvancedTutorialViewModel(
                 attack.attackType == AttackType.ATK_DeBuff && playerCritter.value.playerCritter!!.atk == 1 ->
                     "${playerCritter.value.playerCritter!!.name}'s Attack can't be decreased any further!"
                 attack.attackType == AttackType.ATK_DeBuff ->
-                    "${playerCritter.value.playerCritter!!.name}'s Attack fell!"
+                    "${playerCritter.value.playerCritter!!.name}'s Attack fell to $newAtk!"
                 attack.attackType == AttackType.DEF_DeBuff && playerCritter.value.playerCritter!!.def == 1 ->
                     "${playerCritter.value.playerCritter!!.name}'s Defence can't be decreased any further!"
                 attack.attackType == AttackType.DEF_DeBuff ->
-                    "${playerCritter.value.playerCritter!!.name}'s Defence fell!"
+                    "${playerCritter.value.playerCritter!!.name}'s Defence fell to $newDef!"
                 else -> ""
             }
         }
     }
 
     private fun applyDebuffToCpu(attack: Attack) {
+        var newAtk = 0
+        var newDef = 0
         viewModelScope.launch {
             cpuCritter.update { currentState ->
                 val currentAtk = currentState.cpuCritter?.atk ?: 0
                 val currentDef = currentState.cpuCritter?.def ?: 0
 
-                val newAtk = if (attack.attackType == AttackType.ATK_DeBuff) {
+                newAtk = if (attack.attackType == AttackType.ATK_DeBuff) {
                     (currentAtk - attack.strength).coerceAtLeast(20)
                 } else currentAtk
 
-                val newDef = if (attack.attackType == AttackType.DEF_DeBuff) {
+                newDef = if (attack.attackType == AttackType.DEF_DeBuff) {
                     (currentDef - attack.strength).coerceAtLeast(20)
                 } else currentDef
 
@@ -477,11 +479,11 @@ class BattleForcedAdvancedTutorialViewModel(
                 attack.attackType == AttackType.ATK_DeBuff && cpuCritter.value.cpuCritter!!.atk == 1 ->
                     "${cpuCritter.value.cpuCritter!!.name}'s Attack can't be decreased any further!"
                 attack.attackType == AttackType.ATK_DeBuff ->
-                    "${cpuCritter.value.cpuCritter!!.name}'s Attack fell"
+                    "${cpuCritter.value.cpuCritter!!.name}'s Attack fell to $newAtk"
                 attack.attackType == AttackType.DEF_DeBuff && cpuCritter.value.cpuCritter!!.def == 1 ->
                     "${cpuCritter.value.cpuCritter!!.name}'s Defence can't be decreased any further!"
                 attack.attackType == AttackType.DEF_DeBuff ->
-                    "${cpuCritter.value.cpuCritter!!.name}'s Defence fell"
+                    "${cpuCritter.value.cpuCritter!!.name}'s Defence fell to $newDef"
                 else -> ""
             }
         }

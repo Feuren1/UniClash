@@ -312,7 +312,7 @@ fun CpuCritterForcedTutorialAdvancedInfoText(critter: CritterUsable, battleForce
             ) {
                 Text(
                     text = critter.name,
-                    fontSize = 18.sp,
+                    fontSize = 15.sp,
                     fontWeight = FontWeight.Bold,
                     color = Color.Black
                 )
@@ -322,7 +322,7 @@ fun CpuCritterForcedTutorialAdvancedInfoText(critter: CritterUsable, battleForce
                                     append("LVL: ${critter.level} HP: ${critter.hp}")
                                 }
                             },
-                            fontSize = 18.sp,
+                            fontSize = 14.sp,
                             color = Color.White
                         )
             }
@@ -368,7 +368,7 @@ fun PlayerCritterForcedTutorialAdvancedInfoText(critter: CritterUsable, battleFo
                                     append("LVL: ${critter.level} HP: ${critter.hp}")
                                 }
                             },
-                            fontSize = 18.sp,
+                            fontSize = 14.sp,
                             color = Color.White
                         )
             }

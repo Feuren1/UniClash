@@ -462,7 +462,7 @@ fun PlayerCritterAdvancedTutorialInfoText(critter: CritterUsable) {
                             append("LVL: ${critter.level} HP: ${critter.hp}")
                         }
                     },
-                    fontSize = 18.sp,
+                    fontSize = 14.sp,
                     color = Color.White
                 )
             }
@@ -505,7 +505,7 @@ fun CpuCritterAdvancedTutorialInfoText(critter: CritterUsable) {
                         append("LVL: ${critter.level} HP: ${critter.hp}")
                     }
                 },
-                fontSize = 18.sp,
+                fontSize = 14.sp,
                 color = Color.White
             )
         }

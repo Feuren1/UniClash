@@ -507,7 +507,7 @@ fun PlayerCritterFinalBattleInfoText(critter: CritterUsable, finalBattleViewMode
                             append("LVL: ${critter.level} HP: ${critter.hp}")
                         }
                     },
-                    fontSize = 18.sp,
+                    fontSize = 14.sp,
                     color = Color.White
                 )
             }
@@ -546,7 +546,7 @@ fun CpuCritterFinalBattleInfoText(critter: CritterUsable, finalBattleViewModel: 
             ) {
                 Text(
                     text = critter.name,
-                    fontSize = 18.sp,
+                    fontSize = 15.sp,
                     fontWeight = FontWeight.Bold,
                     color = Color.Black
                 )
@@ -557,7 +557,7 @@ fun CpuCritterFinalBattleInfoText(critter: CritterUsable, finalBattleViewModel: 
                             append("LVL: ${critter.level} HP: ${critter.hp}")
                         }
                     },
-                    fontSize = 18.sp,
+                    fontSize = 14.sp,
                     color = Color.White
                 )
             }

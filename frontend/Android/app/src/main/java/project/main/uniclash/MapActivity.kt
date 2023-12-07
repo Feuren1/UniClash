@@ -46,6 +46,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.lifecycleScope
+import coil.compose.rememberImagePainter
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
 import com.utsman.osmandcompose.CameraState
@@ -326,9 +327,8 @@ class MapActivity : ComponentActivity() {
                                 Text(text = marker.snippet!!, fontSize = 15.sp, color = Color.White)
                                 Text(text = "${geoCodingHelper.getAddressFromLocation(marker.state.latitude,marker.state.longitude)}", fontSize = 15.sp, color = Color.White)
                                 Spacer(modifier = Modifier.height(8.dp))
-                                val drawableImage = painterResource(id = marker.pic)
                                 Image(
-                                    painter = drawableImage,
+                                    painter = rememberImagePainter(marker.pic),
                                     contentDescription = null, // Provide a proper content description if needed
                                     modifier = Modifier.size(200.dp) // Adjust size as needed
                                 )

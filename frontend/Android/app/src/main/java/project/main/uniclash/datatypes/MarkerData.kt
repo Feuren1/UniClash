@@ -11,7 +11,7 @@ open class MarkerData(
     open var visible : Boolean = true,
     open var title :String? = "marker",
     open var snippet : String? = null,
-    open var pic : Int = 0,
+    open var pic : Drawable? = null,
     open var button : Class<out Activity> = MainActivity::class.java,
     open var buttonText : String? = "button",
     )
@@ -22,7 +22,7 @@ data class MarkerWildEncounter(
     override var visible : Boolean = true,
     override var title :String? = "marker",
     override var snippet : String? = null,
-    override var pic : Int = 0,
+    override var pic : Drawable? = null,
     override var button : Class<out Activity> = MainActivity::class.java,
     override var buttonText : String? = "button",
     var critterUsable: CritterUsable? = null,
@@ -36,7 +36,7 @@ data class MarkerStudentHub(
     override var visible : Boolean = true,
     override var title :String? = "marker",
     override var snippet : String? = null,
-    override var pic : Int = 0,
+    override var pic : Drawable? = null,
     override var button : Class<out Activity> = MainActivity::class.java,
     override var buttonText : String? = "button",
     var studentHub : StudentHub ? = null
@@ -50,7 +50,7 @@ data class MarkerArena(
     override var visible : Boolean = true,
     override var title :String? = "marker",
     override var snippet : String? = null,
-    override var pic : Int = 0,
+    override var pic : Drawable? = null,
     override var button : Class<out Activity> = MainActivity::class.java,
     override var buttonText : String? = "button",
     var arena : Arena ? = null

@@ -2,8 +2,14 @@ package project.main.uniclash.viewmodels
 
 import android.annotation.SuppressLint
 import android.content.Context
+import android.content.res.Resources
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
+import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.Drawable
+import android.util.Base64
 import android.util.Log
+import android.widget.ImageView
 import androidx.compose.ui.text.toUpperCase
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
@@ -165,13 +171,18 @@ class MapMarkerViewModel(
                 val icon: Drawable? =
                     mapCalculations.resizeDrawable(context, R.drawable.store, 50.0F)
 
+                val base64EncodedBitmap = studentHub.picture
+                val decodedBytes: ByteArray = Base64.decode(base64EncodedBitmap, Base64.DEFAULT)
+                val bitmap: Bitmap = BitmapFactory.decodeByteArray(decodedBytes, 0, decodedBytes.size)
+                val bitmapDrawable = BitmapDrawable(Resources.getSystem(), bitmap)
+
                 val myMarker = MarkerStudentHub(
                     state = geoPoint,
                     icon = icon,
                     visible = true,
                     title = "${studentHub?.name}",
                     snippet = "${studentHub?.description}",
-                    pic = R.drawable.store,
+                    pic = bitmapDrawable,
                     button = StudentHubActivity::class.java,
                     buttonText = "Go to Hub",
                     studentHub = studentHub
@@ -228,13 +239,18 @@ class MapMarkerViewModel(
                 val icon: Drawable? =
                     mapCalculations.resizeDrawable(context, R.drawable.arena, 50.0F)
 
+                val base64EncodedBitmap = arena.picture
+                val decodedBytes: ByteArray = Base64.decode(base64EncodedBitmap, Base64.DEFAULT)
+                val bitmap: Bitmap = BitmapFactory.decodeByteArray(decodedBytes, 0, decodedBytes.size)
+                val bitmapDrawable = BitmapDrawable(Resources.getSystem(), bitmap)
+
                 val myMarker = MarkerArena(
                     state = geoPoint,
                     icon = icon,
                     visible = true,
                     title = "${arena?.name}",
                     snippet = "${arena?.description}",
-                    pic = R.drawable.arena,
+                    pic = bitmapDrawable,
                     button = ArenaActivity::class.java,
                     buttonText = "Enter arena",
                     arena = arena
@@ -294,13 +310,14 @@ class MapMarkerViewModel(
                 val wildEncounter = wildEncounterMax
 
                 while (i < 800) {
+
                     var myMarker = MarkerWildEncounter(
                         state = GeoPoint(randomLocation.get(i).latitude, randomLocation.get(i).longitude),
                         icon = mapCalculations.resizeDrawable(context, CritterPic.MUSK.searchDrawableM("${wildEncounter.get(i)?.name?.toUpperCase()}M"),50.0F),
                         visible = true,
                         title = "${wildEncounter.get(i)?.name}",
                         snippet = "Level: ${wildEncounter.get(i)?.level}",
-                        pic = CritterPic.MUSK.searchDrawable("${wildEncounter.get(i)?.name?.toUpperCase()}"),
+                        pic =  context.getDrawable(CritterPic.MUSK.searchDrawable("${wildEncounter.get(i)?.name?.toUpperCase()}")),
                         button = WildEncounterActivity::class.java,
                         buttonText = "catch Critter",
                         critterUsable = wildEncounter.get(i)

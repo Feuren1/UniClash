@@ -6,6 +6,6 @@ data class NewArena(
     val lat : String,
     val lon : String,
     val studentId: Int,
-
+    val picture : String
 ){
 }

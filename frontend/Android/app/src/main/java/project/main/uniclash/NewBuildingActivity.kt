@@ -6,6 +6,7 @@ import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.Matrix
 import android.os.Bundle
+import android.util.Base64
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
@@ -58,6 +59,7 @@ import project.main.uniclash.map.GeoCodingHelper
 import project.main.uniclash.retrofit.ArenaService
 import project.main.uniclash.retrofit.StudentHubService
 import project.main.uniclash.viewmodels.NewBuildingViewModel
+import java.io.ByteArrayOutputStream
 
 
 enum class BuildingType(){
@@ -418,19 +420,30 @@ class NewBuildingActivity : ComponentActivity() {
                 ) // Hintergrundfarbe und abgeflachte Ecken
                 .clickable {
                     if (confirmRequest) {
+                        val originalBitmap = BitmapFactory.decodeFile(capturedImagePath)
+                        val targetWidth = 350
+                        val targetHeight = 350
+                        val scaledBitmap = Bitmap.createScaledBitmap(originalBitmap, targetWidth, targetHeight, false)
+                        val outputStream = ByteArrayOutputStream()
+                        scaledBitmap.compress(Bitmap.CompressFormat.PNG,5,outputStream)
+                        val bitmapBytes = outputStream.toByteArray()
+                        val base64EncodedBitmap = Base64.encodeToString(bitmapBytes, Base64.DEFAULT)
+
                         if (building == BuildingType.ARENA) {
                             newBuildingViewModel.addArena(
                                 title,
                                 description,
                                 lat.toString(),
-                                long.toString()
+                                long.toString(),
+                                base64EncodedBitmap
                             )
                         } else {
                             newBuildingViewModel.addStudentHub(
                                 title,
                                 description,
                                 lat.toString(),
-                                long.toString()
+                                long.toString(),
+                                base64EncodedBitmap
                             )
                         }
                             newBuildingSingleTon.setTitle("")

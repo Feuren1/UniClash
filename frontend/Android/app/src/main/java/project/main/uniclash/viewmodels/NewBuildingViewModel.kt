@@ -51,11 +51,11 @@ private  val arenaService: ArenaService,
             isLoading = false
         )
     )
-    fun addArena(name : String, description : String, lat : String, long : String){
+    fun addArena(name : String, description : String, lat : String, long : String, pic : String){
         viewModelScope.launch {
             arena.update { it.copy(isLoading = true) }
             try {
-                var newArena = NewArena(name,description,lat,long,0)
+                var newArena = NewArena(name,description,lat,long,0,pic)
                 val response = arenaService.postArena(newArena).enqueue()
                 Log.d(TAG, "loadArena: $response")
                 if (response.isSuccessful) {
@@ -72,11 +72,11 @@ private  val arenaService: ArenaService,
         }
     }
 
-    fun addStudentHub(name : String, description : String, lat : String, long : String){
+    fun addStudentHub(name : String, description : String, lat : String, long : String, pic : String){
         viewModelScope.launch {
             studentHub.update { it.copy(isLoading = true) }
             try {
-                var newStudentHub = NewStudentHub(name,description,lat,long)
+                var newStudentHub = NewStudentHub(name,description,lat,long,pic)
                 val response = studentHubService.postStudentHub(newStudentHub).enqueue()
                 Log.d(TAG, "loadStudentHub: $response")
                 if (response.isSuccessful) {

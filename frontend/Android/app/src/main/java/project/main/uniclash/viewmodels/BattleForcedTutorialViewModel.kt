@@ -179,7 +179,7 @@ class BattleForcedTutorialViewModel(
                     " Below the Critters name you can see its stats.\n" +
                     "ATK stands for Attack. The higher the Attack the more damage the Critter will deal.\n" +
                     "DEF stands for Defence. This decides how much damage the Critter will take."
-            ForcedTutorialDialogStep.ExplainBattleLog -> "Right above this Tutorial text, you can see the BattleLog this will show what is happening during the battle."
+            ForcedTutorialDialogStep.ExplainBattleLog -> "Right above this Tutorial text, you can see the BattleLog this will show what is happening during the battle. Reading the Battlelog is very important!"
             ForcedTutorialDialogStep.ExplainAttacks -> "Now let's learn about Attacks. These are what lower the Enemy's Health-points." +
                     "\nEach Critter has a maximum of four attacks. Next to the name of the Attack you can see the strength. The higher this stat is, the more damage it will deal."
             ForcedTutorialDialogStep.ExplainSelectAttack -> "But enough talking, lets select an attack now!"

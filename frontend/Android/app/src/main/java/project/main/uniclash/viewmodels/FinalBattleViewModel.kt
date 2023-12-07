@@ -25,26 +25,29 @@ class FinalBattleViewModel(
     val isPlayerTurn = MutableStateFlow<Boolean>(false)
     val playerWon = MutableStateFlow<Boolean?>(null)
     private val cpuAttackOrder = listOf(
+        Attack(2, "Super Guard", 25, AttackType.DEF_Buff),
+        Attack(2, "Super Guard", 25, AttackType.DEF_Buff),
+        Attack(4, "Beak Sharpener", 25, AttackType.ATK_Buff),
+        Attack(3, "ShieldBreak", 20, AttackType.DEF_DeBuff),
         Attack(1, "Dive Attack", 70, AttackType.DAMAGE_DEALER),
-        Attack(3, "ShieldBreak", 15, AttackType.DEF_DeBuff),
-        Attack(3, "ShieldBreak", 15, AttackType.DEF_DeBuff),
+        Attack(2, "Super Guard", 25, AttackType.DEF_Buff),
+        Attack(3, "ShieldBreak", 20, AttackType.DEF_DeBuff),
+        Attack(4, "Beak Sharpener", 25, AttackType.ATK_Buff),
+        Attack(1, "Dive Attack", 70, AttackType.DAMAGE_DEALER),
+        Attack(1, "Dive Attack", 70, AttackType.DAMAGE_DEALER),
         Attack(2, "Super Guard", 25, AttackType.DEF_Buff),
         Attack(1, "Dive Attack", 70, AttackType.DAMAGE_DEALER),
         Attack(1, "Dive Attack", 70, AttackType.DAMAGE_DEALER),
-        Attack(2, "Super Guard", 25, AttackType.DEF_Buff),
-        Attack(2, "Super Guard", 25, AttackType.DEF_Buff),
-        Attack(1, "Dive Attack", 70, AttackType.DAMAGE_DEALER),
-        Attack(1, "Dive Attack", 70, AttackType.DAMAGE_DEALER),
-        Attack(3, "ShieldBreak", 15, AttackType.DEF_DeBuff),
+        Attack(3, "ShieldBreak", 20, AttackType.DEF_DeBuff),
         Attack(4, "Beak Sharpener", 25, AttackType.ATK_Buff),
         Attack(1, "Dive Attack", 70, AttackType.DAMAGE_DEALER),
         Attack(2, "Super Guard", 25, AttackType.DEF_Buff),
         Attack(1, "Dive Attack", 70, AttackType.DAMAGE_DEALER),
-        Attack(3, "ShieldBreak", 15, AttackType.DEF_DeBuff),
+        Attack(3, "ShieldBreak", 20, AttackType.DEF_DeBuff),
         Attack(4, "Beak Sharpener", 25, AttackType.ATK_Buff),
         Attack(1, "Dive Attack", 70, AttackType.DAMAGE_DEALER),
-        Attack(3, "ShieldBreak", 15, AttackType.DEF_DeBuff),
-        Attack(3, "ShieldBreak", 15, AttackType.DEF_DeBuff),
+        Attack(3, "ShieldBreak", 20, AttackType.DEF_DeBuff),
+        Attack(3, "ShieldBreak", 20, AttackType.DEF_DeBuff),
         Attack(2, "Super Guard", 25, AttackType.DEF_Buff),
         Attack(1, "Dive Attack", 70, AttackType.DAMAGE_DEALER),
         Attack(1, "Dive Attack", 70, AttackType.DAMAGE_DEALER),
@@ -52,10 +55,10 @@ class FinalBattleViewModel(
         Attack(2, "Super Guard", 25, AttackType.DEF_Buff),
         Attack(1, "Dive Attack", 70, AttackType.DAMAGE_DEALER),
         Attack(1, "Dive Attack", 70, AttackType.DAMAGE_DEALER),
-        Attack(3, "ShieldBreak", 15, AttackType.DEF_DeBuff),
+        Attack(3, "ShieldBreak", 20, AttackType.DEF_DeBuff),
         Attack(1, "Dive Attack", 70, AttackType.DAMAGE_DEALER),
         Attack(2, "Super Guard", 25, AttackType.DEF_Buff),
-        Attack(3, "ShieldBreak", 15, AttackType.DEF_DeBuff),
+        Attack(3, "ShieldBreak", 20, AttackType.DEF_DeBuff),
         Attack(4, "Beak Sharpener", 25, AttackType.ATK_Buff),
     )
 
@@ -97,12 +100,12 @@ class FinalBattleViewModel(
         viewModelScope.launch {
             Log.d(TAG, "Fetching initial critters data: ")
 
-            val playerAttack1 = Attack(1, "Defence Break", 15, AttackType.DEF_DeBuff)
+            val playerAttack1 = Attack(1, "Defence Break", 20, AttackType.DEF_DeBuff)
             val playerAttack2 = Attack(2, "Hyper Beam", 70, AttackType.DAMAGE_DEALER)
             val playerAttack3 = Attack(3, "Super Guard", 25, AttackType.DEF_Buff)
             val playerAttack4 = Attack(4, "Beak Sharpener", 25, AttackType.ATK_Buff)
             val listOfPlayerAttacks = listOf(playerAttack1, playerAttack2, playerAttack3, playerAttack4)
-            val playerTutorialCritter = CritterUsable(40, "Prc2Duck", 250, 70, 80, 50, listOfPlayerAttacks,1, 1)
+            val playerTutorialCritter = CritterUsable(40, "Prc2Duck", 220, 70, 80, 50, listOfPlayerAttacks,1, 1)
 
             playerCritter.update { state ->
                 state.copy(playerCritter = playerTutorialCritter, isLoading = false)
@@ -113,7 +116,7 @@ class FinalBattleViewModel(
             val cpuAttack3 = Attack(3, "Shield Break", 15, AttackType.DEF_DeBuff)
             val cpuAttack4 = Attack(4, "Beak Sharpener", 25, AttackType.ATK_Buff)
             val listOfCpuAttacks = listOf(cpuAttack1, cpuAttack2, cpuAttack3, cpuAttack4)
-            val cpuTutorialCritter = CritterUsable(40, "Linuxpenguin", 250, 80, 85, 70, listOfCpuAttacks,1, 1)
+            val cpuTutorialCritter = CritterUsable(40, "Linuxpenguin", 250, 80, 85, 40, listOfCpuAttacks,1, 1)
 
             cpuCritter.update { state ->
                 state.copy(cpuCritter = cpuTutorialCritter, isLoading = false)

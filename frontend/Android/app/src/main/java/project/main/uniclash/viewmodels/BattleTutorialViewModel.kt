@@ -180,7 +180,7 @@ class BattleTutorialViewModel(
                     "DEF stands for Defence. This decides how much damage the Critter will take."
             TutorialDialogStep.ExplainBattleLog -> "Right above this Tutorial text, you can see the BattleLog this will show what is happening during the battle." +
                     "You will have to tap on this box whenever you want to execute your selected attack, afterwards you will need to click it again in order to execute the " +
-                    "enemy´s attack. This is very important!"
+                    "enemy´s attack. Reading the Battlelog is very important!"
             TutorialDialogStep.ExplainAttacks -> "Now let's learn about Attacks. These are what lower the Enemy's Health-points." +
                     "\nEach Critter has a maximum of four attacks. Next to the name of the Attack you can see the strength. The higher this stat is, the more damage it will deal."
             TutorialDialogStep.LetPlayerPlay -> "Okay, I explained the basics. Now its your turn to finish the battle, good luck"

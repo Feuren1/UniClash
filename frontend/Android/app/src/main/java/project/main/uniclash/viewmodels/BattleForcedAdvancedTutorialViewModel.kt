@@ -133,8 +133,8 @@ class BattleForcedAdvancedTutorialViewModel(
 
             val playerAttack1 = Attack(1, "Splash", 60, AttackType.DAMAGE_DEALER)
             val playerAttack2 = Attack(2, "HyperBeam", 70, AttackType.DAMAGE_DEALER)
-            val playerAttack3 = Attack(3, "Defence Break", 25, AttackType.DEF_DeBuff)
-            val playerAttack4 = Attack(4, "Beak Sharpener", 20, AttackType.ATK_Buff)
+            val playerAttack3 = Attack(3, "Defence Break", 15, AttackType.DEF_DeBuff)
+            val playerAttack4 = Attack(4, "Beak Sharpener", 25, AttackType.ATK_Buff)
             val listOfPlayerAttacks = listOf(playerAttack1, playerAttack2, playerAttack3, playerAttack4)
             val playerTutorialCritter = CritterUsable(24, "Coolduck", 100, 70, 80, 50, listOfPlayerAttacks,1, 1)
 
@@ -147,7 +147,7 @@ class BattleForcedAdvancedTutorialViewModel(
             val cpuAttack3 = Attack(3, "ShieldBreak", 15, AttackType.DEF_DeBuff)
             val cpuAttack4 = Attack(4, "SkullCrush", 70, AttackType.DAMAGE_DEALER)
             val listOfCpuAttacks = listOf(cpuAttack1, cpuAttack2, cpuAttack3, cpuAttack4)
-            val cpuTutorialCritter = CritterUsable(23, "Quizizzdragon", 130, 60, 130, 30, listOfCpuAttacks,1, 1)
+            val cpuTutorialCritter = CritterUsable(23, "Quizizzdragon", 130, 60, 115, 30, listOfCpuAttacks,1, 1)
 
             cpuCritter.update { state ->
                 state.copy(cpuCritter = cpuTutorialCritter, isLoading = false)
@@ -228,28 +228,31 @@ class BattleForcedAdvancedTutorialViewModel(
             AdvancedForcedTutorialDialogStep.ExplainTypesOfAttacks -> "In Uniclash there are 3 types of attacks:\n" +
                     "NORMAL Attacks: These are the normal Attacks that deal DAMAGE to your opponent. You already used them in the previous Tutorial.\n" +
                     "BUFFS: These will INCREASE your Critters Attack or Defence during the battle.\n" +
-                    "DEBUFFS which will DECREASE your opponents Defence or Attack"
-            AdvancedForcedTutorialDialogStep.ExplainBuffs -> "Buffs can be easily spotted by the green sword/shield next to the attack. BUT you cannot buff stats past a certain point\n" +
+                    "DEBUFFS: which will DECREASE your opponents Defence or Attack."
+            AdvancedForcedTutorialDialogStep.ExplainBuffs -> "Buffs can easily be spotted by the green sword/shield next to the attack.\n" +
                     "Attacks with a green sword will INCREASE your own Attack stat\n" +
-                    "Attacks with a green shield will INCREASE your own Defence stat"
-            AdvancedForcedTutorialDialogStep.ExplainDebuffs -> "DeBuffs on the other hand are displayed by a Red sword/shield next to the attack. BUT you cannot debuff stats past a certain point\n" +
-                    "Attacks with a red sword will DECREASE the enemy´s Attack stat\n" +
-                    "Attacks with a red shield will DECREASE the enemy´s Defence stat"
+                    "Attacks with a green shield will INCREASE your own Defence stat\n" +
+                    "But you cannot buff infinitely. There is a maximum value of 180 for both defence and attack."
+            AdvancedForcedTutorialDialogStep.ExplainDebuffs -> "DeBuffs on the other hand are displayed by a Red sword or shield next to the attack.\n" +
+                    "Attacks with a red sword will DECREASE the enemy´s Attack stat.\n" +
+                    "Attacks with a red shield will DECREASE the enemy´s Defence stat.\n" +
+                    "But you cannot debuff infinitely. There is a minimum value of 20 for both defence and attack."
             AdvancedForcedTutorialDialogStep.ExplainUsage -> "You might ask yourself: Why should I use Buffs and Debuffs when I can just deal damage instead...\n" +
-                    "And you are right, but this little dragon over there is a tanky dude. He has a Defence stat of 130 and 130 HP. So it Might be a good idea to lower that defence first."
-            AdvancedForcedTutorialDialogStep.ExplainSelectDefenseDebuff -> "So lets do it then! Select Shield Break"
+                    "And you are right, but this little dragon over there is a tanky dude. He has a Defence stat of 115 and 130 HP. It is very important to lower that defence before using an normal attack!"
+            AdvancedForcedTutorialDialogStep.ExplainSelectDefenseDebuff -> "So lets do it then! Select Defence Break"
             AdvancedForcedTutorialDialogStep.ExplainExecuteDefenseDebuff -> "Now Execute it!"
             AdvancedForcedTutorialDialogStep.ExplainDefenseDebuffResult -> "As You can see the BattleLog says that the Dinos Defence Dropped.\n" +
                     "But this particular Dragon has such a high DEFENCE that it might be a good idea to do it again!"
             AdvancedForcedTutorialDialogStep.ExplainSelectDefenseDebuff2 -> "So lets do it then! Select Defence Break"
             AdvancedForcedTutorialDialogStep.ExplainExecuteDefenseDebuff2 -> "Now Execute it!"
-            AdvancedForcedTutorialDialogStep.ExplainDefenseDebuffResult2 -> "Okay now we are talking this looks like a manageable amount of Defense!"
-            AdvancedForcedTutorialDialogStep.ExplainSelectAttackBuff -> "Okay now that we have lowered the dragons defence Quite a bit, Lets raise our Attack stat so that we deal even more Damage! " +
+            AdvancedForcedTutorialDialogStep.ExplainDefenseDebuffResult2 -> "You can see that the Dragons defence is now lower than before."
+            AdvancedForcedTutorialDialogStep.ExplainSelectAttackBuff -> "Okay now that we have lowered the dragons defence Quite a bit, lets raise our own Attack stat so that we deal even more Damage! " +
                     "Select Beak Sharpener"
             AdvancedForcedTutorialDialogStep.ExplainExecuteAttackBuff -> "And execute it!"
-            AdvancedForcedTutorialDialogStep.ExplainAttackBuffResult -> "As you can see our Attack is now higher than before. Now its time to finish him off!"
+            AdvancedForcedTutorialDialogStep.ExplainAttackBuffResult -> "As you can see our Attack is now higher than before. Now its time to deal some good amount of damage!"
             AdvancedForcedTutorialDialogStep.ExplainSelectAttack -> "Select HyperBeam to deal damage now!"
-            AdvancedForcedTutorialDialogStep.ExplainLetPlayerPlay -> "Okay now its your turn. But be careful the Quizizzdragon is able to use Buffs and Debuffs as well! Read the BattleLog carefully"
+            AdvancedForcedTutorialDialogStep.ExplainLetPlayerPlay -> "Okay now its your turn! But be aware that buffing and debuffing several times is crucial in a battle so use them often!\n" +
+                    "Also be careful the Quizizzdragon is able to use Buffs and Debuffs as well! Read the BattleLog carefully."
             else -> {return "null"}
         }
     }

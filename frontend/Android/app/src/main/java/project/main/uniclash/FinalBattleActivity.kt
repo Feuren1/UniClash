@@ -408,7 +408,7 @@ fun FinalBattle(finalBattleViewModel:FinalBattleViewModel = viewModel()) {
                     } // Handle click to execute attack
             ) {
                 Text(
-                    text = "Remember what you learned about Stats, Buffs and Debuffs and beat the final Challenge!",
+                    text = "Remember what you learned about Stats, Buffs and Debuffs and beat the final Challenge! Try to keep your attack and defence high, while lowering the Linuxpenguin´s defence.",
                     modifier = Modifier
                         .padding(8.dp)
                         .background(

@@ -128,7 +128,7 @@ class BattleTutorialAdvancedViewModel(
             val cpuAttack3 = Attack(3, "ShieldBreak", 15, AttackType.DEF_DeBuff)
             val cpuAttack4 = Attack(4, "SkullCrush", 70, AttackType.DAMAGE_DEALER)
             val listOfCpuAttacks = listOf(cpuAttack1, cpuAttack2, cpuAttack3, cpuAttack4)
-            val cpuTutorialCritter = CritterUsable(23, "Quizizzdragon", 130, 60, 130, 30, listOfCpuAttacks,1, 1)
+            val cpuTutorialCritter = CritterUsable(23, "Quizizzdragon", 130, 60, 115, 30, listOfCpuAttacks,1, 1)
 
             cpuCritter.update { state ->
                 state.copy(cpuCritter = cpuTutorialCritter, isLoading = false)
@@ -158,16 +158,19 @@ class BattleTutorialAdvancedViewModel(
             AdvancedTutorialDialogStep.ExplainTypesOfAttacks -> "In Uniclash there are 3 types of attacks:\n" +
                     "NORMAL Attacks: These are the normal Attacks that deal DAMAGE to your opponent. You already used them in the previous Tutorial.\n" +
                     "BUFFS: These will INCREASE your Critters Attack or Defence during the battle.\n" +
-                    "DEBUFFS which will DECREASE your opponents Defence or Attack"
-            AdvancedTutorialDialogStep.ExplainBuffs -> "Buffs can be easily spotted by the green sword/shield next to the attack. BUT you cannot buff stats past a certain point\n" +
-                    "Attacks with a green sword will INCREASE your own Attack stat\n" +
-                    "Attacks with a green shield will INCREASE your own Defence stat"
-            AdvancedTutorialDialogStep.ExplainDebuffs -> "DeBuffs on the other hand are displayed by a Red sword/shield next to the attack. BUT you cannot debuff stats past a certain point\n" +
-                    "Attacks with a red sword will DECREASE the enemy´s Attack stat\n" +
-                    "Attacks with a red shield will DECREASE the enemy´s Defence stat"
+                    "DEBUFFS: which will DECREASE your opponents Defence or Attack."
+            AdvancedTutorialDialogStep.ExplainBuffs -> "Buffs can easily be spotted by the green sword or shield next to the attack.\n" +
+                    "Attacks with a green sword will INCREASE your own Attack stat.\n" +
+                    "Attacks with a green shield will INCREASE your own Defence stat.\n" +
+                    "But you cannot buff infinitely. There is a maximum value of 180 for both defence and attack."
+            AdvancedTutorialDialogStep.ExplainDebuffs -> "DeBuffs on the other hand are displayed by a Red sword/shield next to the attack.\n" +
+                    "Attacks with a red sword will DECREASE the enemy´s Attack stat.\n" +
+                    "Attacks with a red shield will DECREASE the enemy´s Defence stat.\n" +
+                    "But you cannot debuff infinitely. There is a minimum value of 20 for both defence and attack."
             AdvancedTutorialDialogStep.ExplainUsage -> "You might ask yourself: Why should I use Buffs and Debuffs when I can just deal damage instead...\n" +
-                    "And you are right, but this little dragon over there is a tanky dude. He has a Defence stat of 130 and 130 HP. So it Might be a good idea to lower that defence first."
-            AdvancedTutorialDialogStep.ExplainLetPlayerPlay -> "Okay now its your turn. But be careful the Quizizzdragon is able to use Buffs and Debuffs as well! Read the BattleLog carefully"
+                    "And you are right, but this little dragon over there is a tanky dude. He has a Defence stat of 115 and 130 HP. It is very important to lower that defence before using an normal attack!"
+            AdvancedTutorialDialogStep.ExplainLetPlayerPlay -> "Okay now its your turn! But be aware that buffing and debuffing several times is crucial in a battle so use them often!\n" +
+                    "Also be careful the Quizizzdragon is able to use Buffs and Debuffs as well! Read the BattleLog carefully."
 
             else -> {return "null"}
         }

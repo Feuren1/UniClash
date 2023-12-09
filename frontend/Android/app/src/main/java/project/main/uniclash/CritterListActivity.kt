@@ -1,5 +1,6 @@
 package project.main.uniclash
 
+import android.app.Application
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
@@ -169,7 +170,7 @@ class CritterListActivity : ComponentActivity() {
 
 
     val uniClashViewModel: UniClashViewModel by viewModels(factoryProducer = {
-        UniClashViewModel.provideFactory(CritterService.getInstance(this))
+        UniClashViewModel.provideFactory(CritterService.getInstance(this), Application())
     })
 
 
@@ -179,7 +180,7 @@ class CritterListActivity : ComponentActivity() {
         val studentId = preferences.getInt("StudentId", 1) ?: 1
 
         val uniClashUiStateCritterUsables by uniClashViewModel.critterUsables.collectAsState()
-        uniClashViewModel.loadCritterUsables(studentId)
+        uniClashViewModel.loadCritterUsables()
         var critterUsables : List<CritterUsable?> = uniClashUiStateCritterUsables.critterUsables
         return critterUsables
     }

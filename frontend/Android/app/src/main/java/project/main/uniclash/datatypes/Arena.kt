@@ -6,6 +6,7 @@ data class Arena(
     val description : String,
     val lat : Double,
     val lon : Double,
+    val critterId: Int,
     val studentId: Int,
     val picture : String
 ){

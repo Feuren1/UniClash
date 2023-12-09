@@ -113,7 +113,7 @@ class MenuActivity : ComponentActivity() {
                                 )
                             )
                             )
-                            MenuCard(listOf(Category("New Building", painterResource(R.drawable.buildings), 5)))
+                            MenuCard(listOf(Category("New Building", painterResource(R.drawable.store), 5)))
                             MenuCard(listOf(
                                 Category(
                                     "Battle Activity",
@@ -152,12 +152,6 @@ class MenuActivity : ComponentActivity() {
                 this.startActivity(intent)
                 finish()
                 buttonRequest = 0
-            }
-            if(buttonRequest == 5) {
-                val intent = Intent(this, NewBuildingActivity::class.java)
-                this.startActivity(intent)
-                buttonRequest = 0
-                finish()
             }
             if(buttonRequest == 10) {
                 MapSettings.CRITTERBINOCULARS.setMapSetting(!MapSettings.CRITTERBINOCULARS.getMapSetting())
@@ -214,20 +208,18 @@ class MenuActivity : ComponentActivity() {
                 val intent = Intent(this, LoginAcitivity::class.java)
                 this.startActivity(intent)
                 buttonRequest = 0
-                finish()
             }
             if(buttonRequest == 15) {
                 val intent = Intent(this, RegisterActivity::class.java)
                 this.startActivity(intent)
                 buttonRequest = 0
-                finish()
             }
             if(buttonRequest == 16) {
                 val intent = Intent(this, ArenaActivity::class.java)
                 this.startActivity(intent)
                 buttonRequest = 0
-                finish()
             }
+
         }
     }
 
@@ -267,6 +259,13 @@ class MenuActivity : ComponentActivity() {
             textAlign = TextAlign.Start,
             modifier = Modifier.padding(vertical = 16.dp) // Add vertical padding
         )
+        /*Text(
+            text = "Coins",
+            fontSize = 18.sp, // Adjust the font size as needed
+            fontWeight = FontWeight.Bold, // Use FontWeight.Bold for bold text
+            textAlign = TextAlign.End,
+            modifier = Modifier.padding(vertical = 16.dp) // Add vertical padding
+        )*/
     }
 
 

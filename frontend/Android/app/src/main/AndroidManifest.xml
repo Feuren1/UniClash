@@ -74,7 +74,7 @@
             android:name=".MenuActivity"
             android:exported="false"
             android:label="@string/title_activity_menu"
-            android:noHistory="true"
+            android:noHistory="false"
             android:theme="@style/Theme.UniClash" />
         <activity
             android:name=".CritterListActivity"

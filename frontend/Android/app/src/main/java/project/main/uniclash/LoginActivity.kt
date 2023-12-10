@@ -52,9 +52,9 @@ import project.main.uniclash.viewmodels.LoginViewModel
 @OptIn(ExperimentalComposeUiApi::class)
 class LoginActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
-            val loginViewModel: LoginViewModel by viewModels(factoryProducer = {
-                LoginViewModel.provideFactory(UserService.getInstance(this), Application())
-            })
+        val loginViewModel: LoginViewModel by viewModels(factoryProducer = {
+            LoginViewModel.provideFactory(UserService.getInstance(this), Application())
+        })
 
         val activityContext = this
 
@@ -109,8 +109,7 @@ class LoginActivity : ComponentActivity() {
                             LoginForm(loginViewModel)
                         }
 
-                        ReturnToRegisterButton(context = activityContext)
-                        ReturnToProfileButton(context = activityContext)
+                        BackButton(context = activityContext)
 
                         if (loginUIState.success == true) {
                             println(loginUIState.success)
@@ -122,102 +121,101 @@ class LoginActivity : ComponentActivity() {
         }
     }
 
-}
 
-@OptIn(ExperimentalComposeUiApi::class, ExperimentalMaterial3Api::class)
-@Composable
-fun LoginForm(loginViewModel: LoginViewModel) {
-    var email by remember { mutableStateOf("") }
-    var password by remember { mutableStateOf("") }
-    var passwordVisibility by remember { mutableStateOf(false) }
+    @OptIn(ExperimentalComposeUiApi::class, ExperimentalMaterial3Api::class)
+    @Composable
+    fun LoginForm(loginViewModel: LoginViewModel) {
+        var email by remember { mutableStateOf("") }
+        var password by remember { mutableStateOf("") }
+        var passwordVisibility by remember { mutableStateOf(false) }
 
-    val context = LocalContext.current
-    val keyboardController = LocalSoftwareKeyboardController.current
+        val context = LocalContext.current
+        val keyboardController = LocalSoftwareKeyboardController.current
 
-    Column(
-        modifier = Modifier
-            .padding(16.dp)
-            .fillMaxSize(),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Bottom
-    ) {
-        OutlinedTextField(
-            value = email,
-            onValueChange = { email = it },
-            label = { Text("Email") },
-            keyboardOptions = KeyboardOptions.Default.copy(
-                keyboardType = KeyboardType.Email,
-                imeAction = ImeAction.Next
-            ),
-            leadingIcon = {
-                Icon(Icons.Filled.Email, contentDescription = "Email")
-            },
+        Column(
             modifier = Modifier
-                .fillMaxWidth()
-                .padding(8.dp),
-                    colors = TextFieldDefaults.outlinedTextFieldColors(
-                        focusedLabelColor = Color.Black,
+                .padding(16.dp)
+                .fillMaxSize(),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Bottom
+        ) {
+            OutlinedTextField(
+                value = email,
+                onValueChange = { email = it },
+                label = { Text("Email") },
+                keyboardOptions = KeyboardOptions.Default.copy(
+                    keyboardType = KeyboardType.Email,
+                    imeAction = ImeAction.Next
+                ),
+                leadingIcon = {
+                    Icon(Icons.Filled.Email, contentDescription = "Email")
+                },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(8.dp),
+                colors = TextFieldDefaults.outlinedTextFieldColors(
+                    focusedLabelColor = Color.Black,
                     focusedBorderColor = Color.Gray,
                     unfocusedBorderColor = Color.Black,
                     containerColor = Color.White
-                    )
-        )
-
-        OutlinedTextField(
-            value = password,
-            onValueChange = { password = it },
-            label = { Text("Password") },
-            keyboardOptions = KeyboardOptions.Default.copy(
-                keyboardType = KeyboardType.Password,
-                imeAction = ImeAction.Done
-            ),
-            visualTransformation = if (passwordVisibility) {
-                VisualTransformation.None
-            } else {
-                PasswordVisualTransformation()
-            },
-            trailingIcon = {
-
-            },
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(8.dp),
-            colors = TextFieldDefaults.outlinedTextFieldColors(
-                focusedLabelColor = Color.Black,
-                focusedBorderColor = Color.Gray,
-                unfocusedBorderColor = Color.Black,
-                containerColor = Color.White
+                )
             )
-        )
+            OutlinedTextField(
+                value = password,
+                onValueChange = { password = it },
+                label = { Text("Password") },
+                keyboardOptions = KeyboardOptions.Default.copy(
+                    keyboardType = KeyboardType.Password,
+                    imeAction = ImeAction.Done
+                ),
+                visualTransformation = if (passwordVisibility) {
+                    VisualTransformation.None
+                } else {
+                    PasswordVisualTransformation()
+                },
+                trailingIcon = {
 
-        Button(
-            onClick = {
-                loginViewModel.login(email, password, context) { callback ->
-                    if (callback.success) {
-                        // Login successful
-                        // Handle the success scenario (e.g., navigate to the next screen)
-                    } else {
-                        // Login failed
-                        // Handle the failure scenario (e.g., show an error message)
+                },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(8.dp),
+                colors = TextFieldDefaults.outlinedTextFieldColors(
+                    focusedLabelColor = Color.Black,
+                    focusedBorderColor = Color.Gray,
+                    unfocusedBorderColor = Color.Black,
+                    containerColor = Color.White
+                )
+            )
+
+            Button(
+                onClick = {
+                    loginViewModel.login(email, password, context) { callback ->
+                        if (callback.success) {
+                            // Login successful
+                            // Handle the success scenario (e.g., navigate to the next screen)
+                        } else {
+                            // Login failed
+                            // Handle the failure scenario (e.g., show an error message)
+                        }
                     }
-                }
-            },
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(8.dp)
-        ) {
-            Text(text = "Login")
+                },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(8.dp)
+            ) {
+                Text(text = "Login")
+            }
         }
     }
-}
 
-@Composable
-fun ReturnToProfile(context: Context) {
-    /*Button(
+    @Composable
+    fun ReturnToProfile(context: Context) {
+        /*Button(
         onClick = {*/
-            val intent = Intent(context, ProfileActivity::class.java)
-            context.startActivity(intent)
-       /* },
+        val intent = Intent(context, ProfileActivity::class.java)
+        context.startActivity(intent)
+        finish()
+        /* },
         modifier = Modifier
             .fillMaxWidth()
             .padding(8.dp),
@@ -229,46 +227,30 @@ fun ReturnToProfile(context: Context) {
             color = Color.White
         )
     }*/
-}
-
-@Composable
-fun ReturnToRegisterButton(context: Context) {
-    Button(
-        onClick = {
-            val intent = Intent(context, RegisterActivity::class.java)
-            context.startActivity(intent)
-        },
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(8.dp),
-    ) {
-        Text(
-            text = "Register new Account",
-            color = Color.White
-        )
     }
-}
 
-@Composable
-fun ReturnToProfileButton(context: Context) {
-    Button(
-        onClick = {
-            val intent = Intent(context, ProfileActivity::class.java)
-            context.startActivity(intent)
-        },
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(8.dp),
-    ) {
-        Text(
-            text = "Use old Session",
-            color = Color.White
-        )
+    @Composable
+    fun BackButton(context: Context) {
+        Button(
+            onClick = {
+                val intent = Intent(context, MainActivity::class.java)
+                context.startActivity(intent)
+                finish()
+            },
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(8.dp),
+        ) {
+            Text(
+                text = "Back",
+                color = Color.White
+            )
+        }
     }
-}
 
-@Preview(showBackground = true)
-@Composable
-fun LoginPreview() {
+    @Preview(showBackground = true)
+    @Composable
+    fun LoginPreview() {
 
+    }
 }

@@ -134,6 +134,7 @@ class MenuActivity : ComponentActivity() {
             if(buttonRequest == 13) {
                 val intent = Intent(this, ProfileActivity::class.java)
                 this.startActivity(intent)
+                finish()
                 buttonRequest = 0
             }
             if(buttonRequest == 1) {
@@ -150,25 +151,21 @@ class MenuActivity : ComponentActivity() {
                 // val intent = Intent(this, CritterDexActivity::class.java)
                 val intent = ActivitySaver.CRITTERDEX.getIntent()
                 this.startActivity(intent)
-                finish()
                 buttonRequest = 0
             }
             if(buttonRequest == 10) {
                 MapSettings.CRITTERBINOCULARS.setMapSetting(!MapSettings.CRITTERBINOCULARS.getMapSetting())
                 val intent = Intent(this, MenuActivity::class.java)
                 this.startActivity(intent)
-                finish()
             }
             if(buttonRequest == 6) {
                 val intent = Intent(this, Battle::class.java)
                 this.startActivity(intent)
-                finish()
                 buttonRequest = 0
             }
             if(buttonRequest == 9) {
                 val intent = Intent(this, CameraActivity::class.java)
                 this.startActivity(intent)
-                finish()
                 buttonRequest = 0
             }
             if(buttonRequest == 7) {
@@ -176,32 +173,27 @@ class MenuActivity : ComponentActivity() {
                 //val intent = Intent(this, MapActivity::class.java)
                 val intent = ActivitySaver.MAP.getIntent()
                 this.startActivity(intent)
-                finish()
                 buttonRequest = 0
             }
             if(buttonRequest == 8) {
                 val intent = Intent(this, StudentHubActivity::class.java)
                 this.startActivity(intent)
-                finish()
                 buttonRequest = 0
             }
             if(buttonRequest == 4){
                 MapSettings.MOVINGCAMERA.setMapSetting(!MapSettings.MOVINGCAMERA.getMapSetting())
                 val intent = Intent(this, MenuActivity::class.java)
                 this.startActivity(intent)
-                finish()
                 buttonRequest = 0
             }
             if(buttonRequest == 12) {
                 val intent = Intent(this, ArenaActivity::class.java)
                 this.startActivity(intent)
-                finish()
                 buttonRequest = 0
             }
             if(buttonRequest == 11) {
                 val intent = Intent(this, PokéActivity::class.java)
                 this.startActivity(intent)
-                finish()
                 buttonRequest = 0
             }
             if(buttonRequest == 14) {

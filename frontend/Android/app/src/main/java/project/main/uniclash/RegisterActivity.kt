@@ -83,154 +83,156 @@ class RegisterActivity : ComponentActivity() {
                     ) {
                         val message by registerViewModel.text.collectAsState()
                         if (message.isNotEmpty()) {
-                            Text(message, modifier = Modifier.padding(16.dp),
-                                    style = TextStyle(
+                            Text(
+                                message, modifier = Modifier.padding(16.dp),
+                                style = TextStyle(
                                     color = Color.White,
-                                fontWeight = FontWeight.Bold
-                            )
+                                    fontWeight = FontWeight.Bold
+                                )
                             )
                         }
                         Box(
                             modifier = Modifier
-                            .fillMaxWidth()
-                            .weight(1f) // otherwise RegisterFOrm will overlap toLoginButton
+                                .fillMaxWidth()
+                                .weight(1f) // otherwise RegisterFOrm will overlap toLoginButton
                         ) {
                             RegisterForm(registerViewModel)
                         }
-                        ReturnToLoginButton(activityContext)
+                        Backbutton(activityContext)
                     }
                 }
             }
         }
     }
-}
 
-@Composable
-fun ReturnToLoginButton(context: Context) {
-    Button(
-        onClick = {
-            val intent = Intent(context, LoginActivity::class.java)
-            context.startActivity(intent)
-        },
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(8.dp),
-    ) {
-        Text(
-            text = "Go to log in",
-            color = Color.White
-        )
-    }
-}
-
-@OptIn(ExperimentalComposeUiApi::class, ExperimentalMaterial3Api::class)
-@Composable
-fun RegisterForm(registerViewModel: RegisterViewModel) {
-    var email by remember { mutableStateOf("") }
-    var username by remember { mutableStateOf("") }
-    var password by remember { mutableStateOf("") }
-    var passwordVisibility by remember { mutableStateOf(false) }
-
-    val context = LocalContext.current
-    val keyboardController = LocalSoftwareKeyboardController.current
-
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(16.dp),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Bottom
-    ) {
-        OutlinedTextField(
-            value = email,
-            onValueChange = { email = it },
-            label = { Text("Email") },
-            keyboardOptions = KeyboardOptions.Default.copy(
-                keyboardType = KeyboardType.Email,
-                imeAction = ImeAction.Next
-            ),
-            leadingIcon = {
-                Icon(Icons.Filled.Email, contentDescription = "Email")
-            },
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(8.dp),
-            colors = TextFieldDefaults.outlinedTextFieldColors(
-                focusedLabelColor = Color.Black,
-                focusedBorderColor = Color.Gray,
-                unfocusedBorderColor = Color.Black,
-                containerColor = Color.White
-            )
-        )
-
-        OutlinedTextField(
-            value = username,
-            onValueChange = { username = it },
-            label = { Text("Username") },
-            keyboardOptions = KeyboardOptions.Default.copy(
-                keyboardType = KeyboardType.Text,
-                imeAction = ImeAction.Next
-            ),
-            leadingIcon = {
-                Icon(Icons.Filled.Person, contentDescription = "Username")
-            },
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(8.dp),
-            colors = TextFieldDefaults.outlinedTextFieldColors(
-                focusedLabelColor = Color.Black,
-                focusedBorderColor = Color.Gray,
-                unfocusedBorderColor = Color.Black,
-                containerColor = Color.White
-            )
-        )
-
-        OutlinedTextField(
-            value = password,
-            onValueChange = { password = it },
-            label = { Text("Password") },
-            keyboardOptions = KeyboardOptions.Default.copy(
-                keyboardType = KeyboardType.Password,
-                imeAction = ImeAction.Done
-            ),
-            visualTransformation = if (passwordVisibility) {
-                PasswordVisualTransformation()
-            } else {
-                VisualTransformation.None
-            },
-            trailingIcon = {
-
-            },
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(8.dp),
-                    colors = TextFieldDefaults.outlinedTextFieldColors(
-                    focusedLabelColor = Color.Black,
-            focusedBorderColor = Color.Gray,
-            unfocusedBorderColor = Color.Black,
-            containerColor = Color.White
-        )
-        )
-
+    @Composable
+    fun Backbutton(context: Context) {
         Button(
             onClick = {
-                registerViewModel.signup(email, password, username) { callback ->
-                    // Handle the registration result here
-                    if (callback.success) {
-                        // Registration successful
-                        // Optionally, you can navigate to the next screen or show a success message
-
-                    } else {
-                        // Registration failed
-                        // Optionally, you can show an error message
-                    }
-                }
+                val intent = Intent(context, MainActivity::class.java)
+                context.startActivity(intent)
+                finish()
             },
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(8.dp)
+                .padding(8.dp),
         ) {
-            Text(text = "Register")
+            Text(
+                text = "Back",
+                color = Color.White
+            )
+        }
+    }
+
+    @OptIn(ExperimentalComposeUiApi::class, ExperimentalMaterial3Api::class)
+    @Composable
+    fun RegisterForm(registerViewModel: RegisterViewModel) {
+        var email by remember { mutableStateOf("") }
+        var username by remember { mutableStateOf("") }
+        var password by remember { mutableStateOf("") }
+        var passwordVisibility by remember { mutableStateOf(false) }
+
+        val context = LocalContext.current
+        val keyboardController = LocalSoftwareKeyboardController.current
+
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(16.dp),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Bottom
+        ) {
+            OutlinedTextField(
+                value = email,
+                onValueChange = { email = it },
+                label = { Text("Email") },
+                keyboardOptions = KeyboardOptions.Default.copy(
+                    keyboardType = KeyboardType.Email,
+                    imeAction = ImeAction.Next
+                ),
+                leadingIcon = {
+                    Icon(Icons.Filled.Email, contentDescription = "Email")
+                },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(8.dp),
+                colors = TextFieldDefaults.outlinedTextFieldColors(
+                    focusedLabelColor = Color.Black,
+                    focusedBorderColor = Color.Gray,
+                    unfocusedBorderColor = Color.Black,
+                    containerColor = Color.White
+                )
+            )
+
+            OutlinedTextField(
+                value = username,
+                onValueChange = { username = it },
+                label = { Text("Username") },
+                keyboardOptions = KeyboardOptions.Default.copy(
+                    keyboardType = KeyboardType.Text,
+                    imeAction = ImeAction.Next
+                ),
+                leadingIcon = {
+                    Icon(Icons.Filled.Person, contentDescription = "Username")
+                },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(8.dp),
+                colors = TextFieldDefaults.outlinedTextFieldColors(
+                    focusedLabelColor = Color.Black,
+                    focusedBorderColor = Color.Gray,
+                    unfocusedBorderColor = Color.Black,
+                    containerColor = Color.White
+                )
+            )
+
+            OutlinedTextField(
+                value = password,
+                onValueChange = { password = it },
+                label = { Text("Password") },
+                keyboardOptions = KeyboardOptions.Default.copy(
+                    keyboardType = KeyboardType.Password,
+                    imeAction = ImeAction.Done
+                ),
+                visualTransformation = if (passwordVisibility) {
+                    PasswordVisualTransformation()
+                } else {
+                    VisualTransformation.None
+                },
+                trailingIcon = {
+
+                },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(8.dp),
+                colors = TextFieldDefaults.outlinedTextFieldColors(
+                    focusedLabelColor = Color.Black,
+                    focusedBorderColor = Color.Gray,
+                    unfocusedBorderColor = Color.Black,
+                    containerColor = Color.White
+                )
+            )
+
+            Button(
+                onClick = {
+                    registerViewModel.signup(email, password, username) { callback ->
+                        // Handle the registration result here
+                        if (callback.success) {
+                            // Registration successful
+                            // Optionally, you can navigate to the next screen or show a success message
+
+                        } else {
+                            // Registration failed
+                            // Optionally, you can show an error message
+                        }
+                    }
+                },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(8.dp)
+            ) {
+                Text(text = "Register")
+            }
         }
     }
 }

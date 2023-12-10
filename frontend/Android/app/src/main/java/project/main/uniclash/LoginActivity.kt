@@ -8,6 +8,7 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -31,8 +32,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
@@ -64,13 +69,23 @@ class LoginActivity : ComponentActivity() {
                 ) {
                     val message by loginViewModel.text.collectAsState()
                     val loginUIState by loginViewModel.login.collectAsState()
+                    Box(
+                        modifier = Modifier.fillMaxSize()
+                    ) {
+                        Image(
+                            painter = painterResource(id = R.drawable.background),
+                            contentDescription = null,
+                            modifier = Modifier.fillMaxSize(),
+                            contentScale = ContentScale.Crop
+                        )
+                    }
 
                     Column(
                         modifier = Modifier
                             .fillMaxSize()
                             .padding(16.dp),
                         //horizontalAlignment = Alignment.CenterHorizontally,
-                        //verticalArrangement = Arrangement.Center
+                        //verticalArrangement = Arrangement.Bottom
                     ) {
                         if (message.isNotEmpty()) {
                             Text(
@@ -78,6 +93,10 @@ class LoginActivity : ComponentActivity() {
                                 modifier = Modifier
                                     .padding(16.dp)
                                     .fillMaxWidth(),
+                                style = TextStyle(
+                                    color = Color.White,
+                                    fontWeight = FontWeight.Bold
+                                ),
                                 textAlign = TextAlign.Center
                             )
                         }
@@ -117,8 +136,8 @@ fun LoginForm(loginViewModel: LoginViewModel) {
 
     Column(
         modifier = Modifier
-            .fillMaxSize()
-            .padding(16.dp),
+            .padding(16.dp)
+            .fillMaxSize(),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Bottom
     ) {
@@ -135,7 +154,13 @@ fun LoginForm(loginViewModel: LoginViewModel) {
             },
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(8.dp)
+                .padding(8.dp),
+                    colors = TextFieldDefaults.outlinedTextFieldColors(
+                        focusedLabelColor = Color.Black,
+                    focusedBorderColor = Color.Gray,
+                    unfocusedBorderColor = Color.Black,
+                    containerColor = Color.White
+                    )
         )
 
         OutlinedTextField(
@@ -156,7 +181,13 @@ fun LoginForm(loginViewModel: LoginViewModel) {
             },
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(8.dp)
+                .padding(8.dp),
+            colors = TextFieldDefaults.outlinedTextFieldColors(
+                focusedLabelColor = Color.Black,
+                focusedBorderColor = Color.Gray,
+                unfocusedBorderColor = Color.Black,
+                containerColor = Color.White
+            )
         )
 
         Button(

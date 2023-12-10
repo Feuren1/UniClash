@@ -6,6 +6,7 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -23,6 +24,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -33,8 +35,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
@@ -61,13 +67,28 @@ class RegisterActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
+                    Box(
+                        modifier = Modifier.fillMaxSize()
+                    ) {
+                        Image(
+                            painter = painterResource(id = R.drawable.background),
+                            contentDescription = null,
+                            modifier = Modifier.fillMaxSize(),
+                            contentScale = ContentScale.Crop
+                        )
+                    }
                     Column(
                         horizontalAlignment = Alignment.CenterHorizontally,
                         verticalArrangement = Arrangement.Bottom
                     ) {
                         val message by registerViewModel.text.collectAsState()
                         if (message.isNotEmpty()) {
-                            Text(message, modifier = Modifier.padding(16.dp))
+                            Text(message, modifier = Modifier.padding(16.dp),
+                                    style = TextStyle(
+                                    color = Color.White,
+                                fontWeight = FontWeight.Bold
+                            )
+                            )
                         }
                         Box(
                             modifier = Modifier
@@ -133,7 +154,13 @@ fun RegisterForm(registerViewModel: RegisterViewModel) {
             },
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(8.dp)
+                .padding(8.dp),
+            colors = TextFieldDefaults.outlinedTextFieldColors(
+                focusedLabelColor = Color.Black,
+                focusedBorderColor = Color.Gray,
+                unfocusedBorderColor = Color.Black,
+                containerColor = Color.White
+            )
         )
 
         OutlinedTextField(
@@ -149,7 +176,13 @@ fun RegisterForm(registerViewModel: RegisterViewModel) {
             },
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(8.dp)
+                .padding(8.dp),
+            colors = TextFieldDefaults.outlinedTextFieldColors(
+                focusedLabelColor = Color.Black,
+                focusedBorderColor = Color.Gray,
+                unfocusedBorderColor = Color.Black,
+                containerColor = Color.White
+            )
         )
 
         OutlinedTextField(
@@ -170,7 +203,13 @@ fun RegisterForm(registerViewModel: RegisterViewModel) {
             },
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(8.dp)
+                .padding(8.dp),
+                    colors = TextFieldDefaults.outlinedTextFieldColors(
+                    focusedLabelColor = Color.Black,
+            focusedBorderColor = Color.Gray,
+            unfocusedBorderColor = Color.Black,
+            containerColor = Color.White
+        )
         )
 
         Button(

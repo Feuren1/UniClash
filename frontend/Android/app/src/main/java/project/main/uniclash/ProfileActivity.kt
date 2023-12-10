@@ -50,8 +50,10 @@ class ProfileActivity : ComponentActivity() {
                     color = MaterialTheme.colorScheme.background
                 ) {
                     Column {
-                        MenuHeader()
-                        Box() {
+                        Box(
+                            Modifier.fillMaxWidth()
+                        ) {
+                            MenuHeader()
                             Image(
                                 painter = painterResource(id = R.drawable.exit),
                                 contentDescription = null,
@@ -62,13 +64,17 @@ class ProfileActivity : ComponentActivity() {
                                     }
                                     .align(Alignment.TopEnd)
                             )
-                            PlayerProfile(profileViewModel)
                         }
+                        PlayerProfile(profileViewModel)
                     }
                 }
             }
             if (exitRequest) {
-                val intent = Intent(this, MenuActivity::class.java)
+                val hasStudent by profileViewModel.hasStudent.collectAsState()
+                var intent = Intent(this, MainActivity::class.java)
+                if(hasStudent == true) {
+                    intent = Intent(this, MenuActivity::class.java)
+                }
                 this.startActivity(intent)
                 finish()
                 exitRequest = false

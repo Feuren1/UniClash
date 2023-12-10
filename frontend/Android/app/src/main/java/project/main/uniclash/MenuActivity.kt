@@ -124,7 +124,7 @@ class MenuActivity : ComponentActivity() {
                             )
                             MenuCard(listOf(Category("Student Hub", painterResource(R.drawable.store), 8)))
                             MenuCard(listOf(Category("Camera", painterResource(R.drawable.swords), 9)))
-                            MenuCard(listOf(Category("Log in", painterResource(R.drawable.profile), 14),Category("Register", painterResource(R.drawable.profile), 15)))
+                            MenuCard(listOf(Category("Log into other acc", painterResource(R.drawable.profile), 14),Category("Register new acc", painterResource(R.drawable.profile), 15)))
                             MenuCard(listOf(Category("Arena", painterResource(R.drawable.arena), 16)))
                             MenuCard(listOf(Category("Poké", painterResource(R.drawable.studentassistance), 11)))
                         }

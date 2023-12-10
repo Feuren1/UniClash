@@ -50,29 +50,27 @@ class MainActivity : ComponentActivity() {
                 modifier = Modifier.fillMaxSize(),
                 color = MaterialTheme.colorScheme.background
             ) {
-                OpenMenuActivityButton()
+                OpenLoginActivity()
+                OpenProfileActivity()
             }
         }
     }
 
 
     @Composable
-    fun OpenMenuActivityButton() {
+    fun OpenLoginActivity() {
         val context = LocalContext.current
-        //Button(
-         //   onClick = {
-                // Handle the button click to open the new activity here
-                val intent = Intent(context, MenuActivity::class.java)
+                val intent = Intent(context, LoginActivity::class.java)
                 this.startActivity(intent)
-          //  },
-         //   modifier = Modifier
-         //       .padding(2.dp)
-          //      .width(200.dp)
-         //       .height(50.dp)
 
-       // ) {
-        //    Text("Menu")
-       // }
+    }
+
+    @Composable
+    fun OpenProfileActivity() {
+        val context = LocalContext.current
+        val intent = Intent(context, LoginActivity::class.java)
+        this.startActivity(intent)
+
     }
     // typically you want to retrieve the device token when the user logs in and save
 // it in the backend when the login is success

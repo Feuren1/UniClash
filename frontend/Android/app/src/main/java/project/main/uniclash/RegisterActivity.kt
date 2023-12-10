@@ -1,10 +1,13 @@
 package project.main.uniclash
 
+import android.content.Context
+import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -29,6 +32,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.text.input.ImeAction
@@ -47,6 +51,8 @@ class RegisterActivity : ComponentActivity() {
         val registerViewModel by viewModels<RegisterViewModel> {
             RegisterViewModel.provideFactory(UserService.getInstance(this), this.application)
         }
+        val activityContext = this
+
         super.onCreate(savedInstanceState)
         setContent {
             UniClashTheme {
@@ -55,14 +61,44 @@ class RegisterActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    RegisterForm(registerViewModel)
-                    val message by registerViewModel.text.collectAsState()
-                    if (message.isNotEmpty()) {
-                        Text(message, modifier = Modifier.padding(16.dp))
+                    Column(
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        verticalArrangement = Arrangement.Bottom
+                    ) {
+                        val message by registerViewModel.text.collectAsState()
+                        if (message.isNotEmpty()) {
+                            Text(message, modifier = Modifier.padding(16.dp))
+                        }
+                        Box(
+                            modifier = Modifier
+                            .fillMaxWidth()
+                            .weight(1f) // otherwise RegisterFOrm will overlap toLoginButton
+                        ) {
+                            RegisterForm(registerViewModel)
+                        }
+                        ReturnToLoginButton(activityContext)
                     }
                 }
             }
         }
+    }
+}
+
+@Composable
+fun ReturnToLoginButton(context: Context) {
+    Button(
+        onClick = {
+            val intent = Intent(context, LoginActivity::class.java)
+            context.startActivity(intent)
+        },
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(8.dp),
+    ) {
+        Text(
+            text = "Go to log in",
+            color = Color.White
+        )
     }
 }
 
@@ -82,7 +118,7 @@ fun RegisterForm(registerViewModel: RegisterViewModel) {
             .fillMaxSize()
             .padding(16.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center
+        verticalArrangement = Arrangement.Bottom
     ) {
         OutlinedTextField(
             value = email,
@@ -159,6 +195,9 @@ fun RegisterForm(registerViewModel: RegisterViewModel) {
         }
     }
 }
+
+
+
 
 
 

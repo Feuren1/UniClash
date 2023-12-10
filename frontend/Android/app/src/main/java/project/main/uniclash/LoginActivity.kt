@@ -10,10 +10,13 @@ import androidx.activity.compose.setContent
 import androidx.activity.viewModels
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Email
@@ -42,7 +45,7 @@ import project.main.uniclash.ui.theme.UniClashTheme
 import project.main.uniclash.viewmodels.LoginViewModel
 
 @OptIn(ExperimentalComposeUiApi::class)
-class LoginAcitivity : ComponentActivity() {
+class LoginActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
             val loginViewModel: LoginViewModel by viewModels(factoryProducer = {
                 LoginViewModel.provideFactory(UserService.getInstance(this), Application())
@@ -66,8 +69,8 @@ class LoginAcitivity : ComponentActivity() {
                         modifier = Modifier
                             .fillMaxSize()
                             .padding(16.dp),
-                        horizontalAlignment = Alignment.CenterHorizontally,
-                        verticalArrangement = Arrangement.Center
+                        //horizontalAlignment = Alignment.CenterHorizontally,
+                        //verticalArrangement = Arrangement.Center
                     ) {
                         if (message.isNotEmpty()) {
                             Text(
@@ -79,12 +82,21 @@ class LoginAcitivity : ComponentActivity() {
                             )
                         }
 
-                        if (loginUIState.success == true) {
-                            println(loginUIState.success)
-                            ReturnToMenuButton(context = activityContext)
+                        Box(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .weight(1f) // otherwise RegisterFOrm will overlap toRegisterButton
+                        ) {
+                            LoginForm(loginViewModel)
                         }
 
-                        LoginForm(loginViewModel)
+                        ReturnToRegisterButton(context = activityContext)
+                        ReturnToProfileButton(context = activityContext)
+
+                        if (loginUIState.success == true) {
+                            println(loginUIState.success)
+                            ReturnToProfile(context = activityContext)
+                        }
                     }
                 }
             }
@@ -108,7 +120,7 @@ fun LoginForm(loginViewModel: LoginViewModel) {
             .fillMaxSize()
             .padding(16.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center
+        verticalArrangement = Arrangement.Bottom
     ) {
         OutlinedTextField(
             value = email,
@@ -169,12 +181,12 @@ fun LoginForm(loginViewModel: LoginViewModel) {
 }
 
 @Composable
-fun ReturnToMenuButton(context: Context) {
-    Button(
-        onClick = {
-            val intent = Intent(context, MenuActivity::class.java)
+fun ReturnToProfile(context: Context) {
+    /*Button(
+        onClick = {*/
+            val intent = Intent(context, ProfileActivity::class.java)
             context.startActivity(intent)
-        },
+       /* },
         modifier = Modifier
             .fillMaxWidth()
             .padding(8.dp),
@@ -183,6 +195,42 @@ fun ReturnToMenuButton(context: Context) {
     ) {
         Text(
             text = "Return to Menu",
+            color = Color.White
+        )
+    }*/
+}
+
+@Composable
+fun ReturnToRegisterButton(context: Context) {
+    Button(
+        onClick = {
+            val intent = Intent(context, RegisterActivity::class.java)
+            context.startActivity(intent)
+        },
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(8.dp),
+    ) {
+        Text(
+            text = "Register new Account",
+            color = Color.White
+        )
+    }
+}
+
+@Composable
+fun ReturnToProfileButton(context: Context) {
+    Button(
+        onClick = {
+            val intent = Intent(context, ProfileActivity::class.java)
+            context.startActivity(intent)
+        },
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(8.dp),
+    ) {
+        Text(
+            text = "Use old Session",
             color = Color.White
         )
     }

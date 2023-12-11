@@ -22,13 +22,12 @@ import {
 import {StudentRepository} from '../repositories';
 import {ItemUsable} from "../models/item-usable.model";
 import {service} from "@loopback/core";
-import {StudentCritterService} from "../services/student-critter.service";
 import {StudentItemService} from "../services/student-Item.service";
 
 export class StudentItemController {
   constructor(
     @repository(StudentRepository) protected studentRepository: StudentRepository,
-    @service(StudentCritterService) protected studentItemService: StudentItemService,
+    @service(StudentItemService) protected studentItemService: StudentItemService,
   ) { }
 
   @get('/students/{id}/items', {
@@ -113,7 +112,7 @@ export class StudentItemController {
     return this.studentRepository.items(id).delete(where);
   }
 
-  @get('/students/{id}/usables', {
+  @get('/students/{id}/Itemusables', {
     responses: {
       '200': {
         description: 'Calculate and return ItemUsable for all items of a student',

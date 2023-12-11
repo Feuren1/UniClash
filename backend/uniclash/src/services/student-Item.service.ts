@@ -32,9 +32,6 @@ export class StudentItemService {
     const itemUsables: ItemUsable[] = [];
 
     for (const item of items) {
-
-      //if (critter.id !== undefined) {//other option is to remove the ? in the model at id? was used
-      //}
       const itemUsable = await this.itemStatsService.createItemUsable(item.id);
       itemUsables.push(itemUsable);
 
@@ -49,9 +46,6 @@ export class StudentItemService {
     const itemUsables: ItemUsable[] = [];
 
     for (const item of items) {
-
-      //if (critter.id !== undefined) {//other option, that was used, is to remove the ? in the model at id?
-      //}
       const critterUsable = await this.itemStatsService.createItemUsable(item.id);
       itemUsables.push(critterUsable);
 

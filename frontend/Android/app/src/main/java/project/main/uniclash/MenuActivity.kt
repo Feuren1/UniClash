@@ -134,16 +134,16 @@ class MenuActivity : ComponentActivity() {
             if(buttonRequest == 13) {
                 val intent = Intent(this, ProfileActivity::class.java)
                 this.startActivity(intent)
-                finish()
                 buttonRequest = 0
             }
             if(buttonRequest == 1) {
                 val intent = Intent(this, CritterListActivity::class.java)
                 this.startActivity(intent)
-                finish()
                 buttonRequest == 0
             }
             if(buttonRequest == 2) {
+                val intent = Intent(this, InventoryActivity::class.java)
+                this.startActivity(intent)
                 buttonRequest == 0
             }
             if(buttonRequest == 3) {

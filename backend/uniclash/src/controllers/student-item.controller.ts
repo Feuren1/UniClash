@@ -17,13 +17,18 @@ import {
 } from '@loopback/rest';
 import {
   Student,
-  Item,
+  Item, CritterUsable,
 } from '../models';
 import {StudentRepository} from '../repositories';
+import {ItemUsable} from "../models/item-usable.model";
+import {service} from "@loopback/core";
+import {StudentCritterService} from "../services/student-critter.service";
+import {StudentItemService} from "../services/student-Item.service";
 
 export class StudentItemController {
   constructor(
     @repository(StudentRepository) protected studentRepository: StudentRepository,
+    @service(StudentCritterService) protected studentItemService: StudentItemService,
   ) { }
 
   @get('/students/{id}/items', {
@@ -106,5 +111,23 @@ export class StudentItemController {
     @param.query.object('where', getWhereSchemaFor(Item)) where?: Where<Item>,
   ): Promise<Count> {
     return this.studentRepository.items(id).delete(where);
+  }
+
+  @get('/students/{id}/usables', {
+    responses: {
+      '200': {
+        description: 'Calculate and return ItemUsable for all items of a student',
+        content: {
+          'application/json': {
+            schema: getModelSchemaRef(ItemUsable),
+          },
+        },
+      },
+    },
+  })
+  async calculateCritterUsable(
+      @param.path.number('id') id: number,
+  ): Promise<ItemUsable[]> {
+    return this.studentItemService.createItemUsableListOnStudentId(id);
   }
 }

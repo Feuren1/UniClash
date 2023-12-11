@@ -1,6 +1,7 @@
 package project.main.uniclash.retrofit
 
 import android.content.Context
+import project.main.uniclash.datatypes.ItemUsable
 import project.main.uniclash.datatypes.Student
 import retrofit2.Call
 import retrofit2.create
@@ -9,9 +10,8 @@ import retrofit2.http.Path
 
 interface InventoryService {
 
-    @GET("/students/{id}/items")
-    fun getItemsFromStudent(@Path("id")id : Int): Call<Item>
-
+    @GET("/students/{id}/Itemusables")
+    fun getItemsFromStudent(@Path("id")id : Int): Call<List<ItemUsable>>
 
 
     companion object {

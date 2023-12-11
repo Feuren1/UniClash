@@ -1,5 +1,6 @@
 package project.main.uniclash
 
+import android.app.Application
 import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -51,13 +52,13 @@ class InventoryActivity : ComponentActivity() {
     private var exitRequest by mutableStateOf(false)
     override fun onCreate(savedInstanceState: Bundle?) {
         val inventoryViewModel: InventoryViewModel by viewModels(factoryProducer = {
-            InventoryViewModel.provideFactory(InventoryService.getInstance(this))
+            InventoryViewModel.provideFactory(InventoryService.getInstance(this), Application())
         })
 
         super.onCreate(savedInstanceState)
 
         setContent {
-            inventoryViewModel.loadItemUsables(1)
+            inventoryViewModel.loadItemUsables()
             val itemUsablesUIState by inventoryViewModel.itemUsables.collectAsState()
             val itemTemplates = itemUsablesUIState.itemUsables
 

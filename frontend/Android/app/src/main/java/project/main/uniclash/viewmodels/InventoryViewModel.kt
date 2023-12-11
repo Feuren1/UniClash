@@ -1,5 +1,6 @@
 package project.main.uniclash.viewmodels
 import android.annotation.SuppressLint
+import android.app.Application
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
@@ -12,6 +13,7 @@ import project.main.uniclash.datatypes.ItemUsable
 import project.main.uniclash.retrofit.ArenaService
 import project.main.uniclash.retrofit.InventoryService
 import project.main.uniclash.retrofit.enqueue
+import project.main.uniclash.userDataManager.UserDataManager
 
 sealed interface ItemUsablesUIState {
     data class HasEntries(
@@ -22,7 +24,12 @@ sealed interface ItemUsablesUIState {
 
 class InventoryViewModel(
     private val inventoryService: InventoryService,
+    private val application: Application,
 ) : ViewModel(){
+
+    private val userDataManager : UserDataManager by lazy {
+        UserDataManager(application)
+    }
 
     val itemUsables = MutableStateFlow(
         ItemUsablesUIState.HasEntries(
@@ -32,11 +39,11 @@ class InventoryViewModel(
     )
 
     @SuppressLint("MissingPermission")
-    fun loadItemUsables(id: Int) {
+    fun loadItemUsables() {
         viewModelScope.launch {
             itemUsables.update { it.copy(isLoading = true) }
             try {
-                val response = inventoryService.getItemsFromStudent(id).enqueue()
+                val response = inventoryService.getItemsFromStudent(userDataManager.getStudentId()!!).enqueue()
                 if (response.isSuccessful) {
                     val itemUsable = response.body()!!
                     itemUsables.update {
@@ -57,12 +64,14 @@ class InventoryViewModel(
     companion object {
         fun provideFactory(
             inventoryService: InventoryService,
+            application: Application,
         ): ViewModelProvider.Factory =
             object : ViewModelProvider.Factory {
                 @Suppress("UNCHECKED_CAST")
                 override fun <T : ViewModel> create(modelClass: Class<T>): T {
                     return InventoryViewModel(
                         inventoryService,
+                        application,
                     ) as T
                 }
             }

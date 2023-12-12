@@ -88,18 +88,18 @@
 | 0  | string     | 0     |
 
 ## Critter Values<br>
-Max Level: 50<br>
+Max Level: 100<br>
 
-Ep for reaching a Level: 1000 <br>
+Ep for reaching a User Level: 500 <br>
 
 # Other Game Rules<br>
 Max User Level: 30? or max.Integer<br>
 Coins per catch: 1 <br>
 Ep per catch: 25<br>
-Coins per fight Win: 4 <br>
+Coins per fight Win: 3 <br>
 Ep per fight Win: 100<br>
-Coins per captured Arena: 6<br>
-Ep per captured Arena: 250<br>
+Coins per captured Arena: 3<br>
+Ep per captured Arena: 150<br>
 Needed Level to create new Buildings: 5<br>
 And how many building: 2<br>
 Needed Level to create new Buildings: 10<br>

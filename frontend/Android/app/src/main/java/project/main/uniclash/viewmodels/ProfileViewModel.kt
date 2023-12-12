@@ -63,6 +63,8 @@ class ProfileViewModel (private val userService: UserService, application: Appli
                             state.copy(user = state.user!!.copy(student = student), isLoading = false)
                         }
                         userDataManager.storeStudentId(response.body()!!.id)
+                        userDataManager.storePlacedBuildings(response.body()!!.placedBuildings)
+                        userDataManager.storeLevel(response.body()!!.level)
                     }
                     hasStudent.value= true
                     text.value = "Game progress loaded successfully"

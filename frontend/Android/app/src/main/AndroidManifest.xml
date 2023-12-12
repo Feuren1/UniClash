@@ -67,6 +67,11 @@
             android:label="@string/title_activity_camera"
             android:theme="@style/Theme.UniClash" />
         <activity
+            android:name=".CameraActivityTest"
+            android:exported="false"
+            android:label="@string/title_activity_camera_test"
+            android:theme="@style/Theme.UniClash" />
+        <activity
             android:name=".StudentHubActivity"
             android:exported="false"
             android:label="@string/title_activity_student_hub"

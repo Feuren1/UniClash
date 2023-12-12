@@ -34,5 +34,15 @@ export class LevelCalcStudentService {
 
     await this.studentRepository.update(student);
   }
+
+  async increasePlacedBuildingOfStudent(studentId: number, placedBuildings: number): Promise<void> {
+    const student: Student = await this.studentRepository.findById(studentId);
+    if (!student) {
+      throw new Error(`Student with ID ${studentId} not found. increase StudentCredits`);
+    };
+    student.placedBuildings = (student.placedBuildings || 0) + placedBuildings;
+
+    await this.studentRepository.update(student);
+  }
 }
 

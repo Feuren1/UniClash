@@ -1,6 +1,7 @@
 package project.main.uniclash
 
 import android.R.attr.path
+import android.app.Application
 import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
@@ -37,6 +38,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -58,6 +60,7 @@ import project.main.uniclash.datatypes.MarkerData
 import project.main.uniclash.map.GeoCodingHelper
 import project.main.uniclash.retrofit.ArenaService
 import project.main.uniclash.retrofit.StudentHubService
+import project.main.uniclash.retrofit.StudentService
 import project.main.uniclash.viewmodels.NewBuildingViewModel
 import java.io.ByteArrayOutputStream
 
@@ -76,6 +79,7 @@ class NewBuildingActivity : ComponentActivity() {
     private var lat by mutableStateOf(Locations.USERLOCATION.getLocation().latitude)
     private var long by mutableStateOf(Locations.USERLOCATION.getLocation().longitude)
     private var capturedImagePath by mutableStateOf("")
+    private var freebuildings by mutableStateOf(0)
 
     private var exitRequest by mutableStateOf(false)
     private var startCamera by mutableStateOf(false)
@@ -94,19 +98,17 @@ class NewBuildingActivity : ComponentActivity() {
         }
 
         newBuildingViewModel = viewModels<NewBuildingViewModel> {
-            NewBuildingViewModel.provideFactory(ArenaService.getInstance(this), StudentHubService.getInstance(this))
+            NewBuildingViewModel.provideFactory(ArenaService.getInstance(this), StudentHubService.getInstance(this), StudentService.getInstance(this),Application())
         }.value
 
         setContent {
-            if(!(title.isNullOrEmpty()) && title.length < 31&&!(description.isNullOrEmpty())&&description.length<61&&lat!=0.0&&long!=0.0&&!(capturedImagePath.isNullOrBlank())){
+            if(!(title.isNullOrEmpty()) && title.length < 31&&!(description.isNullOrEmpty())&&description.length<61&&lat!=0.0&&long!=0.0&&!(capturedImagePath.isNullOrBlank())&&freebuildings>0){
                 confirmRequest = true
-                println("correct")
-                println("${description.length} die länge")
             } else {
                 confirmRequest = false
-                println("incorrect")
-                println("${description.length} die länge")
             }
+
+            newBuildingViewModel.loadStudentFreeBuildingInfo()
 
             geoCodingHelper.getAddressFromLocation(
                 lat,long
@@ -140,6 +142,7 @@ class NewBuildingActivity : ComponentActivity() {
                             .verticalScroll(rememberScrollState())
                     ) {
                         Column {
+                            Level()
                             TitleAndDescription()
                             SelectBuilding()
                             Camera()
@@ -150,7 +153,7 @@ class NewBuildingActivity : ComponentActivity() {
                 }
             }
             if (exitRequest) {
-                val intent = Intent(this, MenuActivity::class.java)
+                val intent = Intent(this, ProfileActivity::class.java)
                 this.startActivity(intent)
                 exitRequest = false
                 finish()
@@ -173,6 +176,48 @@ class NewBuildingActivity : ComponentActivity() {
             textAlign = TextAlign.Start,
             modifier = Modifier.padding(vertical = 16.dp) // Add vertical padding
         )
+    }
+
+    @Composable
+    fun Level() {
+        val freeBuildingsInformation by newBuildingViewModel.studentFreeBuildingInfo.collectAsState()
+        freebuildings = freeBuildingsInformation.level / 5 *2-freeBuildingsInformation.placedBuildings
+        Box(
+            modifier = Modifier
+                .padding(all = 8.dp)
+                .fillMaxWidth() // making box from left to right site
+                .background(
+                    Color.LightGray,
+                    shape = RoundedCornerShape(8.dp)
+                ) // Hintergrundfarbe und abgeflachte Ecken
+
+        ) {
+            Row(modifier = Modifier.padding(all = 8.dp)) {
+                Image(
+                    painter = if(freebuildings>0){painterResource(id = R.drawable.checked)} else {painterResource(id = R.drawable.warning)},
+                    contentDescription = null,
+                    modifier = Modifier
+                        .size(60.dp)
+                )
+                Spacer(modifier = Modifier.width(8.dp))
+                Column {
+                    Spacer(modifier = Modifier.height(18.dp))
+                    Text(
+                        text = "Student Level:",
+                        fontSize = 18.sp,
+                        color = MaterialTheme.colorScheme.secondary,
+                        style = MaterialTheme.typography.titleSmall
+                    )
+                    Text(
+                        text = "You can place 2 buildings, by reaching every fifth level.\n Free buildings left: $freebuildings\nAlready placed: ${freeBuildingsInformation.placedBuildings}\nLevel: ${freeBuildingsInformation.level} ",
+                        fontSize = 12.sp,
+                        color = MaterialTheme.colorScheme.secondary,
+                        style = MaterialTheme.typography.titleSmall
+                    )
+                    Spacer(modifier = Modifier.height(8.dp))
+                }
+            }
+        }
     }
 
     @OptIn(ExperimentalMaterial3Api::class)
@@ -421,11 +466,16 @@ class NewBuildingActivity : ComponentActivity() {
                 .clickable {
                     if (confirmRequest) {
                         val originalBitmap = BitmapFactory.decodeFile(capturedImagePath)
-                        val targetWidth = originalBitmap.width * 400/originalBitmap.height+25
+                        val targetWidth = originalBitmap.width * 400 / originalBitmap.height + 25
                         val targetHeight = 400
-                        val scaledBitmap = Bitmap.createScaledBitmap(originalBitmap, targetWidth, targetHeight, false)
+                        val scaledBitmap = Bitmap.createScaledBitmap(
+                            originalBitmap,
+                            targetWidth,
+                            targetHeight,
+                            false
+                        )
                         val outputStream = ByteArrayOutputStream()
-                        scaledBitmap.compress(Bitmap.CompressFormat.PNG,5,outputStream)
+                        scaledBitmap.compress(Bitmap.CompressFormat.PNG, 5, outputStream)
                         val bitmapBytes = outputStream.toByteArray()
                         val base64EncodedBitmap = Base64.encodeToString(bitmapBytes, Base64.DEFAULT)
 
@@ -446,14 +496,14 @@ class NewBuildingActivity : ComponentActivity() {
                                 base64EncodedBitmap
                             )
                         }
-                            newBuildingSingleTon.setTitle("")
-                            newBuildingSingleTon.setDescription("")
-                            newBuildingSingleTon.setBuilding(BuildingType.ARENA)
+                        newBuildingSingleTon.setTitle("")
+                        newBuildingSingleTon.setDescription("")
+                        newBuildingSingleTon.setBuilding(BuildingType.ARENA)
 
-                            exitRequest = true
-                            MapSaver.ARENA.setMarker(ArrayList<MarkerData?>())
-                            MapSaver.STUDENTHUB.setMarker(ArrayList<MarkerData?>())
-                            finish()
+                        exitRequest = true
+                        MapSaver.ARENA.setMarker(ArrayList<MarkerData?>())
+                        MapSaver.STUDENTHUB.setMarker(ArrayList<MarkerData?>())
+                        finish()
                     } else {
                     }
                 }
@@ -476,7 +526,7 @@ class NewBuildingActivity : ComponentActivity() {
                         style = MaterialTheme.typography.titleSmall
                     )
                     Text(
-                        text = "Title (max 30char.): $title\nDescription (max 60 char.): $description\nBuilding Type: ${if(building== BuildingType.STUDENTHUB){"Student Hub"} else {"Arena"}}\nLocations: $buildingAddress\nPicture: ${if(capturedImagePath.isNullOrBlank()){"missing"}else{"available"}}",
+                        text = "Title (max 30char.): $title\nDescription (max 60 char.): $description\nBuilding Type: ${if(building== BuildingType.STUDENTHUB){"Student Hub"} else {"Arena"}}\nLocations: $buildingAddress\nPicture: ${if(capturedImagePath.isNullOrBlank()){"missing"}else{"available"}}\nStudent Level high enough: ${if(freebuildings>0){"yes"}else{"no"}}",
                         fontSize = 12.sp,
                         color = MaterialTheme.colorScheme.secondary,
                         style = MaterialTheme.typography.titleSmall

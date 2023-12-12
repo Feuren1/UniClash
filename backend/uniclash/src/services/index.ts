@@ -7,3 +7,4 @@ export * from './security.spec.enhancer';
 export * from './token.service';
 export * from './user-credential.service';
 export * from './user.service';
+export * from './levelCalc-student.service';

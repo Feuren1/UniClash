@@ -4,6 +4,7 @@
     <string name="title_activity_menu">Menu</string>
     <string name="title_activity_student_hub">StudentHubActivity</string>
     <string name="title_activity_camera">CameraActivity</string>
+    <string name="title_activity_camera_test">CameraActivityTest</string>
     <string name="title_activity_critter_list">CritterList</string>
     <string name="title_activity_new_building">NewBuilding</string>
     <string name="title_activity_critter_dex">CritterDex</string>

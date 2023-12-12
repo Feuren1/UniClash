@@ -94,8 +94,10 @@ Ep for reaching a Level: 1000 <br>
 
 # Other Game Rules<br>
 Max User Level: 30? or max.Integer<br>
-Coins per Win: 3 <br>
-Ep per Win: 100<br>
+Coins per catch: 1 <br>
+Ep per catch: 25<br>
+Coins per fight Win: 4 <br>
+Ep per fight Win: 100<br>
 Coins per captured Arena: 6<br>
 Ep per captured Arena: 250<br>
 Needed Level to create new Buildings: 5<br>

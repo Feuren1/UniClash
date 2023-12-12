@@ -44,7 +44,9 @@ import androidx.datastore.preferences.preferencesDataStore
 import com.google.android.gms.tasks.OnCompleteListener
 import com.google.firebase.FirebaseApp
 import com.google.firebase.messaging.FirebaseMessaging
+import kotlinx.coroutines.runBlocking
 import project.main.uniclash.retrofit.UserService
+import project.main.uniclash.userDataManager.UserDataManager
 import project.main.uniclash.viewmodels.ProfileViewModel
 
 val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = "UserData")
@@ -58,10 +60,15 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
 
         var activityContext = this
-        
-        val preferences = this.getSharedPreferences("Ids", Context.MODE_PRIVATE)
-        val token = preferences.getString("UserId", "") ?: ""
-        profileViewModel.loadProfile(token, activityContext)
+
+        val userDataManager: UserDataManager by lazy {
+            UserDataManager(application)
+        }
+        var token: String?
+        runBlocking {
+            token = userDataManager.getJWTToken()
+        }
+        token?.let { profileViewModel.loadProfile(it, activityContext) }
 
         FirebaseMessaging.getInstance().token.addOnCompleteListener { task ->
             if (task.isSuccessful) {

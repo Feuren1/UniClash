@@ -113,7 +113,7 @@ class MenuActivity : ComponentActivity() {
                                 )
                             )
                             )
-                            MenuCard(listOf(Category("New Building", painterResource(R.drawable.store), 5)))
+                            MenuCard(listOf(Category("New Building", painterResource(R.drawable.buildings), 5)))
                             MenuCard(listOf(
                                 Category(
                                     "Battle Activity",
@@ -146,9 +146,13 @@ class MenuActivity : ComponentActivity() {
                 this.startActivity(intent)
                 buttonRequest == 0
             }
+            if(buttonRequest == 5) {
+                val intent = Intent(this, NewBuildingActivity::class.java)
+                this.startActivity(intent)
+                buttonRequest == 0
+            }
             if(buttonRequest == 3) {
                 ActivitySaver.CRITTERDEX.setIntent(Intent(this, CritterDexActivity::class.java))
-                // val intent = Intent(this, CritterDexActivity::class.java)
                 val intent = ActivitySaver.CRITTERDEX.getIntent()
                 this.startActivity(intent)
                 buttonRequest = 0

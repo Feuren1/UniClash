@@ -219,6 +219,11 @@ class MenuActivity : ComponentActivity() {
                 this.startActivity(intent)
                 buttonRequest = 0
             }
+            if(buttonRequest == 5) {
+                val intent = Intent(this, NewBuildingActivity::class.java)
+                this.startActivity(intent)
+                buttonRequest = 0
+            }
 
         }
     }

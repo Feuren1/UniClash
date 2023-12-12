@@ -56,7 +56,6 @@ class InventoryActivity : ComponentActivity() {
         })
 
         super.onCreate(savedInstanceState)
-        println("hi")
 
         setContent {
             inventoryViewModel.loadItemUsables()

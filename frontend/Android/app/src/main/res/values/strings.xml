@@ -10,7 +10,7 @@
     <string name="title_activity_register">RegisterActivity</string>
     <string name="title_activity_arena">ArenaActivity</string>
     <string name="title_activity_critter_profile">CritterProfileActivity</string>
-    <string name="title_activity_login_acitivity">LoginAcitivity</string>
+    <string name="title_activity_login_activity">LoginActivity</string>
     <string name="title_activity_profile">ProfileActivity</string>
     <string name="title_activity_inventory">InventoryActivity</string>
     <string name="title_activity_poké">PokéActivity</string>

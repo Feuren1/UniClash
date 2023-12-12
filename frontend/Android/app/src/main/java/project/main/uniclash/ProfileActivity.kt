@@ -119,7 +119,7 @@ fun PlayerProfile(profileViewModel: ProfileViewModel) {
         Text("User ID: ${userUIState.user?.id}")
 
         // Display student information
-        Text("XP: ${userUIState.user?.student?.xp}")
+        Text("XP: ${userUIState.user?.student?.expToNextLevel}") //changed from xp to exp to next level
         Text("Level: ${userUIState.user?.student?.level}")
         Text("Credits: ${userUIState.user?.student?.credits}")
 

@@ -25,8 +25,8 @@ enum class CritterPic(private val drawableResId: Int) {
     COOLDUCKM(R.drawable.coolduckm),
     BORZOI(R.drawable.borzoi),
     BORZOIM(R.drawable.borzoim),
-    PIKACHU(R.drawable.pikatchu),
-    PIKACHUM(R.drawable.pikatchum),
+    PIKACHU(R.drawable.pikachu),
+    PIKACHUM(R.drawable.pikachum),
     MATRYOSHKA(R.drawable.matryoshka),
     MATRYOSHKAM(R.drawable.matryoshkam),
     NUTCRACKER(R.drawable.nutcracker),
@@ -44,6 +44,8 @@ enum class CritterPic(private val drawableResId: Int) {
     CHARMELON(R.drawable.charmeleon),
     CHARMELONM(R.drawable.charmeleonm),
     CROCODILEDUCK(R.drawable.crocodileduck),
+    SNORLAX(R.drawable.snorlax),
+    SNORLAXM(R.drawable.snorlax),
     CROCODILEDUCKM(R.drawable.crocodileduckm);
 
     fun getDrawable(): Int {
@@ -93,7 +95,7 @@ enum class CritterPic(private val drawableResId: Int) {
         if(searchTerm.equals("BORZOI")){
             return BORZOI.getDrawable()
         }
-        if(searchTerm.equals("PIKATCHU")){
+        if(searchTerm.equals("PIKACHU")){
             return PIKACHU.getDrawable()
         }
         if(searchTerm.equals("EGGGIVINGWOOLMILKPIG")){
@@ -113,6 +115,9 @@ enum class CritterPic(private val drawableResId: Int) {
         }
         if(searchTerm.equals("STUDENTASSISTANCE")){
             return STUDENTASSISTANCE.getDrawable()
+        }
+        if(searchTerm.equals("SNORLAX")){
+            return SNORLAX.getDrawable()
         }
         return R.drawable.hub
     }
@@ -160,7 +165,7 @@ enum class CritterPic(private val drawableResId: Int) {
         if(searchTerm.equals("BORZOIM")){
             return BORZOIM.getDrawable()
         }
-        if(searchTerm.equals("PIKATCHUM")){
+        if(searchTerm.equals("PIKACHUM")){
             return PIKACHUM.getDrawable()
         }
         if(searchTerm.equals("EGGGIVINGWOOLMILKPIGM")){
@@ -180,6 +185,9 @@ enum class CritterPic(private val drawableResId: Int) {
         }
         if(searchTerm.equals("STUDENTASSISTANCEM")){
             return STUDENTASSISTANCEM.getDrawable()
+        }
+        if(searchTerm.equals("SNORLAXM")){
+            return SNORLAXM.getDrawable()
         }
         return R.drawable.hub
     }

@@ -8,7 +8,7 @@ data class Arena(
     val lon : Double,
     val critterId: Int,
     val studentId: Int,
-
+    val picture : String
 ){
     override fun toString(): String {
         return "Arena(id=$id, name='$name', description='$description', lat=$lat, lon=$lon, studentID=$studentId)"

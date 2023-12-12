@@ -24,7 +24,7 @@ sealed interface PostCrittersUIState { //TODO: CritterS to Critter?
 }
 class WildEncounterViewModel(
     private val critterService: CritterService,
-    application: Application
+    private val application: Application
 ) : ViewModel() {
 
     private val markerData = SelectedMarker.SELECTEDMARKER.takeMarker()
@@ -54,7 +54,7 @@ class WildEncounterViewModel(
         viewModelScope.launch {
             critters.update { it.copy(isLoading = true) }
             try {
-                val response = critterService.postCatchedCritter(studentId,
+                val response = critterService.postCatchedCritter(userDataManager.getStudentId(),
                     wildEncounterMarker!!.critterUsable!!.critterId).enqueue()
                 Log.d(TAG, "loadCrittersUsable: $response")
                 if (response.isSuccessful) {

@@ -40,6 +40,7 @@ class InventoryViewModel(
 
     @SuppressLint("MissingPermission")
     fun loadItemUsables() {
+        println("hi")
         viewModelScope.launch {
             itemUsables.update { it.copy(isLoading = true) }
             try {

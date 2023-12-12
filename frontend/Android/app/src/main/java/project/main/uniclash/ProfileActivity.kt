@@ -15,8 +15,10 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
+import kotlinx.coroutines.runBlocking
 import project.main.uniclash.retrofit.UserService
 import project.main.uniclash.ui.theme.UniClashTheme
+import project.main.uniclash.userDataManager.UserDataManager
 import project.main.uniclash.viewmodels.LoginViewModel
 import project.main.uniclash.viewmodels.ProfileViewModel
 
@@ -25,10 +27,14 @@ class ProfileActivity : ComponentActivity() {
         val profileViewModel: ProfileViewModel by viewModels(factoryProducer = {
             ProfileViewModel.provideFactory(UserService.getInstance(this), Application())
         })
-        val preferences = this.getSharedPreferences("Ids", Context.MODE_PRIVATE)
-        val token = preferences.getString("UserId", "") ?: ""
-
-        profileViewModel.loadProfile(token, this)
+        val userDataManager: UserDataManager by lazy {
+            UserDataManager(application)
+        }
+        var token: String?
+        runBlocking {
+            token = userDataManager.getJWTToken()
+        }
+        profileViewModel.loadProfile(token!!, this)
 
         super.onCreate(savedInstanceState)
         setContent {

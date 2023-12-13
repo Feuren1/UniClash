@@ -14,10 +14,15 @@ export class LevelCalcStudentService {
     if (!student) {
       throw new Error(`Student with ID ${studentId} not found. CheckForLevel Up Methode`);
     };
+
+    if(student.level == null){
+      student.level = 0;
+    }
+
     if(student.expToNextLevel != null){
       if(student.expToNextLevel > 499){
-        student.expToNextLevel = (student.expToNextLevel || 0) - 500;
-        student.expToNextLevel = (student.expToNextLevel || 0) + 1;
+        student.expToNextLevel = student.expToNextLevel - 500;
+        student.level++;
       }
     }
 

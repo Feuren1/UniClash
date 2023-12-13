@@ -8,9 +8,7 @@ import android.graphics.BitmapFactory
 import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.Drawable
 import android.util.Base64
-import android.util.Log
-import android.widget.ImageView
-import androidx.compose.ui.text.toUpperCase
+import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
@@ -23,7 +21,6 @@ import project.main.uniclash.R
 import project.main.uniclash.StudentHubActivity
 import project.main.uniclash.WildEncounterActivity
 import project.main.uniclash.datatypes.Arena
-import project.main.uniclash.datatypes.CritterPic
 import project.main.uniclash.datatypes.CritterUsable
 import project.main.uniclash.datatypes.Locations
 import project.main.uniclash.datatypes.MapSaver
@@ -311,13 +308,17 @@ class MapMarkerViewModel(
 
                 while (i < 800) {
 
+                    val name: String = wildEncounter.get(i)?.name!!.lowercase()
+                    val resourceId = context.resources.getIdentifier(name, "drawable", context.packageName)
+                    val resourceIdM = context.resources.getIdentifier(name+"m", "drawable", context.packageName)
+
                     var myMarker = MarkerWildEncounter(
                         state = GeoPoint(randomLocation.get(i).latitude, randomLocation.get(i).longitude),
-                        icon = mapCalculations.resizeDrawable(context, CritterPic.MUSK.searchDrawableM("${wildEncounter.get(i)?.name?.toUpperCase()}M"),50.0F),
+                        icon = mapCalculations.resizeDrawable(context, if(resourceIdM > 0){resourceIdM}else{R.drawable.icon},50.0F),
                         visible = true,
                         title = "${wildEncounter.get(i)?.name}",
                         snippet = "Level: ${wildEncounter.get(i)?.level}",
-                        pic =  context.getDrawable(CritterPic.MUSK.searchDrawable("${wildEncounter.get(i)?.name?.toUpperCase()}")),
+                        pic =  context.getDrawable(if(resourceId > 0){resourceId}else{R.drawable.icon}),
                         button = WildEncounterActivity::class.java,
                         buttonText = "catch Critter",
                         critterUsable = wildEncounter.get(i)

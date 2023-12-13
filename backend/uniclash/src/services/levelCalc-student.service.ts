@@ -33,6 +33,7 @@ export class LevelCalcStudentService {
     student.expToNextLevel = (student.expToNextLevel || 0) + epToAdd;
 
     await this.studentRepository.update(student);
+    await this.checkForLevelUp(studentId);
   }
 
   async increasePlacedBuildingOfStudent(studentId: number, placedBuildings: number): Promise<void> {

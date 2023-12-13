@@ -41,7 +41,6 @@ export class CatchCritterService {
     })));
 
     await this.levelCalcStudentService.increaseStudentCredits(studentId, 1,25);
-    await this.levelCalcStudentService.checkForLevelUp(1);
 
     return this.critterStatsService.createCritterUsable(savedCritterCopy.id)
   }

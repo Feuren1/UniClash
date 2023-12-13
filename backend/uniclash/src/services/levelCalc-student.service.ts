@@ -16,8 +16,8 @@ export class LevelCalcStudentService {
     };
     if(student.expToNextLevel != null){
       if(student.expToNextLevel > 499){
-        student.expToNextLevel = (student.expToNextLevel || 0) - 500;
-        student.level = (student.level || 0) + 1;
+        student.expToNextLevel = student.expToNextLevel - 500;
+        student.level = student.level + 1;
       }
     }
 

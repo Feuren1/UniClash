@@ -11,7 +11,7 @@
 5.Finishing Must have User Stories (Core functionality)”<br>
 6.Should have and could have<br>
 7.”<br>
-8.” (Chrismas Week)<br>
+8.Create Poster, finish last stuff. (Chrismas Week)<br>
 
 ## **Our Rules**
 •	Definition of done: When the task is reviewed by another dev and merged into main, the merging must be reviewed too.<br>

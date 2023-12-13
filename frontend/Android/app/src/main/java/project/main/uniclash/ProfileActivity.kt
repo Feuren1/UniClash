@@ -127,11 +127,11 @@ fun PlayerProfile(profileViewModel: ProfileViewModel) {
         if(hasStudent==true){
         // Display button to go back to the menu
         }
-        if(hasStudent==false){
+        if(hasStudent == false){
             // Display button to go back to the menu
             Button(
                 onClick = {
-
+                profileViewModel.createStudent(userUIState.user!!.id)
 
                 },
                 modifier = Modifier

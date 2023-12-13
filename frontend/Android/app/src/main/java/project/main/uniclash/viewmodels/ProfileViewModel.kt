@@ -12,7 +12,10 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import project.main.uniclash.JWT.TokenManager
+import project.main.uniclash.datatypes.Student
+import project.main.uniclash.datatypes.StudentRegisterRequest
 import project.main.uniclash.datatypes.User
+import project.main.uniclash.datatypes.UserSignUpRequest
 import project.main.uniclash.retrofit.UserService
 import project.main.uniclash.retrofit.enqueue
 import project.main.uniclash.userDataManager.UserDataManager
@@ -24,12 +27,20 @@ import retrofit2.Response
 public data class UserIDCallback(val success: Boolean, val id: JsonObject)
 
 public data class UserCallback(val success: Boolean, val user: User?)
+public data class StudentCallback(val success: Boolean, val student: Student?)
 
 sealed interface UserUIState {
     data class HasEntries(
         val user: User?,
         val isLoading: Boolean,
     ) : UserUIState
+}
+
+sealed interface StudentRequestUIState {
+    data class HasEntries(
+        val student: Student?,
+        val isLoading: Boolean,
+    ) : StudentRequestUIState
 }
 
 class ProfileViewModel (private val userService: UserService, application: Application) : ViewModel() {
@@ -41,6 +52,13 @@ class ProfileViewModel (private val userService: UserService, application: Appli
     private val userDataManager: UserDataManager by lazy {
         UserDataManager(application)
     }
+
+    val studentRequest = MutableStateFlow(
+        StudentRequestUIState.HasEntries(
+            student = null,
+            isLoading = false
+        )
+    )
 
     val user = MutableStateFlow(
         UserUIState.HasEntries(
@@ -77,6 +95,68 @@ class ProfileViewModel (private val userService: UserService, application: Appli
                 hasStudent.value= false
                 text.value = "Loading Game Progress failed, Have you created a Student yet?"
                 e.printStackTrace()
+            }
+        }
+    }
+
+    fun createStudent(
+                       userId: String,
+                       ){
+        viewModelScope.launch {
+            val studentRegisterRequest = StudentRegisterRequest(
+                level = 1,
+                lat = 0,
+                lon = 0,
+                credits = 100,
+                expToNextLevel = 0,
+                placedBuildings = 0,
+                userId = userId,
+            )
+            try{
+                val call = userService.createStudent(studentRegisterRequest)
+                call.enqueue(object: Callback<Student>{
+                    override fun onResponse(
+                        call: Call<Student>,
+                        response: Response<Student>
+                    ) {
+                        if (response.isSuccessful) {
+                            // Parse the response body to get user information
+                            val studentResponse = response.body()
+                            Log.d(TAG, response.body().toString())
+                            // Assuming UserResponse is the data type returned by /whoAmI
+                            if (studentResponse != null) {
+                                // Extract the user details
+                                response.body().let {
+                                    user.update { state ->
+                                        state.copy(user = state.user!!.copy(student = it!!), isLoading = false)
+                                    }
+                                }
+                                hasStudent.value = true
+                            }
+                            runBlocking {
+                                userDataManager.storeStudentId(user.value.user!!.student.id)
+                            }
+                            text.value = "Student has been created!"
+                        } else{
+                            Log.d(TAG, "Creating Student has failed!" + response.code())
+                        }
+                    }
+
+                    override fun onFailure(
+                        call: Call<Student>,
+                        t: Throwable
+                    ) {
+                        Log.d(TAG, "Creating Student: FAILED")
+                        t.printStackTrace()
+                        // Invoke the callback with failure
+                        text.value = "Error during Creating student request"
+                    }
+
+                })
+            }catch (e: Exception) {
+                // Handle exception
+                Log.e(TAG, "Error while trying to create Student", e)
+                text.value = "Error while trying to create Student"
             }
         }
     }

@@ -48,36 +48,6 @@ class RegisterViewModel (private val userService: UserService, application: Appl
             isLoading = false,
         )
     )
-
-    fun createStudent(
-        lat: String,
-        lon: String,
-        userId: String,
-        ){
-        val studentRegisterRequest = StudentRegisterRequest(
-            level = 1,
-            lat = lat,
-            lon = lon,
-            credits = 100,
-            expToNextLevel = 0,
-            userId = userId
-        )
-        viewModelScope.launch {
-            try{
-                val request = userService.createStudent(studentRegisterRequest)
-                val response = request.enqueue()
-                if(response.isSuccessful){
-                    val string = response.body()!!
-                    text.value = "Created Student Successfully"
-                }
-            } catch (e: Exception) {
-                e.printStackTrace()
-                text.value = "Failed to create Student"
-                // Invoke the callback with the failure
-
-            }
-        }
-    }
     fun signup(
         email: String,
         password: String,

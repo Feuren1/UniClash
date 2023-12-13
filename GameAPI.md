@@ -93,7 +93,7 @@ Max Level: 100<br>
 Ep for reaching a User Level: 500 <br>
 
 # Other Game Rules<br>
-Max User Level: 30? or max.Integer<br>
+Max User Level: max.Integer<br>
 Coins per catch: 1 <br>
 Ep per catch: 25<br>
 Coins per fight Win: 3 <br>

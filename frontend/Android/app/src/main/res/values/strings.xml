@@ -17,5 +17,6 @@
     <string name="take_photo">Take Photo</string>
     <string name="close">Close Camera</string>
     <string name="stop_capture">Stop Capture</string>
+    <string name="title_activity_add_critter_to_arena">AddCritterToArena</string>
 
 </resources>

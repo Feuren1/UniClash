@@ -3,14 +3,16 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <uses-feature android:name="android.hardware.camera.any" />
+
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.CAMERA" />
     <uses-permission android:name="android.permission.CAMERA" />
     <uses-permission android:name="android.permission.RECORD_AUDIO" />
-    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission
+        android:name="android.permission.WRITE_EXTERNAL_STORAGE"
         android:maxSdkVersion="28" />
 
     <uses-feature
@@ -28,6 +30,11 @@
         android:theme="@style/Theme.UniClash"
         tools:targetApi="31">
         <activity
+            android:name=".AddCritterToArenaActivity"
+            android:exported="false"
+            android:label="@string/title_activity_add_critter_to_arena"
+            android:theme="@style/Theme.UniClash" />
+        <activity
             android:name=".ProfileActivity"
             android:exported="false"
             android:label="@string/title_activity_profile"
@@ -35,7 +42,7 @@
         <activity
             android:name=".LoginActivity"
             android:exported="false"
-            android:label="@string/title_activity_login_activity"/>
+            android:label="@string/title_activity_login_activity" />
         <activity
             android:name=".PokéActivity"
             android:exported="false"

@@ -22,6 +22,8 @@ interface ArenaService {
     @POST("/arenas")
     fun postArena(@Body newArena: NewArena):Call<Arena>
 
+    
+
 
 
     companion object {

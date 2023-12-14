@@ -21,12 +21,12 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import project.main.uniclash.datatypes.CritterPic
 import project.main.uniclash.datatypes.MapSaver
 import project.main.uniclash.retrofit.CritterService
 import project.main.uniclash.viewmodels.WildEncounterViewModel
@@ -59,8 +59,12 @@ class WildEncounterActivity : ComponentActivity() {
                 MenuHeader()
                 var drawableImage = painterResource(id = R.drawable.icon)
 
-                if(CritterPic.MUSK.searchDrawable(wildEncounter!!.critterUsable!!.name) != null) {
-                     drawableImage = painterResource(id = CritterPic.MUSK.searchDrawable(wildEncounter!!.critterUsable!!.name))
+                val context = LocalContext.current
+                val name: String = wildEncounter!!.critterUsable!!.name!!.lowercase()
+                val resourceId = context.resources.getIdentifier(name, "drawable", context.packageName)
+
+                if(resourceId > 0) {
+                     drawableImage = painterResource(id = resourceId)
                 }
 
                 Image(

@@ -5,12 +5,12 @@ data class Student(
     var level: Int,
     var lat: Int,
     var lon: Int,
-    var xp: Int,
     var credits: Int,
     var expToNextLevel: Int,
-    var userId: String
+    var userId: String,
+    var placedBuildings : Int,
 ){
     override fun toString(): String {
-        return "Student(id=$id, level=$level, lat=$lat, lon=$lon, credits=$credits, expToNextLevel=$expToNextLevel, userId='$userId')"
+        return "Student(id=$id, level=$level, lat=$lat, lon=$lon, credits=$credits, expToNextLevel=$expToNextLevel, userId='$userId', placedBuildings=$placedBuildings)"
     }
 }

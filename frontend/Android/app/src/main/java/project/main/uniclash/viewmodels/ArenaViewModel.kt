@@ -8,8 +8,12 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import project.main.uniclash.datatypes.Arena
+import project.main.uniclash.datatypes.MarkerArena
+import project.main.uniclash.datatypes.MarkerWildEncounter
+import project.main.uniclash.datatypes.SelectedMarker
 import project.main.uniclash.retrofit.ArenaService
 import project.main.uniclash.retrofit.enqueue
+import project.main.uniclash.userDataManager.UserDataManager
 
 
 sealed interface ArenasUIState{
@@ -32,6 +36,15 @@ class ArenaViewModel(
 ) : ViewModel(){
 
     private val TAG = ArenaViewModel::class.java.simpleName
+
+
+    private val markerData = SelectedMarker.SELECTEDMARKER.takeMarker()
+    private val arenaMarker = if(markerData is MarkerArena){markerData} else {null}
+
+    fun getselectedArena(): MarkerArena?{
+        return arenaMarker
+    }
+
 
 
     val arena = MutableStateFlow(

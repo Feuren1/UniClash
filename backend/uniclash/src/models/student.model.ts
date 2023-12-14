@@ -40,6 +40,12 @@ export class Student extends Entity {
   })
   expToNextLevel?: number;
 
+  @property({
+    type: 'number',
+    default: 0,
+  })
+  placedBuildings: number;
+
   @hasMany(() => Critter)
   critters: Critter[];
 

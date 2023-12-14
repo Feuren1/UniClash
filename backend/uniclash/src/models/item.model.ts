@@ -9,7 +9,8 @@ export class Item extends Entity {
     id: true,
     generated: true,
   })
-  id?: number;
+  id: number;
+  //removed the "?"
 
   @property({
     type: 'number',

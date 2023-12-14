@@ -57,7 +57,6 @@ class LoginViewModel (private val userService: UserService, application: Applica
             ) {
                 if (response.isSuccessful) {
                     Log.d(TAG, "Login: success, Token: ${response.body()}")
-
                     // Save the JWT token securely
                     val jsonObject = response.body()
                     val jwtToken = jsonObject?.get("token")?.asString

@@ -35,7 +35,7 @@ interface UserService {
     fun getStudent(@Path("id") id: String): Call<Student>
 
     @POST("/students")
-    fun createStudent(@Body studentRegisterRequest: StudentRegisterRequest): Call<String>
+    fun createStudent(@Body studentRegisterRequest: StudentRegisterRequest): Call<Student>
 
 
     companion object {

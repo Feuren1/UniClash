@@ -215,17 +215,19 @@ class StudentHubViewModel(
         //checking if the student has enough money
         if (newCredits >= itemCost) {
 
-            patchStudentCredits(newCredits) //reduces credits of the student
+            decreaseStudentCredits(newCredits) //reduces credits of the student
+            val itemPostData = getSelectedItemPost(currentStudent!!.id, itemTemplateId)
 
             //See if the Item already exists in the DB
-            return if (hasItems(itemTemplateId)) {
+            return if (itemPostData.itemTemplateId != itemTemplateId) {
 
+                println("BUY ITEM PATCH WAS CALLED")
                 //Boolean that student has enough credits (true)
-                patchItemFromItemTemplate(getSelectedItemPatch(currentStudent!!.id,itemTemplateId), quantityIncrease)
+                increaseItemQuantity(getSelectedItemPatch(currentStudent!!.id,itemTemplateId), quantityIncrease)
 
             } else { //Otherwise uses @POST to increase the quantity
 
-                val itemPostData = getSelectedItemPost(currentStudent!!.id, itemTemplateId)
+                println("BUY ITEM POST WAS CALLED")
                 //Boolean that student has enough credits (true)
                 postItemFromStudent(itemPostData)
             }
@@ -264,7 +266,7 @@ class StudentHubViewModel(
         return true
     }
 
-    private fun patchItemFromItemTemplate(itemPatch: ItemPatch, quantityIncrease: Int): Boolean {
+    private fun increaseItemQuantity(itemPatch: ItemPatch, quantityIncrease: Int): Boolean {
 
         val newQuantity = itemPatch.quantity + quantityIncrease
 
@@ -298,7 +300,7 @@ class StudentHubViewModel(
         return true
     }
 
-    private fun patchStudentCredits(newCredits: Int) {
+    private fun decreaseStudentCredits(newCredits: Int) {
 
         println("loadPatchStudentCredit: patchStudentCredits function called")
 

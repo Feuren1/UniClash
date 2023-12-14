@@ -1,5 +1,6 @@
 package project.main.uniclash.viewmodels
 
+import android.app.Application
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
@@ -8,13 +9,14 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import project.main.uniclash.datatypes.ItemFromItemTemplate
+import project.main.uniclash.datatypes.Item
 import project.main.uniclash.datatypes.ItemPatch
 import project.main.uniclash.datatypes.ItemPost
 import project.main.uniclash.datatypes.ItemTemplate
-import project.main.uniclash.datatypes.Student
 import project.main.uniclash.datatypes.StudentPatch
 import project.main.uniclash.retrofit.StudentHubService
 import project.main.uniclash.retrofit.enqueue
+import project.main.uniclash.userDataManager.UserDataManager
 
 sealed interface ItemTemplatesUIState {
     data class HasEntries(
@@ -32,7 +34,7 @@ sealed interface PostItemFromStudentUIState {
 
 sealed interface ItemsFromStudentUIState {
     data class HasEntries(
-        val itemsFromStudent: List<ItemPost>,
+        val itemsFromStudent: List<Item>,
         val isLoading: Boolean,
     ) : ItemsFromStudentUIState
 }
@@ -53,8 +55,13 @@ sealed interface ItemUIState {
 
 class StudentHubViewModel(
     private val studentHubService: StudentHubService,
+    private val application: Application,
 ) : ViewModel() {
     private val TAG = StudentHubViewModel::class.java.simpleName
+
+    private val userDataManager : UserDataManager by lazy {
+        UserDataManager(application)
+    }
 
     val itemTemplates = MutableStateFlow(
         ItemTemplatesUIState.HasEntries(
@@ -98,19 +105,20 @@ class StudentHubViewModel(
         )
     )
 
-    init {
-        viewModelScope.launch {
-            Log.d(TAG, "Fetching initial studentHub data: ")
-            loadItemTemplates() //TODO lässt tenplates immer laden auf wenn z.b. map ausfeührt wird.
-        }
-    }
+//    init {
+//        viewModelScope.launch {
+//            Log.d(TAG, "Fetching student: ")
+//            loadStudent() //TODO lässt tenplates immer laden auf wenn z.b. map ausfeührt wird.
+//        }
+//    }
 
-    //loads one student with the ID
-    fun loadStudent(id: Int) {
+    //loads the current student per userDataManager studentID
+    fun loadStudent() {
         viewModelScope.launch {
             student.update { it.copy(isLoading = true) }
             try {
-                val response = studentHubService.getStudent(id).enqueue()
+                println("studentID: ${userDataManager.getStudentId()}")
+                val response = studentHubService.getStudent(userDataManager.getStudentId()!!).enqueue()
                 Log.d(TAG, "LoadStudent: $response")
                 if (response.isSuccessful) {
                     Log.d(TAG, "Success: ${response.body()}")
@@ -154,11 +162,11 @@ class StudentHubViewModel(
         }
     }
 
-    fun loadItemsFromStudent(studentId: Int) {
+    fun loadItemsFromStudent() {
         viewModelScope.launch {
             itemsFromStudent.update { it.copy(isLoading = true) }
             try {
-                val response = studentHubService.getItemsFromStudent(studentId).enqueue()
+                val response = studentHubService.getItemsFromStudent(userDataManager.getStudentId()!!).enqueue()
                 Log.d(TAG, "loadItemsFromStudent: $response")
                 if (response.isSuccessful) {
                     Log.d(TAG, "loadItemsFromStudent: success")
@@ -206,20 +214,23 @@ class StudentHubViewModel(
         }
     }
 
-    fun buyItem(currentStudent: Student?, itemTemplateId: Int, itemCost: Int, quantityIncrease: Int): Boolean {
+    fun buyItem(itemTemplateId: Int, itemCost: Int, quantityIncrease: Int): Boolean {
+
 
         println("Buy button was pressed in the ViewModel.")
 
+        val currentStudent = student.value.student
+
         val newCredits = currentStudent!!.credits - itemCost
 
+        println("newCredit value")
         //checking if the student has enough money
         if (newCredits >= itemCost) {
 
             decreaseStudentCredits(newCredits) //reduces credits of the student
-            val itemPostData = getSelectedItemPost(currentStudent!!.id, itemTemplateId)
 
             //See if the Item already exists in the DB
-            return if (itemPostData.itemTemplateId != itemTemplateId) {
+            return if (itemExists(itemTemplateId)) {
 
                 println("BUY ITEM PATCH WAS CALLED")
                 //Boolean that student has enough credits (true)
@@ -228,9 +239,11 @@ class StudentHubViewModel(
             } else { //Otherwise uses @POST to increase the quantity
 
                 println("BUY ITEM POST WAS CALLED")
+                val itemPostData = getSelectedItemPost(currentStudent!!.id, itemTemplateId)
                 //Boolean that student has enough credits (true)
                 postItemFromStudent(itemPostData)
             }
+
         } else {
 
             println("Student does not have enough credits!")
@@ -239,9 +252,6 @@ class StudentHubViewModel(
     }
 
     private fun postItemFromStudent(item: ItemPost): Boolean {
-
-        //loads all the ItemForStudent from the DB to have them saved in the viewModel
-        loadItemsFromStudent(item.studentId)
 
         //@POST the ItemForStudent to the student DB
         viewModelScope.launch {
@@ -277,7 +287,7 @@ class StudentHubViewModel(
 
             var updatedItemPatch = ItemPatch(itemPatch.id, newQuantity, itemPatch.itemTemplateId, itemPatch.studentId)
 
-            val response = studentHubService.patchItemsFromItemTemplate(updatedItemPatch.id, updatedItemPatch).enqueue()
+            val response = studentHubService.patchItemsFromItemTemplate(itemPatch.id, updatedItemPatch).enqueue()
             Log.d(TAG, "loadPatchItemQuantity request: $response")
 
             if (response.isSuccessful) {
@@ -307,7 +317,11 @@ class StudentHubViewModel(
         viewModelScope.launch {
             student.update { it.copy(isLoading = true) }
 
-            var updatedStudent = StudentPatch(5, 1, 0, 0, newCredits, 0, "f96e0c04-c965-496a-8942-4fb7fcde9c30")
+//            var updatedStudent1 = StudentPatch(5, 1, 0, 0, newCredits, 0, "f96e0c04-c965-496a-8942-4fb7fcde9c30")
+            val currentStudent = student.value.student
+
+            var updatedStudent = StudentPatch(currentStudent!!.id, currentStudent!!.level, currentStudent!!.lat,
+                currentStudent!!.lon, newCredits, currentStudent!!.expToNextLevel, currentStudent!!.userId)
 
             val response = studentHubService.updateStudentCredits(updatedStudent.id, updatedStudent).enqueue()
             Log.d(TAG, "loadPatchStudentCredit request: $response")
@@ -329,16 +343,16 @@ class StudentHubViewModel(
         }
     }
 
-    private fun hasItems(itemTemplateId: Int): Boolean {
+    private fun itemExists(itemTemplateId: Int): Boolean {
+
+        loadItemsFromStudent()
 
         val itemPostListIterator = itemsFromStudent.value.itemsFromStudent.listIterator()
 
-        //iterates over the list
-        while (itemPostListIterator.hasNext()) {
-            val currentItem = itemPostListIterator.next()
+        itemPostListIterator.forEach {item ->
 
-            //checks if the itemTemplate is already in the DB by iterating over the list
-            if (currentItem.itemTemplateId == itemTemplateId) {
+            // Check if the itemTemplate is already in the DB by iterating over the list
+            if (item.itemTemplateId == itemTemplateId) {
                 return true
             }
         }
@@ -361,7 +375,7 @@ class StudentHubViewModel(
             //checks if the itemTemplate is already in the DB by iterating over the list
             if (currentItem.itemTemplateId == itemTemplateId) {
                 println("currentItem, itemTemplateID exists: $currentItem.")
-                return currentItem
+                return ItemPost(currentItem.quantity, currentItem.itemTemplateId, currentItem.studentId)
             }
         }
 
@@ -370,6 +384,8 @@ class StudentHubViewModel(
     }
 
     private fun getSelectedItemPatch(studentId: Int, itemTemplateId: Int): ItemPatch {
+
+        //TODO: returns ItemId 0 and a whole bunch of other nonesense with the other values
 
         loadItemsFromItemTemplate(studentId)
 
@@ -428,12 +444,14 @@ class StudentHubViewModel(
     companion object {
         fun provideFactory(
             studentHubService: StudentHubService,
+            application: Application,
         ): ViewModelProvider.Factory =
             object : ViewModelProvider.Factory {
                 @Suppress("UNCHECKED_CAST")
                 override fun <T : ViewModel> create(modelClass: Class<T>): T {
                     return StudentHubViewModel(
-                        studentHubService
+                        studentHubService,
+                        application,
                     ) as T
                 }
             }

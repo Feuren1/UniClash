@@ -1,5 +1,6 @@
 package project.main.uniclash
 
+import android.app.Application
 import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -34,28 +35,37 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import project.main.uniclash.datatypes.ItemTemplate
+import project.main.uniclash.retrofit.ArenaService
 import project.main.uniclash.retrofit.StudentHubService
+import project.main.uniclash.retrofit.StudentService
 import project.main.uniclash.ui.theme.UniClashTheme
+import project.main.uniclash.userDataManager.UserDataManager
+import project.main.uniclash.viewmodels.ArenaViewModel
 import project.main.uniclash.viewmodels.StudentHubViewModel
+import project.main.uniclash.viewmodels.StudentViewModel
 
 class StudentHubActivity : ComponentActivity() {
+
+    private val studentHubViewModel by viewModels<StudentHubViewModel> {
+        StudentHubViewModel.provideFactory(StudentHubService.getInstance(this), Application())
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        //initializes a viewmodel for further use. Uses the StudentHubService in order to talk to the backend
-        val studentHubViewModel: StudentHubViewModel by viewModels(factoryProducer = {
-            StudentHubViewModel.provideFactory(StudentHubService.getInstance(this))
-        })
+//        //initializes a viewmodel for further use. Uses the StudentHubService in order to talk to the backend
+//        val studentHubViewModel: StudentHubViewModel by viewModels(factoryProducer = {
+//            StudentHubViewModel.provideFactory(StudentHubService.getInstance(this), Application())
+//        })
         setContent {
             UniClashTheme {
                 // A surface container using the 'background' color from the theme
-                Surface(
-                    modifier = Modifier.fillMaxSize(),
-                    color = MaterialTheme.colorScheme.background
-                ) {
-                    StudentHubScreen(
-                        modifier = Modifier.fillMaxSize(),
-                        studentHubViewModel = studentHubViewModel
-                    )
+                Surface(modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background) {
+
+                    studentHubViewModel.loadStudent()
+                    studentHubViewModel.loadItemsFromStudent()
+                    studentHubViewModel.loadItemTemplates()
+
+                    StudentHubScreen(modifier = Modifier.fillMaxSize(), studentHubViewModel = studentHubViewModel)
                 }
             }
         }
@@ -68,23 +78,16 @@ fun StudentHubScreen(modifier: Modifier = Modifier,
 
     var context = LocalContext.current
 
-//    val studentHubsState by studentHubViewModel.studentHubs.collectAsState()
-//    studentHubViewModel.loadStudentHubs()
-//    var studentHubList = studentHubsState.studentHubs
-
     val itemTemplatesState by studentHubViewModel.itemTemplates.collectAsState()
-    studentHubViewModel.loadItemTemplates()
-    var itemTemplateList = itemTemplatesState.itemTemplates
 
-    val studentState by studentHubViewModel.student.collectAsState()
-    studentHubViewModel.loadStudent(5)
+    var itemTemplateList = itemTemplatesState.itemTemplates
 
     var creditValidation by rememberSaveable { mutableStateOf(true) }
     var buyingStatus by rememberSaveable { mutableStateOf("nothing") }
 
     Column(modifier = modifier) {
 
-        Text("Credits: ${studentState.student?.credits}")
+        Text("Credits: TODO: get credits => make a loadCredit function in viewmodel")
 
         if (creditValidation) {
 
@@ -93,13 +96,6 @@ fun StudentHubScreen(modifier: Modifier = Modifier,
         } else {
             buyingStatus = "Not enough credits!"
             Text("$buyingStatus")
-        }
-
-        Button(onClick = {
-            println("Items: $itemTemplateList")
-//            println("StudentHubs: $studentHubList")
-            }) {
-            Text(text = "Debug")
         }
 
         //Exit Box, image and position:
@@ -126,7 +122,7 @@ fun StudentHubScreen(modifier: Modifier = Modifier,
             onButtonClicked = { itemTemplate ->
                 buyingStatus = itemTemplate.name
                 val quantityButton = 1 //open for extension = if I want to create ways to buy more than one at a time
-                creditValidation = studentHubViewModel.buyItem(studentState.student , itemTemplate.id, itemTemplate.cost, quantityButton)
+                creditValidation = studentHubViewModel.buyItem(itemTemplate.id, itemTemplate.cost, quantityButton)
             })
     }
 }
@@ -141,9 +137,7 @@ fun ItemList(itemTemplateList: List<ItemTemplate>, onButtonClicked: (ItemTemplat
                 item ->
             ItemRow(itemTemplate = item,
                 onButtonClicked = {
-                    println("BEFORE Buy Item clicked in ItemList")
                     onButtonClicked(item)
-                    println("AFTER Buy Item clicked in ItemList")
                 })
         }
     }
@@ -168,9 +162,7 @@ fun ItemRow(
             .weight(1f)
             .padding(end = 16.dp),
             onClick = {
-                println("BEFORE Buy button clicked in ItemRow")
                 onButtonClicked(itemTemplate)
-                println("AFTER Buy button clicked in ItemRow")
             }) {
 
             Text(text = "Buy")

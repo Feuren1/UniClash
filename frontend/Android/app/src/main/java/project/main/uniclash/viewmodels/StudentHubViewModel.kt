@@ -392,54 +392,21 @@ class StudentHubViewModel(
         val itemPatchListIterator = itemsFromItemTemplate.value.itemsFromItemTemplate.listIterator()
 
         //iterates over the list
-        while (itemPatchListIterator.hasNext()) {
-            val currentItem = itemPatchListIterator.next()
+        itemPatchListIterator.forEach {item ->
 
             //checks if the itemTemplate is already in the DB by iterating over the list
-            if (currentItem.itemTemplateId == itemTemplateId) {
+            if (item.itemTemplateId == itemTemplateId) {
                 return ItemPatch(
-                    currentItem.id,
-                    currentItem.quantity,
-                    currentItem.itemTemplateId,
-                    currentItem.studentId
+                    item.id,
+                    item.quantity,
+                    item.itemTemplateId,
+                    item.studentId
                 )
             }
         }
 
         return ItemPatch(0, 0, 0, 0) //Should never be returned
     }
-
-//    private fun postStudent(currentStudent: Student, itemCost: Int) {
-//
-//        println("loadPostStudentCredits: PostStudentCredits function called")
-//        println("loadPostStudentCredits: currentStudent to be past into patch: $currentStudent")
-//
-//        viewModelScope.launch {
-//            student.update { it.copy(isLoading = true) }
-//            try {
-//                var student = StudentPost(1, 0, 0, 100, 0, "69487be5-d92c-4829-b647-e0343cb24860")
-//                println("loadPostStudentCredits: student to be past into patch:BEFORE $student")
-//
-//                val response = studentHubService.postStudent(student).enqueue()
-//                Log.d(TAG, "loadPostStudentCredits request: $response")
-//
-//                if (response.isSuccessful) {
-//                    Log.d(TAG, "loadPostStudentCredits Success: ${response.body()}")
-//                    response.body()?.let {
-//                        this@StudentHubViewModel.student.update { state ->
-//                            state.copy(student = it, isLoading = false)
-//                        }
-//                    }
-//
-//                } else {
-//                    println("loadPostStudentCredits: student to be past into patch:FAILURE $student")
-//                    Log.d(TAG, "loadPostStudentCredits Failed: ${response.code()}, ${response.message()}")
-//                }
-//            } catch (e: Exception) {
-//                e.printStackTrace()
-//            }
-//        }
-//    }
 
     companion object {
         fun provideFactory(

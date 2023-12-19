@@ -6,10 +6,6 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
-import androidx.compose.animation.Animatable
-import androidx.compose.animation.core.FastOutSlowInEasing
-import androidx.compose.animation.core.RepeatMode
-import androidx.compose.animation.core.infiniteRepeatable
 import androidx.compose.animation.core.keyframes
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Image
@@ -35,12 +31,9 @@ import androidx.compose.ui.unit.dp
 import project.main.uniclash.ui.theme.UniClashTheme
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.platform.LocalContext
@@ -164,7 +157,7 @@ fun CritterBattle(battleViewModel: BattleViewModel = viewModel()) {
                         maxHealth = playerMaxHealth,
                         barColor = Color.Green
                     )
-                CritterInfoText(battleViewPlayerUIState.playerCritter!!)
+                PlayerCritterInfoText(battleViewPlayerUIState.playerCritter!!)
 
                 val context = LocalContext.current
                 val name: String = battleViewPlayerUIState.playerCritter!!.name.lowercase()
@@ -197,7 +190,7 @@ fun CritterBattle(battleViewModel: BattleViewModel = viewModel()) {
                         maxHealth = cpuMaxHealth,
                         barColor = Color.Red
                     )
-                CritterInfoText(battleViewcpuCritterUIState.cpuCritter!!)
+                PlayerCritterInfoText(battleViewcpuCritterUIState.cpuCritter!!)
 
                 val context = LocalContext.current
                 val name: String = battleViewcpuCritterUIState.cpuCritter!!.name.lowercase()
@@ -451,7 +444,7 @@ fun BattleDialogText(
 }
 
 @Composable
-fun CritterInfoText(critter: CritterUsable) {
+fun PlayerCritterInfoText(critter: CritterUsable) {
     Box(
         modifier = Modifier
             .background(Color.Gray, RoundedCornerShape(4.dp))
@@ -461,15 +454,14 @@ fun CritterInfoText(critter: CritterUsable) {
             modifier = Modifier
                 .padding(6.dp)
                 .background(
-                    Color.Gray,
+                    Color.Green,
                     RoundedCornerShape(4.dp)
                 )  // Optional: Add a background to the text itself
                 .padding(6.dp),  // Optional: Add padding to the text itself
             text = buildAnnotatedString {
-                withStyle(style = SpanStyle(color = Color.Green)) {
-                    append(critter.name)
+                withStyle(style = SpanStyle(color = Color.Black)) {
+                    append(critter.name + " LVL: ${critter.level} HP: ${critter.hp}")
                 }
-                append(" LVL: ${critter.level} HP: ${critter.hp}")
             },
             fontSize = 18.sp,
             fontWeight = FontWeight.Bold,
@@ -477,6 +469,34 @@ fun CritterInfoText(critter: CritterUsable) {
         )
     }
 }
+
+@Composable
+fun CpuCritterInfoText(critter: CritterUsable) {
+    Box(
+        modifier = Modifier
+            .background(Color.Gray, RoundedCornerShape(4.dp))
+            .padding(2.dp)
+    ) {
+        Text(
+            modifier = Modifier
+                .padding(6.dp)
+                .background(
+                    Color.Red,
+                    RoundedCornerShape(4.dp)
+                )  // Optional: Add a background to the text itself
+                .padding(6.dp),  // Optional: Add padding to the text itself
+            text = buildAnnotatedString {
+                withStyle(style = SpanStyle(color = Color.Black)) {
+                    append(critter.name + " LVL: ${critter.level} HP: ${critter.hp}")
+                }
+            },
+            fontSize = 18.sp,
+            fontWeight = FontWeight.Bold,
+            color = Color.White
+        )
+    }
+}
+
 
 
 

@@ -28,6 +28,31 @@
         android:theme="@style/Theme.UniClash"
         tools:targetApi="31">
         <activity
+            android:name=".FinalBattleActivity"
+            android:exported="false"
+            android:label="@string/title_activity_final_battle"
+            android:theme="@style/Theme.UniClash" />
+        <activity
+            android:name=".BattleForcedTutorialAdvancedActivity"
+            android:exported="false"
+            android:label="@string/title_activity_battle_forced_tutorial_advanced"
+            android:theme="@style/Theme.UniClash" />
+        <activity
+            android:name=".BattleTutorialAdvancedActivity"
+            android:exported="false"
+            android:label="@string/title_activity_battle_tutorial_advanced"
+            android:theme="@style/Theme.UniClash" />
+        <activity
+            android:name=".BattleForcedTutorialActivity"
+            android:exported="false"
+            android:label="BattleForcedTutorialActivity"
+            android:theme="@style/Theme.UniClash" />
+        <activity
+            android:name=".BattleTutorialActivity"
+            android:exported="false"
+            android:label="@string/title_activity_battle_tutorial"
+            android:theme="@style/Theme.UniClash" />
+        <activity
             android:name=".ProfileActivity"
             android:exported="false"
             android:label="@string/title_activity_profile"

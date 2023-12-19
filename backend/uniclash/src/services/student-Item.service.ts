@@ -60,7 +60,7 @@ export class StudentItemService {
       include: ['items'],
     })
 
-    const itemTemplate: ItemTemplate = await this.itemTemplateRepository.findById(1);
+    const itemTemplate: ItemTemplate = await this.itemTemplateRepository.findById(itemTemplateId);
     console.log(`Student ${student.credits}`);
     console.log(`itemTemplate ${itemTemplate.name}`);
     if(itemTemplate.cost != null && student.credits != null) {
@@ -72,17 +72,30 @@ export class StudentItemService {
         console.log("Student quantity: " + student.credits);
 
         const items: Item[] = studentItem.items;
-        for(const item of items){
-          console.log("Step 3");
-          if(item.itemTemplateId == itemTemplateId){
-            if(item.quantity != null) {
-              item.quantity++
-              await this.itemRepository.update(item);
-              await this.studentRepository.update(student);
-              return "new quantity" + item.quantity
+        try {
+          for (const item of items) {
+            console.log("Step 3");
+            if (item.itemTemplateId == itemTemplateId) {
+              if (item.quantity != null) {
+                item.quantity++
+                await this.itemRepository.update(item);
+                await this.studentRepository.update(student);
+                return "new quantity" + item.quantity
+              }
             }
           }
+        }catch (e) {
+          console.log("Inventory is empty");
         }
+        console.log("Wenn genug Geld aber kein Item");
+        const itemData: Partial<Item> = {
+          //id: 1, // Hier kann die ID deines Items sein, wenn du sie bereits kennst
+          quantity: 1, // Die Anzahl der Items
+          itemTemplateId: itemTemplateId, // ID des Item-Templates, zu dem dieses Item gehört
+          studentId: studentId, // ID des Students, dem dieses Item gehört
+        };
+        const newItem: Item = new Item(itemData);
+        this.itemRepository.create(newItem)
       }
     }
     return "student" + studentId + " and itemID" + itemTemplateId

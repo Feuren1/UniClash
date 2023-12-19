@@ -30,16 +30,10 @@ interface StudentHubService {
     @GET("/item-templates")
     fun getItemTemplates(): Call<List<ItemTemplate>>
 
-    @GET("/students/{id}/items")
-    fun getItemsFromStudent(@Path("id") id: Int) : Call<List<Item>>
-
     @GET("/students/{id}")
     fun getStudent(@Path("id")id : Int): Call<Student>
 
-    @GET("/item-templates/{id}/items")
-    fun getItemsFromItemTemplate(@Path("id") id: Int): Call<List<ItemFromItemTemplate>>
-
-    @PATCH("/students/{id}/itemTemplate/{id}")
+    @PATCH("/students/{studentId}/itemTemplate/{itemTemplateId}")
     fun buyItem(@Path("studentId") studentId: Int, @Path("itemTemplateId") itemTemplateId: Int): Call<ItemForStudent>
 
 

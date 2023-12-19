@@ -83,19 +83,20 @@ fun StudentHubScreen(modifier: Modifier = Modifier,
 
     var itemCost by rememberSaveable { mutableIntStateOf(0) }
     var buyingStatus by rememberSaveable { mutableStateOf("nothing") }
-
+    println("1")
     Column(modifier = modifier) {
 
         Text("Credits: TODO: get credits => make a loadCredit function in viewmodel")
-
-        if (student!!.credits - itemCost >= 0) {
-
-            Text("You have last bought: $buyingStatus.")
-
-        } else {
-            buyingStatus = "Not enough credits!"
-            Text("$buyingStatus")
-        }
+        println("2")
+//        if (student!!.credits - itemCost >= 0) {
+//            println("3")
+//            Text("You have last bought: $buyingStatus.")
+//
+//        } else {
+//            buyingStatus = "Not enough credits!"
+//            Text("$buyingStatus")
+//            println("4")
+//        }
 
         //Exit Box, image and position:
         Box(
@@ -128,7 +129,7 @@ fun StudentHubScreen(modifier: Modifier = Modifier,
 
 @Composable
 fun ItemList(itemTemplateList: List<ItemTemplate>, onButtonClicked: (ItemTemplate) -> Unit, modifier: Modifier = Modifier) {
-
+    println("5")
     LazyColumn(modifier = modifier) {
 
         items(items = itemTemplateList, key = { item -> item.name }) {
@@ -148,7 +149,7 @@ fun ItemRow(
     onButtonClicked: (ItemTemplate) -> Unit,
     modifier: Modifier = Modifier
 ) {
-
+    println("6")
     Row(modifier = modifier, verticalAlignment = Alignment.CenterVertically) {
 
         Text(modifier = Modifier

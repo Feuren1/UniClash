@@ -22,6 +22,11 @@ export class Attack extends Entity {
   })
   strength?: number;
 
+  @property({
+    type: 'string',
+  })
+  attackType?: string;
+
   @hasMany(() => CritterAttack)
   critterAttacks: CritterAttack[];
 

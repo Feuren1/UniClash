@@ -39,6 +39,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.painter.Painter
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.SpanStyle
@@ -98,15 +99,21 @@ class FinalBattleActivity : ComponentActivity() {
                     var playerCritter = battleViewPlayerUIState.playerCritter
                     val battleViewcpuCritterUIState by finalBattleViewModel.cpuCritter.collectAsState()
                     var cpuCritter = battleViewcpuCritterUIState.cpuCritter
+                    Box(
+                        modifier = Modifier.fillMaxSize()
+                    ) {
+                        Image(
+                            painter = painterResource(id = R.drawable.battlebackround),
+                            contentDescription = null,
+                            modifier = Modifier.fillMaxSize(),
+                            contentScale = ContentScale.Crop
+                        )
+                    }
+
                     if(!battleViewPlayerUIState.isLoading && !battleViewcpuCritterUIState.isLoading) {
                         Column {
                             var battleResult = finalBattleViewModel.checkResult()
-                            Box(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .background(MaterialTheme.colorScheme.background)
-                                    .padding(16.dp)
-                            ) {
+
                                 Image(
                                     painter = painterResource(id = R.drawable.exit),
                                     contentDescription = null,
@@ -116,9 +123,9 @@ class FinalBattleActivity : ComponentActivity() {
                                             mediaPlayer?.release()
                                             progressRequest = true
                                         }
-                                        .align(Alignment.TopEnd)
+
                                 )
-                            }
+
                             if (battleResult == BattleResult.CPU_WINS) {
                                 Box(
                                     modifier = Modifier
@@ -419,27 +426,7 @@ fun FinalBattle(finalBattleViewModel:FinalBattleViewModel = viewModel()) {
             }
 
             GifImage("vibe", Modifier.padding(4.dp))
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(3.dp)
-                    .clickable {
-                    } // Handle click to execute attack
-            ) {
-                Text(
-                    text = "Remember what you learned about Stats, Buffs and Debuffs and beat the final Challenge! Try to keep your attack and defence high, while lowering the Linuxpenguin´s defence.",
-                    modifier = Modifier
-                        .padding(8.dp)
-                        .background(
-                            color = Color(0xFFFFEBCD),
-                            shape = RoundedCornerShape(16.dp)
-                        )
-                        .padding(8.dp),
-                    fontFamily = FontFamily.Default, // Replace with your custom font
-                    fontSize = 13.sp,
-                    color = Color.Black
-                )
-            }
+
         }
     }
     else if (playerWon == true) {

@@ -58,22 +58,22 @@ class BattleTutorialAdvancedViewModel(
     private val cpuAttackOrder = listOf(
         Attack(4, "QuizzQuestion", 55, AttackType.DAMAGE_DEALER),
         Attack(4, "QuizzQuestion", 55, AttackType.DAMAGE_DEALER),
-        Attack(2, "SuperGuard", 15, AttackType.DEF_Buff),
-        Attack(3, "AttackBreak", 15, AttackType.ATK_DeBuff),
+        Attack(2, "SuperGuard", 15, AttackType.DEF_BUFF),
+        Attack(3, "AttackBreak", 15, AttackType.ATK_DEBUFF),
         Attack(1, "Rollout", 70, AttackType.DAMAGE_DEALER),
-        Attack(2, "SuperGuard", 15, AttackType.DEF_Buff),
-        Attack(3, "AttackBreak", 15, AttackType.ATK_DeBuff),
+        Attack(2, "SuperGuard", 15, AttackType.DEF_BUFF),
+        Attack(3, "AttackBreak", 15, AttackType.ATK_DEBUFF),
         Attack(4, "QuizzQuestion", 55, AttackType.DAMAGE_DEALER),
-        Attack(2, "SuperGuard", 15, AttackType.DEF_Buff),
-        Attack(3, "AttackBreak", 15, AttackType.ATK_DeBuff),
+        Attack(2, "SuperGuard", 15, AttackType.DEF_BUFF),
+        Attack(3, "AttackBreak", 15, AttackType.ATK_DEBUFF),
         Attack(4, "QuizzQuestion", 55, AttackType.DAMAGE_DEALER),
-        Attack(2, "SuperGuard", 15, AttackType.DEF_Buff),
+        Attack(2, "SuperGuard", 15, AttackType.DEF_BUFF),
         Attack(1, "Rollout", 70, AttackType.DAMAGE_DEALER),
-        Attack(2, "SuperGuard", 15, AttackType.DEF_Buff),
-        Attack(3, "AttackBreak", 15, AttackType.ATK_DeBuff),
+        Attack(2, "SuperGuard", 15, AttackType.DEF_BUFF),
+        Attack(3, "AttackBreak", 15, AttackType.ATK_DEBUFF),
         Attack(4, "QuizzQuestion", 55, AttackType.DAMAGE_DEALER),
-        Attack(2, "SuperGuard", 15, AttackType.DEF_Buff),
-        Attack(3, "AttackBreak", 15, AttackType.ATK_DeBuff),
+        Attack(2, "SuperGuard", 15, AttackType.DEF_BUFF),
+        Attack(3, "AttackBreak", 15, AttackType.ATK_DEBUFF),
         Attack(4, "QuizzQuestion", 55, AttackType.DAMAGE_DEALER),
     )
     private var cpuAttackIndex = 0
@@ -114,8 +114,8 @@ class BattleTutorialAdvancedViewModel(
 
             val playerAttack1 = Attack(1, "Splash", 60, AttackType.DAMAGE_DEALER)
             val playerAttack2 = Attack(2, "HyperBeam", 70, AttackType.DAMAGE_DEALER)
-            val playerAttack3 = Attack(3, "Defence Break", 15, AttackType.DEF_DeBuff)
-            val playerAttack4 = Attack(4, "Beak Sharpener", 25, AttackType.ATK_Buff)
+            val playerAttack3 = Attack(3, "Defence Break", 15, AttackType.DEF_DEBUFF)
+            val playerAttack4 = Attack(4, "Beak Sharpener", 25, AttackType.ATK_BUFF)
             val listOfPlayerAttacks = listOf(playerAttack1, playerAttack2, playerAttack3, playerAttack4)
             val playerTutorialCritter = CritterUsable(24, "Coolduck", 100, 70, 80, 50, listOfPlayerAttacks,1, 1)
 
@@ -124,8 +124,8 @@ class BattleTutorialAdvancedViewModel(
             }
 
             val cpuAttack1 = Attack(1, "Rollout", 70, AttackType.DAMAGE_DEALER)
-            val cpuAttack2 = Attack(2, "SuperGuard", 25, AttackType.DEF_Buff)
-            val cpuAttack3 = Attack(3, "ShieldBreak", 15, AttackType.DEF_DeBuff)
+            val cpuAttack2 = Attack(2, "SuperGuard", 25, AttackType.DEF_BUFF)
+            val cpuAttack3 = Attack(3, "ShieldBreak", 15, AttackType.DEF_DEBUFF)
             val cpuAttack4 = Attack(4, "SkullCrush", 70, AttackType.DAMAGE_DEALER)
             val listOfCpuAttacks = listOf(cpuAttack1, cpuAttack2, cpuAttack3, cpuAttack4)
             val cpuTutorialCritter = CritterUsable(23, "Quizizzdragon", 130, 60, 115, 30, listOfCpuAttacks,1, 1)
@@ -179,12 +179,12 @@ class BattleTutorialAdvancedViewModel(
 
     fun executePlayerAttack() {
         if (playerInput.value.isPlayerAttackSelected) {
-            if(playerInput.value.selectedPlayerAttack!!.attackType==AttackType.ATK_Buff ||
-                playerInput.value.selectedPlayerAttack!!.attackType==AttackType.DEF_Buff ){
+            if(playerInput.value.selectedPlayerAttack!!.attackType==AttackType.ATK_BUFF ||
+                playerInput.value.selectedPlayerAttack!!.attackType==AttackType.DEF_BUFF ){
                 applyBuffToPlayer(playerInput.value.selectedPlayerAttack!!)
             }
-            if(playerInput.value.selectedPlayerAttack!!.attackType==AttackType.ATK_DeBuff ||
-                playerInput.value.selectedPlayerAttack!!.attackType==AttackType.DEF_DeBuff){
+            if(playerInput.value.selectedPlayerAttack!!.attackType==AttackType.ATK_DEBUFF ||
+                playerInput.value.selectedPlayerAttack!!.attackType==AttackType.DEF_DEBUFF){
                 applyDebuffToCpu(playerInput.value.selectedPlayerAttack!!)
             }
             if(playerInput.value.selectedPlayerAttack!!.attackType==AttackType.DAMAGE_DEALER){
@@ -205,12 +205,12 @@ class BattleTutorialAdvancedViewModel(
 
     fun executeCpuAttack() {
         if (cpuInput.value.isCpuAttackSelected) {
-            if(cpuInput.value.selectedCpuAttack!!.attackType==AttackType.ATK_Buff ||
-                cpuInput.value.selectedCpuAttack!!.attackType==AttackType.DEF_Buff ){
+            if(cpuInput.value.selectedCpuAttack!!.attackType==AttackType.ATK_BUFF ||
+                cpuInput.value.selectedCpuAttack!!.attackType==AttackType.DEF_BUFF ){
                 applyBuffToCpu(cpuInput.value.selectedCpuAttack!!)
             }
-            if(cpuInput.value.selectedCpuAttack!!.attackType==AttackType.ATK_DeBuff ||
-                cpuInput.value.selectedCpuAttack!!.attackType==AttackType.DEF_DeBuff){
+            if(cpuInput.value.selectedCpuAttack!!.attackType==AttackType.ATK_DEBUFF ||
+                cpuInput.value.selectedCpuAttack!!.attackType==AttackType.DEF_DEBUFF){
                 applyDebuffToPlayer(cpuInput.value.selectedCpuAttack!!)
             }
             if(cpuInput.value.selectedCpuAttack!!.attackType==AttackType.DAMAGE_DEALER){
@@ -299,7 +299,7 @@ class BattleTutorialAdvancedViewModel(
     }
 
     private fun applyBuffToPlayer(attack: Attack) {
-        if (attack.attackType == AttackType.ATK_Buff) {
+        if (attack.attackType == AttackType.ATK_BUFF) {
             viewModelScope.launch() {
                 val newAtk = (playerCritter.value.playerCritter!!.atk + attack.strength).coerceAtMost(180)
                 val increased = newAtk > playerCritter.value.playerCritter!!.atk
@@ -317,7 +317,7 @@ class BattleTutorialAdvancedViewModel(
                 }
             }
         }
-        if (attack.attackType == AttackType.DEF_Buff) {
+        if (attack.attackType == AttackType.DEF_BUFF) {
             viewModelScope.launch() {
                 val newDef = (playerCritter.value.playerCritter!!.def + attack.strength).coerceAtMost(180)
                 val increased = newDef > playerCritter.value.playerCritter!!.def
@@ -345,10 +345,10 @@ class BattleTutorialAdvancedViewModel(
                 val currentAtk = currentState.playerCritter?.atk ?: 0
                 val currentDef = currentState.playerCritter?.def ?: 0
 
-                newAtk = if (attack.attackType == AttackType.ATK_DeBuff) {
+                newAtk = if (attack.attackType == AttackType.ATK_DEBUFF) {
                     (currentAtk - attack.strength).coerceAtLeast(20)
                 } else currentAtk
-                newDef = if (attack.attackType == AttackType.DEF_DeBuff) {
+                newDef = if (attack.attackType == AttackType.DEF_DEBUFF) {
                     (currentDef - attack.strength).coerceAtLeast(20)
                 } else currentDef
                 currentState.copy(
@@ -360,13 +360,13 @@ class BattleTutorialAdvancedViewModel(
             }
 
             _battleText.value = when {
-                attack.attackType == AttackType.ATK_DeBuff && playerCritter.value.playerCritter!!.atk == 1 ->
+                attack.attackType == AttackType.ATK_DEBUFF && playerCritter.value.playerCritter!!.atk == 1 ->
                     "${playerCritter.value.playerCritter!!.name}'s Attack can't be decreased any further!"
-                attack.attackType == AttackType.ATK_DeBuff ->
+                attack.attackType == AttackType.ATK_DEBUFF ->
                     "${playerCritter.value.playerCritter!!.name}'s Attack fell to $newAtk!"
-                attack.attackType == AttackType.DEF_DeBuff && playerCritter.value.playerCritter!!.def == 1 ->
+                attack.attackType == AttackType.DEF_DEBUFF && playerCritter.value.playerCritter!!.def == 1 ->
                     "${playerCritter.value.playerCritter!!.name}'s Defence can't be decreased any further!"
-                attack.attackType == AttackType.DEF_DeBuff ->
+                attack.attackType == AttackType.DEF_DEBUFF ->
                     "${playerCritter.value.playerCritter!!.name}'s Defence fell to $newDef!"
                 else -> ""
             }
@@ -381,11 +381,11 @@ class BattleTutorialAdvancedViewModel(
                 val currentAtk = currentState.cpuCritter?.atk ?: 0
                 val currentDef = currentState.cpuCritter?.def ?: 0
 
-                newAtk = if (attack.attackType == AttackType.ATK_DeBuff) {
+                newAtk = if (attack.attackType == AttackType.ATK_DEBUFF) {
                     (currentAtk - attack.strength).coerceAtLeast(20)
                 } else currentAtk
 
-                newDef = if (attack.attackType == AttackType.DEF_DeBuff) {
+                newDef = if (attack.attackType == AttackType.DEF_DEBUFF) {
                     (currentDef - attack.strength).coerceAtLeast(20)
                 } else currentDef
 
@@ -398,13 +398,13 @@ class BattleTutorialAdvancedViewModel(
             }
 
             _battleText.value = when {
-                attack.attackType == AttackType.ATK_DeBuff && cpuCritter.value.cpuCritter!!.atk == 1 ->
+                attack.attackType == AttackType.ATK_DEBUFF && cpuCritter.value.cpuCritter!!.atk == 1 ->
                     "${cpuCritter.value.cpuCritter!!.name}'s Attack can't be decreased any further!"
-                attack.attackType == AttackType.ATK_DeBuff ->
+                attack.attackType == AttackType.ATK_DEBUFF ->
                     "${cpuCritter.value.cpuCritter!!.name}'s Attack fell to $newAtk"
-                attack.attackType == AttackType.DEF_DeBuff && cpuCritter.value.cpuCritter!!.def == 1 ->
+                attack.attackType == AttackType.DEF_DEBUFF && cpuCritter.value.cpuCritter!!.def == 1 ->
                     "${cpuCritter.value.cpuCritter!!.name}'s Defence can't be decreased any further!"
-                attack.attackType == AttackType.DEF_DeBuff ->
+                attack.attackType == AttackType.DEF_DEBUFF ->
                     "${cpuCritter.value.cpuCritter!!.name}'s Defence fell to $newDef"
                 else -> ""
             }
@@ -412,7 +412,7 @@ class BattleTutorialAdvancedViewModel(
     }
 
     private fun applyBuffToCpu(attack: Attack) {
-        if (attack.attackType == AttackType.ATK_Buff) {
+        if (attack.attackType == AttackType.ATK_BUFF) {
             viewModelScope.launch() {
                 val newAtk = (cpuCritter.value.cpuCritter!!.atk + attack.strength).coerceAtMost(180)
                 val increased = newAtk > cpuCritter.value.cpuCritter!!.atk
@@ -430,7 +430,7 @@ class BattleTutorialAdvancedViewModel(
                 }
             }
         }
-        if (attack.attackType == AttackType.DEF_Buff) {
+        if (attack.attackType == AttackType.DEF_BUFF) {
             viewModelScope.launch() {
                 val newDef = (cpuCritter.value.cpuCritter!!.def + attack.strength).coerceAtMost(180)
                 val increased = newDef > cpuCritter.value.cpuCritter!!.def

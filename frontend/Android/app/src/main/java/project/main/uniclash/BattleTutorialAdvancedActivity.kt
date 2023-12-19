@@ -1,7 +1,6 @@
 package project.main.uniclash
 
 import android.annotation.SuppressLint
-import android.graphics.drawable.Drawable
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -45,21 +44,14 @@ import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.sp
-import androidx.core.content.ContextCompat
 import androidx.lifecycle.viewmodel.compose.viewModel
-import android.content.Context
 import android.content.Intent
-import androidx.core.graphics.drawable.toBitmap
 import project.main.uniclash.battle.BattleResult
 import project.main.uniclash.datatypes.Attack
 import project.main.uniclash.datatypes.AttackType
 import project.main.uniclash.datatypes.CritterUsable
 import project.main.uniclash.retrofit.CritterService
-import project.main.uniclash.viewmodels.AdvancedTutorialStep
 import project.main.uniclash.viewmodels.BattleTutorialAdvancedViewModel
-import android.graphics.drawable.BitmapDrawable
-import androidx.core.graphics.drawable.toBitmap
-import androidx.emoji2.text.EmojiCompat
 
 class BattleTutorialAdvancedActivity : ComponentActivity() {
 

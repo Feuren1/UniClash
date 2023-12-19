@@ -1,6 +1,8 @@
 
 package project.main.uniclash.viewmodels
 
+import android.annotation.SuppressLint
+import android.app.Application
 import android.util.Log
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
@@ -15,6 +17,7 @@ import project.main.uniclash.battle.BattleLogicView
 import project.main.uniclash.battle.BattleResult
 import project.main.uniclash.datatypes.Attack
 import project.main.uniclash.retrofit.enqueue
+import project.main.uniclash.userDataManager.UserDataManager
 import kotlin.coroutines.resume
 import kotlin.coroutines.suspendCoroutine
 
@@ -60,7 +63,9 @@ class BattleViewModel(
     //TAG for logging
     private val TAG = UniClashViewModel::class.java.simpleName
     private val _battleText = MutableStateFlow("Battle started!")
-
+    val userDataManager: UserDataManager by lazy {
+        UserDataManager(Application())
+    }
     val battleText: MutableStateFlow<String> get() = _battleText
 
     val playerCritter = MutableStateFlow(
@@ -96,8 +101,8 @@ class BattleViewModel(
     init {
         viewModelScope.launch {
             Log.d(TAG, "Fetching initial critters data: ")
-            loadPlayerCritter(44)
-            loadCpuCritter(20)
+            loadPlayerCritter()
+            loadCpuCritter(146)
         }
     }
 
@@ -244,18 +249,22 @@ class BattleViewModel(
         return (((((2*level)/5)+2)*attack*atk/def)/50)+2
     }
 
-    fun loadPlayerCritter(id: Int) {
+    @SuppressLint("MissingPermission")
+    fun loadPlayerCritter() {
         viewModelScope.launch {
             playerCritter.update { it.copy(isLoading = true) }
             try {
-                val response = critterService.getCritterUsable(id).enqueue()
-                Log.d(TAG, "LoadPlayerCritter: $response")
+                val response = critterService.getCritterUsables(userDataManager.getStudentId()!!).enqueue()
+                Log.d(TAG, "loadCrittersUsable: $response")
                 if (response.isSuccessful) {
-                    Log.d(TAG, "Success: ${response.body()}")
-                    response.body()?.let {
-                        playerCritter.update { state ->
-                            state.copy(playerCritter = it, isLoading = false)
-                        }
+                    Log.d(TAG, "loadCrittersUsables: success")
+                    val crittersUsables = response.body()!!
+                    Log.d(TAG, "loadCrittersUsables: $crittersUsables")
+                    playerCritter.update {
+                        it.copy(
+                            playerCritter = crittersUsables[0],
+                            isLoading = false
+                        )
                     }
                 }
             } catch (e: Exception) {

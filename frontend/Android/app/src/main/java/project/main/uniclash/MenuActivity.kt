@@ -76,7 +76,7 @@ class MenuActivity : ComponentActivity() {
                             .verticalScroll(rememberScrollState())
                     ) {
                         Column {
-                            /*MenuCard(listOf(
+                            MenuCard(listOf(
                                 Category(
                                     "Critters List",
                                     painterResource(R.drawable.prc2duck),
@@ -116,15 +116,15 @@ class MenuActivity : ComponentActivity() {
                                 )
                             )
                             )
-                            MenuCard(listOf(Category("Student Hub", painterResource(R.drawable.store), 8)))
-                            MenuCard(listOf(Category("Camera", painterResource(R.drawable.swords), 9)))
-                            MenuCard(listOf(Category("Arena", painterResource(R.drawable.arena), 10)))
-                            MenuCard(listOf(Category("Poké", painterResource(R.drawable.studentassistance), 11)))
-                            MenuCard(listOf(Category("BattleForcedTutorial", painterResource(R.drawable.prc2duck), 17)))
-                            MenuCard(listOf(Category("BattleForcedTutorialAdvanced", painterResource(R.drawable.prc2duck), 18)))
-                            MenuCard(listOf(Category("BattleTutorial", painterResource(R.drawable.prc2duck), 15)))
-                            MenuCard(listOf(Category("BattleTutorialAdvanced", painterResource(R.drawable.prc2duck), 16)))
-                            MenuCard(listOf(Category("Final Battle Challenge", painterResource(R.drawable.prc2duck), 19)))
+                            MenuCard(listOf(Category("Student Hub", painterResource(R.drawable.store), StudentHubActivity::class.java)))
+                            MenuCard(listOf(Category("Camera", painterResource(R.drawable.swords), CameraActivity::class.java)))
+                            MenuCard(listOf(Category("Arena", painterResource(R.drawable.arena), ArenaActivity::class.java)))
+                            MenuCard(listOf(Category("Poké", painterResource(R.drawable.studentassistance), PokéActivity::class.java)))
+                            MenuCard(listOf(Category("BattleForcedTutorial", painterResource(R.drawable.prc2duck), BattleForcedTutorialActivity::class.java)))
+                            MenuCard(listOf(Category("BattleForcedTutorialAdvanced", painterResource(R.drawable.prc2duck), BattleForcedTutorialAdvancedActivity::class.java)))
+                            MenuCard(listOf(Category("BattleTutorial", painterResource(R.drawable.prc2duck), BattleTutorialActivity::class.java)))
+                            MenuCard(listOf(Category("BattleTutorialAdvanced", painterResource(R.drawable.prc2duck), BattleTutorialAdvancedActivity::class.java)))
+                            MenuCard(listOf(Category("Final Battle Challenge", painterResource(R.drawable.prc2duck), FinalBattleActivity::class.java)))
                             MenuCard(listOf(Category("Student Hub", painterResource(R.drawable.store), StudentHubActivity::class.java)))
                             MenuCard(listOf(Category("Camera", painterResource(R.drawable.swords), CameraActivityTest::class.java)))
                             MenuCard(listOf(Category("Log into other acc", painterResource(R.drawable.profile), LoginActivity::class.java),Category("Register new acc", painterResource(R.drawable.profile), RegisterActivity::class.java)))
@@ -138,31 +138,6 @@ class MenuActivity : ComponentActivity() {
                 val intent = Intent(this, buttonRequest)
                 this.startActivity(intent)
                 buttonRequest = MainActivity::class.java
-            }
-            if(buttonRequest == 15) {
-                val intent = Intent(this, BattleTutorialActivity::class.java)
-                this.startActivity(intent)
-                buttonRequest = 0
-            }
-            if(buttonRequest == 16) {
-                val intent = Intent(this, BattleTutorialAdvancedActivity::class.java)
-                this.startActivity(intent)
-                buttonRequest = 0
-            }
-            if(buttonRequest == 17) {
-                val intent = Intent(this, BattleForcedTutorialActivity::class.java)
-                this.startActivity(intent)
-                buttonRequest = 0
-            }
-            if(buttonRequest == 18) {
-                val intent = Intent(this, BattleForcedTutorialAdvancedActivity::class.java)
-                this.startActivity(intent)
-                buttonRequest = 0
-            }
-            if(buttonRequest == 19) {
-                val intent = Intent(this, FinalBattleActivity::class.java)
-                this.startActivity(intent)
-                buttonRequest = 0
             }
         }
     }

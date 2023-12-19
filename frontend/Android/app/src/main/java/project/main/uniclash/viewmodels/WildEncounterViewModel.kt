@@ -29,6 +29,7 @@ class WildEncounterViewModel(
 
     private val markerData = SelectedMarker.SELECTEDMARKER.takeMarker()
     private val wildEncounterMarker = if(markerData is MarkerWildEncounter){markerData} else {null}
+    private var catchChance = 0.0
     private val userDataManager: UserDataManager by lazy {
         UserDataManager(application)
     }
@@ -49,47 +50,55 @@ class WildEncounterViewModel(
         )
     )
 
-     fun addWildEncounterToUser(studentId: Int) {
+    private fun isCatchSuccessful(): Boolean {
+        val randomValue = Math.random() * 100.0
 
-        viewModelScope.launch {
-            critters.update { it.copy(isLoading = true) }
-            try {
-                val response = critterService.postCatchedCritter(userDataManager.getStudentId(),
-                    wildEncounterMarker!!.critterUsable!!.critterId).enqueue()
-                Log.d(TAG, "loadCrittersUsable: $response")
-                if (response.isSuccessful) {
-                    Log.d(TAG, "Success: ${response.body()}")
-                    response.body()?.let {
-                        critters.update { state ->
-                            state.copy(critter = it, isLoading = false)
+        return randomValue <= catchChance
+    }
+
+     fun addWildEncounterToUser() : String {
+        if(isCatchSuccessful()) {
+            viewModelScope.launch {
+                critters.update { it.copy(isLoading = true) }
+                try {
+                    val response = critterService.postCatchedCritter(
+                        userDataManager.getStudentId(),
+                        wildEncounterMarker!!.critterUsable!!.critterId
+                    ).enqueue()
+                    Log.d(TAG, "loadCrittersUsable: $response")
+                    if (response.isSuccessful) {
+                        Log.d(TAG, "Success: ${response.body()}")
+                        response.body()?.let {
+                            critters.update { state ->
+                                state.copy(critter = it, isLoading = false)
+                            }
                         }
                     }
+                } catch (e: Exception) {
+                    e.printStackTrace()
                 }
-            } catch (e: Exception) {
-                e.printStackTrace()
             }
+            return "Critter caught!\nYou receive 25EP and 1 Credit"
+        } else{
+            return "Critter escapes!"
         }
     }
-    /*fun addWildEncounterToUser(){
+
+    fun calculateCatchChance(critterLevel :Int) : Double{
+        var chance = 0.0
         viewModelScope.launch {
-            critters.update { it.copy(isLoading = true) }
-            try {
-                var critterForStudent = CritterForStudent(1,1,"testi",1,1)
-                val response = critterService.postStudentCritter(1, critterForStudent).enqueue()
-                Log.d(TAG, "loadCrittersUsable: $response")
-                if (response.isSuccessful) {
-                    Log.d(TAG, "Success: ${response.body()}")
-                    response.body()?.let {
-                        critters.update { state ->
-                            state.copy(critter = it, isLoading = false)
-                        }
-                    }
+            val userLevel = userDataManager.getLevel()
+            var difference = userLevel?.minus(critterLevel)
+            if (difference != null) {
+                if(difference > 0){
+                    difference = 0
                 }
-            } catch (e: Exception) {
-                e.printStackTrace()
+                chance = (100 -difference*-1).toDouble()
             }
         }
-    }*/
+        catchChance = chance
+        return chance
+    }
 
 
     companion object {

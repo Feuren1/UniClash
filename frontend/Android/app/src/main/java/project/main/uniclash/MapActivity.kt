@@ -1,28 +1,26 @@
 package project.main.uniclash
 
-import android.Manifest
-import android.annotation.SuppressLint
 import android.app.Activity
-import android.content.Context
 import android.content.Intent
-import android.content.pm.PackageManager
-import android.graphics.Bitmap
-import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.Drawable
 import android.os.Bundle
-import android.os.Looper
 import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
-import androidx.annotation.DrawableRes
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -32,7 +30,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -48,13 +45,9 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.core.app.ActivityCompat
-import androidx.core.content.ContextCompat
-import androidx.core.graphics.drawable.toBitmap
+import androidx.lifecycle.lifecycleScope
+import coil.compose.rememberImagePainter
 import com.google.android.gms.location.FusedLocationProviderClient
-import com.google.android.gms.location.LocationCallback
-import com.google.android.gms.location.LocationRequest
-import com.google.android.gms.location.LocationResult
 import com.google.android.gms.location.LocationServices
 import com.utsman.osmandcompose.CameraState
 import com.utsman.osmandcompose.Marker
@@ -63,41 +56,48 @@ import com.utsman.osmandcompose.OpenStreetMap
 import com.utsman.osmandcompose.rememberCameraState
 import com.utsman.osmandcompose.rememberMarkerState
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import org.osmdroid.util.GeoPoint
 import project.main.uniclash.datatypes.Counter
-import project.main.uniclash.datatypes.CritterUsable
 import project.main.uniclash.datatypes.Locations
 import project.main.uniclash.datatypes.MapSaver
 import project.main.uniclash.datatypes.MapSettings
 import project.main.uniclash.datatypes.MarkerData
+import project.main.uniclash.datatypes.MarkerWildEncounter
 import project.main.uniclash.datatypes.SelectedMarker
-import project.main.uniclash.datatypes.StudentHub
+import project.main.uniclash.map.GeoCodingHelper
+import project.main.uniclash.map.LocationPermissions
+import project.main.uniclash.map.MapCalculations
+import project.main.uniclash.map.MarkerList
+import project.main.uniclash.retrofit.ArenaService
 import project.main.uniclash.retrofit.CritterService
 import project.main.uniclash.retrofit.StudentHubService
 import project.main.uniclash.ui.theme.UniClashTheme
-import project.main.uniclash.viewmodels.StudentHubViewModel
-import project.main.uniclash.viewmodels.UniClashViewModel
-import project.main.uniclash.wildencounter.WildEncounterLogic
-import java.lang.Math.atan2
-import java.lang.Math.cos
-import java.lang.Math.sin
-import java.lang.Math.sqrt
-import java.util.concurrent.TimeUnit
-import kotlin.math.pow
+import project.main.uniclash.viewmodels.MapLocationViewModel
+import project.main.uniclash.viewmodels.MapMarkerViewModel
 
 class MapActivity : ComponentActivity() {
     private lateinit var fusedLocationClient: FusedLocationProviderClient
-    private val locationPermissions = arrayOf(
-        //array ONLY for location Permissions!!!
-        Manifest.permission.ACCESS_COARSE_LOCATION,
-        Manifest.permission.ACCESS_FINE_LOCATION,
-    )
+
+    private val locationPermissions = LocationPermissions(this, this)
+    private val mapCalculations = MapCalculations()
+    private val geoCodingHelper = GeoCodingHelper(this)
+
+    private val mapLocationViewModel: MapLocationViewModel by viewModels(factoryProducer = {
+        MapLocationViewModel.provideFactory(locationPermissions)
+    })
+
+    private val mapMarkerViewModel: MapMarkerViewModel by viewModels(factoryProducer = {
+        MapMarkerViewModel.provideFactory(CritterService.getInstance(this), StudentHubService.getInstance(this), ArenaService.getInstance(this),this,)
+    })
+
+    private var markerList = MarkerList()//dependency injection
+    private var reloadMap by mutableStateOf(true)
+
     private var startMapRequested by mutableStateOf(false)
     private var mainLatitude: Double by mutableStateOf(Locations.USERLOCATION.getLocation().latitude) //for gps location
     private var mainLongitude: Double by mutableStateOf(Locations.USERLOCATION.getLocation().longitude)//"
 
-    private var markerList = ArrayList<MarkerData>()
-    private var markersLoaded by mutableStateOf(false)
     private var movingCamera : Boolean ? = true
 
     private var shouldLoadFirstWildEncounter by mutableStateOf(false)
@@ -105,28 +105,70 @@ class MapActivity : ComponentActivity() {
 
     private var newCritterNotification by mutableStateOf(11)
 
-    private var shouldLoadStudentHubs by mutableStateOf(false)
-    private var shouldInitStudentHubs by mutableStateOf(false)
-    private var alreadyLoadStudentHubs by mutableStateOf(false)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
 
+        //markerList observer and updater
+        lifecycleScope.launch {
+            markerList.markerList.collect {
+               reloadMap = false
+                reloadMap = true
+            }
+        }
+
+        mapLocationViewModel.getUserLocation(this) { location ->
+            Locations.USERLOCATION.setLocation(GeoPoint(location.latitude,location.longitude))
+            reloadMap = false
+            reloadMap = true
+        }
 
         setContent {
             // todo uistate from viewmodel
+            if(MapSaver.STUDENTHUB.getMarker().isEmpty()) {
+                mapMarkerViewModel.loadStudentHubs()
+                val markersStudentHubUIState by mapMarkerViewModel.markersStudentHub.collectAsState()
+                val studentHubMarkers = markersStudentHubUIState.markersStudentHub
+                markerList.addListOfMarkersQ(studentHubMarkers)
+                MapSaver.STUDENTHUB.setMarker(studentHubMarkers)
+            } else{
+                markerList.addListOfMarkersQ(MapSaver.STUDENTHUB.getMarker()!!)
+            }
+
+            if(MapSaver.ARENA.getMarker().isEmpty()) {
+                mapMarkerViewModel.loadArenas()
+                val markersArenaUIState by mapMarkerViewModel.markersArena.collectAsState()
+                val arenaMarkers = markersArenaUIState.makersArena
+                markerList.addListOfMarkersQ(arenaMarkers)
+                MapSaver.ARENA.setMarker(arenaMarkers)
+            } else{
+                markerList.addListOfMarkersQ(MapSaver.ARENA.getMarker()!!)
+            }
+
+            if(MapSaver.WILDENCOUNTER.getMarker().isEmpty()) {
+                mapMarkerViewModel.loadCritterUsables(1)
+                val markersWildEncounterUIState by mapMarkerViewModel.markersWildEncounter.collectAsState()
+                val wildEncounterMarkers = markersWildEncounterUIState.markersWildEncounter
+                //markerList.addListOfMarkersQ(wildEncounterMarkers) //should be set in LoadFirstWildEncounter
+                MapSaver.WILDENCOUNTER.setMarker(wildEncounterMarkers)
+            } else if (Counter.FIRSTSPAWN.getCounter() < 1){ //to avoid that wildencounter will spawn before time times to zero
+                markerList.addListOfMarkersQ(MapSaver.WILDENCOUNTER.getMarker()!!)
+            }
+
+
             UniClashTheme {
                 Surface(
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    if (hasPermissions() || startMapRequested) {
-                        val currentUserLocation = getUserLocation(context = LocalContext.current)
+                    var currentUserLocation : MapLocationViewModel.LatandLong = MapLocationViewModel.LatandLong(Locations.USERLOCATION.getLocation().latitude,Locations.USERLOCATION.getLocation().longitude)
+                    if (locationPermissions.hasPermissions() || startMapRequested) {
+                        //  val currentUserLocation = mapLocationViewModel.getUserLocation(context = LocalContext.current)
                         if(currentUserLocation.latitude != 0.0 && currentUserLocation.longitude != 0.0) {
                             mainLatitude = currentUserLocation.latitude
                             mainLongitude = currentUserLocation.longitude
-                            Locations.USERLOCATION.setLocation(GeoPoint(currentUserLocation.latitude, currentUserLocation.longitude))
                         }
+                        SettingUpMap()
                         Map()
                     } else {
                         Column(
@@ -153,8 +195,8 @@ class MapActivity : ComponentActivity() {
 
                             // Add a button to request location permissions and start the map
                             Button(onClick = {
-                                requestLocationPermissions()
-                                if (hasPermissions()) {
+                                locationPermissions.requestLocationPermissions()
+                                if (locationPermissions.hasPermissions()) {
                                     startMapRequested = true
                                 }
                             }) {
@@ -175,22 +217,28 @@ class MapActivity : ComponentActivity() {
         if(!alreadySetedUpMap)
          gpsLocation = rememberMarkerState()
          cameraState = rememberCameraState()
+        cameraState.zoom = 20.0
         alreadySetedUpMap = true
     }
 
     @Composable
     fun Map() {
-        LoadMarkers()
         LoadFirstWildEncounter()
         LoadWildEncounter()
-        LoadStudentHubs()
-        InitStudentHubMarker()
 
-        SettingUpMap()
+        val contextForLocation = LocalContext.current
 
         LaunchedEffect(Unit) {
             while (true) {
+                println("${markerList.getMarkerList().size} die Size der Liste")
+
+                mapLocationViewModel.getUserLocation(contextForLocation) { location ->
+                    mainLatitude = location.latitude
+                    mainLongitude = location.longitude
+                }
+
                 val tolerance = 0.0001 //0.0001 before
+
                 if (Math.abs(mainLatitude - cameraState.geoPoint.latitude) > tolerance || Math.abs(
                         mainLongitude - cameraState.geoPoint.longitude
                     ) > tolerance
@@ -200,13 +248,11 @@ class MapActivity : ComponentActivity() {
                         "$mainLatitude and ${cameraState.geoPoint.latitude} ---- $mainLongitude and ${cameraState.geoPoint.longitude}"
                     )
                     gpsLocation.geoPoint = GeoPoint(mainLatitude, mainLongitude)
-                    gpsLocation.rotation = calculateDirection(GeoPoint(cameraState.geoPoint.latitude,cameraState.geoPoint.longitude), GeoPoint(mainLatitude,mainLongitude))+270F
+                    gpsLocation.rotation = mapCalculations.calculateDirection(GeoPoint(cameraState.geoPoint.latitude,cameraState.geoPoint.longitude), GeoPoint(mainLatitude,mainLongitude))+270F
                     if (MapSettings.MOVINGCAMERA.getMapSetting()) {
-                        cameraState.geoPoint = GeoPoint(mainLatitude, mainLongitude)
-                        cameraState.zoom = 20.0
+                        cameraState.geoPoint = GeoPoint(mainLatitude,mainLongitude)
                     } else if (movingCamera == true) {
-                        cameraState.geoPoint = GeoPoint(mainLatitude, mainLongitude)
-                        cameraState.zoom = 20.0
+                        cameraState.geoPoint = GeoPoint(mainLatitude,mainLongitude)
                         movingCamera = false
                     }
                 }
@@ -219,19 +265,11 @@ class MapActivity : ComponentActivity() {
                 }
 
                 if(Counter.WILDENCOUNTERREFRESHER.getCounter() <1){
-                    MapSaver.WILDENCOUNTER.setMarker(null)
+                    MapSaver.WILDENCOUNTER.setMarker(ArrayList<MarkerData?>())
                     shouldLoadWildEncounter = true
                     Counter.WILDENCOUNTERREFRESHER.setCounter(60)
                 }
                 newCritterNotification = Counter.WILDENCOUNTERREFRESHER.getCounter()
-
-                shouldLoadStudentHubs = true
-
-                if(MapSaver.STUDENTHUB.getMarker() == null){
-                    shouldInitStudentHubs = true
-                } else if(MapSaver.STUDENTHUB.getMarker()!!.isEmpty()){
-                    shouldInitStudentHubs = true
-                }
             }
         }
 
@@ -239,41 +277,45 @@ class MapActivity : ComponentActivity() {
 
         // define marker icon
         val arrow: Drawable? by remember {
-            mutableStateOf(resizeDrawableTo50x50(context, R.drawable.arrow))
+            mutableStateOf(mapCalculations.resizeDrawable(context, R.drawable.arrow, 50.0F))
         }
 
         // Use camera state and location in your OpenStreetMap Composable
-        if (!markersLoaded) {
-            var critterVisibility : Int
-            if(MapSettings.CRITTERBINOCULARS.getMapSetting()){
-                critterVisibility = 1000
-            } else {
-                critterVisibility = 250
-            }
-
             OpenStreetMap(
                 modifier = Modifier.fillMaxSize(),
                 cameraState = cameraState
             ) {
+                if (reloadMap) {
+                var critterVisibility : Int
+                if(MapSettings.CRITTERBINOCULARS.getMapSetting()){
+                    critterVisibility = 1000
+                } else {
+                    critterVisibility = 250
+                }
+
                 // Add markers and other map components here s)
-                markerList.forEach { marker ->
-                    val distance = haversineDistance(marker.state.geoPoint.latitude, marker.state.geoPoint.longitude, Locations.USERLOCATION.getLocation().latitude, Locations.USERLOCATION.getLocation().longitude)
+                markerList.getMarkerList().forEach() { marker ->
+                    val distance = mapCalculations.haversineDistance(marker.state.latitude, marker.state.longitude, Locations.USERLOCATION.getLocation().latitude, Locations.USERLOCATION.getLocation().longitude)
                     Log.d(
                         LOCATION_TAG,
                         "set marker"
                     )
+
+                    val state = rememberMarkerState(
+                        geoPoint = marker.state
+                        )
+
                     Marker(
-                        state = marker.state,
+                        state = state,
                         icon = marker.icon,
                         title = marker.title,
                         snippet = marker.snippet,
-                        visible = if(marker.critterUsable != null && distance > critterVisibility){false}else{marker.visible},
-                        id = marker.id,
+                        visible = if(marker is MarkerWildEncounter && distance > critterVisibility){false}else{marker.visible},
                     ) {
                         if (distance < 501) {
                             Column(
                                 modifier = Modifier
-                                    .size(340.dp)
+                                    .size(325.dp,400.dp)
                                     .background(
                                         color = Color.Black.copy(alpha = 0.75f),
                                         shape = RoundedCornerShape(7.dp)
@@ -283,12 +325,12 @@ class MapActivity : ComponentActivity() {
                             ) {
                                 Text(text = marker.title!!, fontSize = 20.sp, color = Color.White)
                                 Text(text = marker.snippet!!, fontSize = 15.sp, color = Color.White)
+                                Text(text = "${geoCodingHelper.getAddressFromLocation(marker.state.latitude,marker.state.longitude)}", fontSize = 15.sp, color = Color.White)
                                 Spacer(modifier = Modifier.height(8.dp))
-                                val drawableImage = painterResource(id = marker.pic)
                                 Image(
-                                    painter = drawableImage,
+                                    painter = rememberImagePainter(marker.pic),
                                     contentDescription = null, // Provide a proper content description if needed
-                                    modifier = Modifier.size(220.dp) // Adjust size as needed
+                                    modifier = Modifier.size(235.dp) // Adjust size as needed
                                 )
                                 OpenActivityButton(marker)
                             }
@@ -298,44 +340,136 @@ class MapActivity : ComponentActivity() {
                 Marker(
                     state = gpsLocation,
                     icon = arrow,
-                    title = "NamePlaceholder",
-                    snippet = ":)"
-                ) {
-                    Column(
-                        modifier = Modifier
-                            .size(250.dp)
-                            .background(
-                                color = Color.Black.copy(alpha = 0.75f),
-                                shape = RoundedCornerShape(7.dp)
-                            ),
-                        verticalArrangement = Arrangement.Center,
-                        horizontalAlignment = Alignment.CenterHorizontally
-                    ) {
-                        Text(text = it.title, fontSize = 20.sp, color = Color.White)
-                        Text(text = it.snippet, fontSize = 15.sp, color = Color.White)
-                        Spacer(modifier = Modifier.height(8.dp))
-
-                        OpenActivityButton(MenuActivity::class.java, "User Menu")
-                    }
-                }
+                )
             }
         }
-        NewCrittersAdvice()
-        //WildEncounter(uniClashViewModel = uniClashViewModel)
+        MenuTaskBar()
     }
 
     @Composable
+    fun MenuTaskBar() {
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(16.dp),
+            contentAlignment = Alignment.BottomStart
+        ) {
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(50.dp)
+                    .background(Color.LightGray, shape = RoundedCornerShape(8.dp))
+            ) {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(65.dp),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Spacer(modifier = Modifier.width(16.dp))
+
+                    // Timer
+                    val drawableTimer = painterResource(id = R.drawable.hourglass)
+                    Image(
+                        painter = drawableTimer,
+                        contentDescription = null,
+                        modifier = Modifier
+                            .size(40.dp)
+                            .offset(x = 130.dp)
+                    )
+                    var minutes: Int = newCritterNotification / 20
+                    Text(//newCritterNotification *3 = seconds
+                        text = if (newCritterNotification < 20) {
+                            "${newCritterNotification * 3} sec"
+                        } else {
+                            "${minutes}:${newCritterNotification * 3 - minutes * 60}min"
+                        },
+                        color = Color.White,
+                        fontWeight = FontWeight.Bold,
+                        modifier = Modifier
+                            .padding(end = 24.dp)
+                            .offset(x = (15).dp)
+                    )
+                }
+            }
+            val drawableImage = painterResource(id = R.drawable.profile)
+            val drawableBinoculars = painterResource(id = R.drawable.binoculars)
+            val drawableLocation = painterResource(id = R.drawable.location)
+            val drawableZoomIn = painterResource(id = R.drawable.zoom)
+            val drawableZoomOut = painterResource(id = R.drawable.zoomout)
+            Image(
+                painter = drawableImage,
+                contentDescription = null,
+                modifier = Modifier
+                    .size(60.dp)
+                    .offset(y = (-10).dp)
+                    .clickable { OpenActivityButton(MenuActivity::class.java) }
+            )
+            Image(
+                painter = drawableBinoculars,
+                contentDescription = null,
+                modifier = Modifier
+                    .size(40.dp)
+                    .offset(x = (130).dp)
+                    .offset(y = (-5).dp)
+                    .clickable {
+                        MapSettings.CRITTERBINOCULARS.setMapSetting(!MapSettings.CRITTERBINOCULARS.getMapSetting())
+                        reloadMap = false
+                        reloadMap = true
+                    }
+            )
+            Image(
+                painter = drawableLocation,
+                contentDescription = null,
+                modifier = Modifier
+                    .size(40.dp)
+                    .offset(x = (180).dp)
+                    .offset(y = (-5).dp)
+                    .clickable {
+                        MapSettings.MOVINGCAMERA.setMapSetting(!MapSettings.MOVINGCAMERA.getMapSetting())
+                    }
+            )
+
+            Column(
+                modifier = Modifier
+                    .fillMaxHeight()
+                    .fillMaxWidth()
+                    .padding(end = 16.dp),
+                verticalArrangement = Arrangement.Center,
+                horizontalAlignment = Alignment.End
+            ) {
+                Image(
+                    painter = drawableZoomIn,
+                    contentDescription = null,
+                    modifier = Modifier
+                        .size(60.dp)
+                        .offset(y = (-5).dp)
+                        .clickable { cameraState.zoom = cameraState.zoom + 1.0 }
+                )
+                Image(
+                    painter = drawableZoomOut,
+                    contentDescription = null,
+                    modifier = Modifier
+                        .size(60.dp)
+                        .offset(y = (-5).dp)
+                        .clickable { cameraState.zoom = cameraState.zoom - 1.0 }
+                )
+            }
+        }
+    }
+    @Composable
     fun OpenActivityButton(marker : MarkerData) {
         val context = LocalContext.current
-        val distance = haversineDistance(marker.state.geoPoint.latitude, marker.state.geoPoint.longitude, Locations.USERLOCATION.getLocation().latitude, Locations.USERLOCATION.getLocation().longitude)
+        val distance = mapCalculations.haversineDistance(marker.state.latitude, marker.state.longitude, Locations.USERLOCATION.getLocation().latitude, Locations.USERLOCATION.getLocation().longitude)
         if(distance < 76) {
             Button(
                 onClick = {
                     // Handle the button click to open the new activity here
                     SelectedMarker.SELECTEDMARKER.setMarker(marker)
-                    //removeMarker(SelectedMarker.SELECTEDMARKER.takeMarker()!!)
                     val intent = Intent(context,marker.button)
                     this.startActivity(intent, null)
+                    finish()
                 },
                 modifier = Modifier
                     .padding(2.dp)
@@ -350,54 +484,11 @@ class MapActivity : ComponentActivity() {
         }
     }
 
-    @Composable
-    fun OpenActivityButton(activity: Class<out Activity> = MenuActivity::class.java, text  : String) {
-        val context = LocalContext.current
-        Button(
-            onClick = {
+    fun OpenActivityButton(activity: Class<out Activity> = MenuActivity::class.java) {
                 // Handle the button click to open the new activity here
-                val intent = Intent(context,activity)
+                val intent = Intent(this,activity)
                 this.startActivity(intent, null)
-            },
-            modifier = Modifier
-                .padding(2.dp)
-                .width(200.dp)
-                .height(50.dp)
-
-        ) {
-            Text("$text")
-        }
-    }
-
-    private val wildEncounterLogic = WildEncounterLogic(context = this)
-
-    @Composable
-    fun NewCrittersAdvice(){
-        if(newCritterNotification<11){
-            Text(text = "New Critters will spawn soon!",color = Color.Red, fontWeight = FontWeight.Bold)
-        }
-    }
-
-    @Composable
-    fun LoadMarkers(){
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(16.dp),
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            val drawableImage = painterResource(id = R.drawable.icon)
-            Image(
-                painter = drawableImage,
-                contentDescription = null,
-                modifier = Modifier.size(240.dp)
-            )
-            Text(
-                text = "\nMap has problems to load",
-                color = Color.Red,
-                fontWeight = FontWeight.Bold
-            )
-        }
+                finish()
     }
 
     var alreadyLoaded = false //for LoadWildEncounter firstLoad
@@ -407,11 +498,9 @@ class MapActivity : ComponentActivity() {
         if(shouldLoadFirstWildEncounter) {
             if(alreadyLoaded == false) {
                 Log.d(LOCATION_TAG, "Excecuted first loadwildencounter")
-                var critterUsables = WildEncounter(uniClashViewModel)
-                println("${critterUsables.size} size")
-                    addListOfMarkers(wildEncounterLogic.initMarkers(critterUsables))
+                     markerList.addListOfMarkersQ(MapSaver.WILDENCOUNTER.getMarker())
                 shouldLoadFirstWildEncounter = false
-                if(critterUsables.isEmpty()){
+                if(MapSaver.WILDENCOUNTER.getMarker().isEmpty()){
                     Counter.FIRSTSPAWN.setCounter(2)
                 } else {
                     alreadyLoaded = true
@@ -423,332 +512,13 @@ class MapActivity : ComponentActivity() {
     fun LoadWildEncounter(){
         if(shouldLoadWildEncounter) {
             Log.d(LOCATION_TAG, "Excecuted second loadwildencounter")
-            //addListOfMarkers(wildEncounterLogic.initMarkers())
-            //shouldLoadWildEncounter = false
             val intent = Intent(this,MapActivity::class.java)
             this.startActivity(intent, null)
+            finish()
         }
     }
-
-
-    fun LoadStudentHubs(){
-        if(shouldLoadStudentHubs) {
-            println("trying to load student hubs ${MapSaver.STUDENTHUB.getMarker().toString()}")
-            if (MapSaver.STUDENTHUB.getMarker() != null && MapSaver.STUDENTHUB.getMarker()!!
-                    .isNotEmpty() && !alreadyLoadStudentHubs
-            ) {
-                println("executed :( executed :( executed :( executed :( executed :(")
-                alreadyLoadStudentHubs = true
-                addListOfMarkers(MapSaver.STUDENTHUB.getMarker()!!)
-            }else {
-                shouldLoadStudentHubs = false
-            }
-        }
-    }
-
-    @Composable
-    fun InitStudentHubMarker() {
-        if(shouldInitStudentHubs) {
-            val context = LocalContext.current
-            val studentHubs = StudentHubs(studentHubViewModel)
-            var studentHubMarkerList = ArrayList<MarkerData>()
-
-            println("${studentHubs.size} size from the database")
-
-            for (studentHub in studentHubs) {
-                val geoPoint = GeoPoint(studentHub?.lat!!, studentHub?.lon!!)
-
-                val icon: Drawable? by remember {
-                    mutableStateOf(resizeDrawableTo50x50(context, R.drawable.store))
-                }
-
-                val myMarker = MarkerData(
-                    id = "1",
-                    state = MarkerState(geoPoint = geoPoint),
-                    icon = icon,
-                    visible = true,
-                    title = "${studentHub?.name}",
-                    snippet = "${studentHub?.description}",
-                    pic = R.drawable.store,
-                    button = StudentHubActivity::class.java,
-                    buttonText = "Go to Hub",
-                    studentHub = studentHub
-                )
-
-                studentHubMarkerList.add(myMarker)
-            }
-            MapSaver.STUDENTHUB.setMarker(studentHubMarkerList)
-            shouldInitStudentHubs = false
-        }
-    }
-
-    fun addMarker(marker: MarkerData) {
-        if(!(markerList.contains(marker))) {
-            markerList.add(marker)
-            updateMapMarkers()
-        }
-    }
-
-    fun addListOfMarkers(markers: ArrayList<MarkerData>) {
-        if(!(markerList.containsAll(markers))) {
-            if (!markersLoaded!!) {
-                for (marker in markers) {
-                    markerList.add(marker)
-                }
-            }
-            updateMapMarkers()
-        }
-    }
-
-    fun removeMarker(marker: MarkerData) {
-        print("${markerList.size} markers")
-        markerList.remove(marker)
-        print("${markerList.size} markers")
-        updateMapMarkers()
-    }
-
-    private fun updateMapMarkers() {
-        markersLoaded = true
-        markersLoaded = false;
-    }
-
-    private fun resizeDrawableTo50x50(context: Context, @DrawableRes drawableRes: Int): Drawable? {
-        val originalDrawable: Drawable? = context.getDrawable(drawableRes)
-
-        val originalBitmap = originalDrawable?.toBitmap()
-        val originalWidth = originalBitmap?.width ?: 1
-        val originalHeight = originalBitmap?.height ?: 1
-
-        val scaleRatio = 50.0f / originalHeight.toFloat()
-
-        val scaledWidth = (originalWidth * scaleRatio).toInt()
-        val scaledHeight = 50
-
-        val scaledBitmap =
-            originalBitmap?.let { Bitmap.createScaledBitmap(it, scaledWidth, scaledHeight, true) }
-
-        return BitmapDrawable(context.resources, scaledBitmap)
-    }
-
-    private fun resizeDrawableTo60x60(context: Context, @DrawableRes drawableRes: Int): Drawable? {
-        val originalDrawable: Drawable? = context.getDrawable(drawableRes)
-
-        val originalBitmap = originalDrawable?.toBitmap()
-        val originalWidth = originalBitmap?.width ?: 1
-        val originalHeight = originalBitmap?.height ?: 1
-
-        val scaleRatio = 60.0f / originalHeight.toFloat()
-
-        val scaledWidth = (originalWidth * scaleRatio).toInt()
-        val scaledHeight = 60
-
-        val scaledBitmap =
-            originalBitmap?.let { Bitmap.createScaledBitmap(it, scaledWidth, scaledHeight, true) }
-
-        return BitmapDrawable(context.resources, scaledBitmap)
-    }
-
-    private fun calculateDirection(startpoint: GeoPoint, endpoint: GeoPoint): Float {
-        val dX = endpoint.longitude - startpoint.longitude
-        val dY = endpoint.latitude - startpoint.latitude
-
-        val winkel = Math.toDegrees(atan2(dY, dX)).toFloat()
-        return if (winkel < 0) {
-            (winkel + 360) % 360 // like: *-1
-        } else {
-            winkel
-        }
-    }
-
-    private fun haversineDistance(lat1: Double, lon1: Double, lat2: Double, lon2: Double): Double {
-        val radius = 6371000 // radius of the earth in meters
-
-        val dLat = Math.toRadians(lat2 - lat1)
-        val dLon = Math.toRadians(lon2 - lon1)
-        val a = sin(dLat / 2).pow(2) + cos(Math.toRadians(lat1)) * cos(Math.toRadians(lat2)) * sin(dLon / 2).pow(2)
-        val c = 2 * atan2(sqrt(a), sqrt(1 - a))
-
-        return radius * c
-    }
-
-
-    //gps stuff
-    private fun requestLocationPermissions() {
-        for (permission in locationPermissions) {
-            if (ContextCompat.checkSelfPermission(this, permission)
-                != PackageManager.PERMISSION_GRANTED
-            ) {
-                ActivityCompat.requestPermissions(this, locationPermissions, 0)
-            }
-        }
-    }
-
-    override fun onRequestPermissionsResult(
-        requestCode: Int,
-        permissions: Array<out String>,
-        grantResults: IntArray
-    ) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-        // Handle permission results if needed
-    }
-
-    private fun hasPermissions(): Boolean {
-        for (permission in locationPermissions) {
-            if (ContextCompat.checkSelfPermission(this, permission)
-                != PackageManager.PERMISSION_GRANTED
-            ) {
-                return false
-            }
-        }
-        return true
-    }
-
-    //new gps stuff
-    /**
-     * Manages all location related tasks for the app.
-     */
-
-//A callback for receiving notifications from the FusedLocationProviderClient.
-    lateinit var locationCallback: LocationCallback
-
-    //The main entry point for interacting with the Fused Location Provider
-    lateinit var locationProvider: FusedLocationProviderClient
 
     companion object {
         private const val LOCATION_TAG = "MyLocationTag"
-    }
-
-    @SuppressLint("MissingPermission")
-    @Composable
-    fun getUserLocation(context: Context): LatandLong {
-
-        // The Fused Location Provider provides access to location APIs.
-        locationProvider = LocationServices.getFusedLocationProviderClient(context)
-
-        var currentUserLocation by remember { mutableStateOf(LatandLong()) }
-
-        DisposableEffect(key1 = locationProvider) {
-            locationCallback = object : LocationCallback() {
-                //1
-                override fun onLocationResult(result: LocationResult) {
-                    /**
-                     * Option 1
-                     * This option returns the locations computed, ordered from oldest to newest.
-                     * */
-                    for (location in result.locations) {
-                        // Update data class with location data
-                        currentUserLocation = LatandLong(location.latitude, location.longitude)
-
-                        Log.d(LOCATION_TAG, "${location.latitude},${location.longitude}")
-                    }
-
-
-                    /**
-                     * Option 2
-                     * This option returns the most recent historical location currently available.
-                     * Will return null if no historical location is available
-                     * */
-                    locationProvider.lastLocation
-                        .addOnSuccessListener { location ->
-                            location?.let {
-                                val lat = location.latitude
-                                val long = location.longitude
-                                // Update data class with location data
-                                currentUserLocation =
-                                    LatandLong(latitude = lat, longitude = long)
-                            }
-                        }
-                        .addOnFailureListener {
-                            Log.e("Location_error", "${it.message}")
-                        }
-                }
-            }
-            //2
-            if (hasPermissions()) {
-                locationUpdate()
-            } else {
-                requestLocationPermissions()
-            }
-            //3
-            onDispose {
-                stopLocationUpdate()
-            }
-        }
-        //4
-        return currentUserLocation
-    }
-
-    //data class to store the user Latitude and longitude
-    data class LatandLong( //set the first maker
-        val latitude: Double = 0.0,
-        val longitude: Double = 0.0
-    )
-
-    @SuppressLint("MissingPermission")
-    fun locationUpdate() {
-        locationCallback.let {
-            println("locationUpdate tries updating")
-            //An encapsulation of various parameters for requesting
-            // location through FusedLocationProviderClient.
-            val locationRequest: LocationRequest =
-                LocationRequest.create().apply {
-                    interval = TimeUnit.SECONDS.toMillis(5) //TimeUnit.SECONDS.toMillis(60)
-                    fastestInterval = TimeUnit.SECONDS.toMillis(3) //TimeUnit.SECONDS.toMillis(30)
-                    maxWaitTime = TimeUnit.SECONDS.toMillis(5) //TimeUnit.MINUTES.toMillis(2)
-                    priority = LocationRequest.PRIORITY_HIGH_ACCURACY
-                }
-            //use FusedLocationProviderClient to request location update
-            locationProvider.requestLocationUpdates(
-                locationRequest,
-                it,
-                Looper.getMainLooper()
-            )
-        }
-
-    }
-
-    fun stopLocationUpdate() {
-        try {
-            //Removes all location updates for the given callback.
-            val removeTask = locationProvider.removeLocationUpdates(locationCallback)
-            removeTask.addOnCompleteListener { task ->
-                if (task.isSuccessful) {
-                    Log.d(LOCATION_TAG, "Location Callback removed.")
-                } else {
-                    Log.d(LOCATION_TAG, "Failed to remove Location Callback.")
-                }
-            }
-        } catch (se: SecurityException) {
-            Log.e(LOCATION_TAG, "Failed to remove Location Callback.. $se")
-        }
-    }
- //BackendStuff
-
-    val uniClashViewModel: UniClashViewModel by viewModels(factoryProducer = {
-        UniClashViewModel.provideFactory(CritterService.getInstance(this))
-    })
-
-    val studentHubViewModel: StudentHubViewModel by viewModels(factoryProducer = {
-        StudentHubViewModel.provideFactory(StudentHubService.getInstance(this))
-    })
-
-
-
-    @Composable
-    fun WildEncounter(uniClashViewModel: UniClashViewModel):List<CritterUsable?> {
-        val uniClashUiStateCritterUsables by uniClashViewModel.critterUsables.collectAsState()
-        uniClashViewModel.loadCritterUsables(1)
-        var critterUsables : List<CritterUsable?> = uniClashUiStateCritterUsables.critterUsables
-        println("${critterUsables.size} size in methode")
-        return critterUsables
-    }
-
-    @Composable
-    fun StudentHubs(studentHubViewModel: StudentHubViewModel):List<StudentHub?> {
-        val studentHubsUIState by studentHubViewModel.studentHubs.collectAsState()
-        studentHubViewModel.loadStudentHubs()
-        var studentHubs : List<StudentHub?> = studentHubsUIState.studentHubs
-        println("${studentHubs.size} size in methode")
-        return studentHubs
     }
 }

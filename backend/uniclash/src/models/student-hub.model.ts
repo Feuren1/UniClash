@@ -31,6 +31,11 @@ export class StudentHub extends Entity {
   })
   description?: string;
 
+  @property({
+    type: 'string',
+  })
+  picture?: string;
+
 
   constructor(data?: Partial<StudentHub>) {
     super(data);

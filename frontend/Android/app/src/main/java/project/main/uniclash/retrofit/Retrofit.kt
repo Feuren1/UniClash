@@ -2,18 +2,20 @@ package project.main.uniclash.retrofit
 
 import android.content.Context
 import com.google.gson.GsonBuilder
+import kotlinx.coroutines.runBlocking
 import okhttp3.Interceptor
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.internal.http2.Http2Reader.Companion.logger
+import project.main.uniclash.userDataManager.UserDataManager
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import java.io.IOException
-import java.lang.String
+import java.net.HttpURLConnection
 import java.time.Instant
 import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
@@ -24,6 +26,7 @@ class Retrofit {
     companion object {
         private const val BASE_URL = "https://friends-app-b7tv.onrender.com/"
         private var retrofit: Retrofit? = null
+
         fun getRetrofitInstance(context: Context): Retrofit {
             if (retrofit == null) {
                 val contentType = "application/json".toMediaType()
@@ -31,11 +34,10 @@ class Retrofit {
                     Instant::class.java,
                     InstantTypeAdapter()
                 ).create()
-                retrofit =
-                    Retrofit.Builder().baseUrl(BASE_URL)
-                        .addConverterFactory(GsonConverterFactory.create(gson))
-                        .client(okhttpClient(context))
-                        .build()
+                retrofit = Retrofit.Builder().baseUrl(BASE_URL)
+                    .addConverterFactory(GsonConverterFactory.create(gson))
+                    .client(okhttpClient(context))
+                    .build()
             }
             return retrofit!!
         }
@@ -43,11 +45,46 @@ class Retrofit {
         private fun okhttpClient(context: Context): OkHttpClient {
             return OkHttpClient.Builder()
                 .addInterceptor(LoggingInterceptor())
-
+                .addInterceptor(AuthInterceptor(context))
                 .build()
         }
     }
 }
+
+internal class AuthInterceptor(private val context: Context) : Interceptor {
+    private val userDataManager: UserDataManager by lazy {
+        UserDataManager(context)
+    }
+    override fun intercept(chain: Interceptor.Chain): okhttp3.Response {
+        var request = chain.request()
+        //val preferences = context.getSharedPreferences("Token", Context.MODE_PRIVATE)
+        //
+        // Retrieve the token from SharedPreferences
+        //val token = preferences.getString("JWT-Token", "") ?: ""
+        val token : String?
+        runBlocking {
+            token = userDataManager.getJWTToken()
+        }
+
+        println(token)
+            // Add Authorization header only if the token is not empty
+            request = request.newBuilder()
+                .addHeader("Authorization", "Bearer $token")
+                .build()
+
+
+        println("Request headers: ${request.headers}")
+        //var response = chain.proceed(request)
+        //if(response.code== HttpURLConnection.HTTP_UNAUTHORIZED){
+        //    response.close()
+        //}
+        return chain.proceed(request)
+    }
+}
+
+
+// Rest of your code remains unchanged
+
 internal class LoggingInterceptor : Interceptor {
     @Throws(IOException::class)
     override fun intercept(chain: Interceptor.Chain): okhttp3.Response {

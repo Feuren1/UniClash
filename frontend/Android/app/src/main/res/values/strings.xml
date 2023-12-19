@@ -4,17 +4,23 @@
     <string name="title_activity_menu">Menu</string>
     <string name="title_activity_student_hub">StudentHubActivity</string>
     <string name="title_activity_camera">CameraActivity</string>
+    <string name="title_activity_camera_test">CameraActivityTest</string>
     <string name="title_activity_critter_list">CritterList</string>
+    <string name="title_activity_new_building">NewBuilding</string>
     <string name="title_activity_critter_dex">CritterDex</string>
     <string name="title_activity_register">RegisterActivity</string>
     <string name="title_activity_arena">ArenaActivity</string>
     <string name="title_activity_critter_profile">CritterProfileActivity</string>
+    <string name="title_activity_login_activity">LoginActivity</string>
+    <string name="title_activity_profile">ProfileActivity</string>
     <string name="title_activity_inventory">InventoryActivity</string>
     <string name="title_activity_poké">PokéActivity</string>
     <string name="title_activity_battle_tutorial">BattleTutorialActivity</string>
     <string name="title_activity_battle_tutorial_advanced">BattleTutorialAdvancedActivity</string>
-    <string name="title_activity_battle_forced_tutorial_advanced">
-        BattleForcedTutorialAdvancedActivity
-    </string>
+    <string name="title_activity_battle_forced_tutorial_advanced">BattleForcedTutorialAdvancedActivity</string>
     <string name="title_activity_final_battle">FinalBattleActivity</string>
+    <string name="take_photo">Take Photo</string>
+    <string name="close">Close Camera</string>
+    <string name="stop_capture">Stop Capture</string>
+
 </resources>

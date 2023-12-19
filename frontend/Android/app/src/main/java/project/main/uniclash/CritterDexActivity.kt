@@ -31,17 +31,15 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import project.main.uniclash.datatypes.CritterPic
 import project.main.uniclash.datatypes.CritterTemplate
-import project.main.uniclash.datatypes.CritterUsable
 import project.main.uniclash.retrofit.CritterService
 import project.main.uniclash.viewmodels.CritterDexViewModel
-import project.main.uniclash.viewmodels.UniClashViewModel
 
 
 class CritterDexActivity : ComponentActivity() {
@@ -55,13 +53,8 @@ class CritterDexActivity : ComponentActivity() {
 
         setContent {
             critterDexViewModel.loadCritterTemplates()
-            //critterDexViewModel.sortCritterTemplates()
             val critterDexUiStateCritterTemplates by critterDexViewModel.critterTemplatesOrdered.collectAsState()
             val critterTemplates = critterDexUiStateCritterTemplates.critterTemplates
-            //val critterDexOrdered = critterDexViewModel.sortCritterTemplates()
-            //val critterDexUiStateCritterTemplates2 by critterDexViewModel.critterTemplates.collectAsState()
-            //val critterDexCritters = critterDexUiStateCritterTemplates.critterTemplates
-            //val critterDexOrdered = critterDexViewModel.sortCritterTemplates()
 
 
             Column {
@@ -106,6 +99,7 @@ class CritterDexActivity : ComponentActivity() {
             if (exitRequest) {
                 val intent = Intent(this, MenuActivity::class.java)
                 this.startActivity(intent)
+                finish()
                 exitRequest = false
             }
         }
@@ -140,8 +134,11 @@ class CritterDexActivity : ComponentActivity() {
                         .clickable {}
                         .fillMaxWidth()) {
                         Row(modifier = Modifier.padding(all = 8.dp)) {
+                            val context = LocalContext.current
+                            val name: String = critter?.name!!.lowercase()
+                            val resourceId = context.resources.getIdentifier(name, "drawable", context.packageName)
                             Image(
-                                painter = painterResource(CritterPic.MUSK.searchDrawable("${critter?.name}")),
+                                painter = painterResource(if(resourceId > 0){resourceId}else{R.drawable.icon}),
                                 contentDescription = null,
                                 modifier = Modifier
                                     .size(60.dp)

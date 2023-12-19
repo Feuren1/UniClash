@@ -1,6 +1,7 @@
 package project.main.uniclash.viewmodels
 
 import android.annotation.SuppressLint
+import android.app.Application
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
@@ -13,6 +14,7 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import project.main.uniclash.datatypes.CritterTemplate
 import project.main.uniclash.retrofit.enqueue
+import project.main.uniclash.userDataManager.UserDataManager
 
 public data class CritterIdCallback(val success: Boolean, val id: String)
 
@@ -46,9 +48,13 @@ sealed interface CritterUsablesUIState {
 
 class UniClashViewModel(
     private val critterService: CritterService,
+    private val application: Application
 ) : ViewModel() {
     //TAG for logging
     private val TAG = UniClashViewModel::class.java.simpleName
+    private val userDataManager: UserDataManager by lazy {
+        UserDataManager(application)
+    }
 
 
     val critters = MutableStateFlow(
@@ -106,11 +112,11 @@ class UniClashViewModel(
     }
 
     @SuppressLint("MissingPermission")
-    fun loadCritterUsables(id: Int) {
+    fun loadCritterUsables() {
         viewModelScope.launch {
             critterUsables.update { it.copy(isLoading = true) }
             try {
-                val response = critterService.getCritterUsables(id).enqueue()
+                val response = critterService.getCritterUsables(userDataManager.getStudentId()!!).enqueue()
                 Log.d(TAG, "loadCrittersUsable: $response")
                 if (response.isSuccessful) {
                     Log.d(TAG, "loadCrittersUsables: success")
@@ -179,12 +185,14 @@ class UniClashViewModel(
     companion object {
         fun provideFactory(
             critterService: CritterService,
+            application: Application,
         ): ViewModelProvider.Factory =
             object : ViewModelProvider.Factory {
                 @Suppress("UNCHECKED_CAST")
                 override fun <T : ViewModel> create(modelClass: Class<T>): T {
                     return UniClashViewModel(
-                        critterService
+                        critterService,
+                        application
                     ) as T
                 }
             }

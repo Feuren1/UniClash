@@ -10,7 +10,6 @@ import retrofit2.create
 import retrofit2.http.Body
 import retrofit2.http.GET
 import retrofit2.http.POST
-import retrofit2.http.PUT
 import retrofit2.http.Path
 
 interface CritterService {
@@ -32,7 +31,7 @@ interface CritterService {
     fun postStudentCritter(@Path("id") id: Int, @Body critterForStudent: CritterForStudent) : Call<CritterUsable>
 
     @POST("/students/{studentId}/critters/{critterId}/catchCritter")
-    fun postCatchedCritter(@Path("studentId") studentId: Int, @Path("critterId") critterId : Int) :Call<CritterUsable>
+    fun postCatchedCritter(@Path("studentId") studentId: Int?, @Path("critterId") critterId: Int) :Call<CritterUsable>
 
     @GET("/critter-templates")
     fun getCrittersTemplates(): Call<List<CritterTemplate>>

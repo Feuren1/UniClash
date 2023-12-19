@@ -8,13 +8,17 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import project.main.uniclash.datatypes.Arena
+import project.main.uniclash.datatypes.MarkerArena
+import project.main.uniclash.datatypes.MarkerWildEncounter
+import project.main.uniclash.datatypes.SelectedMarker
 import project.main.uniclash.retrofit.ArenaService
 import project.main.uniclash.retrofit.enqueue
+import project.main.uniclash.userDataManager.UserDataManager
 
 
 sealed interface ArenasUIState{
     data class HasEntries(
-        val arenas: List<Arena>?,
+        val arenas: List<Arena?>,
         val isLoading: Boolean,
     ): ArenasUIState
 }
@@ -34,6 +38,15 @@ class ArenaViewModel(
     private val TAG = ArenaViewModel::class.java.simpleName
 
 
+    private val markerData = SelectedMarker.SELECTEDMARKER.takeMarker()
+    private val arenaMarker = if(markerData is MarkerArena){markerData} else {null}
+
+    fun getselectedArena(): MarkerArena?{
+        return arenaMarker
+    }
+
+
+
     val arena = MutableStateFlow(
         ArenaUIState.HasEntries(
             arena = null,
@@ -43,7 +56,7 @@ class ArenaViewModel(
 
     val arenas = MutableStateFlow(
         ArenasUIState.HasEntries(
-            arenas = null,
+            arenas = emptyList(),
             isLoading = false,
         )
     )
@@ -61,11 +74,12 @@ class ArenaViewModel(
                 Log.d(TAG, "LoadAllArenas: $response")
                 if (response.isSuccessful) {
                     Log.d(TAG, "Success: ${response.body()}")
-                    response.body().let {
-                        arenas.update { state ->
-                            state.copy(arenas = it, isLoading = false)
-                        }
-
+                    val arenas = response.body()!!
+                    this@ArenaViewModel.arenas.update {
+                        it.copy(
+                            arenas = arenas,
+                            isLoading = false
+                        )
                     }
                 }
             } catch (e: Exception) {

@@ -2,20 +2,58 @@ package project.main.uniclash.datatypes
 
 import android.app.Activity
 import android.graphics.drawable.Drawable
-import com.utsman.osmandcompose.MarkerState
+import org.osmdroid.util.GeoPoint
 import project.main.uniclash.MainActivity
 
-data class MarkerData(
-    var id: String? = "id",//kann weg
-    var state : MarkerState, //todo kein Marker state sondern, geoPoint
-    var icon : Drawable? = null,
-    var visible : Boolean = true,
-    var title :String? = "marker",
-    var snippet : String? = null,
-    var pic : Int = 0,
-    var button : Class<out Activity> = MainActivity::class.java,
-    var buttonText : String? = "button",
-    var critterUsable: CritterUsable ? = null,
-    var studentHub : StudentHub ? = null
-    //todo drei data data class die extenden.
+open class MarkerData(
+    open var state : GeoPoint,
+    open var icon : Drawable? = null,
+    open var visible : Boolean = true,
+    open var title :String? = "marker",
+    open var snippet : String? = null,
+    open var pic : Drawable? = null,
+    open var button : Class<out Activity> = MainActivity::class.java,
+    open var buttonText : String? = "button",
     )
+
+data class MarkerWildEncounter(
+    override var state : GeoPoint,
+    override var icon : Drawable? = null,
+    override var visible : Boolean = true,
+    override var title :String? = "marker",
+    override var snippet : String? = null,
+    override var pic : Drawable? = null,
+    override var button : Class<out Activity> = MainActivity::class.java,
+    override var buttonText : String? = "button",
+    var critterUsable: CritterUsable? = null,
+) : MarkerData(
+    state,icon,visible,title,snippet,pic,button, buttonText
+)
+
+data class MarkerStudentHub(
+    override var state : GeoPoint,
+    override var icon : Drawable? = null,
+    override var visible : Boolean = true,
+    override var title :String? = "marker",
+    override var snippet : String? = null,
+    override var pic : Drawable? = null,
+    override var button : Class<out Activity> = MainActivity::class.java,
+    override var buttonText : String? = "button",
+    var studentHub : StudentHub ? = null
+) : MarkerData(
+    state,icon,visible,title,snippet,pic,button, buttonText
+)
+
+data class MarkerArena(
+    override var state : GeoPoint,
+    override var icon : Drawable? = null,
+    override var visible : Boolean = true,
+    override var title :String? = "marker",
+    override var snippet : String? = null,
+    override var pic : Drawable? = null,
+    override var button : Class<out Activity> = MainActivity::class.java,
+    override var buttonText : String? = "button",
+    var arena : Arena ? = null
+) : MarkerData(
+    state,icon,visible,title,snippet,pic,button, buttonText
+)

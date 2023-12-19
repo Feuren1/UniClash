@@ -2,6 +2,7 @@ package project.main.uniclash
 
 import android.annotation.SuppressLint
 import android.content.Intent
+import android.media.MediaPlayer
 import android.os.Build.VERSION.SDK_INT
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -47,6 +48,9 @@ import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.sp
+import androidx.core.view.WindowCompat
+import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.WindowInsetsControllerCompat
 import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.ImageLoader
 import coil.compose.rememberAsyncImagePainter
@@ -68,6 +72,7 @@ class FinalBattleActivity : ComponentActivity() {
     private var repeatRequest by mutableStateOf(false)
     private var progressRequest by mutableStateOf(false)
     private var exitRequest by mutableStateOf(false)
+    private var mediaPlayer: MediaPlayer? = null
     //TODO Rename into BattleActivity
     private val finalBattleViewModel by viewModels<FinalBattleViewModel> {
         FinalBattleViewModel.provideFactory(CritterService.getInstance(this))
@@ -75,21 +80,26 @@ class FinalBattleActivity : ComponentActivity() {
     @SuppressLint("SuspiciousIndentation")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        //initializes a viewmodel for further use. Uses the critterservice in order to talk to the backend
+        mediaPlayer = MediaPlayer.create(this, R.raw.battlesoundtrack1)
+        mediaPlayer?.isLooping = true
+        mediaPlayer?.start()
+        WindowCompat.setDecorFitsSystemWindows(window, false)
+        WindowInsetsControllerCompat(window, window.decorView).run {
+            hide(WindowInsetsCompat.Type.systemBars())
+            systemBarsBehavior = WindowInsetsControllerCompat.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
+        }
         setContent {
             UniClashTheme {
                 Surface(
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    //creates the pokemongame composable (name should be critterBattle)
                     val battleViewPlayerUIState by finalBattleViewModel.playerCritter.collectAsState()
                     var playerCritter = battleViewPlayerUIState.playerCritter
                     val battleViewcpuCritterUIState by finalBattleViewModel.cpuCritter.collectAsState()
                     var cpuCritter = battleViewcpuCritterUIState.cpuCritter
                     Column {
                         var battleResult = finalBattleViewModel.checkResult()
-                        if (battleResult == BattleResult.PLAYER_WINS){
                             Box(
                                 modifier = Modifier
                                     .fillMaxWidth()
@@ -102,12 +112,12 @@ class FinalBattleActivity : ComponentActivity() {
                                     modifier = Modifier
                                         .size(40.dp)
                                         .clickable {
+                                            mediaPlayer?.release()
                                             progressRequest = true
                                         }
                                         .align(Alignment.TopEnd)
                                 )
                             }
-                        }
                         if (battleResult == BattleResult.CPU_WINS){
                             Box(
                                 modifier = Modifier
@@ -143,10 +153,17 @@ class FinalBattleActivity : ComponentActivity() {
                 val intent = Intent(this, MenuActivity::class.java)
                 this.startActivity(intent)
             }
+            if (exitRequest) {
+                mediaPlayer?.release()
+                val intent = Intent(this, MenuActivity::class.java)
+                this.startActivity(intent)
+                exitRequest = false
+            }
         }
 
     }
     override fun onDestroy() {
+        mediaPlayer?.release()
         super.onDestroy()
     }
 }

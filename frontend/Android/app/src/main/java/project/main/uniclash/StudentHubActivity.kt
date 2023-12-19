@@ -25,6 +25,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
@@ -35,14 +36,9 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import project.main.uniclash.datatypes.ItemTemplate
-import project.main.uniclash.retrofit.ArenaService
 import project.main.uniclash.retrofit.StudentHubService
-import project.main.uniclash.retrofit.StudentService
 import project.main.uniclash.ui.theme.UniClashTheme
-import project.main.uniclash.userDataManager.UserDataManager
-import project.main.uniclash.viewmodels.ArenaViewModel
 import project.main.uniclash.viewmodels.StudentHubViewModel
-import project.main.uniclash.viewmodels.StudentViewModel
 
 class StudentHubActivity : ComponentActivity() {
 
@@ -56,13 +52,14 @@ class StudentHubActivity : ComponentActivity() {
 //        val studentHubViewModel: StudentHubViewModel by viewModels(factoryProducer = {
 //            StudentHubViewModel.provideFactory(StudentHubService.getInstance(this), Application())
 //        })
+
         setContent {
             UniClashTheme {
                 // A surface container using the 'background' color from the theme
                 Surface(modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background) {
 
                     studentHubViewModel.loadStudent()
-                    studentHubViewModel.loadItemsFromStudent()
+//                    studentHubViewModel.loadItemsFromStudent()
                     studentHubViewModel.loadItemTemplates()
 
                     StudentHubScreen(modifier = Modifier.fillMaxSize(), studentHubViewModel = studentHubViewModel)
@@ -79,17 +76,19 @@ fun StudentHubScreen(modifier: Modifier = Modifier,
     var context = LocalContext.current
 
     val itemTemplatesState by studentHubViewModel.itemTemplates.collectAsState()
-
     var itemTemplateList = itemTemplatesState.itemTemplates
 
-    var creditValidation by rememberSaveable { mutableStateOf(true) }
+    val studentState by studentHubViewModel.student.collectAsState()
+    val student = studentState.student
+
+    var itemCost by rememberSaveable { mutableIntStateOf(0) }
     var buyingStatus by rememberSaveable { mutableStateOf("nothing") }
 
     Column(modifier = modifier) {
 
         Text("Credits: TODO: get credits => make a loadCredit function in viewmodel")
 
-        if (creditValidation) {
+        if (student!!.credits - itemCost >= 0) {
 
             Text("You have last bought: $buyingStatus.")
 
@@ -121,8 +120,8 @@ fun StudentHubScreen(modifier: Modifier = Modifier,
         ItemList(itemTemplateList,
             onButtonClicked = { itemTemplate ->
                 buyingStatus = itemTemplate.name
-                val quantityButton = 1 //open for extension = if I want to create ways to buy more than one at a time
-                creditValidation = studentHubViewModel.buyItem(itemTemplate.id, itemTemplate.cost, quantityButton)
+                studentHubViewModel.buyItem(itemTemplate.id)
+                itemCost = itemTemplate.cost
             })
     }
 }

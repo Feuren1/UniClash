@@ -1,6 +1,6 @@
 package project.main.uniclash.datatypes
 
-data class ItemPatch(
+data class ItemForStudent(
     val id: Int,
     val quantity: Int,
     val itemTemplateId: Int,

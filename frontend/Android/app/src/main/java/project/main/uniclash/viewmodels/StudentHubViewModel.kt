@@ -45,11 +45,11 @@ sealed interface ItemsFromItemTemplateUIState {
     ) : ItemsFromItemTemplateUIState
 }
 
-sealed interface ItemUIState {
+sealed interface ItemForStudentUIState {
     data class HasEntries(
         val itemForStudent: ItemForStudent?,
         val isLoading: Boolean,
-    ) : ItemUIState
+    ) : ItemForStudentUIState
 }
 
 class StudentHubViewModel(
@@ -98,7 +98,7 @@ class StudentHubViewModel(
     )
 
     val itemForStudent = MutableStateFlow(
-        ItemUIState.HasEntries(
+        ItemForStudentUIState.HasEntries(
             itemForStudent = null,
             isLoading = false
         )

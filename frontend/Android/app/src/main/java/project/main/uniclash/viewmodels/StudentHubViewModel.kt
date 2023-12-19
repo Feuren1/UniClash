@@ -1,5 +1,6 @@
 package project.main.uniclash.viewmodels
 
+import android.app.Application
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
@@ -7,22 +8,15 @@ import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import project.main.uniclash.datatypes.ItemForStudent
+import project.main.uniclash.datatypes.ItemFromItemTemplate
+import project.main.uniclash.datatypes.Item
+import project.main.uniclash.datatypes.ItemPatch
+import project.main.uniclash.datatypes.ItemPost
 import project.main.uniclash.datatypes.ItemTemplate
-import project.main.uniclash.datatypes.Student
-import project.main.uniclash.datatypes.StudentHub
 import project.main.uniclash.datatypes.StudentPatch
 import project.main.uniclash.retrofit.StudentHubService
 import project.main.uniclash.retrofit.enqueue
-
-
-sealed interface StudentHubUIState {
-
-    data class HasEntries(
-        val studentHub: StudentHub?,
-        val isLoading: Boolean,
-    ) : StudentHubUIState
-}
+import project.main.uniclash.userDataManager.UserDataManager
 
 sealed interface ItemTemplatesUIState {
     data class HasEntries(
@@ -31,38 +25,43 @@ sealed interface ItemTemplatesUIState {
     ) : ItemTemplatesUIState
 }
 
-sealed interface PostItemForStudentUIState {
+sealed interface PostItemFromStudentUIState {
     data class HasEntries(
-        val itemForStudent: ItemForStudent?,
+        val itemPost: ItemPost?,
         val isLoading: Boolean,
-    ) : PostItemForStudentUIState
+    ) : PostItemFromStudentUIState
 }
 
-sealed interface ItemsForStudentUIState {
+sealed interface ItemsFromStudentUIState {
     data class HasEntries(
-        val itemsForStudent: List<ItemForStudent>,
+        val itemsFromStudent: List<Item>,
         val isLoading: Boolean,
-    ) : ItemsForStudentUIState
+    ) : ItemsFromStudentUIState
 }
 
-//sealed interface PatchStudentUIState {
-//    data class HasEntries(
-//        val student: Student?,
-//        val isLoading: Boolean,
-//    ) : PatchStudentUIState
-//}
+sealed interface ItemsFromItemTemplateUIState {
+    data class HasEntries(
+        val itemsFromItemTemplate: List<ItemFromItemTemplate>,
+        val isLoading: Boolean,
+    ) : ItemsFromItemTemplateUIState
+}
+
+sealed interface ItemUIState {
+    data class HasEntries(
+        val itemPatch: ItemPatch?,
+        val isLoading: Boolean,
+    ) : ItemUIState
+}
 
 class StudentHubViewModel(
     private val studentHubService: StudentHubService,
+    private val application: Application,
 ) : ViewModel() {
     private val TAG = StudentHubViewModel::class.java.simpleName
 
-    val studentHub = MutableStateFlow(
-        StudentHubUIState.HasEntries(
-            isLoading = false,
-            studentHub = null
-        )
-    )
+    private val userDataManager : UserDataManager by lazy {
+        UserDataManager(application)
+    }
 
     val itemTemplates = MutableStateFlow(
         ItemTemplatesUIState.HasEntries(
@@ -71,15 +70,15 @@ class StudentHubViewModel(
         )
     )
 
-    val itemForStudent = MutableStateFlow(
-        PostItemForStudentUIState.HasEntries(
+    val itemFromStudent = MutableStateFlow(
+        PostItemFromStudentUIState.HasEntries(
             isLoading = false,
-            itemForStudent = null
+            itemPost = null
         )
     )
 
-    val itemsForStudent = MutableStateFlow(
-        ItemsForStudentUIState.HasEntries(
+    val itemsFromStudent = MutableStateFlow(
+        ItemsFromStudentUIState.HasEntries(
             emptyList(),
             isLoading = false
         )
@@ -88,23 +87,38 @@ class StudentHubViewModel(
     val student = MutableStateFlow(
         StudentUIState.HasEntries(
             student = null,
-            isLoading = false,
+            isLoading = false
         )
     )
 
-    init {
-        viewModelScope.launch {
-            Log.d(TAG, "Fetching initial studentHub data: ")
-            loadItemTemplates() //TODO lässt tenplates immer laden auf wenn z.b. map ausfeührt wird.
-        }
-    }
+    val itemsFromItemTemplate = MutableStateFlow(
+        ItemsFromItemTemplateUIState.HasEntries(
+            emptyList(),
+            isLoading = false
+        )
+    )
 
-    //loads one student with the ID
-    fun loadStudent(id: Int) {
+    val item = MutableStateFlow(
+        ItemUIState.HasEntries(
+            itemPatch = null,
+            isLoading = false
+        )
+    )
+
+//    init {
+//        viewModelScope.launch {
+//            Log.d(TAG, "Fetching student: ")
+//            loadStudent() //TODO lässt tenplates immer laden auf wenn z.b. map ausfeührt wird.
+//        }
+//    }
+
+    //loads the current student per userDataManager studentID
+    fun loadStudent() {
         viewModelScope.launch {
             student.update { it.copy(isLoading = true) }
             try {
-                val response = studentHubService.getStudent(id).enqueue()
+                println("studentID: ${userDataManager.getStudentId()}")
+                val response = studentHubService.getStudent(userDataManager.getStudentId()!!).enqueue()
                 Log.d(TAG, "LoadStudent: $response")
                 if (response.isSuccessful) {
                     Log.d(TAG, "Success: ${response.body()}")
@@ -130,10 +144,10 @@ class StudentHubViewModel(
                 Log.d(TAG, "loadItemTemplates: $response")
                 if (response.isSuccessful) {
                     Log.d(TAG, "loadItemTemplates: success")
-                    //creates an item list based on the fetched data
+
                     val itemTemplates = response.body()!!
                     Log.d(TAG, "loadItemTemplates: $itemTemplates")
-                    //replaces the critters list inside the UI state with the fetched data
+
                     this@StudentHubViewModel.itemTemplates.update {
                         it.copy(
                             itemTemplates = itemTemplates,
@@ -148,59 +162,88 @@ class StudentHubViewModel(
         }
     }
 
-    fun loadItemsForStudent(studentId: Int) {
+    fun loadItemsFromStudent() {
         viewModelScope.launch {
-            itemsForStudent.update { it.copy(isLoading = true) }
+            itemsFromStudent.update { it.copy(isLoading = true) }
             try {
-                val response = studentHubService.getItemsFromStudent(studentId).enqueue()
-                Log.d(TAG, "loadItemsForStudent: $response")
+                val response = studentHubService.getItemsFromStudent(userDataManager.getStudentId()!!).enqueue()
+                Log.d(TAG, "loadItemsFromStudent: $response")
                 if (response.isSuccessful) {
-                    Log.d(TAG, "loadItemsForStudent: success")
-                    //creates an item list based on the fetched data
-                    val itemsForStudent = response.body()!!
-                    Log.d(TAG, "loadItemsForStudent: $itemsForStudent")
-                    //replaces the critters list inside the UI state with the fetched data
-                    this@StudentHubViewModel.itemsForStudent.update {
+                    Log.d(TAG, "loadItemsFromStudent: success")
+
+                    val itemsFromStudent = response.body()!!
+                    Log.d(TAG, "loadItemsFromStudent: $itemsFromStudent")
+
+                    this@StudentHubViewModel.itemsFromStudent.update {
                         it.copy(
-                            itemsForStudent = itemsForStudent,
+                            itemsFromStudent = itemsFromStudent,
                             isLoading = false
                         )
                     }
                 }
             } catch (e: Exception) {
-                Log.e(TAG, "items: error")
+                Log.e(TAG, "itemsFromStudent: error")
                 e.printStackTrace()
             }
         }
     }
 
-    fun buyItem(currentStudent: Student?, itemTemplateId: Int, itemCost: Int): Boolean {
+    fun loadItemsFromItemTemplate(studentId: Int) {
+        viewModelScope.launch {
+            itemsFromItemTemplate.update { it.copy(isLoading = true) }
+            try {
+                val response = studentHubService.getItemsFromItemTemplate(studentId).enqueue()
+                Log.d(TAG, "loadItemsFromItemTemplate: $response")
+                if (response.isSuccessful) {
+                    Log.d(TAG, "loadItemsFromItemTemplate: success")
+
+                    val itemsFromItemTemplate = response.body()!!
+                    Log.d(TAG, "loadItemsFromItemTemplate: $itemsFromItemTemplate")
+
+                    this@StudentHubViewModel.itemsFromItemTemplate.update {
+                        it.copy(
+                            itemsFromItemTemplate = itemsFromItemTemplate,
+                            isLoading = false
+                        )
+                    }
+                }
+            } catch (e: Exception) {
+                Log.e(TAG, "itemsFromItemTemplate: error")
+                e.printStackTrace()
+            }
+        }
+    }
+
+    fun buyItem(itemTemplateId: Int, itemCost: Int, quantityIncrease: Int): Boolean {
+
 
         println("Buy button was pressed in the ViewModel.")
 
-        //loads all the ItemForStudent from the DB to have them saved in the viewModel
-        loadItemsForStudent(currentStudent!!.id)
-//        println("loadItemsForStudent was called.")
+        val currentStudent = student.value.student
 
-        val newCredits = currentStudent.credits - itemCost
+        val newCredits = currentStudent!!.credits - itemCost
 
+        println("newCredit value")
         //checking if the student has enough money
         if (newCredits >= itemCost) {
 
-            patchStudentCredits(newCredits, itemCost) //reduces credits of the student
-
-            //calls the iterator method to get the same item as the selected one by the user
-            val item = getSelectedItemForStudent(currentStudent!!.id, itemTemplateId)
+            decreaseStudentCredits(newCredits) //reduces credits of the student
 
             //See if the Item already exists in the DB
-            return if (item.itemTemplateId != itemTemplateId /*As @PATCH does not work =*/ || item.itemTemplateId == itemTemplateId) {
+            return if (itemExists(itemTemplateId)) {
 
-                postItemForStudent(currentStudent!!.id, item) //Boolean that student has enough credits (true)
+                println("BUY ITEM PATCH WAS CALLED")
+                //Boolean that student has enough credits (true)
+                increaseItemQuantity(getSelectedItemPatch(currentStudent!!.id,itemTemplateId), quantityIncrease)
 
-            } else { //Otherwise uses @PATCH to increase the quantity
+            } else { //Otherwise uses @POST to increase the quantity
 
-                patchItemForStudent(currentStudent!!.id, itemTemplateId, item) //Boolean that student has enough credits (true)
+                println("BUY ITEM POST WAS CALLED")
+                val itemPostData = getSelectedItemPost(currentStudent!!.id, itemTemplateId)
+                //Boolean that student has enough credits (true)
+                postItemFromStudent(itemPostData)
             }
+
         } else {
 
             println("Student does not have enough credits!")
@@ -208,179 +251,174 @@ class StudentHubViewModel(
         }
     }
 
-    //helper method to only have to do the iteration as few times as possible
-    private fun getSelectedItemForStudent(studentId: Int, itemTemplateId: Int): ItemForStudent {
-
-        println("THE STUDENTID in helper method: $studentId")
-
-        val itemListIterator = itemsForStudent.value.itemsForStudent.listIterator()
-
-        //iterates over the list
-        while (itemListIterator.hasNext()) {
-            val currentItem = itemListIterator.next()
-            println("currentItem, first call: $currentItem.")
-
-            //checks if the itemTemplate is already in the DB by iterating over the list
-            if (currentItem.itemTemplateId == itemTemplateId) {
-                println("currentItem, itemTemplateID exists: $currentItem.")
-                return currentItem
-            }
-        }
-
-//        //makes sure the method works even when only one item is in the DB, as hasNext would skip it
-//        if (!itemListIterator.hasNext()) {
-//
-//            val currentItem = itemListIterator.next()
-//            println("currentItem, false hasNext() call: $currentItem.")
-//
-//            //checks if the itemTemplate is already in the DB by iterating over the list
-//            if (currentItem.itemTemplateId == itemTemplateId) {
-//                println("currentItem, itemTemplateID exists false hasNext() call: $currentItem.")
-//                return currentItem
-//            }
-//        }
-
-        //returns a standard ItemForStudent to be posted to the students DB
-        return ItemForStudent(1, itemTemplateId, studentId)
-    }
-
-    private fun postItemForStudent(studentId: Int, item: ItemForStudent): Boolean {
+    private fun postItemFromStudent(item: ItemPost): Boolean {
 
         //@POST the ItemForStudent to the student DB
         viewModelScope.launch {
-            itemForStudent.update { it.copy(isLoading = true) }
-            try {
-                var itemForStudent = item
-                val response = studentHubService.postStudentItem(studentId, itemForStudent).enqueue()
-                println(itemForStudent)
-                Log.d(TAG, "loadBuyItem: $response")
-                if (response.isSuccessful) {
-                    Log.d(TAG, "Success: ${response.body()}")
-                    response.body()?.let {
-                        this@StudentHubViewModel.itemForStudent.update { state ->
-                            state.copy(itemForStudent = it, isLoading = false)
-                        }
+            itemFromStudent.update { it.copy(isLoading = true) }
+
+            var itemFromStudent = item
+            val response = studentHubService.postStudentItem(item.studentId, itemFromStudent).enqueue()
+            println(itemFromStudent)
+            Log.d(TAG, "loadBuyItem: $response")
+            if (response.isSuccessful) {
+                Log.d(TAG, "Success: ${response.body()}")
+                response.body()?.let {
+                    this@StudentHubViewModel.itemFromStudent.update { state ->
+                        state.copy(itemPost = it, isLoading = false)
                     }
-                } else {
-                    Log.d(TAG, "Post Failed")
                 }
-            } catch (e: Exception) {
-                e.printStackTrace()
+            } else {
+                Log.d(TAG, "PostItem Failed")
             }
         }
 
         return true
     }
 
-    private fun patchItemForStudent(studentId: Int, itemTemplateId: Int, item: ItemForStudent): Boolean {
+    private fun increaseItemQuantity(itemPatch: ItemPatch, quantityIncrease: Int): Boolean {
 
-//        //TODO: use the /item-templates/{id}/items => I get all items of the templateId <= here I get the itemId / I also need to filter the studentId to get the correct Item
-//        //TODO: then use /item/[{id}, with this one I can use PATCH <= here I use the itemId to patch the correct Item
-//        //@PATCH of the existing ItemForStudent, increasing its quantity
-//        viewModelScope.launch {
-//            itemForStudent.update { it.copy(isLoading = true) }
-//            try {
-//                var itemForStudent = ItemForStudent(item.quantity + 1, itemTemplateId, studentId)
-//                val response = studentHubService.updateItemQuantityByTemplateId(
-//                    studentId,
-//                    itemTemplateId,
-//                    itemForStudent
-//                ).enqueue()
-//                println(itemForStudent)
-//                Log.d(TAG, "loadUpdateItemQuantity: $response")
-//                if (response.isSuccessful) {
-//                    Log.d(TAG, "Success: ${response.body()}")
-//                    response.body()?.let {
-//                        this@StudentHubViewModel.itemForStudent.update { state ->
-//                            state.copy(itemForStudent = it, isLoading = false)
-//                        }
-//                    }
-//                    println(itemForStudent)
-//                } else {
-//                    Log.d(TAG, "Patch Failed")
-//                    println(itemForStudent)
-//                }
-//            } catch (e: Exception) {
-//                e.printStackTrace()
-//            }
-//        }
+        val newQuantity = itemPatch.quantity + quantityIncrease
+
+        println("loadPatchItemQuantity: patchItemQuantity function called")
+
+        viewModelScope.launch {
+            student.update { it.copy(isLoading = true) }
+
+            var updatedItemPatch = ItemPatch(itemPatch.id, newQuantity, itemPatch.itemTemplateId, itemPatch.studentId)
+
+            val response = studentHubService.patchItemsFromItemTemplate(itemPatch.id, updatedItemPatch).enqueue()
+            Log.d(TAG, "loadPatchItemQuantity request: $response")
+
+            if (response.isSuccessful) {
+
+                Log.d(TAG, "loadPatchItemQuantity Success: ${response.body()}")
+                response.body()?.let {
+                    this@StudentHubViewModel.item.update { state ->
+                        state.copy(itemPatch = it, isLoading = false)
+                    }
+                }
+
+            } else {
+
+                Log.d(
+                    TAG,
+                    "loadPatchItemQuantity Failed: ${response.code()}, ${response.message()}"
+                )
+            }
+        }
         return true
     }
 
-    private fun patchStudentCredits(newCredits: Int, itemCost: Int) {
+    private fun decreaseStudentCredits(newCredits: Int) {
 
         println("loadPatchStudentCredit: patchStudentCredits function called")
 
         viewModelScope.launch {
             student.update { it.copy(isLoading = true) }
-            try {
-                var student = StudentPatch(5, 1, 0, 0, newCredits, 0, "f96e0c04-c965-496a-8942-4fb7fcde9c30")
-                println("loadPatchStudentCredit: Updating credits for student ${student.id} to $newCredits")
-                println("loadPatchStudentCredit: student to be past into patch:BEFORE $student")
 
-                val response = studentHubService.updateStudentCredits(student.id, student).enqueue()
-                Log.d(TAG, "loadPatchStudentCredit request: $response")
+//            var updatedStudent1 = StudentPatch(5, 1, 0, 0, newCredits, 0, "f96e0c04-c965-496a-8942-4fb7fcde9c30")
+            val currentStudent = student.value.student
 
-                if (response.isSuccessful) {
-                    println("loadPatchStudentCredit: student to be past into patch:SUCCESS $student")
-                    Log.d(TAG, "loadPatchStudentCredit Success: ${response.body()}")
-                    response.body()?.let {
-                        this@StudentHubViewModel.student.update { state ->
-                            state.copy(student = it, isLoading = false)
-                        }
+            var updatedStudent = StudentPatch(currentStudent!!.id, currentStudent!!.level, currentStudent!!.lat,
+                currentStudent!!.lon, newCredits, currentStudent!!.expToNextLevel, currentStudent!!.userId)
+
+            val response = studentHubService.updateStudentCredits(updatedStudent.id, updatedStudent).enqueue()
+            Log.d(TAG, "loadPatchStudentCredit request: $response")
+
+            if (response.isSuccessful) {
+                Log.d(TAG, "loadPatchStudentCredit Success: ${response.body()}")
+                response.body()?.let {
+                    this@StudentHubViewModel.student.update { state ->
+                        state.copy(student = it, isLoading = false)
                     }
-
-                } else {
-                    println("loadPatchStudentCredit: student to be past into patch:FAILURE $student")
-                    Log.d(TAG, "loadPatchStudentCredit Failed: ${response.code()}, ${response.message()}")
                 }
-            } catch (e: Exception) {
-                e.printStackTrace()
+
+            } else {
+                Log.d(
+                    TAG,
+                    "loadPatchStudentCredit Failed: ${response.code()}, ${response.message()}"
+                )
             }
         }
     }
 
-//    private fun postStudent(currentStudent: Student, itemCost: Int) {
-//
-//        println("loadPostStudentCredits: PostStudentCredits function called")
-//        println("loadPostStudentCredits: currentStudent to be past into patch: $currentStudent")
-//
-//        viewModelScope.launch {
-//            student.update { it.copy(isLoading = true) }
-//            try {
-//                var student = StudentPost(1, 0, 0, 100, 0, "69487be5-d92c-4829-b647-e0343cb24860")
-//                println("loadPostStudentCredits: student to be past into patch:BEFORE $student")
-//
-//                val response = studentHubService.postStudent(student).enqueue()
-//                Log.d(TAG, "loadPostStudentCredits request: $response")
-//
-//                if (response.isSuccessful) {
-//                    Log.d(TAG, "loadPostStudentCredits Success: ${response.body()}")
-//                    response.body()?.let {
-//                        this@StudentHubViewModel.student.update { state ->
-//                            state.copy(student = it, isLoading = false)
-//                        }
-//                    }
-//
-//                } else {
-//                    println("loadPostStudentCredits: student to be past into patch:FAILURE $student")
-//                    Log.d(TAG, "loadPostStudentCredits Failed: ${response.code()}, ${response.message()}")
-//                }
-//            } catch (e: Exception) {
-//                e.printStackTrace()
-//            }
-//        }
-//    }
+    private fun itemExists(itemTemplateId: Int): Boolean {
+
+        loadItemsFromStudent()
+
+        val itemPostListIterator = itemsFromStudent.value.itemsFromStudent.listIterator()
+
+        itemPostListIterator.forEach {item ->
+
+            // Check if the itemTemplate is already in the DB by iterating over the list
+            if (item.itemTemplateId == itemTemplateId) {
+                return true
+            }
+        }
+
+        return false
+    }
+
+    //helper method to only have to do the iteration as few times as possible
+    private fun getSelectedItemPost(studentId: Int, itemTemplateId: Int): ItemPost {
+
+        println("THE STUDENTID in helper method: $studentId")
+
+        val itemPostListIterator = itemsFromStudent.value.itemsFromStudent.listIterator()
+
+        //iterates over the list
+        while (itemPostListIterator.hasNext()) {
+            val currentItem = itemPostListIterator.next()
+            println("currentItem, first call: $currentItem.")
+
+            //checks if the itemTemplate is already in the DB by iterating over the list
+            if (currentItem.itemTemplateId == itemTemplateId) {
+                println("currentItem, itemTemplateID exists: $currentItem.")
+                return ItemPost(currentItem.quantity, currentItem.itemTemplateId, currentItem.studentId)
+            }
+        }
+
+        //returns a standard ItemFromStudent to be posted to the students DB
+        return ItemPost(1, itemTemplateId, studentId)
+    }
+
+    private fun getSelectedItemPatch(studentId: Int, itemTemplateId: Int): ItemPatch {
+
+        //TODO: returns ItemId 0 and a whole bunch of other nonesense with the other values
+
+        loadItemsFromItemTemplate(studentId)
+
+        val itemPatchListIterator = itemsFromItemTemplate.value.itemsFromItemTemplate.listIterator()
+
+        //iterates over the list
+        itemPatchListIterator.forEach {item ->
+
+            //checks if the itemTemplate is already in the DB by iterating over the list
+            if (item.itemTemplateId == itemTemplateId) {
+                return ItemPatch(
+                    item.id,
+                    item.quantity,
+                    item.itemTemplateId,
+                    item.studentId
+                )
+            }
+        }
+
+        return ItemPatch(0, 0, 0, 0) //Should never be returned
+    }
 
     companion object {
         fun provideFactory(
             studentHubService: StudentHubService,
+            application: Application,
         ): ViewModelProvider.Factory =
             object : ViewModelProvider.Factory {
                 @Suppress("UNCHECKED_CAST")
                 override fun <T : ViewModel> create(modelClass: Class<T>): T {
                     return StudentHubViewModel(
-                        studentHubService
+                        studentHubService,
+                        application,
                     ) as T
                 }
             }

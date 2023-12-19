@@ -129,4 +129,23 @@ export class StudentItemController {
   ): Promise<ItemUsable[]> {
     return this.studentItemService.createItemUsableListOnStudentId(id);
   }
+
+  @get('/students/{studentId}/itemTemplate/{itemTemplateId}', {
+    responses: {
+      '200': {
+        description: 'let a user to buy an item',
+        content: {
+          'application/json': {
+            schema: getModelSchemaRef(ItemUsable),
+          },
+        },
+      },
+    },
+  })
+  async buyItem(
+      @param.path.number('studentId') studentId: number,
+      @param.path.number('itemTemplateId') itemTemplateId: number,
+  ): Promise<String> {
+    return this.studentItemService.buyItem(studentId,itemTemplateId);
+  }
 }

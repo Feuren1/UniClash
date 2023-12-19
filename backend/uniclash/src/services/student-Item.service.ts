@@ -1,6 +1,6 @@
 import {inject, injectable} from '@loopback/core';
 import {repository} from '@loopback/repository';
-import {Critter, CritterUsable, Item, Student} from '../models';
+import {Critter, CritterUsable, Item, ItemTemplate, Student} from '../models';
 import {
   AttackRepository,
   CritterAttackRepository,
@@ -16,7 +16,7 @@ import {ItemStatsService} from "./item-stats.service";
 @injectable()
 export class StudentItemService {
   constructor(
-    @repository(ItemRepository) protected itemTemplateRepository: ItemTemplateRepository,
+    @repository(ItemTemplateRepository) protected itemTemplateRepository: ItemTemplateRepository,
     @repository(ItemRepository) protected itemRepository: ItemRepository,
     @repository(StudentRepository) protected studentRepository: StudentRepository,
     @inject('services.ItemStatsService') // Inject the CritterStatsService
@@ -52,5 +52,39 @@ export class StudentItemService {
     }
 
     return itemUsables;
+  }
+
+  async buyItem(studentId : number, itemTemplateId : number) : Promise<String> {
+    const student: Student = await this.studentRepository.findById(studentId)
+    const studentItem: Student = await this.studentRepository.findById(studentId, {
+      include: ['items'],
+    })
+
+    const itemTemplate: ItemTemplate = await this.itemTemplateRepository.findById(1);
+    console.log(`Student ${student.credits}`);
+    console.log(`itemTemplate ${itemTemplate.name}`);
+    if(itemTemplate.cost != null && student.credits != null) {
+      console.log("Step 1");
+      if(student.credits - itemTemplate.cost > -1) {
+        console.log("Step 2");
+        console.log("Student quantity: " + student.credits);
+        student.credits -= itemTemplate.cost
+        console.log("Student quantity: " + student.credits);
+
+        const items: Item[] = studentItem.items;
+        for(const item of items){
+          console.log("Step 3");
+          if(item.itemTemplateId == itemTemplateId){
+            if(item.quantity != null) {
+              item.quantity++
+              await this.itemRepository.update(item);
+              await this.studentRepository.update(student);
+              return "new quantity" + item.quantity
+            }
+          }
+        }
+      }
+    }
+    return "student" + studentId + " and itemID" + itemTemplateId
   }
 }

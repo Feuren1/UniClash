@@ -588,12 +588,12 @@ fun ClickableAttackAdvancedTutorial(
     val attackDrawable: Int? = R.drawable.pow
 
     val drawable = when (attack.attackType) {
-        AttackType.ATK_Buff -> swordDrawable
-        AttackType.DEF_Buff -> shieldDrawable
-        AttackType.ATK_DeBuff -> redSwordDrawable
-        AttackType.DEF_DeBuff -> redShieldDrawable
+        AttackType.ATK_BUFF -> swordDrawable
+        AttackType.DEF_BUFF -> shieldDrawable
+        AttackType.ATK_DEBUFF -> redSwordDrawable
+        AttackType.DEF_DEBUFF -> redShieldDrawable
         AttackType.DAMAGE_DEALER -> attackDrawable
-        else -> null // Handle other cases or leave it null
+        else -> attackDrawable // Handle other cases or leave it null
     }
 
     Box(

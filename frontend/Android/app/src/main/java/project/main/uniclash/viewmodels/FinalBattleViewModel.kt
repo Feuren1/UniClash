@@ -1,5 +1,7 @@
 package project.main.uniclash.viewmodels
 
+import android.annotation.SuppressLint
+import android.app.Application
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
@@ -12,13 +14,17 @@ import kotlinx.coroutines.launch
 import project.main.uniclash.battle.BattleResult
 import project.main.uniclash.datatypes.Attack
 import project.main.uniclash.datatypes.AttackType
-
+import project.main.uniclash.retrofit.enqueue
+import project.main.uniclash.userDataManager.UserDataManager
 
 
 class FinalBattleViewModel(
     private val critterService: CritterService,
     private var playerTurn: Boolean,
 ) : ViewModel() {
+    val userDataManager: UserDataManager by lazy {
+        UserDataManager(Application())
+    }
     //TAG for logging
     private val TAG = BattleTutorialViewModel::class.java.simpleName
     private val _battleText = MutableStateFlow("Battle started!")
@@ -99,17 +105,7 @@ class FinalBattleViewModel(
     init {
         viewModelScope.launch {
             Log.d(TAG, "Fetching initial critters data: ")
-
-            val playerAttack1 = Attack(1, "Defence Break", 20, AttackType.DEF_DeBuff)
-            val playerAttack2 = Attack(2, "Hyper Beam", 70, AttackType.DAMAGE_DEALER)
-            val playerAttack3 = Attack(3, "Super Guard", 25, AttackType.DEF_Buff)
-            val playerAttack4 = Attack(4, "Beak Sharpener", 25, AttackType.ATK_Buff)
-            val listOfPlayerAttacks = listOf(playerAttack1, playerAttack2, playerAttack3, playerAttack4)
-            val playerTutorialCritter = CritterUsable(40, "Prc2Duck", 220, 70, 80, 50, listOfPlayerAttacks,1, 1)
-
-            playerCritter.update { state ->
-                state.copy(playerCritter = playerTutorialCritter, isLoading = false)
-            }
+            loadPlayerCritter()
 
             val cpuAttack1 = Attack(1, "Dive Attack", 70, AttackType.DAMAGE_DEALER)
             val cpuAttack2 = Attack(2, "Super Guard", 25, AttackType.DEF_Buff)
@@ -122,7 +118,9 @@ class FinalBattleViewModel(
                 state.copy(cpuCritter = cpuTutorialCritter, isLoading = false)
             }
         }
-        doesPlayerStart()
+        if(!playerCritter.value.isLoading) {
+            doesPlayerStart()
+        }
     }
 
     fun executePlayerAttack() {
@@ -441,6 +439,30 @@ class FinalBattleViewModel(
         val atk = playerCritter.value.playerCritter!!.atk;
         val level = playerCritter.value.playerCritter!!.level;
         return (((((2*level)/5)+2)*attack*atk/def)/50)+2
+    }
+
+    @SuppressLint("MissingPermission")
+    fun loadPlayerCritter() {
+        viewModelScope.launch {
+            playerCritter.update { it.copy(isLoading = true) }
+            try {
+                val response = critterService.getCritterUsables(userDataManager.getStudentId()!!).enqueue()
+                Log.d(TAG, "loadCrittersUsable: $response")
+                if (response.isSuccessful) {
+                    Log.d(TAG, "loadCrittersUsables: success")
+                    val crittersUsables = response.body()!!
+                    Log.d(TAG, "loadCrittersUsables: $crittersUsables")
+                    playerCritter.update {
+                        it.copy(
+                            playerCritter = crittersUsables[0],
+                            isLoading = false
+                        )
+                    }
+                }
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
+        }
     }
 
     companion object {

@@ -2,10 +2,10 @@ package project.main.uniclash.datatypes
 
 enum class AttackType {
     DAMAGE_DEALER,
-    ATK_Buff,
-    DEF_Buff,
-    SPD_Buff,
-    ATK_DeBuff,
-    DEF_DeBuff,
-    SPD_DeBuff,
+    ATK_BUFF,
+    DEF_BUFF,
+    SPD_BUFF,
+    ATK_DEBUFF,
+    DEF_DEBUFF,
+    SPD_DEBUFF,
 }

@@ -98,8 +98,9 @@ class FinalBattleActivity : ComponentActivity() {
                     var playerCritter = battleViewPlayerUIState.playerCritter
                     val battleViewcpuCritterUIState by finalBattleViewModel.cpuCritter.collectAsState()
                     var cpuCritter = battleViewcpuCritterUIState.cpuCritter
-                    Column {
-                        var battleResult = finalBattleViewModel.checkResult()
+                    if(!battleViewPlayerUIState.isLoading && !battleViewcpuCritterUIState.isLoading) {
+                        Column {
+                            var battleResult = finalBattleViewModel.checkResult()
                             Box(
                                 modifier = Modifier
                                     .fillMaxWidth()
@@ -118,27 +119,28 @@ class FinalBattleActivity : ComponentActivity() {
                                         .align(Alignment.TopEnd)
                                 )
                             }
-                        if (battleResult == BattleResult.CPU_WINS){
-                            Box(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .background(MaterialTheme.colorScheme.background)
-                                    .padding(16.dp)
-                            ) {
-                                Image(
-                                    painter = painterResource(id = R.drawable.repeat),
-                                    contentDescription = null,
+                            if (battleResult == BattleResult.CPU_WINS) {
+                                Box(
                                     modifier = Modifier
-                                        .size(40.dp)
-                                        .clickable {
-                                            repeatRequest = true
-                                        }
-                                        .align(Alignment.TopEnd)
-                                )
+                                        .fillMaxWidth()
+                                        .background(MaterialTheme.colorScheme.background)
+                                        .padding(16.dp)
+                                ) {
+                                    Image(
+                                        painter = painterResource(id = R.drawable.repeat),
+                                        contentDescription = null,
+                                        modifier = Modifier
+                                            .size(40.dp)
+                                            .clickable {
+                                                repeatRequest = true
+                                            }
+                                            .align(Alignment.TopEnd)
+                                    )
+                                }
                             }
-                        }
-                        Box {
-                            FinalBattle(finalBattleViewModel)
+                            Box {
+                                FinalBattle(finalBattleViewModel)
+                            }
                         }
                     }
 

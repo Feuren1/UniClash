@@ -130,7 +130,7 @@ export class StudentItemController {
     return this.studentItemService.createItemUsableListOnStudentId(id);
   }
 
-  @get('/students/{studentId}/itemTemplate/{itemTemplateId}', {
+  @patch('/students/{studentId}/itemTemplate/{itemTemplateId}', {
     responses: {
       '200': {
         description: 'let a user to buy an item',

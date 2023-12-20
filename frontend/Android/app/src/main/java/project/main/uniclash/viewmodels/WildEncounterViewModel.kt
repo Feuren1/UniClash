@@ -3,6 +3,9 @@ package project.main.uniclash.viewmodels
 import android.app.Application
 import android.content.ContentValues.TAG
 import android.util.Log
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
@@ -13,6 +16,7 @@ import project.main.uniclash.datatypes.CritterUsable
 import project.main.uniclash.datatypes.MarkerWildEncounter
 import project.main.uniclash.datatypes.SelectedMarker
 import project.main.uniclash.retrofit.CritterService
+import project.main.uniclash.retrofit.InventoryService
 import project.main.uniclash.retrofit.enqueue
 import project.main.uniclash.userDataManager.UserDataManager
 
@@ -22,14 +26,22 @@ sealed interface PostCrittersUIState { //TODO: CritterS to Critter?
         val isLoading: Boolean,
     ) : PostCrittersUIState
 }
+
+sealed interface UseItemUIState {
+    data class HasEntries(
+        val quantitiy : Int,
+        val isLoading: Boolean,
+    ) : UseItemUIState
+}
 class WildEncounterViewModel(
     private val critterService: CritterService,
+    private val inventoryService: InventoryService,
     private val application: Application
 ) : ViewModel() {
 
     private val markerData = SelectedMarker.SELECTEDMARKER.takeMarker()
     private val wildEncounterMarker = if(markerData is MarkerWildEncounter){markerData} else {null}
-    private var catchChance = 0.0
+    var catchChance by mutableStateOf(0.0)
     private val userDataManager: UserDataManager by lazy {
         UserDataManager(application)
     }
@@ -46,6 +58,13 @@ class WildEncounterViewModel(
     val critters = MutableStateFlow( //TODO: change critterS to critter, is not a list
         PostCrittersUIState.HasEntries( //TODO: here too
             critter = null,
+            isLoading = false
+        )
+    )
+
+    val usedItem = MutableStateFlow(
+        UseItemUIState.HasEntries(
+            quantitiy = 0,
             isLoading = false
         )
     )
@@ -84,8 +103,36 @@ class WildEncounterViewModel(
         }
     }
 
+    fun useChocolatewaffle(): Boolean {
+        if (catchChance < 90) {
+            viewModelScope.launch {
+                usedItem.update { state ->
+                    state.copy(isLoading = true)
+                }
+                try {
+                    val response = inventoryService.useItem(userDataManager.getStudentId()!!, 2).enqueue()
+                    if (response.isSuccessful) {
+                        Log.d(TAG, "Success: ${response.body()}")
+                        response.body()?.let {
+                            //if (it) {
+                                println("ausgeführt ")
+                                usedItem.update { state ->
+                                    state.copy(quantitiy = state.quantitiy + 1)
+                            //    }
+                            }
+                        }
+                    }
+                } catch (e: Exception) {
+                    e.printStackTrace()
+                }
+            }
+        }
+        return true
+    }
+
+
     fun calculateCatchChance(critterLevel :Int) : Double{
-        var chance = 0.0
+        var chance = (usedItem.value.quantitiy*5).toDouble()
         viewModelScope.launch {
             val userLevel = userDataManager.getLevel()
             var difference = userLevel?.minus(critterLevel)
@@ -93,10 +140,14 @@ class WildEncounterViewModel(
                 if(difference > 0){
                     difference = 0
                 }
-                chance = (100 -difference*-1).toDouble()
+                chance += (100 -difference*-1).toDouble()
             }
         }
+        if(chance>90){
+            chance = 90.0
+        }
         catchChance = chance
+        println("new catch Chance $catchChance")
         return chance
     }
 
@@ -104,6 +155,7 @@ class WildEncounterViewModel(
     companion object {
         fun provideFactory(
             critterService: CritterService,
+            inventoryService: InventoryService,
             application: Application,
         ): ViewModelProvider.Factory =
             object : ViewModelProvider.Factory {
@@ -111,6 +163,7 @@ class WildEncounterViewModel(
                 override fun <T : ViewModel> create(modelClass: Class<T>): T {
                     return WildEncounterViewModel(
                         critterService,
+                        inventoryService,
                         application
                     ) as T
                 }

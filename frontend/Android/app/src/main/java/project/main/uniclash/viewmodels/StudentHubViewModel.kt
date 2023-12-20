@@ -110,7 +110,7 @@ class StudentHubViewModel(
     }
 
     //Buys an Item, increasing quantity and subtracting student credits (Backend)
-    fun buyItem(itemTemplateId: Int) {
+    fun buyItem(itemTemplateId: Int): Boolean {
 
         viewModelScope.launch {
             buyItemResponse.update { it.copy(isLoading = true) }
@@ -131,6 +131,7 @@ class StudentHubViewModel(
                 e.printStackTrace()
             }
         }
+        return buyItemResponse.value.buyItemResponse
     }
 
     companion object {

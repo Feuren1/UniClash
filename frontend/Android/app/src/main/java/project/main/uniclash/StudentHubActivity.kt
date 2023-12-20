@@ -1,8 +1,11 @@
 package project.main.uniclash
 
+import android.annotation.SuppressLint
 import android.app.Application
 import android.content.Intent
 import android.os.Bundle
+import android.view.Gravity
+import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
@@ -23,14 +26,17 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
@@ -59,7 +65,6 @@ class StudentHubActivity : ComponentActivity() {
                 Surface(modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background) {
 
                     studentHubViewModel.loadStudent()
-//                    studentHubViewModel.loadItemsFromStudent()
                     studentHubViewModel.loadItemTemplates()
 
                     StudentHubScreen(modifier = Modifier.fillMaxSize(), studentHubViewModel = studentHubViewModel)
@@ -68,6 +73,7 @@ class StudentHubActivity : ComponentActivity() {
         }
     }
 }
+
 
 @Composable
 fun StudentHubScreen(modifier: Modifier = Modifier,
@@ -81,32 +87,53 @@ fun StudentHubScreen(modifier: Modifier = Modifier,
     val studentState by studentHubViewModel.student.collectAsState()
     val student = studentState.student
 
-    var itemCost by rememberSaveable { mutableIntStateOf(0) }
-    var buyingStatus by rememberSaveable { mutableStateOf("nothing") }
-    println("1")
+    var creditValidation by remember {mutableStateOf(true)}
+    var buyingStatus by remember {mutableStateOf("nothing")}
+    var credits by remember { mutableIntStateOf(0) }
+
+    if (student != null) {
+
+        credits = student.credits
+    }
+
+
+//    var clicked by remember { mutableIntStateOf(0) }
+
     Column(modifier = modifier) {
 
-        Text("Credits: TODO: get credits => make a loadCredit function in viewmodel")
-        println("2")
-//        if (student!!.credits - itemCost >= 0) {
-//            println("3")
-//            Text("You have last bought: $buyingStatus.")
+        if (student != null) {
+
+            Text("Credits: $credits")
+
+        } else {
+            Text("Credits: NULL")
+        }
+
+//        // LaunchedEffect to show a Toast message when creditValidation changes
+//        LaunchedEffect(clicked) {
 //
-//        } else {
-//            buyingStatus = "Not enough credits!"
-//            Text("$buyingStatus")
-//            println("4")
+//            val message = if (creditValidation) {
+//                "You have bought: $buyingStatus."
+//
+//            } else {
+//                "Not enough credits!"
+//            }
+//
+//            // Customize the Toast message content and duration
+//            val toast = Toast.makeText(context, message, Toast.LENGTH_SHORT)
+//
+//            // Customize the location using setGravity
+//            toast.setGravity(Gravity.TOP, 0, 100)
+//
+//            toast.show()
 //        }
 
         //Exit Box, image and position:
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
+        Box(modifier = Modifier.fillMaxWidth()
                 .background(MaterialTheme.colorScheme.background)
                 .padding(16.dp)
         ) {
-            Image(
-                painter = painterResource(id = R.drawable.exit),
+            Image(painter = painterResource(id = R.drawable.exit),
                 contentDescription = null,
                 modifier = Modifier
                     .size(40.dp)
@@ -121,15 +148,34 @@ fun StudentHubScreen(modifier: Modifier = Modifier,
         ItemList(itemTemplateList,
             onButtonClicked = { itemTemplate ->
                 buyingStatus = itemTemplate.name
-                studentHubViewModel.buyItem(itemTemplate.id)
-                itemCost = itemTemplate.cost
+                creditValidation = studentHubViewModel.buyItem(itemTemplate.id)
+//                clicked++
+                studentHubViewModel.loadStudent()
+
+                //Toast message when creditValidation changes
+                val message = if (creditValidation) {
+                    "You have bought: $buyingStatus."
+
+                } else {
+                    "Not enough credits!"
+                }
+
+                // Customize the Toast message content and duration
+                val toast = Toast.makeText(context, message, Toast.LENGTH_SHORT)
+
+                // Customize the location using setGravity
+                toast.setGravity(Gravity.TOP, 0, 100)
+
+                toast.show()
             })
     }
 }
 
 @Composable
-fun ItemList(itemTemplateList: List<ItemTemplate>, onButtonClicked: (ItemTemplate) -> Unit, modifier: Modifier = Modifier) {
-    println("5")
+fun ItemList(itemTemplateList: List<ItemTemplate>,
+             onButtonClicked: (ItemTemplate) -> Unit,
+             modifier: Modifier = Modifier) {
+
     LazyColumn(modifier = modifier) {
 
         items(items = itemTemplateList, key = { item -> item.name }) {
@@ -144,12 +190,10 @@ fun ItemList(itemTemplateList: List<ItemTemplate>, onButtonClicked: (ItemTemplat
 }
 
 @Composable
-fun ItemRow(
-    itemTemplate: ItemTemplate,
+fun ItemRow(itemTemplate: ItemTemplate,
     onButtonClicked: (ItemTemplate) -> Unit,
-    modifier: Modifier = Modifier
-) {
-    println("6")
+    modifier: Modifier = Modifier) {
+
     Row(modifier = modifier, verticalAlignment = Alignment.CenterVertically) {
 
         Text(modifier = Modifier

@@ -1,6 +1,7 @@
 package project.main.uniclash.viewmodels
 
 import android.app.Application
+import android.content.ContentValues
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
@@ -161,7 +162,7 @@ class StudentHubViewModel(
         }
     }
 
-    fun buyItem(itemTemplateId: Int) {
+    fun buyItem2(itemTemplateId: Int) {
 
         viewModelScope.launch {
             itemForStudent.update { it.copy(isLoading = true) }
@@ -177,6 +178,29 @@ class StudentHubViewModel(
             } else {
                 Log.d(TAG, "buyItem Failed")
             }
+        }
+    }
+
+    fun buyItem(id : Int) {
+            viewModelScope.launch {
+                itemForStudent.update { state ->
+                    state.copy(isLoading = true)
+                }
+                try {
+                    val response = studentHubService.buyItem(userDataManager.getStudentId()!!, 2).enqueue()
+                    if (response.isSuccessful) {
+                        Log.d(ContentValues.TAG, "Success: ${response.body()}")
+                        response.body()?.let {
+                            //if (it) {
+                            println("ausgeführt ")
+                            itemForStudent.update { state ->
+                                state.copy()
+                            }
+                        }
+                    }
+                } catch (e: Exception) {
+                    e.printStackTrace()
+                }
         }
     }
 

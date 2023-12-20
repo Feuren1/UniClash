@@ -1,3 +1,4 @@
+import {service} from '@loopback/core';
 import {
   Count,
   CountSchema,
@@ -19,11 +20,14 @@ import {
 } from '@loopback/rest';
 import {Student} from '../models';
 import {StudentRepository} from '../repositories';
+import {LevelCalcStudentService} from "../services";
+
 
 export class StudentController {
   constructor(
     @repository(StudentRepository)
     public studentRepository : StudentRepository,
+    @service(LevelCalcStudentService) protected levelCalcStudentService: LevelCalcStudentService,
   ) {}
 
   @post('/students')
@@ -146,5 +150,16 @@ export class StudentController {
   })
   async deleteById(@param.path.number('id') id: number): Promise<void> {
     await this.studentRepository.deleteById(id);
+  }
+
+  @patch('/students/{id}/increaseBuilding')
+  @response(204, {
+    description: 'increases placed Buildings from Student',
+  })
+  async replaceByStudentId(
+      @param.path.number('id') id: number,
+      @requestBody() addedBuildings: number,
+  ): Promise<void> {
+    await this.levelCalcStudentService.increasePlacedBuildingOfStudent(id, addedBuildings);
   }
 }

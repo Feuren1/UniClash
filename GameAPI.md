@@ -88,20 +88,20 @@
 | 0  | string     | 0     |
 
 ## Critter Values<br>
-Max Level: 50<br>
+Max Level: 100<br>
 
-Ep for reaching a Level: 1000 <br>
+## Student / User Rules<br>
+Every user gets 100 coins by register<br>
+Ep for reaching a User Level: 500 <br>
+Max User Level: max.Integer<br>
+Needed Level to create new Buildings: 5 , 10 ,15 aso.<br>
+And how many buildings: 2<br>
 
 # Other Game Rules<br>
-Max User Level: 30? or max.Integer<br>
-Coins per Win: 3 <br>
-Ep per Win: 100<br>
-Coins per captured Arena: 6<br>
-Ep per captured Arena: 250<br>
-Needed Level to create new Buildings: 5<br>
-And how many building: 2<br>
-Needed Level to create new Buildings: 10<br>
-And how many building: +2<br>
+Coins per catch: 1 <br>
+Ep per catch: 25<br>
+Coins per fight Win: 3 <br>
+Ep per fight Win: 100<br>
+Coins per captured Arena: 3<br>
+Ep per captured Arena: 150<br>
 Legendary critter can not set in arenas.<br>
-
-jeder user bekommt 100 credits zum start

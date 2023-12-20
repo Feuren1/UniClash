@@ -3,12 +3,14 @@ import {repository} from "@loopback/repository";
 import {Critter, CritterUsable, Student} from "../models";
 import {AttackRepository, CritterAttackRepository, CritterRepository, StudentRepository} from "../repositories";
 import {CritterStatsService} from "./critter-stats.service";
+import {LevelCalcStudentService} from "./levelCalc-student.service";
 
 
 @injectable()
 export class CatchCritterService {
   constructor(
     @service(CritterStatsService) protected critterStatsService: CritterStatsService,
+    @service(LevelCalcStudentService) protected levelCalcStudentService : LevelCalcStudentService,
     @repository(CritterRepository) protected critterRepository: CritterRepository,
     @repository(AttackRepository) protected attackRepository: AttackRepository,
     @repository(CritterAttackRepository) protected critterAttackRepository: CritterAttackRepository,
@@ -38,19 +40,9 @@ export class CatchCritterService {
       id: undefined,
     })));
 
-   // await this.increaseStudentCredits(studentId, 10);
+    await this.levelCalcStudentService.increaseStudentCredits(studentId, 1,25);
 
     return this.critterStatsService.createCritterUsable(savedCritterCopy.id)
   }
-
-  /*async increaseStudentCredits(studentId: number, creditsToAdd: number): Promise<void> {
-    const student: Student = await this.studentRepository.findById(studentId);
-    if (!student) {
-      throw new Error(`Student with ID ${studentId} not found.`);
-    };
-    student.credits = (student.credits || 0) + creditsToAdd;
-
-    await this.studentRepository.update(student);
-  }*/
 }
 

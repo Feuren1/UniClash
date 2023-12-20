@@ -57,4 +57,34 @@ class UserDataManager(context: Context) {
                 preferences[STUDENT_ID]
             }.first()
     }
+
+    suspend fun storePlacedBuildings(number: Int) {
+        val PLACED_BUILDINGS = intPreferencesKey("placed_buildings")
+        context.dataStore.edit { preferences ->
+            preferences[PLACED_BUILDINGS] = number
+        }
+    }
+
+    suspend fun getPlacedBuildings(): Int? {
+        val PLACED_BUILDINGS = intPreferencesKey("placed_buildings")
+        return dataStore.data
+            .map { preferences ->
+                preferences[PLACED_BUILDINGS]
+            }.first()
+    }
+
+    suspend fun storeLevel(number: Int) {
+        val LEVEL = intPreferencesKey("level")
+        context.dataStore.edit { preferences ->
+            preferences[LEVEL] = number
+        }
+    }
+
+    suspend fun getLevel(): Int? {
+        val LEVEL = intPreferencesKey("level")
+        return dataStore.data
+            .map { preferences ->
+                preferences[LEVEL]
+            }.first()
+    }
 }

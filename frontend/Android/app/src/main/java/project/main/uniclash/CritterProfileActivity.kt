@@ -38,7 +38,6 @@ import project.main.uniclash.viewmodels.CritterUsableUIState
 import project.main.uniclash.viewmodels.UniClashViewModel
 
 class CritterProfileActivity : ComponentActivity() {
-
     private var exitRequest by mutableStateOf(false)
     val critterProfileViewModel: CritterProfileViewModel by viewModels(factoryProducer = {
         CritterProfileViewModel.provideFactory(CritterService.getInstance(this))
@@ -51,7 +50,6 @@ class CritterProfileActivity : ComponentActivity() {
         if (b != null) critterId = b.getInt("critterId")
         critterProfileViewModel.loadCritter(critterId)
         critterProfileViewModel.loadCritterUsable(critterId)
-
         setContent {
             UniClashTheme {
                 // A surface container using the 'background' color from the theme
@@ -105,9 +103,6 @@ fun CritterProfile(critterProfileViewModel: CritterProfileViewModel = viewModel(
     val critterUsableUIState by critterProfileViewModel.critterUsable.collectAsState()
     val critterUIState by critterProfileViewModel.critter.collectAsState()
     if (critterUsableUIState.critterUsable!=null){
-
-
-
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -134,11 +129,17 @@ fun CritterProfile(critterProfileViewModel: CritterProfileViewModel = viewModel(
         Text(text = "Critter ID: ${critterUsableUIState.critterUsable!!.critterId}")
         Text(text = "Critter Template ID: ${critterUsableUIState.critterUsable!!.critterTemplateId}")
 
-        Button(onClick = {
-            critterProfileViewModel.evolve(critterUsableUIState.critterUsable!!.critterId)
-            critterProfileViewModel.loadCritterUsable(critterUIState.critter!!.id)
-        }) {
-
+        Button(
+            onClick = {
+            //critterProfileViewModel.evolve(critterUsableUIState.critterUsable!!.critterId)
+            //critterProfileViewModel.loadCritterUsable(critterUIState.critter!!.id)
+            critterProfileViewModel.storeFightingCritter()
+        },
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(8.dp)
+            ) {
+            Text(text = "Select this critter to fight!")
         }
     }
     }

@@ -446,15 +446,15 @@ class FinalBattleViewModel(
         viewModelScope.launch {
             playerCritter.update { it.copy(isLoading = true) }
             try {
-                val response = critterService.getCritterUsables(userDataManager.getStudentId()!!).enqueue()
+                val response = critterService.getCritterUsable(userDataManager.getFightingCritterID()!!).enqueue()
                 Log.d(TAG, "loadCrittersUsable: $response")
                 if (response.isSuccessful) {
                     Log.d(TAG, "loadCrittersUsables: success")
-                    val crittersUsables = response.body()!!
-                    Log.d(TAG, "loadCrittersUsables: $crittersUsables")
+                    val crittersUsable = response.body()!!
+                    Log.d(TAG, "loadCrittersUsables: $crittersUsable")
                     playerCritter.update {
                         it.copy(
-                            playerCritter = crittersUsables[0],
+                            playerCritter = crittersUsable,
                             isLoading = false
                         )
                     }

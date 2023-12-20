@@ -1,6 +1,8 @@
 package project.main.uniclash.viewmodels
 
+import android.app.Application
 import android.util.Log
+import androidx.datastore.dataStore
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
@@ -9,11 +11,15 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import project.main.uniclash.retrofit.CritterService
 import project.main.uniclash.retrofit.enqueue
+import project.main.uniclash.userDataManager.UserDataManager
 
 class CritterProfileViewModel(
     private val critterService: CritterService
 ): ViewModel() {
     private val TAG = CritterProfileViewModel::class.java.simpleName
+    val userDataManager: UserDataManager by lazy {
+        UserDataManager(Application())
+    }
     val critter = MutableStateFlow(
         CritterUIState.HasEntries(
             critter = null,
@@ -43,6 +49,11 @@ class CritterProfileViewModel(
             } catch (e: Exception) {
                 e.printStackTrace()
             }
+        }
+    }
+    fun storeFightingCritter(){
+        viewModelScope.launch {
+            userDataManager.storeFightingCritterID(critter.value.critter!!.id)
         }
     }
     fun loadCritter(id: Int) {

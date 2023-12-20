@@ -26,9 +26,10 @@ import {StudentItemService} from "../services/student-Item.service";
 
 export class StudentItemController {
   constructor(
-    @repository(StudentRepository) protected studentRepository: StudentRepository,
-    @service(StudentItemService) protected studentItemService: StudentItemService,
-  ) { }
+      @repository(StudentRepository) protected studentRepository: StudentRepository,
+      @service(StudentItemService) protected studentItemService: StudentItemService,
+  ) {
+  }
 
   @get('/students/{id}/items', {
     responses: {
@@ -43,8 +44,8 @@ export class StudentItemController {
     },
   })
   async find(
-    @param.path.number('id') id: number,
-    @param.query.object('filter') filter?: Filter<Item>,
+      @param.path.number('id') id: number,
+      @param.query.object('filter') filter?: Filter<Item>,
   ): Promise<Item[]> {
     return this.studentRepository.items(id).find(filter);
   }
@@ -58,18 +59,18 @@ export class StudentItemController {
     },
   })
   async create(
-    @param.path.number('id') id: typeof Student.prototype.id,
-    @requestBody({
-      content: {
-        'application/json': {
-          schema: getModelSchemaRef(Item, {
-            title: 'NewItemInStudent',
-            exclude: ['id'],
-            optional: ['studentId']
-          }),
+      @param.path.number('id') id: typeof Student.prototype.id,
+      @requestBody({
+        content: {
+          'application/json': {
+            schema: getModelSchemaRef(Item, {
+              title: 'NewItemInStudent',
+              exclude: ['id'],
+              optional: ['studentId']
+            }),
+          },
         },
-      },
-    }) item: Omit<Item, 'id'>,
+      }) item: Omit<Item, 'id'>,
   ): Promise<Item> {
     return this.studentRepository.items(id).create(item);
   }
@@ -83,16 +84,16 @@ export class StudentItemController {
     },
   })
   async patch(
-    @param.path.number('id') id: number,
-    @requestBody({
-      content: {
-        'application/json': {
-          schema: getModelSchemaRef(Item, {partial: true}),
+      @param.path.number('id') id: number,
+      @requestBody({
+        content: {
+          'application/json': {
+            schema: getModelSchemaRef(Item, {partial: true}),
+          },
         },
-      },
-    })
-    item: Partial<Item>,
-    @param.query.object('where', getWhereSchemaFor(Item)) where?: Where<Item>,
+      })
+          item: Partial<Item>,
+      @param.query.object('where', getWhereSchemaFor(Item)) where?: Where<Item>,
   ): Promise<Count> {
     return this.studentRepository.items(id).patch(item, where);
   }
@@ -106,8 +107,8 @@ export class StudentItemController {
     },
   })
   async delete(
-    @param.path.number('id') id: number,
-    @param.query.object('where', getWhereSchemaFor(Item)) where?: Where<Item>,
+      @param.path.number('id') id: number,
+      @param.query.object('where', getWhereSchemaFor(Item)) where?: Where<Item>,
   ): Promise<Count> {
     return this.studentRepository.items(id).delete(where);
   }
@@ -130,10 +131,10 @@ export class StudentItemController {
     return this.studentItemService.createItemUsableListOnStudentId(id);
   }
 
-  @patch('/students/{studentId}/itemTemplate/{itemTemplateId}', {
+  @patch('/students/{studentId}/itemTemplate/{itemTemplateId}/buy', {
     responses: {
       '200': {
-        description: 'let a user to buy an item',
+        description: 'let a student to buy an item',
         content: {
           'application/json': {
             schema: getModelSchemaRef(ItemUsable),
@@ -146,6 +147,25 @@ export class StudentItemController {
       @param.path.number('studentId') studentId: number,
       @param.path.number('itemTemplateId') itemTemplateId: number,
   ): Promise<String> {
-    return this.studentItemService.buyItem(studentId,itemTemplateId);
+    return this.studentItemService.buyItem(studentId, itemTemplateId);
   }
+
+@patch('/students/{studentId}/itemTemplate/{itemTemplateId}/use', {
+  responses: {
+    '200': {
+      description: 'use an Item from a student',
+      content: {
+        'application/json': {
+          schema: getModelSchemaRef(ItemUsable),
+        },
+      },
+    },
+  },
+})
+async useItem(
+    @param.path.number('studentId') studentId: number,
+@param.path.number('itemTemplateId') itemTemplateId: number,
+): Promise<Boolean> {
+  return this.studentItemService.useItem(studentId,itemTemplateId);
+}
 }

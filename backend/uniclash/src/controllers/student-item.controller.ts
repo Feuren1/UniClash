@@ -165,7 +165,7 @@ export class StudentItemController {
 async useItem(
     @param.path.number('studentId') studentId: number,
 @param.path.number('itemTemplateId') itemTemplateId: number,
-): Promise<Boolean> {
+): Promise<String> {
   return this.studentItemService.useItem(studentId,itemTemplateId);
 }
 }

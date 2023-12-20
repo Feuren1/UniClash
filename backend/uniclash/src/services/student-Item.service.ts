@@ -88,7 +88,7 @@ export class StudentItemService {
     return false
   }
 
-  async useItem(studentId : number, itemTemplateId : number) : Promise<Boolean>{
+  async useItem(studentId : number, itemTemplateId : number) : Promise<String>{
     const studentItem: Student = await this.studentRepository.findById(studentId, {
       include: ['items'],
     })
@@ -100,13 +100,13 @@ export class StudentItemService {
             if(item.quantity != null && item.quantity>0){
               item.quantity--
               await this.itemRepository.update(item);
-              return true
+              return "true"
             }
           }
       }
     }catch (e) {
       console.log("Inventory is empty");
     }
-    return false
+    return "false"
   }
 }

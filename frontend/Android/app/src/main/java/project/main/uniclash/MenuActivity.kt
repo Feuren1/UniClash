@@ -108,28 +108,12 @@ class MenuActivity : ComponentActivity() {
                             )
                             )
                             MenuCard(listOf(Category("New Building", painterResource(R.drawable.buildings), NewBuildingActivity::class.java)))
-                            MenuCard(listOf(
-                                Category(
-                                    "Battle Activity",
-                                    painterResource(R.drawable.arena),
-                                    Battle::class.java
-                                )
-                            )
-                            )
-                            MenuCard(listOf(Category("Student Hub", painterResource(R.drawable.store), StudentHubActivity::class.java)))
-                            MenuCard(listOf(Category("Camera", painterResource(R.drawable.swords), CameraActivity::class.java)))
-                            MenuCard(listOf(Category("Arena", painterResource(R.drawable.arena), ArenaActivity::class.java)))
-                            MenuCard(listOf(Category("Poké", painterResource(R.drawable.studentassistance), PokéActivity::class.java)))
-                            MenuCard(listOf(Category("BattleForcedTutorial", painterResource(R.drawable.prc2duck), BattleForcedTutorialActivity::class.java)))
-                            MenuCard(listOf(Category("BattleForcedTutorialAdvanced", painterResource(R.drawable.prc2duck), BattleForcedTutorialAdvancedActivity::class.java)))
-                            MenuCard(listOf(Category("BattleTutorial", painterResource(R.drawable.prc2duck), BattleTutorialActivity::class.java)))
-                            MenuCard(listOf(Category("BattleTutorialAdvanced", painterResource(R.drawable.prc2duck), BattleTutorialAdvancedActivity::class.java)))
-                            MenuCard(listOf(Category("Final Battle Challenge", painterResource(R.drawable.prc2duck), FinalBattleActivity::class.java)))
-                            MenuCard(listOf(Category("Student Hub", painterResource(R.drawable.store), StudentHubActivity::class.java)))
-                            MenuCard(listOf(Category("Camera", painterResource(R.drawable.swords), CameraActivityTest::class.java)))
                             MenuCard(listOf(Category("Log into other acc", painterResource(R.drawable.profile), LoginActivity::class.java),Category("Register new acc", painterResource(R.drawable.profile), RegisterActivity::class.java)))
-                            MenuCard(listOf(Category("Arena", painterResource(R.drawable.arena), ArenaActivity::class.java)))
+                            MenuCard(listOf(Category("Student Hub", painterResource(R.drawable.store), StudentHubActivity::class.java)))
+                            //MenuCard(listOf(Category("Camera", painterResource(R.drawable.swords), CameraActivity::class.java)))
                             MenuCard(listOf(Category("Poké", painterResource(R.drawable.studentassistance), PokéActivity::class.java)))
+                            MenuCard(listOf(Category("Battle Activity", painterResource(R.drawable.arena), Battle::class.java)))
+                            MenuCard(listOf(Category("BattleForcedTutorial", painterResource(R.drawable.prc2duck), BattleForcedTutorialActivity::class.java),Category("BattleForcedTutorialAdvanced", painterResource(R.drawable.prc2duck), BattleForcedTutorialAdvancedActivity::class.java),Category("BattleTutorial", painterResource(R.drawable.prc2duck), BattleTutorialActivity::class.java),Category("BattleTutorialAdvanced", painterResource(R.drawable.prc2duck), BattleTutorialAdvancedActivity::class.java),Category("Final Battle Challenge", painterResource(R.drawable.prc2duck), FinalBattleActivity::class.java)))
                         }
                     }
                 }

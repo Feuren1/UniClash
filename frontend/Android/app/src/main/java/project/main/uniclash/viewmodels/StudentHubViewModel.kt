@@ -37,6 +37,7 @@ class StudentHubViewModel(
     private val userDataManager : UserDataManager by lazy {
         UserDataManager(application)
     }
+    val buyItemSuccessful = MutableStateFlow<Boolean?>(null)
 
     val itemTemplates = MutableStateFlow(
         ItemTemplatesUIState.HasEntries(
@@ -110,7 +111,7 @@ class StudentHubViewModel(
     }
 
     //Buys an Item, increasing quantity and subtracting student credits (Backend)
-    fun buyItem(itemTemplateId: Int): Boolean {
+    fun buyItem(itemTemplateId: Int) {
 
         viewModelScope.launch {
             buyItemResponse.update { it.copy(isLoading = true) }
@@ -120,18 +121,20 @@ class StudentHubViewModel(
                 if (response.isSuccessful) {
                     Log.d(ContentValues.TAG, "Success: ${response.body()}")
                     Log.d(TAG, "buyItem: $buyItemResponse")
-
+                    buyItemSuccessful.value = true
                     response.body()?.let {
-                        this@StudentHubViewModel.buyItemResponse.update { state ->
+                        buyItemResponse.update { state ->
                             state.copy(buyItemResponse = it, isLoading = false)
                         }
                     }
+
+                } else{
+
                 }
             } catch (e: Exception) {
                 e.printStackTrace()
             }
         }
-        return buyItemResponse.value.buyItemResponse
     }
 
     companion object {

@@ -86,7 +86,7 @@ fun StudentHubScreen(modifier: Modifier = Modifier,
 
     val studentState by studentHubViewModel.student.collectAsState()
     val student = studentState.student
-
+    var buySuccessful = studentHubViewModel.buyItemSuccessful.collectAsState()
     var creditValidation by remember {mutableStateOf(true)}
     var buyingStatus by remember {mutableStateOf("nothing")}
     var credits by remember { mutableIntStateOf(0) }
@@ -129,9 +129,10 @@ fun StudentHubScreen(modifier: Modifier = Modifier,
 //        }
 
         //Exit Box, image and position:
-        Box(modifier = Modifier.fillMaxWidth()
-                .background(MaterialTheme.colorScheme.background)
-                .padding(16.dp)
+        Box(modifier = Modifier
+            .fillMaxWidth()
+            .background(MaterialTheme.colorScheme.background)
+            .padding(16.dp)
         ) {
             Image(painter = painterResource(id = R.drawable.exit),
                 contentDescription = null,
@@ -148,7 +149,7 @@ fun StudentHubScreen(modifier: Modifier = Modifier,
         ItemList(itemTemplateList,
             onButtonClicked = { itemTemplate ->
                 buyingStatus = itemTemplate.name
-                creditValidation = studentHubViewModel.buyItem(itemTemplate.id)
+                studentHubViewModel.buyItem(itemTemplate.id)
 //                clicked++
                 studentHubViewModel.loadStudent()
 

@@ -38,6 +38,7 @@ class StudentHubViewModel(
         UserDataManager(application)
     }
     val buyItemSuccessful = MutableStateFlow<Boolean?>(null)
+    val message = MutableStateFlow<String?>("Welcome to the Student Hub!")
 
     val itemTemplates = MutableStateFlow(
         ItemTemplatesUIState.HasEntries(
@@ -60,12 +61,17 @@ class StudentHubViewModel(
         )
     )
 
+    init{
+        loadStudent()
+        loadItemTemplates()
+    }
+
     //loads the current student per userDataManager studentID
     fun loadStudent() {
         viewModelScope.launch {
             student.update { it.copy(isLoading = true) }
             try {
-                println("studentID: ${userDataManager.getStudentId()}")
+
                 val response = studentHubService.getStudent(userDataManager.getStudentId()!!).enqueue()
                 Log.d(TAG, "LoadStudent: $response")
                 if (response.isSuccessful) {
@@ -111,25 +117,32 @@ class StudentHubViewModel(
     }
 
     //Buys an Item, increasing quantity and subtracting student credits (Backend)
-    fun buyItem(itemTemplateId: Int) {
+    fun buyItem(itemTemplateId: Int, itemName: String) {
 
         viewModelScope.launch {
             buyItemResponse.update { it.copy(isLoading = true) }
+            message.value = "Is Loading..."
+
             try {
                 val response = studentHubService.buyItem(userDataManager.getStudentId()!!, itemTemplateId).enqueue()
 
                 if (response.isSuccessful) {
+
                     Log.d(ContentValues.TAG, "Success: ${response.body()}")
                     Log.d(TAG, "buyItem: $buyItemResponse")
                     buyItemSuccessful.value = true
+                    message.value = "You have bought: $itemName"
                     response.body()?.let {
                         buyItemResponse.update { state ->
                             state.copy(buyItemResponse = it, isLoading = false)
                         }
                     }
 
+                    loadStudent()
+
                 } else{
 
+                    message.value = "Not enough credits"
                 }
             } catch (e: Exception) {
                 e.printStackTrace()

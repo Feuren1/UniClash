@@ -69,6 +69,7 @@ class AddCritterToArenaActivity : ComponentActivity() {
             CritterDetail(critter = critter)
         }
     }
+
     @Composable
     fun CritterDetail(critter: CritterUsable?) {
         Box(
@@ -118,10 +119,4 @@ class AddCritterToArenaActivity : ComponentActivity() {
     }
 }
 
-@Composable
-fun Greeting2(name: String, modifier: Modifier = Modifier) {
-    Text(
-        text = "Hello $name!",
-        modifier = modifier
-    )
-}
+

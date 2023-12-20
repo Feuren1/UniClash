@@ -30,7 +30,7 @@ export class CatchCritterService {
     })
     const number : number = 0
     const critters: Critter[] = student.critters;
-      if(critters.length<50) {
+      if(critters.length<200) {
         const savedCritterCopy: Critter = await this.critterRepository.create({
           //critterAttacks:undefined,
           id: undefined,
@@ -51,7 +51,7 @@ export class CatchCritterService {
       }else {
         await this.levelCalcStudentService.increaseStudentCredits(studentId, 1,25);
 
-        throw new Error("You reached the max. amount of Critter (max. 50)");
+        throw new Error("You reached the max. amount of Critter (max. 200)");
       }
   }
 }

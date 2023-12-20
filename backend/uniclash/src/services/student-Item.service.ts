@@ -49,7 +49,7 @@ export class StudentItemService {
     return itemUsables;
   }
 
-  async buyItem(studentId : number, itemTemplateId : number) : Promise<String> {
+  async buyItem(studentId : number, itemTemplateId : number) : Promise<Boolean> {
     const student: Student = await this.studentRepository.findById(studentId)
     const studentItem: Student = await this.studentRepository.findById(studentId, {
       include: ['items'],
@@ -68,7 +68,8 @@ export class StudentItemService {
                 item.quantity++
                 await this.itemRepository.update(item);
                 await this.studentRepository.update(student);
-                return "new quantity" + item.quantity
+                
+                return true
               }
             }
           }
@@ -84,7 +85,7 @@ export class StudentItemService {
         this.itemRepository.create(newItem)
       }
     }
-    return "student" + studentId + " and itemID" + itemTemplateId
+    return false
   }
 
   async useItem(studentId : number, itemTemplateId : number) : Promise<Boolean>{

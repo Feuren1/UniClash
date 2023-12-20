@@ -59,7 +59,7 @@ class CritterListActivity : ComponentActivity() {
                         .background(MaterialTheme.colorScheme.background)
                         .padding(16.dp)
                 ) {
-                    MenuHeader()
+                    MenuHeader(myCritters.size)
                     Image(
                         painter = painterResource(id = R.drawable.exit),
                         contentDescription = null,
@@ -101,14 +101,22 @@ class CritterListActivity : ComponentActivity() {
     }
 
     @Composable
-    fun MenuHeader() {
-        Text(
-            text = "Critters",
-            fontSize = 50.sp, // Adjust the font size as needed
-            fontWeight = FontWeight.Bold, // Use FontWeight.Bold for bold text
-            textAlign = TextAlign.Start,
-            modifier = Modifier.padding(vertical = 16.dp) // Add vertical padding
-        )
+    fun MenuHeader(size : Int) {
+        Column {
+            Text(
+                text = "Critters",
+                fontSize = 50.sp, // Adjust the font size as needed
+                fontWeight = FontWeight.Bold, // Use FontWeight.Bold for bold text
+                textAlign = TextAlign.Start,
+                modifier = Modifier.padding(vertical = 16.dp) // Add vertical padding
+            )
+            Text(
+                text = "$size/50 Critters${if(size>= 50){"\nYou reached the max amount of critters.\nNew captured critters are not added to your team!!!"}else{}}",
+                fontSize = 12.sp, // Adjust the font size as needed
+                fontWeight = FontWeight.Bold, // Use FontWeight.Bold for bold text
+                textAlign = TextAlign.Start,
+            )
+        }
     }
 
     @Composable

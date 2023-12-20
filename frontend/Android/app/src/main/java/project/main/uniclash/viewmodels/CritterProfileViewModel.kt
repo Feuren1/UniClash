@@ -9,9 +9,18 @@ import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import project.main.uniclash.datatypes.Critter
 import project.main.uniclash.retrofit.CritterService
 import project.main.uniclash.retrofit.enqueue
 import project.main.uniclash.userDataManager.UserDataManager
+
+
+sealed interface DelCritterUIState {
+    data class HasEntries(
+        val critter: String,
+        val isLoading: Boolean,
+    ) : DelCritterUIState
+}
 
 class CritterProfileViewModel(
     private val critterService: CritterService
@@ -26,6 +35,14 @@ class CritterProfileViewModel(
             isLoading = false,
         )
     )
+
+    val delCritter = MutableStateFlow(
+        DelCritterUIState.HasEntries(
+            critter = "null",
+            isLoading = false,
+        )
+    )
+
 
     val critterUsable = MutableStateFlow(
         CritterUsableUIState.HasEntries(
@@ -45,6 +62,31 @@ class CritterProfileViewModel(
                             state.copy(critterUsable = it, isLoading = false)
                         }
                     }
+                }
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
+        }
+    }
+
+    fun delCritter(id: Int) {
+        viewModelScope.launch {
+            delCritter.update { it.copy(isLoading = true) }
+            try {
+                val response = critterService.delCritter(id).enqueue()
+                Log.d(TAG, "delete Critter: $response")
+                if (response.isSuccessful) {
+                    response.body()?.let {
+                        delCritter.update { state ->
+                            state.copy(critter = it, isLoading = false)
+                        }
+                    }
+                }
+                critterUsable.update { state->
+                    state.copy(critterUsable = null, isLoading = false)
+                }
+                critter.update { state->
+                    state.copy(critter = null, isLoading = false)
                 }
             } catch (e: Exception) {
                 e.printStackTrace()

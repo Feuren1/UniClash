@@ -13,6 +13,20 @@ class UserDataManager(context: Context) {
     private val context = context
     private val dataStore = context.dataStore
 
+    suspend fun storeFightingCritterID(id: Int) {
+        val CRITTER_ID = intPreferencesKey("critter_id")
+        context.dataStore.edit { preferences ->
+            preferences[CRITTER_ID] = id
+        }
+    }
+
+    suspend fun getFightingCritterID(): Int? {
+        val CRITTER_ID = intPreferencesKey("critter_id")
+        return dataStore.data
+            .map { preferences ->
+                preferences[CRITTER_ID]
+            }.first()
+    }
     suspend fun storeUserId(id: String) {
         val USER_ID = stringPreferencesKey("user_id")
         context.dataStore.edit { preferences ->

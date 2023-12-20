@@ -185,7 +185,7 @@ fun CritterBattleAdvancedTutorialIntro(battleTutorialAdvancedViewModel: BattleTu
                         painter = picture,
                         contentDescription = null,
                         modifier = Modifier
-                            .size(60.dp)
+                            .size(100.dp)
                     )
                 } else {
                     Text("Image not found for $name")
@@ -228,7 +228,7 @@ fun CritterBattleAdvancedTutorialIntro(battleTutorialAdvancedViewModel: BattleTu
                         painter = playerPicture,
                         contentDescription = null,
                         modifier = Modifier
-                            .size(60.dp)
+                            .size(100.dp)
                     )
                 } else {
                     Text("Image not found for $playerName")

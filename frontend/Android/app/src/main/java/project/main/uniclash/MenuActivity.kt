@@ -97,13 +97,13 @@ class MenuActivity : ComponentActivity() {
                                         "Following location arrow off"
                                     } else {
                                         "Following location arrow on"
-                                    }, painterResource(R.drawable.location), MenuActivity::class.java,1
+                                    }, painterResource(R.drawable.location), MenuActivity::class.java,2
                                 ), Category(
                                     if (MapSettings.CRITTERBINOCULARS.getMapSetting()) {
                                         "Deactivate Binoculars"
                                     } else {
                                         "Activate Binoculars"
-                                    }, painterResource(R.drawable.binoculars), MenuActivity::class.java,1
+                                    }, painterResource(R.drawable.binoculars), MenuActivity::class.java,3
                                 )
                             )
                             )
@@ -123,6 +123,15 @@ class MenuActivity : ComponentActivity() {
                 this.startActivity(intent)
                 buttonRequest = MainActivity::class.java
             }
+        }
+    }
+
+    fun checkBySpecificID(id : Int){
+        if(id == 2){
+            MapSettings.MOVINGCAMERA.setMapSetting(!MapSettings.MOVINGCAMERA.getMapSetting())
+        }
+        if(id == 3){
+            MapSettings.CRITTERBINOCULARS.setMapSetting(!MapSettings.CRITTERBINOCULARS.getMapSetting())
         }
     }
 
@@ -155,7 +164,9 @@ class MenuActivity : ComponentActivity() {
         ) {
             Column {
             for (category in categories) {
-                Box(modifier = Modifier.clickable {buttonRequest = category.activity }.fillMaxWidth()){
+                Box(modifier = Modifier.clickable {buttonRequest = category.activity
+                    checkBySpecificID(category.id)
+                }.fillMaxWidth()){
                 Row(modifier = Modifier.padding(all = 8.dp)) {
                     Image(
                         painter = category.picture,

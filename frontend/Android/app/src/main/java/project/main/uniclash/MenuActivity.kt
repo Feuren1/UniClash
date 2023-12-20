@@ -67,10 +67,10 @@ class MenuActivity : ComponentActivity() {
                     )
                 }
                 Box(
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .background(Color.White) // Hier wird der Hintergrund weiß gemacht
-                        ) {
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .background(Color.White) // Hier wird der Hintergrund weiß gemacht
+                ) {
                     Box(
                         modifier = Modifier
                             .verticalScroll(rememberScrollState())
@@ -160,34 +160,34 @@ class MenuActivity : ComponentActivity() {
                     Color.LightGray,
                     shape = RoundedCornerShape(8.dp)
                 ) // Hintergrundfarbe und abgeflachte Ecken
-                //.clickable {buttonRequest = category.id }
+            //.clickable {buttonRequest = category.id }
         ) {
             Column {
-            for (category in categories) {
-                Box(modifier = Modifier.clickable {buttonRequest = category.activity
-                    checkBySpecificID(category.id)
-                }.fillMaxWidth()){
-                Row(modifier = Modifier.padding(all = 8.dp)) {
-                    Image(
-                        painter = category.picture,
-                        contentDescription = null,
-                        modifier = Modifier
-                            .size(60.dp) //40
-                    )
-                    Spacer(modifier = Modifier.width(8.dp))
-                    Column {
-                        Spacer(modifier = Modifier.height(18.dp))
-                        Text(
-                            text = category.title,
-                            fontSize = 18.sp,
-                            color = MaterialTheme.colorScheme.secondary,
-                            style = MaterialTheme.typography.titleSmall
+                for (category in categories) {
+                    Box(modifier = Modifier.clickable {buttonRequest = category.activity
+                        checkBySpecificID(category.id)
+                    }.fillMaxWidth()){
+                        Row(modifier = Modifier.padding(all = 8.dp)) {
+                            Image(
+                                painter = category.picture,
+                                contentDescription = null,
+                                modifier = Modifier
+                                    .size(60.dp) //40
+                            )
+                            Spacer(modifier = Modifier.width(8.dp))
+                            Column {
+                                Spacer(modifier = Modifier.height(18.dp))
+                                Text(
+                                    text = category.title,
+                                    fontSize = 18.sp,
+                                    color = MaterialTheme.colorScheme.secondary,
+                                    style = MaterialTheme.typography.titleSmall
 
-                        )
-                        Spacer(modifier = Modifier.height(8.dp))
+                                )
+                                Spacer(modifier = Modifier.height(8.dp))
+                            }
+                        }
                     }
-                }
-                }
                 }
             }
         }

@@ -1,9 +1,6 @@
 package project.main.uniclash.retrofit
 
 import android.content.Context
-import project.main.uniclash.datatypes.ItemFromItemTemplate
-import project.main.uniclash.datatypes.Item
-import project.main.uniclash.datatypes.ItemForStudent
 import project.main.uniclash.datatypes.ItemTemplate
 import project.main.uniclash.datatypes.NewStudentHub
 import project.main.uniclash.datatypes.Student
@@ -21,9 +18,6 @@ interface StudentHubService {
     @POST("/student-hubs")
     fun postStudentHub(@Body studentHub: NewStudentHub) : Call<StudentHub>
 
-    @GET("/student-hubs/{id}")
-    fun getStudentHub(@Path("id") id: Int): Call<StudentHub>
-
     @GET("/student-hubs")
     fun getStudentHubs(): Call<List<StudentHub>>
 
@@ -34,7 +28,7 @@ interface StudentHubService {
     fun getStudent(@Path("id")id : Int): Call<Student>
 
     @PATCH("/students/{studentId}/itemTemplate/{itemTemplateId}/buy")
-    fun buyItem(@Path("studentId") studentId: Int, @Path("itemTemplateId") itemTemplateId: Int): Call<String>
+    fun buyItem(@Path("studentId") studentId: Int, @Path("itemTemplateId") itemTemplateId: Int): Call<Boolean>
 
 
 

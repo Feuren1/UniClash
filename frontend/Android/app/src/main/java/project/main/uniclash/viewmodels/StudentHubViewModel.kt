@@ -9,10 +9,6 @@ import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import project.main.uniclash.datatypes.ItemFromItemTemplate
-import project.main.uniclash.datatypes.Item
-import project.main.uniclash.datatypes.ItemForStudent
-import project.main.uniclash.datatypes.ItemPost
 import project.main.uniclash.datatypes.ItemTemplate
 import project.main.uniclash.retrofit.StudentHubService
 import project.main.uniclash.retrofit.enqueue
@@ -25,32 +21,11 @@ sealed interface ItemTemplatesUIState {
     ) : ItemTemplatesUIState
 }
 
-sealed interface PostItemFromStudentUIState {
+sealed interface BuyItemUIState {
     data class HasEntries(
-        val itemPost: ItemPost?,
+        val buyItemResponse: Boolean,
         val isLoading: Boolean,
-    ) : PostItemFromStudentUIState
-}
-
-sealed interface ItemsFromStudentUIState {
-    data class HasEntries(
-        val itemsFromStudent: List<Item>,
-        val isLoading: Boolean,
-    ) : ItemsFromStudentUIState
-}
-
-sealed interface ItemsFromItemTemplateUIState {
-    data class HasEntries(
-        val itemsFromItemTemplate: List<ItemFromItemTemplate>,
-        val isLoading: Boolean,
-    ) : ItemsFromItemTemplateUIState
-}
-
-sealed interface ItemForStudentUIState {
-    data class HasEntries(
-        val itemForStudent: String?,
-        val isLoading: Boolean,
-    ) : ItemForStudentUIState
+    ) : BuyItemUIState
 }
 
 class StudentHubViewModel(
@@ -70,20 +45,6 @@ class StudentHubViewModel(
         )
     )
 
-    val itemFromStudent = MutableStateFlow(
-        PostItemFromStudentUIState.HasEntries(
-            isLoading = false,
-            itemPost = null
-        )
-    )
-
-    val itemsFromStudent = MutableStateFlow(
-        ItemsFromStudentUIState.HasEntries(
-            emptyList(),
-            isLoading = false
-        )
-    )
-
     val student = MutableStateFlow(
         StudentUIState.HasEntries(
             student = null,
@@ -91,26 +52,12 @@ class StudentHubViewModel(
         )
     )
 
-    val itemsFromItemTemplate = MutableStateFlow(
-        ItemsFromItemTemplateUIState.HasEntries(
-            emptyList(),
+    val buyItemResponse = MutableStateFlow(
+        BuyItemUIState.HasEntries(
+            buyItemResponse = false,
             isLoading = false
         )
     )
-
-    val itemForStudent = MutableStateFlow(
-        ItemForStudentUIState.HasEntries(
-            itemForStudent = null,
-            isLoading = false
-        )
-    )
-
-//    init {
-//        viewModelScope.launch {
-//            Log.d(TAG, "Fetching student: ")
-//            loadStudent() //TODO lässt tenplates immer laden auf wenn z.b. map ausfeührt wird.
-//        }
-//    }
 
     //loads the current student per userDataManager studentID
     fun loadStudent() {
@@ -162,45 +109,27 @@ class StudentHubViewModel(
         }
     }
 
-    fun buyItem2(itemTemplateId: Int) {
+    //Buys an Item, increasing quantity and subtracting student credits (Backend)
+    fun buyItem(itemTemplateId: Int) {
 
         viewModelScope.launch {
-            itemForStudent.update { it.copy(isLoading = true) }
+            buyItemResponse.update { it.copy(isLoading = true) }
+            try {
+                val response = studentHubService.buyItem(userDataManager.getStudentId()!!, itemTemplateId).enqueue()
 
-            val response = studentHubService.buyItem(userDataManager.getStudentId()!!, itemTemplateId).enqueue()
-            Log.d(TAG, "loadBuyItem: $response")
+                if (response.isSuccessful) {
+                    Log.d(ContentValues.TAG, "Success: ${response.body()}")
+                    Log.d(TAG, "buyItem: $buyItemResponse")
 
-            if (response.isSuccessful) {
-
-                Log.d(TAG, "Success: ${response.body()}")
-
-
-            } else {
-                Log.d(TAG, "buyItem Failed")
-            }
-        }
-    }
-
-    fun buyItem(id : Int) {
-            viewModelScope.launch {
-                itemForStudent.update { state ->
-                    state.copy(isLoading = true)
-                }
-                try {
-                    val response = studentHubService.buyItem(userDataManager.getStudentId()!!, 2).enqueue()
-                    if (response.isSuccessful) {
-                        Log.d(ContentValues.TAG, "Success: ${response.body()}")
-                        response.body()?.let {
-                            //if (it) {
-                            println("ausgeführt ")
-                            itemForStudent.update { state ->
-                                state.copy()
-                            }
+                    response.body()?.let {
+                        this@StudentHubViewModel.buyItemResponse.update { state ->
+                            state.copy(buyItemResponse = it, isLoading = false)
                         }
                     }
-                } catch (e: Exception) {
-                    e.printStackTrace()
                 }
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
         }
     }
 

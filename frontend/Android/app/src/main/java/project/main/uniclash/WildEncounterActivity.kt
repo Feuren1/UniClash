@@ -46,6 +46,7 @@ import project.main.uniclash.datatypes.CritterUsable
 import project.main.uniclash.datatypes.MapSaver
 import project.main.uniclash.datatypes.MarkerWildEncounter
 import project.main.uniclash.retrofit.CritterService
+import project.main.uniclash.retrofit.InventoryService
 import project.main.uniclash.viewmodels.WildEncounterViewModel
 
 
@@ -55,17 +56,22 @@ class WildEncounterActivity : ComponentActivity() {
     private var catchCritter by mutableStateOf(false)
 
     private lateinit var wildEncounterViewModel: WildEncounterViewModel
+    private var reCalculate by mutableStateOf(false)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         wildEncounterViewModel = viewModels<WildEncounterViewModel> {
-            WildEncounterViewModel.provideFactory(CritterService.getInstance(this), Application())
+            WildEncounterViewModel.provideFactory(CritterService.getInstance(this), InventoryService.getInstance(this),Application())
         }.value
 
         var wildEncounter = wildEncounterViewModel.getWildEncounterMarker()
 
         setContent {
+        if(reCalculate){
+            wildEncounterViewModel.calculateCatchChance(wildEncounter!!.critterUsable!!.level)
+            reCalculate = false
+        }
             Box(){
                 Image(
                     painter = painterResource(id = R.drawable.background),
@@ -130,6 +136,14 @@ class WildEncounterActivity : ComponentActivity() {
                         WildEncounterCatchChange(wildEncounter)
 
                         // Add a button to request location permissions and start the map
+                        Button(
+                            modifier = Modifier
+                                .fillMaxWidth(),
+                            onClick = {
+                                reCalculate = wildEncounterViewModel.useChocolatewaffle()
+                            }) {
+                            Text(text = "feed me!")
+                        }
                         Button(
                             modifier = Modifier
                                 .fillMaxWidth(),
@@ -212,7 +226,7 @@ class WildEncounterActivity : ComponentActivity() {
                         style = MaterialTheme.typography.titleSmall
                     )
                     Text(
-                        text = "\nName: ${wildEncounter.critterUsable!!.name}\nLevel: ${wildEncounter.critterUsable!!.level}\nHealthpoints: ${wildEncounter.critterUsable!!.hp}\nAttak: ${wildEncounter.critterUsable!!.atk}\nDefence: ${wildEncounter.critterUsable!!.def}\nSpeed: ${wildEncounter.critterUsable!!.spd}\n",
+                        text = "\nName: ${wildEncounter.critterUsable!!.name}\nLevel: ${wildEncounter.critterUsable!!.level}\nHealthpoints: ${wildEncounter.critterUsable!!.hp}\nAttack: ${wildEncounter.critterUsable!!.atk}\nDefence: ${wildEncounter.critterUsable!!.def}\nSpeed: ${wildEncounter.critterUsable!!.spd}\n",
                         fontSize = 12.sp,
                         color = MaterialTheme.colorScheme.secondary,
                         style = MaterialTheme.typography.titleSmall
@@ -255,16 +269,17 @@ class WildEncounterActivity : ComponentActivity() {
                 Spacer(modifier = Modifier.width(8.dp))
                 Column {
                     Spacer(modifier = Modifier.height(18.dp))
-                    val catchChange = wildEncounterViewModel.calculateCatchChance(wildEncounter.critterUsable!!.level)
+                    wildEncounterViewModel.calculateCatchChance(wildEncounter.critterUsable!!.level)
+                    val catchChance = wildEncounterViewModel.catchChance;
                     val textColor = when {
-                        catchChange in 0.0..30.0 -> Color.Red
-                        catchChange in 31.0..49.0 -> Color(0xFFE65100) // Orange
-                        catchChange in 50.0..69.0 -> Color.Yellow
-                        catchChange in 70.0..89.0 -> Color.Green
+                        catchChance in 0.0..30.0 -> Color.Red
+                        catchChance in 31.0..49.0 -> Color(0xFFE65100) // Orange
+                        catchChance in 50.0..69.0 -> Color.Yellow
+                        catchChance in 70.0..89.0 -> Color.Green
                         else -> Color(0xFF006400) //dark Green
                     }
                     Text(
-                        text = "Critter catch change: $catchChange %",
+                        text = "Critter catch change: $catchChance %",
                         fontSize = 18.sp,
                         color = textColor,
                         style = MaterialTheme.typography.titleSmall

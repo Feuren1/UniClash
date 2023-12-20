@@ -47,7 +47,7 @@ sealed interface ItemsFromItemTemplateUIState {
 
 sealed interface ItemForStudentUIState {
     data class HasEntries(
-        val itemForStudent: ItemForStudent?,
+        val itemForStudent: String?,
         val isLoading: Boolean,
     ) : ItemForStudentUIState
 }
@@ -163,7 +163,6 @@ class StudentHubViewModel(
 
     fun buyItem(itemTemplateId: Int) {
 
-        //@POST the ItemForStudent to the student DB
         viewModelScope.launch {
             itemForStudent.update { it.copy(isLoading = true) }
 
@@ -173,11 +172,6 @@ class StudentHubViewModel(
             if (response.isSuccessful) {
 
                 Log.d(TAG, "Success: ${response.body()}")
-                response.body()?.let {
-                    this@StudentHubViewModel.itemForStudent.update { state ->
-                        state.copy(itemForStudent = it, isLoading = false)
-                    }
-                }
 
 
             } else {

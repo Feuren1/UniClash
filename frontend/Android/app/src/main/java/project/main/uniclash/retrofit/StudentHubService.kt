@@ -34,7 +34,7 @@ interface StudentHubService {
     fun getStudent(@Path("id")id : Int): Call<Student>
 
     @PATCH("/students/{studentId}/itemTemplate/{itemTemplateId}/buy")
-    fun buyItem(@Path("studentId") studentId: Int, @Path("itemTemplateId") itemTemplateId: Int): Call<ItemForStudent>
+    fun buyItem(@Path("studentId") studentId: Int, @Path("itemTemplateId") itemTemplateId: Int): Call<String>
 
 
 

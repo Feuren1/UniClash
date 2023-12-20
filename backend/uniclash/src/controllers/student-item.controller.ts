@@ -146,7 +146,7 @@ export class StudentItemController {
   async buyItem(
       @param.path.number('studentId') studentId: number,
       @param.path.number('itemTemplateId') itemTemplateId: number,
-  ): Promise<String> {
+  ): Promise<Boolean> {
     return this.studentItemService.buyItem(studentId, itemTemplateId);
   }
 

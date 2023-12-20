@@ -142,8 +142,6 @@ fun StudentHubScreen(modifier: Modifier = Modifier,
                 buyingStatus = itemTemplate.name
                 studentHubViewModel.buyItem(itemTemplate.id, itemTemplate.name)
             })
-
-        Text(message.value!!)
     }
 }
 

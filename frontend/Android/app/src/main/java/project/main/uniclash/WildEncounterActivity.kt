@@ -1,5 +1,6 @@
 package project.main.uniclash
 
+import android.annotation.SuppressLint
 import android.app.Application
 import android.content.Context
 import android.content.Intent
@@ -42,7 +43,9 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import org.osmdroid.util.GeoPoint
 import project.main.uniclash.datatypes.CritterUsable
+import project.main.uniclash.datatypes.Locations
 import project.main.uniclash.datatypes.MapSaver
 import project.main.uniclash.datatypes.MarkerWildEncounter
 import project.main.uniclash.retrofit.CritterService
@@ -58,6 +61,7 @@ class WildEncounterActivity : ComponentActivity() {
     private lateinit var wildEncounterViewModel: WildEncounterViewModel
     private var reCalculate by mutableStateOf(false)
 
+    @SuppressLint("StateFlowValueCalledInComposition")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -66,12 +70,8 @@ class WildEncounterActivity : ComponentActivity() {
         }.value
 
         var wildEncounter = wildEncounterViewModel.getWildEncounterMarker()
-
         setContent {
-        if(reCalculate){
-            wildEncounterViewModel.calculateCatchChance(wildEncounter!!.critterUsable!!.level)
-            reCalculate = false
-        }
+            wildEncounterViewModel.calculateCatchChance()
             Box(){
                 Image(
                     painter = painterResource(id = R.drawable.background),
@@ -269,7 +269,6 @@ class WildEncounterActivity : ComponentActivity() {
                 Spacer(modifier = Modifier.width(8.dp))
                 Column {
                     Spacer(modifier = Modifier.height(18.dp))
-                    wildEncounterViewModel.calculateCatchChance(wildEncounter.critterUsable!!.level)
                     val catchChance = wildEncounterViewModel.catchChance;
                     val textColor = when {
                         catchChance in 0.0..30.0 -> Color.Red

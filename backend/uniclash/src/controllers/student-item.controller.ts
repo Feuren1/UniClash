@@ -165,7 +165,25 @@ export class StudentItemController {
 async useItem(
     @param.path.number('studentId') studentId: number,
 @param.path.number('itemTemplateId') itemTemplateId: number,
-): Promise<String> {
+): Promise<Boolean> {
   return this.studentItemService.useItem(studentId,itemTemplateId);
+}
+
+@patch('/critter/{critterId}/useRedBull', {
+  responses: {
+    '200': {
+      description: 'use an Redbull from a student',
+      content: {
+        'application/json': {
+          schema: getModelSchemaRef(ItemUsable),
+        },
+      },
+    },
+  },
+})
+async useRedBull(
+    @param.path.number('critterId') critterId: number,
+): Promise<Boolean> {
+  return this.studentItemService.useRedBull(critterId);
 }
 }

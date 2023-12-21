@@ -10,6 +10,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import project.main.uniclash.datatypes.CritterUsable
@@ -68,6 +69,15 @@ class WildEncounterViewModel(
             isLoading = false
         )
     )
+    val usedItemQuantityFlow = usedItem.map { it.quantitiy }
+
+    init {
+        viewModelScope.launch {
+            usedItemQuantityFlow.collect {
+                calculateCatchChance()
+            }
+        }
+    }
 
     private fun isCatchSuccessful(): Boolean {
         val randomValue = Math.random() * 100.0
@@ -131,11 +141,11 @@ class WildEncounterViewModel(
     }
 
 
-    fun calculateCatchChance(critterLevel :Int) : Double{
+    fun calculateCatchChance() : Double{
         var chance = (usedItem.value.quantitiy*5).toDouble()
         viewModelScope.launch {
             val userLevel = userDataManager.getLevel()
-            var difference = userLevel?.minus(critterLevel)
+            var difference = userLevel?.minus(wildEncounterMarker!!.critterUsable!!.level)
             if (difference != null) {
                 if(difference > 0){
                     difference = 0

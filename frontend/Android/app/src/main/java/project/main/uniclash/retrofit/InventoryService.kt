@@ -17,6 +17,9 @@ interface InventoryService {
     @PATCH("/students/{studentId}/itemTemplate/{itemTemplateId}/use")
     fun useItem(@Path("studentId")studentId : Int, @Path("itemTemplateId") itemTemplateId : Int) : Call<Boolean>
 
+    @PATCH("/critter/{critterId}/useRedBull")
+    fun useRedBull(@Path("critterId") critterId : Int) : Call<Boolean>
+
 
     companion object {
         private var inventoryService: InventoryService? = null

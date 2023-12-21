@@ -230,7 +230,7 @@ class MapActivity : ComponentActivity() {
 
         LaunchedEffect(Unit) {
             while (true) {
-                println("${markerList.getMarkerList().size} die Size der Liste")
+                println("${markerList.getMarkerList().size} die Size der MarkerList")
 
                 mapLocationViewModel.getUserLocation(contextForLocation) { location ->
                     mainLatitude = location.latitude
@@ -271,9 +271,12 @@ class MapActivity : ComponentActivity() {
                     shouldLoadFirstWildEncounter = true
                 }
 
-                if(Counter.WILDENCOUNTERREFRESHER.getCounter() <1 && Counter.FIRSTSPAWN.getCounter() > 1){
+                if(Counter.WILDENCOUNTERREFRESHER.getCounter() == 1 && Counter.FIRSTSPAWN.getCounter()<1){
                     markerList.removeMarkersQ(MapSaver.WILDENCOUNTER.getMarker())
                     MapSaver.WILDENCOUNTER.setMarker(ArrayList<MarkerData?>())
+                }
+                if(Counter.WILDENCOUNTERREFRESHER.getCounter() <1 && Counter.FIRSTSPAWN.getCounter() < 1){
+                    println("cleared and now set to true")
                     shouldLoadWildEncounter = true
                     Counter.WILDENCOUNTERREFRESHER.setCounter(300)
                 }
@@ -323,7 +326,7 @@ class MapActivity : ComponentActivity() {
                         if (distance < 501) {
                             Column(
                                 modifier = Modifier
-                                    .size(325.dp,400.dp)
+                                    .size(325.dp, 400.dp)
                                     .background(
                                         color = Color.Black.copy(alpha = 0.75f),
                                         shape = RoundedCornerShape(7.dp)
@@ -517,7 +520,6 @@ class MapActivity : ComponentActivity() {
             }
         }
     }
-
     fun LoadWildEncounter(){
         if(shouldLoadWildEncounter) {
             Log.d(LOCATION_TAG, "Excecuted second loadwildencounter")
@@ -525,7 +527,7 @@ class MapActivity : ComponentActivity() {
             markerList.addListOfMarkersQ(MapSaver.WILDENCOUNTER.getMarker())
 
             if(MapSaver.WILDENCOUNTER.getMarker().isEmpty()) {
-                Counter.WILDENCOUNTERREFRESHER.setCounter(5)
+                Counter.WILDENCOUNTERREFRESHER.setCounter(0)
             }
 
             shouldLoadWildEncounter = false

@@ -11,6 +11,7 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import project.main.uniclash.datatypes.Critter
 import project.main.uniclash.retrofit.CritterService
+import project.main.uniclash.retrofit.InventoryService
 import project.main.uniclash.retrofit.enqueue
 import project.main.uniclash.userDataManager.UserDataManager
 
@@ -22,8 +23,16 @@ sealed interface DelCritterUIState {
     ) : DelCritterUIState
 }
 
+sealed interface UseRedbullUIState {
+    data class HasEntries(
+        val used: Boolean,
+        val isLoading: Boolean,
+    ) : DelCritterUIState
+}
+
 class CritterProfileViewModel(
-    private val critterService: CritterService
+    private val critterService: CritterService,
+    private val inventoryService : InventoryService
 ): ViewModel() {
     private val TAG = CritterProfileViewModel::class.java.simpleName
     val userDataManager: UserDataManager by lazy {
@@ -50,6 +59,14 @@ class CritterProfileViewModel(
             isLoading = false,
         )
     )
+
+    val redbullUsage = MutableStateFlow(
+        UseRedbullUIState.HasEntries(
+            used = false,
+            isLoading = false,
+        )
+    )
+
     fun loadCritterUsable(id: Int) {
         viewModelScope.launch {
             critterUsable.update { it.copy(isLoading = true) }
@@ -137,15 +154,36 @@ class CritterProfileViewModel(
             }
         }
     }
+
+    fun useRedBull(critterid: Int) {
+        viewModelScope.launch {
+            redbullUsage.update { it.copy(isLoading = true) }
+            try {
+                val response = inventoryService.useRedBull(critterid).enqueue()
+                if (response.isSuccessful) {
+                    println(response.body())
+                    response.body()?.let {
+                        redbullUsage.update { state ->
+                            state.copy(used = it, isLoading = false)
+                        }
+                    }
+                }
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
+        }
+    }
     companion object {
         fun provideFactory(
             critterService: CritterService,
+            inventoryService : InventoryService,
         ): ViewModelProvider.Factory =
             object : ViewModelProvider.Factory {
                 @Suppress("UNCHECKED_CAST")
                 override fun <T : ViewModel> create(modelClass: Class<T>): T {
                     return CritterProfileViewModel(
                         critterService,
+                        inventoryService
                     ) as T
                 }
             }

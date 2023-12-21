@@ -32,6 +32,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import project.main.uniclash.datatypes.CritterUsable
 import project.main.uniclash.retrofit.CritterService
+import project.main.uniclash.retrofit.InventoryService
 import project.main.uniclash.ui.theme.UniClashTheme
 import project.main.uniclash.viewmodels.CritterProfileViewModel
 import project.main.uniclash.viewmodels.CritterUsableUIState
@@ -40,7 +41,7 @@ import project.main.uniclash.viewmodels.UniClashViewModel
 class CritterProfileActivity : ComponentActivity() {
     private var exitRequest by mutableStateOf(false)
     val critterProfileViewModel: CritterProfileViewModel by viewModels(factoryProducer = {
-        CritterProfileViewModel.provideFactory(CritterService.getInstance(this))
+        CritterProfileViewModel.provideFactory(CritterService.getInstance(this), InventoryService.getInstance(this))
     })
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -153,6 +154,17 @@ class CritterProfileActivity : ComponentActivity() {
                         .padding(8.dp)
                 ) {
                     Text(text = "Evolve")
+                }
+                Button(
+                    onClick = {
+                        critterProfileViewModel.loadCritterUsable(critterUIState.critter!!.id)
+                        critterProfileViewModel.useRedBull(critterUsableUIState.critterUsable!!.critterId)
+                    },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(8.dp)
+                ) {
+                    Text(text = "Use Rebull")
                 }
                 Button(
                     onClick = {

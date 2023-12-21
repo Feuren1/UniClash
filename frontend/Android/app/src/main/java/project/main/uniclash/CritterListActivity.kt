@@ -118,7 +118,7 @@ class CritterListActivity : ComponentActivity() {
                 modifier = Modifier.padding(vertical = 16.dp) // Add vertical padding
             )
             Text(
-                text = "$size/200 Critters${if(size>= 200){"\nYou reached the max amount of critters.\nNew captured critters are not added to your team!!!"}else{}}",
+                text = "$size/200 Critters${if(size>= 200){"\nYou reached the max amount of critters.\nNew captured critters are not added to your team!!!"}else{""}}",
                 fontSize = 12.sp, // Adjust the font size as needed
                 fontWeight = FontWeight.Bold, // Use FontWeight.Bold for bold text
                 textAlign = TextAlign.Start,

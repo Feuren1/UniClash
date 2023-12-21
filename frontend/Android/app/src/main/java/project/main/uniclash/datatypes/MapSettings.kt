@@ -48,7 +48,8 @@ enum class SelectedMarker(private var marker:MarkerData?) {
 }
 
 enum class Locations(private var location : GeoPoint){
-    USERLOCATION(GeoPoint(0.0,0.0));
+    USERLOCATION(GeoPoint(0.0,0.0)),
+    INTERSECTION(GeoPoint(0.0,0.0));
 
     fun getLocation(): GeoPoint {
         return location

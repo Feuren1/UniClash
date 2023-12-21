@@ -257,6 +257,13 @@ class MapActivity : ComponentActivity() {
                     }
                 }
                 delay(1000) //3sec.
+
+                var distance = mapCalculations.haversineDistance(Locations.USERLOCATION.getLocation().latitude,Locations.USERLOCATION.getLocation().longitude,Locations.INTERSECTION.getLocation().latitude,Locations.INTERSECTION.getLocation().longitude)
+                if(distance > 2100){
+                    Locations.INTERSECTION.setLocation(Locations.USERLOCATION.getLocation())
+                    Counter.WILDENCOUNTERREFRESHER.setCounter(1)
+                }
+
                 Counter.FIRSTSPAWN.minusCounter(1)
                 Counter.WILDENCOUNTERREFRESHER.minusCounter(1)
 
@@ -264,7 +271,8 @@ class MapActivity : ComponentActivity() {
                     shouldLoadFirstWildEncounter = true
                 }
 
-                if(Counter.WILDENCOUNTERREFRESHER.getCounter() <1){
+                if(Counter.WILDENCOUNTERREFRESHER.getCounter() <1 && Counter.FIRSTSPAWN.getCounter() > 1){
+                    markerList.removeMarkersQ(MapSaver.WILDENCOUNTER.getMarker())
                     MapSaver.WILDENCOUNTER.setMarker(ArrayList<MarkerData?>())
                     shouldLoadWildEncounter = true
                     Counter.WILDENCOUNTERREFRESHER.setCounter(300)
@@ -513,9 +521,17 @@ class MapActivity : ComponentActivity() {
     fun LoadWildEncounter(){
         if(shouldLoadWildEncounter) {
             Log.d(LOCATION_TAG, "Excecuted second loadwildencounter")
-            val intent = Intent(this,MapActivity::class.java)
-            this.startActivity(intent, null)
-            finish()
+            mapMarkerViewModel.loadCritterUsables(1)
+            markerList.addListOfMarkersQ(MapSaver.WILDENCOUNTER.getMarker())
+
+            if(MapSaver.WILDENCOUNTER.getMarker().isEmpty()) {
+                Counter.WILDENCOUNTERREFRESHER.setCounter(5)
+            }
+
+            shouldLoadWildEncounter = false
+            //val intent = Intent(this,MapActivity::class.java)
+            //this.startActivity(intent, null)
+            //finish()
         }
     }
 

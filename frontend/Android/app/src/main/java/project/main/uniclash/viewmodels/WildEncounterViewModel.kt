@@ -1,5 +1,6 @@
 package project.main.uniclash.viewmodels
 
+import android.R
 import android.app.Application
 import android.content.ContentValues.TAG
 import android.util.Log
@@ -31,6 +32,7 @@ sealed interface PostCrittersUIState { //TODO: CritterS to Critter?
 sealed interface UseItemUIState {
     data class HasEntries(
         val quantitiy : Int,
+        val itemAvail : Boolean,
         val isLoading: Boolean,
     ) : UseItemUIState
 }
@@ -66,6 +68,7 @@ class WildEncounterViewModel(
     val usedItem = MutableStateFlow(
         UseItemUIState.HasEntries(
             quantitiy = 0,
+            itemAvail = true,
             isLoading = false
         )
     )
@@ -99,7 +102,7 @@ class WildEncounterViewModel(
                         Log.d(TAG, "Success: ${response.body()}")
                         response.body()?.let {
                             critters.update { state ->
-                                state.copy(critter = it, isLoading = false)
+                                state.copy(critter = it,  isLoading = false)
                             }
                         }
                     }
@@ -124,11 +127,14 @@ class WildEncounterViewModel(
                     if (response.isSuccessful) {
                         Log.d(TAG, "Success: ${response.body()}")
                         response.body()?.let {
-                            //if (it) {
-                                println("ausgeführt ")
+                            if (it) {
                                 usedItem.update { state ->
-                                    state.copy(quantitiy = state.quantitiy + 1)
-                            //    }
+                                    state.copy(quantitiy = state.quantitiy + 1, itemAvail = it, isLoading = false)
+                                }
+                            } else {
+                                usedItem.update { state ->
+                                    state.copy(quantitiy = state.quantitiy, itemAvail = it, isLoading = false)
+                                }
                             }
                         }
                     }

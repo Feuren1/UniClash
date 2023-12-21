@@ -43,6 +43,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import kotlinx.coroutines.flow.collect
 import org.osmdroid.util.GeoPoint
 import project.main.uniclash.datatypes.CritterUsable
 import project.main.uniclash.datatypes.Locations
@@ -71,6 +72,11 @@ class WildEncounterActivity : ComponentActivity() {
 
         var wildEncounter = wildEncounterViewModel.getWildEncounterMarker()
         setContent {
+            val usedItem = wildEncounterViewModel.usedItem.collectAsState()
+            if(!usedItem.value.itemAvail){
+                Toast.makeText(baseContext, "You have no chocolatewaffles :(", Toast.LENGTH_SHORT).show()
+            }
+
             wildEncounterViewModel.calculateCatchChance()
             Box(){
                 Image(

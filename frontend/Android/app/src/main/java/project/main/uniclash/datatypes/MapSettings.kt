@@ -62,8 +62,8 @@ enum class Locations(private var location : GeoPoint){
 }
 
 enum class Counter(private var count : Int){
-    FIRSTSPAWN(5),
-    WILDENCOUNTERREFRESHER(20);
+    FIRSTSPAWN(30),
+    WILDENCOUNTERREFRESHER(300);
 
     fun getCounter():Int{
         return count
@@ -81,21 +81,6 @@ enum class Counter(private var count : Int){
 
     fun plusCounter(plusCounter : Int){
         count += plusCounter
-    }
-}
-
-enum class ActivitySaver(private var intent: Intent?){
-    CRITTERDEX(null),
-    MAP(null);
-
-    fun getIntent(): Intent? {
-        return intent
-    }
-
-    fun setIntent(intent : Intent){
-        if(this.intent == null) {
-            this.intent = intent
-        }
     }
 }
 

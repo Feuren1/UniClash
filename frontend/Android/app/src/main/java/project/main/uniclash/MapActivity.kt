@@ -256,7 +256,7 @@ class MapActivity : ComponentActivity() {
                         movingCamera = false
                     }
                 }
-                delay(3000) //3sec.
+                delay(1000) //3sec.
                 Counter.FIRSTSPAWN.minusCounter(1)
                 Counter.WILDENCOUNTERREFRESHER.minusCounter(1)
 
@@ -267,7 +267,7 @@ class MapActivity : ComponentActivity() {
                 if(Counter.WILDENCOUNTERREFRESHER.getCounter() <1){
                     MapSaver.WILDENCOUNTER.setMarker(ArrayList<MarkerData?>())
                     shouldLoadWildEncounter = true
-                    Counter.WILDENCOUNTERREFRESHER.setCounter(60)
+                    Counter.WILDENCOUNTERREFRESHER.setCounter(300)
                 }
                 newCritterNotification = Counter.WILDENCOUNTERREFRESHER.getCounter()
             }
@@ -378,12 +378,12 @@ class MapActivity : ComponentActivity() {
                             .size(40.dp)
                             .offset(x = 130.dp)
                     )
-                    var minutes: Int = newCritterNotification / 20
+                    var minutes: Int = newCritterNotification / 60 //20
                     Text(//newCritterNotification *3 = seconds
-                        text = if (newCritterNotification < 20) {
-                            "${newCritterNotification * 3} sec"
+                        text = if (newCritterNotification < 60) { //20
+                            "${newCritterNotification * 1} sec" //3
                         } else {
-                            "${minutes}:${newCritterNotification * 3 - minutes * 60}min"
+                            "${minutes}:${newCritterNotification * 1 - minutes * 60}min" //3
                         },
                         color = Color.White,
                         fontWeight = FontWeight.Bold,
@@ -501,7 +501,8 @@ class MapActivity : ComponentActivity() {
                      markerList.addListOfMarkersQ(MapSaver.WILDENCOUNTER.getMarker())
                 shouldLoadFirstWildEncounter = false
                 if(MapSaver.WILDENCOUNTER.getMarker().isEmpty()){
-                    Counter.FIRSTSPAWN.setCounter(2)
+                    mapMarkerViewModel.loadCritterUsables(1)
+                    Counter.FIRSTSPAWN.setCounter(5)
                 } else {
                     alreadyLoaded = true
                 }

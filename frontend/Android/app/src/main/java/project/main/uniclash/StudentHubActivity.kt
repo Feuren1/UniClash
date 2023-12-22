@@ -61,17 +61,17 @@ class StudentHubActivity : ComponentActivity() {
                 // A surface container using the 'background' color from the theme
                 Surface(modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background) {
 
-                    val studentState by studentHubViewModel.student.collectAsState()
+//                    val studentState by studentHubViewModel.student.collectAsState()
 
-                    if (studentState.isLoading) {
+//                    if (studentState.isLoading) {
+//
+//                        Text("Loading Student...")
+//                    }
 
-                        Text("Loading Student...")
-                    }
-
-                    if (studentState.student != null && !studentState.isLoading) {
+//                    if (studentState.student != null && !studentState.isLoading) {
 
                         StudentHubScreen(modifier = Modifier.fillMaxSize(), studentHubViewModel = studentHubViewModel)
-                    }
+//                    }
 
                 }
             }

@@ -41,6 +41,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import project.main.uniclash.datatypes.CritterUsable
 import project.main.uniclash.retrofit.CritterService
+import project.main.uniclash.viewmodels.CritterDexViewModel
 import project.main.uniclash.viewmodels.UniClashViewModel
 
 
@@ -48,9 +49,15 @@ class CritterListActivity : ComponentActivity() {
     private var exitRequest by mutableStateOf(false)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        val uniClashViewModel: UniClashViewModel by viewModels(factoryProducer = {
+            UniClashViewModel.provideFactory(CritterService.getInstance(this), Application())
+        })
+
 
         setContent {
-            val myCritters = MyCritters(uniClashViewModel)
+            uniClashViewModel.loadCritterUsables()
+            val uniClashUiStateCritterUsables by uniClashViewModel.critterUsables.collectAsState()
+            val myCritters = uniClashUiStateCritterUsables.critterUsables
 
             Column {
                 Box(
@@ -59,7 +66,7 @@ class CritterListActivity : ComponentActivity() {
                         .background(MaterialTheme.colorScheme.background)
                         .padding(16.dp)
                 ) {
-                    MenuHeader()
+                    MenuHeader(myCritters.size)
                     Image(
                         painter = painterResource(id = R.drawable.exit),
                         contentDescription = null,
@@ -101,14 +108,22 @@ class CritterListActivity : ComponentActivity() {
     }
 
     @Composable
-    fun MenuHeader() {
-        Text(
-            text = "Critters",
-            fontSize = 50.sp, // Adjust the font size as needed
-            fontWeight = FontWeight.Bold, // Use FontWeight.Bold for bold text
-            textAlign = TextAlign.Start,
-            modifier = Modifier.padding(vertical = 16.dp) // Add vertical padding
-        )
+    fun MenuHeader(size : Int) {
+        Column {
+            Text(
+                text = "Critters",
+                fontSize = 50.sp, // Adjust the font size as needed
+                fontWeight = FontWeight.Bold, // Use FontWeight.Bold for bold text
+                textAlign = TextAlign.Start,
+                modifier = Modifier.padding(vertical = 16.dp) // Add vertical padding
+            )
+            Text(
+                text = "$size/200 Critters${if(size>= 200){"\nYou reached the max amount of critters.\nNew captured critters are not added to your team!!!"}else{""}}",
+                fontSize = 12.sp, // Adjust the font size as needed
+                fontWeight = FontWeight.Bold, // Use FontWeight.Bold for bold text
+                textAlign = TextAlign.Start,
+            )
+        }
     }
 
     @Composable
@@ -160,22 +175,5 @@ class CritterListActivity : ComponentActivity() {
                 }
             }
         }
-    }
-
-
-    val uniClashViewModel: UniClashViewModel by viewModels(factoryProducer = {
-        UniClashViewModel.provideFactory(CritterService.getInstance(this), Application())
-    })
-
-
-    @Composable
-    fun MyCritters(uniClashViewModel: UniClashViewModel):List<CritterUsable?> {
-        val preferences = this.getSharedPreferences("Ids", Context.MODE_PRIVATE)
-        val studentId = preferences.getInt("StudentId", 1) ?: 1
-
-        val uniClashUiStateCritterUsables by uniClashViewModel.critterUsables.collectAsState()
-        uniClashViewModel.loadCritterUsables()
-        var critterUsables : List<CritterUsable?> = uniClashUiStateCritterUsables.critterUsables
-        return critterUsables
     }
 }

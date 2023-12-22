@@ -9,12 +9,30 @@ import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import project.main.uniclash.datatypes.Critter
 import project.main.uniclash.retrofit.CritterService
+import project.main.uniclash.retrofit.InventoryService
 import project.main.uniclash.retrofit.enqueue
 import project.main.uniclash.userDataManager.UserDataManager
 
+
+sealed interface DelCritterUIState {
+    data class HasEntries(
+        val critter: String,
+        val isLoading: Boolean,
+    ) : DelCritterUIState
+}
+
+sealed interface UseRedbullUIState {
+    data class HasEntries(
+        val used: Boolean,
+        val isLoading: Boolean,
+    ) : DelCritterUIState
+}
+
 class CritterProfileViewModel(
-    private val critterService: CritterService
+    private val critterService: CritterService,
+    private val inventoryService : InventoryService
 ): ViewModel() {
     private val TAG = CritterProfileViewModel::class.java.simpleName
     val userDataManager: UserDataManager by lazy {
@@ -27,12 +45,28 @@ class CritterProfileViewModel(
         )
     )
 
+    val delCritter = MutableStateFlow(
+        DelCritterUIState.HasEntries(
+            critter = "null",
+            isLoading = false,
+        )
+    )
+
+
     val critterUsable = MutableStateFlow(
         CritterUsableUIState.HasEntries(
             critterUsable = null,
             isLoading = false,
         )
     )
+
+    val redbullUsage = MutableStateFlow(
+        UseRedbullUIState.HasEntries(
+            used = false,
+            isLoading = false,
+        )
+    )
+
     fun loadCritterUsable(id: Int) {
         viewModelScope.launch {
             critterUsable.update { it.copy(isLoading = true) }
@@ -45,6 +79,31 @@ class CritterProfileViewModel(
                             state.copy(critterUsable = it, isLoading = false)
                         }
                     }
+                }
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
+        }
+    }
+
+    fun delCritter(id: Int) {
+        viewModelScope.launch {
+            delCritter.update { it.copy(isLoading = true) }
+            try {
+                val response = critterService.delCritter(id).enqueue()
+                Log.d(TAG, "delete Critter: $response")
+                if (response.isSuccessful) {
+                    response.body()?.let {
+                        delCritter.update { state ->
+                            state.copy(critter = it, isLoading = false)
+                        }
+                    }
+                }
+                critterUsable.update { state->
+                    state.copy(critterUsable = null, isLoading = false)
+                }
+                critter.update { state->
+                    state.copy(critter = null, isLoading = false)
                 }
             } catch (e: Exception) {
                 e.printStackTrace()
@@ -95,15 +154,36 @@ class CritterProfileViewModel(
             }
         }
     }
+
+    fun useRedBull(critterid: Int) {
+        viewModelScope.launch {
+            redbullUsage.update { it.copy(isLoading = true) }
+            try {
+                val response = inventoryService.useRedBull(critterid).enqueue()
+                if (response.isSuccessful) {
+                    println(response.body())
+                    response.body()?.let {
+                        redbullUsage.update { state ->
+                            state.copy(used = it, isLoading = false)
+                        }
+                    }
+                }
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
+        }
+    }
     companion object {
         fun provideFactory(
             critterService: CritterService,
+            inventoryService : InventoryService,
         ): ViewModelProvider.Factory =
             object : ViewModelProvider.Factory {
                 @Suppress("UNCHECKED_CAST")
                 override fun <T : ViewModel> create(modelClass: Class<T>): T {
                     return CritterProfileViewModel(
                         critterService,
+                        inventoryService
                     ) as T
                 }
             }

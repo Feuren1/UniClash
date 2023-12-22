@@ -1,5 +1,6 @@
 package project.main.uniclash.viewmodels
 
+import android.R
 import android.app.Application
 import android.content.ContentValues.TAG
 import android.util.Log
@@ -10,6 +11,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import project.main.uniclash.datatypes.CritterUsable
@@ -30,6 +32,7 @@ sealed interface PostCrittersUIState { //TODO: CritterS to Critter?
 sealed interface UseItemUIState {
     data class HasEntries(
         val quantitiy : Int,
+        val itemAvail : Boolean,
         val isLoading: Boolean,
     ) : UseItemUIState
 }
@@ -65,9 +68,19 @@ class WildEncounterViewModel(
     val usedItem = MutableStateFlow(
         UseItemUIState.HasEntries(
             quantitiy = 0,
+            itemAvail = true,
             isLoading = false
         )
     )
+    val usedItemQuantityFlow = usedItem.map { it.quantitiy }
+
+    init {
+        viewModelScope.launch {
+            usedItemQuantityFlow.collect {
+                calculateCatchChance()
+            }
+        }
+    }
 
     private fun isCatchSuccessful(): Boolean {
         val randomValue = Math.random() * 100.0
@@ -89,7 +102,7 @@ class WildEncounterViewModel(
                         Log.d(TAG, "Success: ${response.body()}")
                         response.body()?.let {
                             critters.update { state ->
-                                state.copy(critter = it, isLoading = false)
+                                state.copy(critter = it,  isLoading = false)
                             }
                         }
                     }
@@ -114,11 +127,14 @@ class WildEncounterViewModel(
                     if (response.isSuccessful) {
                         Log.d(TAG, "Success: ${response.body()}")
                         response.body()?.let {
-                            //if (it) {
-                                println("ausgeführt ")
+                            if (it) {
                                 usedItem.update { state ->
-                                    state.copy(quantitiy = state.quantitiy + 1)
-                            //    }
+                                    state.copy(quantitiy = state.quantitiy + 1, itemAvail = it, isLoading = false)
+                                }
+                            } else {
+                                usedItem.update { state ->
+                                    state.copy(quantitiy = state.quantitiy, itemAvail = it, isLoading = false)
+                                }
                             }
                         }
                     }
@@ -131,11 +147,11 @@ class WildEncounterViewModel(
     }
 
 
-    fun calculateCatchChance(critterLevel :Int) : Double{
+    fun calculateCatchChance() : Double{
         var chance = (usedItem.value.quantitiy*5).toDouble()
         viewModelScope.launch {
             val userLevel = userDataManager.getLevel()
-            var difference = userLevel?.minus(critterLevel)
+            var difference = userLevel?.minus(wildEncounterMarker!!.critterUsable!!.level)
             if (difference != null) {
                 if(difference > 0){
                     difference = 0

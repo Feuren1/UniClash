@@ -22,6 +22,7 @@ import {Critter, CritterUsable} from '../models';
 import {CritterRepository} from '../repositories';
 import {EvolveCritterService} from '../services';
 import {StudentCritterService} from '../services/student-critter.service';
+import {LevelCalcCritterService} from "../services/levelCalc-critter.service";
 
 export class CritterController {
   constructor(
@@ -29,6 +30,7 @@ export class CritterController {
     @repository(CritterRepository)
     public critterRepository: CritterRepository,
     @service(StudentCritterService) protected studentCritterService: StudentCritterService,
+    @service(LevelCalcCritterService) protected levelCalcCritterService : LevelCalcCritterService
   ) { }
 
   @post('/critters')
@@ -156,7 +158,7 @@ export class CritterController {
   @get('/critters/{id}/evolve', {
     responses: {
       '200': {
-        description: 'Evolve Critter and return Critter',
+        description: 'Evolve Critter',
         content: {
           'application/json': {
             schema: getModelSchemaRef(Critter),
@@ -168,10 +170,10 @@ export class CritterController {
   async evolveCritter(
     @param.path.number('id') id: number,
   ): Promise<Critter> {
-    return this.evolveCritterService.evolveCritter(id);
+    return this.levelCalcCritterService.evolveCritter(id);
   }
 
-  @get('/critters/{id}/evolveUsable', {
+  /*@get('/critters/{id}/evolveUsable', {
     responses: {
       '200': {
         description: 'Evolve Critter and return CritterUsable',
@@ -187,6 +189,25 @@ export class CritterController {
     @param.path.number('id') id: number,
   ): Promise<CritterUsable> {
     return this.evolveCritterService.evolveCritterUsable(id);
+  }*/
+
+  @get('/critters/{id}/exp/{exp}/expCritter', {
+    responses: {
+      '200': {
+        description: 'exp Critter',
+        content: {
+          'application/json': {
+            schema: getModelSchemaRef(Critter),
+          },
+        },
+      },
+    },
+  })
+  async expCritter(
+      @param.path.number('id') id: number,
+      @param.path.number('exp') exp: number,
+  ): Promise<void> {
+    return this.levelCalcCritterService.increaseCritterExp(id,exp);
   }
 
   @get('/usables', {

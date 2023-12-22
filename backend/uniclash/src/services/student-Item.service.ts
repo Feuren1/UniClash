@@ -1,19 +1,23 @@
-import {inject, injectable} from '@loopback/core';
+import {inject, injectable, service} from '@loopback/core';
 import {repository} from '@loopback/repository';
 import {Critter, CritterUsable, Item, ItemTemplate, Student} from '../models';
 import {
+  CritterRepository,
   ItemRepository, ItemTemplateRepository,
   StudentRepository
 } from '../repositories';;
 import {ItemUsable} from "../models/item-usable.model";
 import {ItemStatsService} from "./item-stats.service";
+import {LevelCalcCritterService} from "./levelCalc-critter.service";
 
 @injectable()
 export class StudentItemService {
   constructor(
     @repository(ItemTemplateRepository) protected itemTemplateRepository: ItemTemplateRepository,
     @repository(ItemRepository) protected itemRepository: ItemRepository,
+    @repository(CritterRepository) protected critterRepository: CritterRepository,
     @repository(StudentRepository) protected studentRepository: StudentRepository,
+    @service(LevelCalcCritterService) protected levelCalcCritterService : LevelCalcCritterService,
     @inject('services.ItemStatsService') // Inject the CritterStatsService
     protected itemStatsService: ItemStatsService,
   ) { }
@@ -106,6 +110,17 @@ export class StudentItemService {
       }
     }catch (e) {
       console.log("Inventory is empty");
+    }
+    return false
+  }
+
+  async useRedBull(critterId : number):Promise<Boolean>{
+    const critter: Critter = await this.critterRepository.findById(critterId)
+    const itemUsed : Boolean = await this.useItem(critter.studentId, 1)
+
+    if(itemUsed){
+      this.levelCalcCritterService.increaseCritterExp(critterId,100)
+      return true
     }
     return false
   }

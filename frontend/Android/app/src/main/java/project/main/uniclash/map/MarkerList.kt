@@ -39,4 +39,13 @@ class MarkerList() {
     fun removeMarker(marker: MarkerData) {
         _markerList.value = ArrayList(_markerList.value - marker)
     }
+
+    fun removeMarkersQ(markers: ArrayList<MarkerData?>){
+        //val convertedMarkers = markers.filterNotNull()
+        //if (!(convertedMarkers.containsAll(_markerList.value))) {
+        println("starting to remove")
+            _markerList.value.removeAll(markers) //toSet removes all double avail. values
+        println("removed!!!!")
+       // }
+    }
 }

@@ -230,7 +230,7 @@ class MapActivity : ComponentActivity() {
 
         LaunchedEffect(Unit) {
             while (true) {
-                println("${markerList.getMarkerList().size} die Size der Liste")
+                println("${markerList.getMarkerList().size} die Size der MarkerList")
 
                 mapLocationViewModel.getUserLocation(contextForLocation) { location ->
                     mainLatitude = location.latitude
@@ -256,7 +256,14 @@ class MapActivity : ComponentActivity() {
                         movingCamera = false
                     }
                 }
-                delay(3000) //3sec.
+                delay(1000) //3sec.
+
+                var distance = mapCalculations.haversineDistance(Locations.USERLOCATION.getLocation().latitude,Locations.USERLOCATION.getLocation().longitude,Locations.INTERSECTION.getLocation().latitude,Locations.INTERSECTION.getLocation().longitude)
+                if(distance > 2100){
+                    Locations.INTERSECTION.setLocation(Locations.USERLOCATION.getLocation())
+                    Counter.WILDENCOUNTERREFRESHER.setCounter(1)
+                }
+
                 Counter.FIRSTSPAWN.minusCounter(1)
                 Counter.WILDENCOUNTERREFRESHER.minusCounter(1)
 
@@ -264,10 +271,14 @@ class MapActivity : ComponentActivity() {
                     shouldLoadFirstWildEncounter = true
                 }
 
-                if(Counter.WILDENCOUNTERREFRESHER.getCounter() <1){
+                if(Counter.WILDENCOUNTERREFRESHER.getCounter() == 1 && Counter.FIRSTSPAWN.getCounter()<1){
+                    markerList.removeMarkersQ(MapSaver.WILDENCOUNTER.getMarker())
                     MapSaver.WILDENCOUNTER.setMarker(ArrayList<MarkerData?>())
+                }
+                if(Counter.WILDENCOUNTERREFRESHER.getCounter() <1 && Counter.FIRSTSPAWN.getCounter() < 1){
+                    println("cleared and now set to true")
                     shouldLoadWildEncounter = true
-                    Counter.WILDENCOUNTERREFRESHER.setCounter(60)
+                    Counter.WILDENCOUNTERREFRESHER.setCounter(300)
                 }
                 newCritterNotification = Counter.WILDENCOUNTERREFRESHER.getCounter()
             }
@@ -315,7 +326,7 @@ class MapActivity : ComponentActivity() {
                         if (distance < 501) {
                             Column(
                                 modifier = Modifier
-                                    .size(325.dp,400.dp)
+                                    .size(325.dp, 400.dp)
                                     .background(
                                         color = Color.Black.copy(alpha = 0.75f),
                                         shape = RoundedCornerShape(7.dp)
@@ -378,12 +389,12 @@ class MapActivity : ComponentActivity() {
                             .size(40.dp)
                             .offset(x = 130.dp)
                     )
-                    var minutes: Int = newCritterNotification / 20
+                    var minutes: Int = newCritterNotification / 60 //20
                     Text(//newCritterNotification *3 = seconds
-                        text = if (newCritterNotification < 20) {
-                            "${newCritterNotification * 3} sec"
+                        text = if (newCritterNotification < 60) { //20
+                            "${newCritterNotification * 1} sec" //3
                         } else {
-                            "${minutes}:${newCritterNotification * 3 - minutes * 60}min"
+                            "${minutes}:${newCritterNotification * 1 - minutes * 60}min" //3
                         },
                         color = Color.White,
                         fontWeight = FontWeight.Bold,
@@ -501,20 +512,28 @@ class MapActivity : ComponentActivity() {
                      markerList.addListOfMarkersQ(MapSaver.WILDENCOUNTER.getMarker())
                 shouldLoadFirstWildEncounter = false
                 if(MapSaver.WILDENCOUNTER.getMarker().isEmpty()){
-                    Counter.FIRSTSPAWN.setCounter(2)
+                    mapMarkerViewModel.loadCritterUsables(1)
+                    Counter.FIRSTSPAWN.setCounter(5)
                 } else {
                     alreadyLoaded = true
                 }
             }
         }
     }
-
     fun LoadWildEncounter(){
         if(shouldLoadWildEncounter) {
             Log.d(LOCATION_TAG, "Excecuted second loadwildencounter")
-            val intent = Intent(this,MapActivity::class.java)
-            this.startActivity(intent, null)
-            finish()
+            mapMarkerViewModel.loadCritterUsables(1)
+            markerList.addListOfMarkersQ(MapSaver.WILDENCOUNTER.getMarker())
+
+            if(MapSaver.WILDENCOUNTER.getMarker().isEmpty()) {
+                Counter.WILDENCOUNTERREFRESHER.setCounter(0)
+            }
+
+            shouldLoadWildEncounter = false
+            //val intent = Intent(this,MapActivity::class.java)
+            //this.startActivity(intent, null)
+            //finish()
         }
     }
 

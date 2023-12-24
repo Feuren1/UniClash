@@ -6,8 +6,6 @@ import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
-import android.view.Gravity
-import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
@@ -24,6 +22,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -32,7 +31,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
@@ -52,6 +50,22 @@ import project.main.uniclash.datatypes.ItemTemplate
 import project.main.uniclash.retrofit.StudentHubService
 import project.main.uniclash.ui.theme.UniClashTheme
 import project.main.uniclash.viewmodels.StudentHubViewModel
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.zIndex
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.material3.*
+import androidx.compose.material3.MaterialTheme.typography
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.unit.dp
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
+
 
 class StudentHubActivity : ComponentActivity() {
 
@@ -64,38 +78,28 @@ class StudentHubActivity : ComponentActivity() {
 
         setContent {
             UniClashTheme {
-                // A surface container using the 'background' color from the theme
-                Surface(
-                    modifier = Modifier.fillMaxSize(),
-                    color = MaterialTheme.colorScheme.background
-                ) {
+                var isLoading by rememberSaveable { mutableStateOf(true) }
 
-//                    val studentState by studentHubViewModel.student.collectAsState()
+                Box(modifier = Modifier.fillMaxSize()) {
 
-//                    if (studentState.isLoading) {
-//
-//                        Text("Loading Student...")
-//                    }
+                    Surface(modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background) {
 
-//                    if (studentState.student != null && !studentState.isLoading) {
+                        val studentState by studentHubViewModel.student.collectAsState()
+                        isLoading = studentState.isLoading
 
-                    StudentHubScreen(
-                        modifier = Modifier.fillMaxSize(),
-                        studentHubViewModel = studentHubViewModel
-                    )
-//                    }
-
+                        StudentHubScreen(modifier = Modifier.fillMaxSize(),studentHubViewModel = studentHubViewModel,isLoading)
+                    }
                 }
             }
         }
     }
 }
 
-
 @Composable
 fun StudentHubScreen(
     modifier: Modifier = Modifier,
-    studentHubViewModel: StudentHubViewModel = viewModel()
+    studentHubViewModel: StudentHubViewModel = viewModel(),
+    isLoading: Boolean
 ) {
 
     var context = LocalContext.current
@@ -114,12 +118,16 @@ fun StudentHubScreen(
     var buyingStatus by remember { mutableStateOf("nothing") }
     var credits by remember { mutableIntStateOf(0) }
 
-
     if (student != null) {
 
         credits = student.credits
     }
 
+    // Loading circle
+    if (isLoading) {
+
+        LoadingCircle(modifier)
+    }
 
     Column(modifier = modifier) {
 
@@ -131,35 +139,76 @@ fun StudentHubScreen(
 
             } else {
                 // This branch should theoretically never happen, but logs a message, just in case
-                Log.e("YourTag", "Unexpected null student case")
+                Log.e("", "Unexpected null student case")
             }
+
+            Title(modifier)
 
             Exit(modifier, context)
         }
 
-        ItemList(itemTemplateList,
+        ItemList(
+            itemTemplateList,
             onButtonClicked = { itemTemplate ->
                 buyingStatus = itemTemplate.name
                 studentHubViewModel.buyItem(itemTemplate.id, itemTemplate.name)
-            })
+            },
+            isLoading = isLoading
+        )
     }
+}
+
+@Composable
+fun LoadingCircle(modifier: Modifier) {
+
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(Color.Transparent) // Transparent background
+            .wrapContentSize(Alignment.Center)
+            .zIndex(2f)
+    ) {
+        Box(
+            modifier = Modifier
+                .background(Color.LightGray) // Change the background color to light gray
+                .padding(16.dp)
+        ) {
+            CircularProgressIndicator(
+                modifier = Modifier.size(50.dp)
+            )
+        }
+    }
+}
+
+@Composable
+fun Title(modifier: Modifier) {
+    Text(
+        text = "Student Hub",
+        fontSize = 35.sp,
+        fontWeight = FontWeight.Bold,
+        textAlign = TextAlign.Center,
+        modifier = Modifier.padding(vertical = 5.dp)
+    )
 }
 
 @Composable
 fun ItemList(
     itemTemplateList: List<ItemTemplate>,
     onButtonClicked: (ItemTemplate) -> Unit,
+    isLoading: Boolean,
     modifier: Modifier = Modifier
 ) {
-
     LazyColumn(modifier = modifier) {
 
-        items(items = itemTemplateList, key = { item -> item.name }) {
-
-                item ->
-            ItemRow(itemTemplate = item, onButtonClicked = {
-                onButtonClicked(item)
-            })
+        items(items = itemTemplateList, key = { item -> item.name }) { item ->
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(8.dp)
+                    .background(Color.LightGray, shape = RoundedCornerShape(8.dp))
+            ) {
+                ItemRow(itemTemplate = item, onButtonClicked = onButtonClicked, isLoading = isLoading)
+            }
         }
     }
 }
@@ -168,22 +217,25 @@ fun ItemList(
 fun ItemRow(
     itemTemplate: ItemTemplate,
     onButtonClicked: (ItemTemplate) -> Unit,
+    isLoading: Boolean,
     modifier: Modifier = Modifier
 ) {
-
-    Row(modifier = modifier, verticalAlignment = Alignment.CenterVertically) {
-
+    Row(modifier = modifier.padding(all = 8.dp), verticalAlignment = Alignment.CenterVertically) {
         ItemImage(itemTemplate, modifier)
 
         Spacer(modifier = Modifier.weight(1f))
 
-        Button(modifier = Modifier
-            .width(100.dp)
-            .padding(end = 16.dp),
+        Button(
+            modifier = Modifier
+                .width(100.dp)
+                .padding(end = 16.dp),
             onClick = {
-                onButtonClicked(itemTemplate)
-            }) {
-
+                if (!isLoading) {
+                    onButtonClicked(itemTemplate)
+                }
+            },
+            enabled = !isLoading // Enable the button only if not loading
+        ) {
             Text(text = "Buy")
         }
     }

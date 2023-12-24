@@ -121,7 +121,6 @@ class StudentHubViewModel(
 
         viewModelScope.launch {
             buyItemResponse.update { it.copy(isLoading = true) }
-            message.value = "Is Loading..."
 
             try {
                 val response = studentHubService.buyItem(userDataManager.getStudentId()!!, itemTemplateId).enqueue()

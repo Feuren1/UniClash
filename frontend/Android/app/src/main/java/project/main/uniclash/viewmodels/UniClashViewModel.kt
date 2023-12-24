@@ -198,6 +198,10 @@ class UniClashViewModel(
             }
     }
 
+    init {
+        loadCritterUsables()
+    }
+
 
 /*
 

@@ -29,6 +29,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -55,9 +56,10 @@ class CritterListActivity : ComponentActivity() {
 
 
         setContent {
-            uniClashViewModel.loadCritterUsables()
             val uniClashUiStateCritterUsables by uniClashViewModel.critterUsables.collectAsState()
             val myCritters = uniClashUiStateCritterUsables.critterUsables
+            var isLoading by rememberSaveable { mutableStateOf(true) }
+            isLoading = uniClashUiStateCritterUsables.isLoading
 
             Column {
                 Box(
@@ -89,20 +91,30 @@ class CritterListActivity : ComponentActivity() {
                         modifier = Modifier
                             .verticalScroll(rememberScrollState())
                     ) {
-                        Column {
-                            for (critter in myCritters) {
-                                CritterDetail(critter)
-                            }
+                            UsableList(uniClashViewModel,isLoading)
                         }
                     }
                 }
-            }
 
             if (exitRequest) {
                 val intent = Intent(this, MenuActivity::class.java)
                 this.startActivity(intent)
                 finish()
                 exitRequest = false
+            }
+        }
+    }
+
+    @Composable
+    fun UsableList(uniClashViewModel: UniClashViewModel,isLoading : Boolean) {
+        val uniClashUiStateCritterUsables by uniClashViewModel.critterUsables.collectAsState()
+        if (isLoading) {
+            LoadingCircle(Modifier)
+        } else {
+            Column {
+                for (critter in uniClashUiStateCritterUsables.critterUsables) {
+                    CritterDetail(critter)
+                }
             }
         }
     }

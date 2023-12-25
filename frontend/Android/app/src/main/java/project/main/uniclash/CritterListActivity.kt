@@ -20,6 +20,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
@@ -44,6 +45,7 @@ import project.main.uniclash.datatypes.CritterUsable
 import project.main.uniclash.retrofit.CritterService
 import project.main.uniclash.viewmodels.CritterDexViewModel
 import project.main.uniclash.viewmodels.UniClashViewModel
+import androidx.compose.foundation.lazy.items
 
 
 class CritterListActivity : ComponentActivity() {
@@ -81,18 +83,12 @@ class CritterListActivity : ComponentActivity() {
                     )
                 }
 
-                // Scroll-Box für Critters mit weißem Hintergrund
                 Box(
                     modifier = Modifier
                         .fillMaxSize()
-                        .background(Color.White) // Hier wird der Hintergrund weiß gemacht
+                        .background(Color.White)
                 ) {
-                    Box(
-                        modifier = Modifier
-                            .verticalScroll(rememberScrollState())
-                    ) {
                             UsableList(uniClashViewModel,isLoading)
-                        }
                     }
                 }
 
@@ -106,18 +102,26 @@ class CritterListActivity : ComponentActivity() {
     }
 
     @Composable
-    fun UsableList(uniClashViewModel: UniClashViewModel,isLoading : Boolean) {
+    fun UsableList(uniClashViewModel: UniClashViewModel, isLoading: Boolean) {
         val uniClashUiStateCritterUsables by uniClashViewModel.critterUsables.collectAsState()
         if (isLoading) {
             LoadingCircle(Modifier)
-        } else {
-            Column {
-                for (critter in uniClashUiStateCritterUsables.critterUsables) {
-                    CritterDetail(critter)
+        }else {
+            LazyColumn(modifier = Modifier) {
+                items(items = uniClashUiStateCritterUsables.critterUsables, key= { critter -> critter!!.critterId }) { critter ->
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(8.dp)
+                            .background(Color.LightGray, shape = RoundedCornerShape(8.dp))
+                    ) {
+                        CritterDetail(critter)
+                    }
                 }
             }
         }
     }
+
 
     @Composable
     fun MenuHeader(size : Int) {

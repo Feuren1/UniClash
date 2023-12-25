@@ -20,6 +20,7 @@ import project.main.uniclash.datatypes.SelectedMarker
 import project.main.uniclash.retrofit.CritterService
 import project.main.uniclash.retrofit.InventoryService
 import project.main.uniclash.retrofit.enqueue
+import project.main.uniclash.userDataManager.CritterListDataManager
 import project.main.uniclash.userDataManager.UserDataManager
 
 sealed interface PostCrittersUIState { //TODO: CritterS to Critter?
@@ -47,6 +48,10 @@ class WildEncounterViewModel(
     var catchChance by mutableStateOf(0.0)
     private val userDataManager: UserDataManager by lazy {
         UserDataManager(application)
+    }
+
+    private val critterListDataManager: CritterListDataManager by lazy {
+        CritterListDataManager(Application())
     }
 
     init {
@@ -91,6 +96,9 @@ class WildEncounterViewModel(
      fun addWildEncounterToUser() : String {
         if(isCatchSuccessful()) {
             viewModelScope.launch {
+
+                critterListDataManager.clearCritterList() //to refresh critterList
+
                 critters.update { it.copy(isLoading = true) }
                 try {
                     val response = critterService.postCatchedCritter(

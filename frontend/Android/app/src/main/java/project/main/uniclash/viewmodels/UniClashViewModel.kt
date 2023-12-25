@@ -14,6 +14,7 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import project.main.uniclash.datatypes.CritterTemplate
 import project.main.uniclash.retrofit.enqueue
+import project.main.uniclash.userDataManager.CritterListDataManager
 import project.main.uniclash.userDataManager.UserDataManager
 
 public data class CritterIdCallback(val success: Boolean, val id: String)
@@ -54,6 +55,9 @@ class UniClashViewModel(
     private val TAG = UniClashViewModel::class.java.simpleName
     private val userDataManager: UserDataManager by lazy {
         UserDataManager(application)
+    }
+    private val critterListDataManager: CritterListDataManager by lazy {
+        CritterListDataManager(application)
     }
 
 
@@ -114,23 +118,32 @@ class UniClashViewModel(
     @SuppressLint("MissingPermission")
     fun loadCritterUsables() {
         viewModelScope.launch {
-            critterUsables.update { it.copy(isLoading = true) }
-            try {
-                val response = critterService.getCritterUsables(userDataManager.getStudentId()!!).enqueue()
-                Log.d(TAG, "loadCrittersUsable: $response")
-                if (response.isSuccessful) {
-                    Log.d(TAG, "loadCrittersUsables: success")
-                    val crittersUsables = response.body()!!
-                    Log.d(TAG, "loadCrittersUsables: $crittersUsables")
+            if (critterListDataManager.checkCritterListIsNotEmpty()) {
+                critterUsables.update { it.copy(critterUsables = critterListDataManager.getCritterList()) }
+            } else {
+
+                critterUsables.update { it.copy(isLoading = true) }
+                try {
+                    val response =
+                        critterService.getCritterUsables(userDataManager.getStudentId()!!).enqueue()
+                    Log.d(TAG, "loadCrittersUsable: $response")
+                    if (response.isSuccessful) {
+                        Log.d(TAG, "loadCrittersUsables: success")
+                        val crittersUsables = response.body()!!
+                        Log.d(TAG, "loadCrittersUsables: $crittersUsables")
+
+                        critterListDataManager.storeCritterList(crittersUsables)
+
                         critterUsables.update {
                             it.copy(
                                 critterUsables = crittersUsables,
                                 isLoading = false
                             )
                         }
+                    }
+                } catch (e: Exception) {
+                    e.printStackTrace()
                 }
-            } catch (e: Exception) {
-                e.printStackTrace()
             }
         }
     }

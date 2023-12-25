@@ -13,6 +13,7 @@ import project.main.uniclash.datatypes.Critter
 import project.main.uniclash.retrofit.CritterService
 import project.main.uniclash.retrofit.InventoryService
 import project.main.uniclash.retrofit.enqueue
+import project.main.uniclash.userDataManager.CritterListDataManager
 import project.main.uniclash.userDataManager.UserDataManager
 
 
@@ -37,6 +38,9 @@ class CritterProfileViewModel(
     private val TAG = CritterProfileViewModel::class.java.simpleName
     val userDataManager: UserDataManager by lazy {
         UserDataManager(Application())
+    }
+    private val critterListDataManager: CritterListDataManager by lazy {
+        CritterListDataManager(Application())
     }
     val critter = MutableStateFlow(
         CritterUIState.HasEntries(
@@ -88,6 +92,9 @@ class CritterProfileViewModel(
 
     fun delCritter(id: Int) {
         viewModelScope.launch {
+
+            critterListDataManager.clearCritterList() //to refresh critterList
+
             delCritter.update { it.copy(isLoading = true) }
             try {
                 val response = critterService.delCritter(id).enqueue()
@@ -137,6 +144,9 @@ class CritterProfileViewModel(
 
     fun evolve(id: Int) {
         viewModelScope.launch {
+
+            critterListDataManager.clearCritterList() //to refresh critterList
+
             critter.update { it.copy(isLoading = true) }
             try {
                 val response = critterService.evolveCritter(id).enqueue()
@@ -157,6 +167,9 @@ class CritterProfileViewModel(
 
     fun useRedBull(critterid: Int) {
         viewModelScope.launch {
+
+            critterListDataManager.clearCritterList() //to refresh critterList
+
             redbullUsage.update { it.copy(isLoading = true) }
             try {
                 val response = inventoryService.useRedBull(critterid).enqueue()

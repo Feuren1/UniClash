@@ -83,7 +83,7 @@ class MapMarkerViewModel(
     private val context : Context,
 ) : ViewModel() {
 
-    var mapCalculations = MapCalculations()
+    private var mapCalculations = MapCalculations()
 
     val markersStudentHub = MutableStateFlow(
         MarkersStudentHubUIState.HasEntries(
@@ -150,7 +150,7 @@ class MapMarkerViewModel(
         }
     }
 
-    fun initMarkersStudentHub() {
+    private fun initMarkersStudentHub() {
             if(studentHubs.value.studentHubs.isNotEmpty()) {
                 this@MapMarkerViewModel.markersStudentHub.update {
                     it.copy(
@@ -218,7 +218,7 @@ class MapMarkerViewModel(
         }
     }
 
-    fun initMarkersArena(){
+    private fun initMarkersArena(){
             if(arenas.value.arenas.isNotEmpty()) {
                 this@MapMarkerViewModel.markersArena.update {
                     it.copy(
@@ -286,7 +286,7 @@ class MapMarkerViewModel(
         }
     }
 
-    fun initWildEncounter(){
+    private fun initWildEncounter(){
             if(critterUsables.value.critterUsables.isNotEmpty()){
                 this@MapMarkerViewModel.markersWildEncounter.update {
                     it.copy(
@@ -300,8 +300,9 @@ class MapMarkerViewModel(
             while(wildEncounterMax.size < 901 && wildEncounterMax.isNotEmpty()){
                 wildEncounterMax = wildEncounterMax + usableCritters
             }
-            val studentLocation = Locations.USERLOCATION.getLocation()
+            val studentLocation : GeoPoint = Locations.USERLOCATION.getLocation()
                 Locations.INTERSECTION.setLocation(Locations.USERLOCATION.getLocation())
+                
 
             if(MapSaver.WILDENCOUNTER.getMarker().isEmpty() &&wildEncounterMax.isNotEmpty()) {
                 var randomLocation = generateRandomGeoPoints(studentLocation, 2.0, 900) //400 per km

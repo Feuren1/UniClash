@@ -232,7 +232,7 @@ class MapActivity : ComponentActivity() {
             while (true) {
                 println("${markerList.getMarkerList().size} die Size der MarkerList")
 
-                mapLocationViewModel.getUserLocation(contextForLocation) { location ->
+                mapLocationViewModel.getUserLocation(contextForLocation) { location -> //has to checked here too, because in line 120 is in onCreate (only executed once).
                     mainLatitude = location.latitude
                     mainLongitude = location.longitude
                 }
@@ -257,15 +257,14 @@ class MapActivity : ComponentActivity() {
                     }
                 }
                 delay(1000) //3sec.
+                Counter.FIRSTSPAWN.minusCounter(1)
+                Counter.WILDENCOUNTERREFRESHER.minusCounter(1)
 
                 var distance = mapCalculations.haversineDistance(Locations.USERLOCATION.getLocation().latitude,Locations.USERLOCATION.getLocation().longitude,Locations.INTERSECTION.getLocation().latitude,Locations.INTERSECTION.getLocation().longitude)
                 if(distance > 2100){
-                    Locations.INTERSECTION.setLocation(Locations.USERLOCATION.getLocation())
+                    Locations.INTERSECTION.setLocation(Locations.USERLOCATION.getLocation()) //otherwise endless loop
                     Counter.WILDENCOUNTERREFRESHER.setCounter(1)
                 }
-
-                Counter.FIRSTSPAWN.minusCounter(1)
-                Counter.WILDENCOUNTERREFRESHER.minusCounter(1)
 
                 if (Counter.FIRSTSPAWN.getCounter() < 1) {
                     shouldLoadFirstWildEncounter = true
@@ -276,7 +275,6 @@ class MapActivity : ComponentActivity() {
                     MapSaver.WILDENCOUNTER.setMarker(ArrayList<MarkerData?>())
                 }
                 if(Counter.WILDENCOUNTERREFRESHER.getCounter() <1 && Counter.FIRSTSPAWN.getCounter() < 1){
-                    println("cleared and now set to true")
                     shouldLoadWildEncounter = true
                     Counter.WILDENCOUNTERREFRESHER.setCounter(300)
                 }

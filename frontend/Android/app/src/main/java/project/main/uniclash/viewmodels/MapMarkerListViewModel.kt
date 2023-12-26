@@ -1,9 +1,10 @@
-package project.main.uniclash.map
+package project.main.uniclash.viewmodels
 
+import androidx.lifecycle.ViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import project.main.uniclash.datatypes.MarkerData
 
-class MarkerList() {
+class MapMarkerListViewModel : ViewModel() {
 
     private val _markerList = MutableStateFlow(ArrayList<MarkerData>())
     val markerList = _markerList

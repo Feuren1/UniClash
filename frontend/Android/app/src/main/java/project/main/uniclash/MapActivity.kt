@@ -68,7 +68,7 @@ import project.main.uniclash.datatypes.SelectedMarker
 import project.main.uniclash.map.GeoCodingHelper
 import project.main.uniclash.map.LocationPermissions
 import project.main.uniclash.map.MapCalculations
-import project.main.uniclash.map.MarkerList
+import project.main.uniclash.viewmodels.MapMarkerListViewModel
 import project.main.uniclash.retrofit.ArenaService
 import project.main.uniclash.retrofit.CritterService
 import project.main.uniclash.retrofit.StudentHubService
@@ -88,10 +88,10 @@ class MapActivity : ComponentActivity() {
     })
 
     private val mapMarkerViewModel: MapMarkerViewModel by viewModels(factoryProducer = {
-        MapMarkerViewModel.provideFactory(CritterService.getInstance(this), StudentHubService.getInstance(this), ArenaService.getInstance(this),this,)
+        MapMarkerViewModel.provideFactory(CritterService.getInstance(this), StudentHubService.getInstance(this), ArenaService.getInstance(this),this,markerList)
     })
 
-    private var markerList = MarkerList()//dependency injection
+    private var markerList = MapMarkerListViewModel()//dependency injection
     private var reloadMap by mutableStateOf(true)
 
     private var startMapRequested by mutableStateOf(false)
@@ -101,7 +101,6 @@ class MapActivity : ComponentActivity() {
     private var movingCamera : Boolean ? = true
 
     private var shouldLoadFirstWildEncounter by mutableStateOf(false)
-    private var shouldLoadWildEncounter by mutableStateOf(false)
 
     private var newCritterNotification by mutableStateOf(11)
 
@@ -224,7 +223,6 @@ class MapActivity : ComponentActivity() {
     @Composable
     fun Map() {
         LoadFirstWildEncounter()
-        LoadWildEncounter()
 
         val contextForLocation = LocalContext.current
 
@@ -256,29 +254,14 @@ class MapActivity : ComponentActivity() {
                         movingCamera = false
                     }
                 }
-                delay(1000) //3sec.
-                Counter.FIRSTSPAWN.minusCounter(1)
-                Counter.WILDENCOUNTERREFRESHER.minusCounter(1)
+                delay(1000) //1sec.
 
-                var distance = mapCalculations.haversineDistance(Locations.USERLOCATION.getLocation().latitude,Locations.USERLOCATION.getLocation().longitude,Locations.INTERSECTION.getLocation().latitude,Locations.INTERSECTION.getLocation().longitude)
-                if(distance > 2100){
-                    Locations.INTERSECTION.setLocation(Locations.USERLOCATION.getLocation()) //otherwise endless loop
-                    Counter.WILDENCOUNTERREFRESHER.setCounter(1)
-                }
-
+                mapMarkerViewModel.counterLogic()
                 if (Counter.FIRSTSPAWN.getCounter() < 1) {
                     shouldLoadFirstWildEncounter = true
                 }
-
-                if(Counter.WILDENCOUNTERREFRESHER.getCounter() == 1 && Counter.FIRSTSPAWN.getCounter()<1){
-                    markerList.removeMarkersQ(MapSaver.WILDENCOUNTER.getMarker())
-                    MapSaver.WILDENCOUNTER.setMarker(ArrayList<MarkerData?>())
-                }
-                if(Counter.WILDENCOUNTERREFRESHER.getCounter() <1 && Counter.FIRSTSPAWN.getCounter() < 1){
-                    shouldLoadWildEncounter = true
-                    Counter.WILDENCOUNTERREFRESHER.setCounter(300)
-                }
                 newCritterNotification = Counter.WILDENCOUNTERREFRESHER.getCounter()
+
             }
         }
 
@@ -516,22 +499,6 @@ class MapActivity : ComponentActivity() {
                     alreadyLoaded = true
                 }
             }
-        }
-    }
-    fun LoadWildEncounter(){
-        if(shouldLoadWildEncounter) {
-            Log.d(LOCATION_TAG, "Excecuted second loadwildencounter")
-            mapMarkerViewModel.loadCritterUsables(1)
-            markerList.addListOfMarkersQ(MapSaver.WILDENCOUNTER.getMarker())
-
-            if(MapSaver.WILDENCOUNTER.getMarker().isEmpty()) {
-                Counter.WILDENCOUNTERREFRESHER.setCounter(0)
-            }
-
-            shouldLoadWildEncounter = false
-            //val intent = Intent(this,MapActivity::class.java)
-            //this.startActivity(intent, null)
-            //finish()
         }
     }
 

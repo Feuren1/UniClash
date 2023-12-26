@@ -63,7 +63,7 @@ enum class Locations(private var location : GeoPoint){
 }
 
 enum class Counter(private var count : Int){
-    FIRSTSPAWN(10),
+    FIRSTSPAWN(30),
     WILDENCOUNTERREFRESHER(300);
 
     fun getCounter():Int{

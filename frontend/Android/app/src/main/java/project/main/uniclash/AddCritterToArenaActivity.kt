@@ -33,7 +33,6 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import project.main.uniclash.datatypes.CritterPic
 import project.main.uniclash.datatypes.CritterUsable
 import project.main.uniclash.retrofit.ArenaCritterService
 import project.main.uniclash.ui.theme.UniClashTheme
@@ -92,7 +91,7 @@ class AddCritterToArenaActivity : ComponentActivity() {
         ) {
             Row(modifier = Modifier.padding(all = 8.dp)) {
                 Image(
-                    painter = painterResource(CritterPic.MUSK.searchDrawable("${critter?.name}")),
+                    painter = painterResource(id = R.drawable.arrow),
                     contentDescription = null,
                     modifier = Modifier
                         .size(60.dp)

@@ -6,7 +6,6 @@ import androidx.lifecycle.ViewModelProvider
 import project.main.uniclash.datatypes.ArenaCritterPatch
 import project.main.uniclash.datatypes.CritterUsable
 import project.main.uniclash.datatypes.Student
-import project.main.uniclash.datatypes.StudentPatch
 import project.main.uniclash.viewmodels.ArenaViewModel
 import retrofit2.Call
 import retrofit2.create

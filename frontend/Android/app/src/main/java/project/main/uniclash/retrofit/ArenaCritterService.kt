@@ -3,6 +3,7 @@ package project.main.uniclash.retrofit
 import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
+import project.main.uniclash.datatypes.Arena
 import project.main.uniclash.datatypes.ArenaCritterPatch
 import project.main.uniclash.datatypes.CritterUsable
 import project.main.uniclash.datatypes.Student
@@ -18,8 +19,10 @@ interface ArenaCritterService {
 
 
 
+
     @PATCH("/arenas/{id}")
-    fun updateArenaCritter(@Path("id") id: Int, @Body arenaCritterPatch: ArenaCritterPatch): Call<String>
+    fun updateArenaCritter(@Path("id") id: Int, @Body arenaCritterPatch: ArenaCritterPatch): Call<Arena>
+
 
     @GET("/students/{id}/usables")
     fun getCritterUsables(@Path("id") id: Int): Call<List<CritterUsable>>

@@ -19,7 +19,10 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -29,6 +32,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -47,7 +51,9 @@ class AddCritterToArenaActivity : ComponentActivity() {
 
         super.onCreate(savedInstanceState)
         setContent {
-
+            val selectedCritter by addCritterToArenaViewModel.selectedCritter.collectAsState()
+            val bundle = intent.extras
+            val arenaId = bundle?.getInt("ArenaID")
             UniClashTheme {
                 // A surface container using the 'background' color from the theme
                 Surface(
@@ -57,20 +63,50 @@ class AddCritterToArenaActivity : ComponentActivity() {
 
                 }
             }
-            CritterList(addCritterToArenaViewModel)
+            if (selectedCritter != null){
+                Column {
+                    Row {
+                        Text(text = "You have selected this critter")
+
+                    }
+                    Row {
+                        CritterDetail(critter = selectedCritter)
+                    }
+                    Row {
+                        Button(onClick = {
+                            addCritterToArenaViewModel.patchArenaCritter(arenaId!!)
+                        }) {
+
+                        }
+                    }
+                }
+
+
+            } else
+
+            {
+                CritterList(addCritterToArenaViewModel)
+            }
+
+
         }
 }
     @Composable
-    fun CritterList(addCritterToArenaViewModel: AddCritterToArenaViewModel)  {
+    fun CritterList(addCritterToArenaViewModel: AddCritterToArenaViewModel) {
         val critterListUIState by addCritterToArenaViewModel.critterUsables.collectAsState()
         val critterList = critterListUIState.critterUsables
-        for (critter in critterList) {
-            CritterDetail(critter = critter)
+
+        LazyColumn {
+            items(critterList) { critter ->
+                CritterDetail(critter = critter,addCritterToArenaViewModel)
+            }
         }
     }
 
     @Composable
-    fun CritterDetail(critter: CritterUsable?) {
+    fun CritterDetail(critter: CritterUsable?, addCritterToArenaViewModel: AddCritterToArenaViewModel = viewModel()) {
+
+
         Box(
             modifier = Modifier
                 .padding(all = 8.dp)
@@ -80,22 +116,25 @@ class AddCritterToArenaActivity : ComponentActivity() {
                     shape = RoundedCornerShape(8.dp)
                 ) // Hintergrundfarbe und abgeflachte Ecken
                 .clickable {
-                    val intent = Intent(this, CritterProfileActivity::class.java)
-                    val b = Bundle()
-                    b.putInt("critterId", critter!!.critterId)
-                    intent.putExtras(b)
-                    startActivity(intent)
-                    finish()
+                    addCritterToArenaViewModel.selectedCritter.value = critter!!
                 }
 
         ) {
             Row(modifier = Modifier.padding(all = 8.dp)) {
-                Image(
-                    painter = painterResource(id = R.drawable.arrow),
-                    contentDescription = null,
-                    modifier = Modifier
-                        .size(60.dp)
-                )
+                val context = LocalContext.current
+                val name: String = critter!!.name.lowercase()
+                val resourceId = context.resources.getIdentifier(name, "drawable", context.packageName)
+                if (resourceId != 0) {
+                    val picture = painterResource(id = resourceId)
+                    Image(
+                        painter = picture,
+                        contentDescription = null,
+                        modifier = Modifier
+                            .size(80.dp)
+                    )
+                } else {
+                    Text("Image not found for $name")
+                }
                 Spacer(modifier = Modifier.width(8.dp))
                 Column {
                     Spacer(modifier = Modifier.height(18.dp))

@@ -166,7 +166,8 @@ fun ArenaListItem(arena: Arena) {
             val bundle = Bundle()
             // storing the string value in the bundle
             // which is mapped to key
-            bundle.putString("ArenaID", "${arenaViewModel.getselectedArena()!!.arena!!.id}")
+            var arenaIdInt = arenaViewModel.getselectedArena()!!.arena!!.id.toInt()
+            bundle.putInt("ArenaID", arenaViewModel.getselectedArena()!!.arena!!.id)
 
             intent.putExtras(bundle)
             startActivity(intent)

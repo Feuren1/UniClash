@@ -76,7 +76,7 @@ class AddCritterToArenaActivity : ComponentActivity() {
                         Button(onClick = {
                             addCritterToArenaViewModel.patchArenaCritter(arenaId!!)
                         }) {
-
+                            Text("Insert Critter")
                         }
                     }
                 }

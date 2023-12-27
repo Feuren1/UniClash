@@ -155,6 +155,7 @@ fun ArenaListItem(arena: Arena) {
             intent.putExtras(bundle)
             startActivity(intent)
         }) {
+            Text("Start Battle")
 
         }
     }
@@ -172,6 +173,7 @@ fun ArenaListItem(arena: Arena) {
             intent.putExtras(bundle)
             startActivity(intent)
         }) {
+            Text("Add Critter to Arena")
 
         }
     }

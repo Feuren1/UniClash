@@ -142,6 +142,15 @@
             android:label="WildEncounter"
             android:noHistory="true"
             android:theme="@style/Theme.UniClash" />
+
+        <activity
+            android:name=".AddCritterToArenaActivity"
+            android:exported="false"
+            android:label="WildEncounter"
+            android:noHistory="true"
+            android:theme="@style/Theme.UniClash" />
+
+
         <activity
             android:name=".MainActivity"
             android:exported="true"

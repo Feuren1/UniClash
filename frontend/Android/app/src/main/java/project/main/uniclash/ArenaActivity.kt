@@ -66,7 +66,8 @@ class ArenaActivity : ComponentActivity() {
                            // ArenaDetails(arena, studentUIState.student)
                         //}
                         showArena()
-
+                        startBattleButton()
+                        addCritterToArenaButton()
                         arenasUIstate.arenas?.let { arenas ->
                             LazyColumn(
                                 modifier = Modifier
@@ -80,7 +81,7 @@ class ArenaActivity : ComponentActivity() {
                                 }
                             }
                         }
-                        startBattleButton()
+
                         // Add a button or other UI elements as needed
                     }
                 }
@@ -157,4 +158,22 @@ fun ArenaListItem(arena: Arena) {
 
         }
     }
+    @Composable
+    fun addCritterToArenaButton(){
+        Button(onClick = {
+            val intent = Intent(this, AddCritterToArenaActivity::class.java)
+            // creating a bundle object
+            val bundle = Bundle()
+            // storing the string value in the bundle
+            // which is mapped to key
+            var arenaIdInt = arenaViewModel.getselectedArena()!!.arena!!.id.toInt()
+            bundle.putInt("ArenaID", arenaViewModel.getselectedArena()!!.arena!!.id)
+
+            intent.putExtras(bundle)
+            startActivity(intent)
+        }) {
+
+        }
+    }
+
 }

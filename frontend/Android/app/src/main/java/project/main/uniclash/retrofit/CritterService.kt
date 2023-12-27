@@ -8,6 +8,7 @@ import project.main.uniclash.datatypes.CritterUsable
 import retrofit2.Call
 import retrofit2.create
 import retrofit2.http.Body
+import retrofit2.http.DELETE
 import retrofit2.http.GET
 import retrofit2.http.POST
 import retrofit2.http.Path
@@ -18,6 +19,10 @@ interface CritterService {
 
     @GET("/critters/{id}")
     fun getCritters(@Path("id") id: Int): Call<Critter>
+
+    @DELETE("/critters/{id}")
+    fun delCritter(@Path("id") id :Int): Call<String>
+
     @GET("/critters/{id}/usable")
     fun getCritterUsable(@Path("id") id: Int): Call<CritterUsable>
 

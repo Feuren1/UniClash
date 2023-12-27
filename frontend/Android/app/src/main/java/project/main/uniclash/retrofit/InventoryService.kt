@@ -6,12 +6,19 @@ import project.main.uniclash.datatypes.Student
 import retrofit2.Call
 import retrofit2.create
 import retrofit2.http.GET
+import retrofit2.http.PATCH
 import retrofit2.http.Path
 
 interface InventoryService {
 
     @GET("/students/{id}/Itemusables")
     fun getItemsFromStudent(@Path("id")id : Int): Call<List<ItemUsable>>
+
+    @PATCH("/students/{studentId}/itemTemplate/{itemTemplateId}/use")
+    fun useItem(@Path("studentId")studentId : Int, @Path("itemTemplateId") itemTemplateId : Int) : Call<Boolean>
+
+    @PATCH("/critter/{critterId}/useRedBull")
+    fun useRedBull(@Path("critterId") critterId : Int) : Call<Boolean>
 
 
     companion object {

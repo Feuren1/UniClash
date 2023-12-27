@@ -1,14 +1,10 @@
 package project.main.uniclash.retrofit
 
 import android.content.Context
-import project.main.uniclash.datatypes.Item
-import project.main.uniclash.datatypes.ItemForStudent
 import project.main.uniclash.datatypes.ItemTemplate
 import project.main.uniclash.datatypes.NewStudentHub
 import project.main.uniclash.datatypes.Student
 import project.main.uniclash.datatypes.StudentHub
-import project.main.uniclash.datatypes.StudentPatch
-import project.main.uniclash.datatypes.StudentPost
 import retrofit2.Call
 import retrofit2.create
 import retrofit2.http.Body
@@ -19,26 +15,21 @@ import retrofit2.http.Path
 
 interface StudentHubService {
 
-    @GET("/student-hubs/{id}")
-    fun getStudentHub(@Path("id") id: Int): Call<StudentHub>
     @POST("/student-hubs")
     fun postStudentHub(@Body studentHub: NewStudentHub) : Call<StudentHub>
+
     @GET("/student-hubs")
     fun getStudentHubs(): Call<List<StudentHub>>
+
     @GET("/item-templates")
     fun getItemTemplates(): Call<List<ItemTemplate>>
-    @GET("/items")
-    fun getItems(): Call<List<Item>>
-    @POST("/students/{id}/items")
-    fun postStudentItem(@Path("id") id: Int, @Body itemForStudent: ItemForStudent) : Call<ItemForStudent>
-    @GET("/students/{id}/items")
-    fun getItemsFromStudent(@Path("id") id: Int) : Call<List<ItemForStudent>>
+
     @GET("/students/{id}")
     fun getStudent(@Path("id")id : Int): Call<Student>
-    @PATCH("/students/{id}")
-    fun updateStudentCredits(@Path("id") id: Int, @Body studentPatch: StudentPatch): Call<Student>
-    @POST("/students")
-    fun postStudent(@Body studentPost: StudentPost): Call<Student>
+
+    @PATCH("/students/{studentId}/itemTemplate/{itemTemplateId}/buy")
+    fun buyItem(@Path("studentId") studentId: Int, @Path("itemTemplateId") itemTemplateId: Int): Call<Boolean>
+
 
 
     companion object {

@@ -1,9 +1,10 @@
-package project.main.uniclash.map
+package project.main.uniclash.viewmodels
 
+import androidx.lifecycle.ViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import project.main.uniclash.datatypes.MarkerData
 
-class MarkerList() {
+class MapMarkerListViewModel : ViewModel() {
 
     private val _markerList = MutableStateFlow(ArrayList<MarkerData>())
     val markerList = _markerList
@@ -38,5 +39,14 @@ class MarkerList() {
 
     fun removeMarker(marker: MarkerData) {
         _markerList.value = ArrayList(_markerList.value - marker)
+    }
+
+    fun removeMarkersQ(markers: ArrayList<MarkerData?>){
+        //val convertedMarkers = markers.filterNotNull()
+        //if (!(convertedMarkers.containsAll(_markerList.value))) {
+        println("starting to remove")
+            _markerList.value.removeAll(markers) //toSet removes all double avail. values
+        println("removed!!!!")
+       // }
     }
 }

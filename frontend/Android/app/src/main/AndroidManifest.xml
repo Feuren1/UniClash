@@ -3,16 +3,14 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <uses-feature android:name="android.hardware.camera.any" />
-
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.CAMERA" />
     <uses-permission android:name="android.permission.CAMERA" />
     <uses-permission android:name="android.permission.RECORD_AUDIO" />
-    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
-    <uses-permission
-        android:name="android.permission.WRITE_EXTERNAL_STORAGE"
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"
         android:maxSdkVersion="28" />
 
     <uses-feature
@@ -30,9 +28,29 @@
         android:theme="@style/Theme.UniClash"
         tools:targetApi="31">
         <activity
-            android:name=".AddCritterToArenaActivity"
+            android:name=".FinalBattleActivity"
             android:exported="false"
-            android:label="@string/title_activity_add_critter_to_arena"
+            android:label="@string/title_activity_final_battle"
+            android:theme="@style/Theme.UniClash" />
+        <activity
+            android:name=".BattleForcedTutorialAdvancedActivity"
+            android:exported="false"
+            android:label="@string/title_activity_battle_forced_tutorial_advanced"
+            android:theme="@style/Theme.UniClash" />
+        <activity
+            android:name=".BattleTutorialAdvancedActivity"
+            android:exported="false"
+            android:label="@string/title_activity_battle_tutorial_advanced"
+            android:theme="@style/Theme.UniClash" />
+        <activity
+            android:name=".BattleForcedTutorialActivity"
+            android:exported="false"
+            android:label="BattleForcedTutorialActivity"
+            android:theme="@style/Theme.UniClash" />
+        <activity
+            android:name=".BattleTutorialActivity"
+            android:exported="false"
+            android:label="@string/title_activity_battle_tutorial"
             android:theme="@style/Theme.UniClash" />
         <activity
             android:name=".ProfileActivity"
@@ -42,7 +60,7 @@
         <activity
             android:name=".LoginActivity"
             android:exported="false"
-            android:label="@string/title_activity_login_activity" />
+            android:label="@string/title_activity_login_activity"/>
         <activity
             android:name=".PokéActivity"
             android:exported="false"

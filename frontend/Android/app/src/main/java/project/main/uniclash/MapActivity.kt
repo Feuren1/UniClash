@@ -68,7 +68,7 @@ import project.main.uniclash.datatypes.SelectedMarker
 import project.main.uniclash.map.GeoCodingHelper
 import project.main.uniclash.map.LocationPermissions
 import project.main.uniclash.map.MapCalculations
-import project.main.uniclash.map.MarkerList
+import project.main.uniclash.viewmodels.MapMarkerListViewModel
 import project.main.uniclash.retrofit.ArenaService
 import project.main.uniclash.retrofit.CritterService
 import project.main.uniclash.retrofit.StudentHubService
@@ -88,10 +88,10 @@ class MapActivity : ComponentActivity() {
     })
 
     private val mapMarkerViewModel: MapMarkerViewModel by viewModels(factoryProducer = {
-        MapMarkerViewModel.provideFactory(CritterService.getInstance(this), StudentHubService.getInstance(this), ArenaService.getInstance(this),this,)
+        MapMarkerViewModel.provideFactory(CritterService.getInstance(this), StudentHubService.getInstance(this), ArenaService.getInstance(this),this,markerList)
     })
 
-    private var markerList = MarkerList()//dependency injection
+    private var markerList = MapMarkerListViewModel()//dependency injection
     private var reloadMap by mutableStateOf(true)
 
     private var startMapRequested by mutableStateOf(false)
@@ -101,7 +101,6 @@ class MapActivity : ComponentActivity() {
     private var movingCamera : Boolean ? = true
 
     private var shouldLoadFirstWildEncounter by mutableStateOf(false)
-    private var shouldLoadWildEncounter by mutableStateOf(false)
 
     private var newCritterNotification by mutableStateOf(11)
 
@@ -224,15 +223,14 @@ class MapActivity : ComponentActivity() {
     @Composable
     fun Map() {
         LoadFirstWildEncounter()
-        LoadWildEncounter()
 
         val contextForLocation = LocalContext.current
 
         LaunchedEffect(Unit) {
             while (true) {
-                println("${markerList.getMarkerList().size} die Size der Liste")
+                println("${markerList.getMarkerList().size} die Size der MarkerList")
 
-                mapLocationViewModel.getUserLocation(contextForLocation) { location ->
+                mapLocationViewModel.getUserLocation(contextForLocation) { location -> //has to checked here too, because in line 120 is in onCreate (only executed once).
                     mainLatitude = location.latitude
                     mainLongitude = location.longitude
                 }
@@ -256,20 +254,14 @@ class MapActivity : ComponentActivity() {
                         movingCamera = false
                     }
                 }
-                delay(3000) //3sec.
-                Counter.FIRSTSPAWN.minusCounter(1)
-                Counter.WILDENCOUNTERREFRESHER.minusCounter(1)
+                delay(1000) //1sec.
 
+                mapMarkerViewModel.counterLogic()
                 if (Counter.FIRSTSPAWN.getCounter() < 1) {
                     shouldLoadFirstWildEncounter = true
                 }
-
-                if(Counter.WILDENCOUNTERREFRESHER.getCounter() <1){
-                    MapSaver.WILDENCOUNTER.setMarker(ArrayList<MarkerData?>())
-                    shouldLoadWildEncounter = true
-                    Counter.WILDENCOUNTERREFRESHER.setCounter(60)
-                }
                 newCritterNotification = Counter.WILDENCOUNTERREFRESHER.getCounter()
+
             }
         }
 
@@ -315,7 +307,7 @@ class MapActivity : ComponentActivity() {
                         if (distance < 501) {
                             Column(
                                 modifier = Modifier
-                                    .size(325.dp,400.dp)
+                                    .size(325.dp, 400.dp)
                                     .background(
                                         color = Color.Black.copy(alpha = 0.75f),
                                         shape = RoundedCornerShape(7.dp)
@@ -378,12 +370,12 @@ class MapActivity : ComponentActivity() {
                             .size(40.dp)
                             .offset(x = 130.dp)
                     )
-                    var minutes: Int = newCritterNotification / 20
+                    var minutes: Int = newCritterNotification / 60 //20
                     Text(//newCritterNotification *3 = seconds
-                        text = if (newCritterNotification < 20) {
-                            "${newCritterNotification * 3} sec"
+                        text = if (newCritterNotification < 60) { //20
+                            "${newCritterNotification * 1} sec" //3
                         } else {
-                            "${minutes}:${newCritterNotification * 3 - minutes * 60}min"
+                            "${minutes}:${newCritterNotification * 1 - minutes * 60}min" //3
                         },
                         color = Color.White,
                         fontWeight = FontWeight.Bold,
@@ -501,20 +493,12 @@ class MapActivity : ComponentActivity() {
                      markerList.addListOfMarkersQ(MapSaver.WILDENCOUNTER.getMarker())
                 shouldLoadFirstWildEncounter = false
                 if(MapSaver.WILDENCOUNTER.getMarker().isEmpty()){
-                    Counter.FIRSTSPAWN.setCounter(2)
+                    mapMarkerViewModel.loadCritterUsables(1)
+                    Counter.FIRSTSPAWN.setCounter(5)
                 } else {
                     alreadyLoaded = true
                 }
             }
-        }
-    }
-
-    fun LoadWildEncounter(){
-        if(shouldLoadWildEncounter) {
-            Log.d(LOCATION_TAG, "Excecuted second loadwildencounter")
-            val intent = Intent(this,MapActivity::class.java)
-            this.startActivity(intent, null)
-            finish()
         }
     }
 

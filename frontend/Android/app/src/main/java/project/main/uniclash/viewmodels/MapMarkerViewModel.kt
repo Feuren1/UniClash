@@ -8,6 +8,7 @@ import android.graphics.BitmapFactory
 import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.Drawable
 import android.util.Base64
+import android.util.Log
 import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
@@ -17,10 +18,12 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import org.osmdroid.util.GeoPoint
 import project.main.uniclash.ArenaActivity
+import project.main.uniclash.MapActivity
 import project.main.uniclash.R
 import project.main.uniclash.StudentHubActivity
 import project.main.uniclash.WildEncounterActivity
 import project.main.uniclash.datatypes.Arena
+import project.main.uniclash.datatypes.Counter
 import project.main.uniclash.datatypes.CritterUsable
 import project.main.uniclash.datatypes.Locations
 import project.main.uniclash.datatypes.MapSaver
@@ -34,6 +37,7 @@ import project.main.uniclash.retrofit.ArenaService
 import project.main.uniclash.retrofit.CritterService
 import project.main.uniclash.retrofit.StudentHubService
 import project.main.uniclash.retrofit.enqueue
+import kotlin.math.cos
 
 sealed interface MarkersStudentHubUIState {
     data class HasEntries(
@@ -81,9 +85,10 @@ class MapMarkerViewModel(
     private val studentHubService : StudentHubService,
     private val arenaService : ArenaService,
     private val context : Context,
+    private val mapMarkerListViewModel : MapMarkerListViewModel,
 ) : ViewModel() {
 
-    var mapCalculations = MapCalculations()
+    private var mapCalculations = MapCalculations()
 
     val markersStudentHub = MutableStateFlow(
         MarkersStudentHubUIState.HasEntries(
@@ -128,7 +133,6 @@ class MapMarkerViewModel(
     )
 
     fun loadStudentHubs() {
-        println("try to load hubs")
         viewModelScope.launch {
             studentHubs.update { it.copy(isLoading = true) }
             try {
@@ -150,7 +154,7 @@ class MapMarkerViewModel(
         }
     }
 
-    fun initMarkersStudentHub() {
+    private fun initMarkersStudentHub() {
             if(studentHubs.value.studentHubs.isNotEmpty()) {
                 this@MapMarkerViewModel.markersStudentHub.update {
                     it.copy(
@@ -162,7 +166,7 @@ class MapMarkerViewModel(
             var studentHubMarkerList = ArrayList<MarkerData?>()
             var i = 0
             while (i < studentHubs.size) {
-                val studentHub = studentHubs.get(i)
+                val studentHub = studentHubs[i]
                 val geoPoint = GeoPoint(studentHub?.lat!!, studentHub?.lon!!)
 
                 val icon: Drawable? =
@@ -218,7 +222,7 @@ class MapMarkerViewModel(
         }
     }
 
-    fun initMarkersArena(){
+    private fun initMarkersArena(){
             if(arenas.value.arenas.isNotEmpty()) {
                 this@MapMarkerViewModel.markersArena.update {
                     it.copy(
@@ -286,7 +290,7 @@ class MapMarkerViewModel(
         }
     }
 
-    fun initWildEncounter(){
+    private fun initWildEncounter(){
             if(critterUsables.value.critterUsables.isNotEmpty()){
                 this@MapMarkerViewModel.markersWildEncounter.update {
                     it.copy(
@@ -297,31 +301,34 @@ class MapMarkerViewModel(
             val usableCritters = critterUsables.value.critterUsables
             var mapCalculations = MapCalculations()
             var wildEncounterMax = usableCritters
-            while(wildEncounterMax.size < 801 && wildEncounterMax.isNotEmpty()){
+            while(wildEncounterMax.size < 901 && wildEncounterMax.isNotEmpty()){
                 wildEncounterMax = wildEncounterMax + usableCritters
             }
-            val userLocation = Locations.USERLOCATION.getLocation()
+            val studentLocation : GeoPoint = Locations.USERLOCATION.getLocation()
+                Locations.INTERSECTION.setLocation(Locations.USERLOCATION.getLocation())
+
+
             if(MapSaver.WILDENCOUNTER.getMarker().isEmpty() &&wildEncounterMax.isNotEmpty()) {
-                var randomLocation = generateRandomGeoPoints(userLocation, 2.0, 800) //400 per km
+                var randomLocation = generateRandomGeoPoints(studentLocation, 2.0, 900) //400 per km
                 var i = 0
                 val wildEncounter = wildEncounterMax
 
-                while (i < 800) {
+                while (i < 900) {
 
-                    val name: String = wildEncounter.get(i)?.name!!.lowercase()
+                    val name: String = wildEncounter[i]?.name!!.lowercase()
                     val resourceId = context.resources.getIdentifier(name, "drawable", context.packageName)
                     val resourceIdM = context.resources.getIdentifier(name+"m", "drawable", context.packageName)
 
                     var myMarker = MarkerWildEncounter(
-                        state = GeoPoint(randomLocation.get(i).latitude, randomLocation.get(i).longitude),
+                        state = GeoPoint(randomLocation.get(i).latitude, randomLocation[i].longitude),
                         icon = mapCalculations.resizeDrawable(context, if(resourceIdM > 0){resourceIdM}else{R.drawable.icon},50.0F),
                         visible = true,
-                        title = "${wildEncounter.get(i)?.name}",
-                        snippet = "Level: ${wildEncounter.get(i)?.level}",
+                        title = "${wildEncounter[i]?.name}",
+                        snippet = "Level: ${wildEncounter[i]?.level}",
                         pic =  context.getDrawable(if(resourceId > 0){resourceId}else{R.drawable.icon}),
                         button = WildEncounterActivity::class.java,
                         buttonText = "catch Critter",
-                        critterUsable = wildEncounter.get(i)
+                        critterUsable = wildEncounter[i]
                     )
                     wildEncounterMarkerList.add(myMarker)
                     i++
@@ -357,15 +364,45 @@ class MapMarkerViewModel(
             val y = w * Math.sin(t)
 
             // Adjust the x-coordinate for the shrinking of the east-west distances
-            val new_x = x / Math.cos(Math.toRadians(center.latitude))
+            val newX = x / cos(Math.toRadians(center.latitude))
 
-            val newLongitude = new_x + center.longitude
+            val newLongitude = newX + center.longitude
             val newLatitude = y + center.latitude
             geoLocations.add(GeoPoint(newLatitude, newLongitude))
             counter--
         }
         return geoLocations
     }
+
+    fun counterLogic(){
+        Counter.FIRSTSPAWN.minusCounter(1)
+        Counter.WILDENCOUNTERREFRESHER.minusCounter(1)
+
+        var distance = mapCalculations.haversineDistance(Locations.USERLOCATION.getLocation().latitude,Locations.USERLOCATION.getLocation().longitude,Locations.INTERSECTION.getLocation().latitude,Locations.INTERSECTION.getLocation().longitude)
+        if(distance > 2100){
+            Locations.INTERSECTION.setLocation(Locations.USERLOCATION.getLocation()) //otherwise endless loop
+            Counter.WILDENCOUNTERREFRESHER.setCounter(1)
+        }
+
+        if(Counter.WILDENCOUNTERREFRESHER.getCounter() == 1 && Counter.FIRSTSPAWN.getCounter()<1){
+            mapMarkerListViewModel.removeMarkersQ(MapSaver.WILDENCOUNTER.getMarker())
+            MapSaver.WILDENCOUNTER.setMarker(ArrayList<MarkerData?>())
+        }
+
+        if(Counter.WILDENCOUNTERREFRESHER.getCounter() <1 && Counter.FIRSTSPAWN.getCounter() < 1){
+            loadWildEncounter()
+            Counter.WILDENCOUNTERREFRESHER.setCounter(300)
+        }
+    }
+
+    private fun loadWildEncounter(){
+            loadCritterUsables(1)
+             mapMarkerListViewModel.addListOfMarkersQ(MapSaver.WILDENCOUNTER.getMarker())
+
+            if(MapSaver.WILDENCOUNTER.getMarker().isEmpty()) {
+                Counter.WILDENCOUNTERREFRESHER.setCounter(0)
+            }
+        }
 
     init {
         viewModelScope.launch {
@@ -394,6 +431,7 @@ class MapMarkerViewModel(
             studentHubService: StudentHubService,
             arenaService : ArenaService,
             context : Context,
+            mapMarkerListViewModel : MapMarkerListViewModel
         ): ViewModelProvider.Factory =
             object : ViewModelProvider.Factory {
                 @Suppress("UNCHECKED_CAST")
@@ -403,6 +441,7 @@ class MapMarkerViewModel(
                         studentHubService,
                         arenaService,
                         context,
+                        mapMarkerListViewModel,
                     ) as T
                 }
             }

@@ -32,6 +32,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import project.main.uniclash.datatypes.CritterUsable
 import project.main.uniclash.retrofit.CritterService
+import project.main.uniclash.retrofit.InventoryService
 import project.main.uniclash.ui.theme.UniClashTheme
 import project.main.uniclash.viewmodels.CritterProfileViewModel
 import project.main.uniclash.viewmodels.CritterUsableUIState
@@ -40,8 +41,9 @@ import project.main.uniclash.viewmodels.UniClashViewModel
 class CritterProfileActivity : ComponentActivity() {
     private var exitRequest by mutableStateOf(false)
     val critterProfileViewModel: CritterProfileViewModel by viewModels(factoryProducer = {
-        CritterProfileViewModel.provideFactory(CritterService.getInstance(this))
+        CritterProfileViewModel.provideFactory(CritterService.getInstance(this), InventoryService.getInstance(this))
     })
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         val b = intent.extras
@@ -81,7 +83,7 @@ class CritterProfileActivity : ComponentActivity() {
                             )
                         }
                         Box {
-                            if (critterUsable!==null){
+                            if (critterUsable != null) {
                                 CritterProfileScreen()
                             }
                         }
@@ -89,69 +91,104 @@ class CritterProfileActivity : ComponentActivity() {
 
                 }
                 if (exitRequest) {
-                    val intent = Intent(this, MenuActivity::class.java)
+                    val intent = Intent(this, CritterListActivity::class.java)
                     this.startActivity(intent)
                     exitRequest = false
+                    finish()
                 }
             }
         }
     }
 }
 
-@Composable
-fun CritterProfile(critterProfileViewModel: CritterProfileViewModel = viewModel()) {
-    val critterUsableUIState by critterProfileViewModel.critterUsable.collectAsState()
-    val critterUIState by critterProfileViewModel.critter.collectAsState()
-    if (critterUsableUIState.critterUsable!=null){
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(16.dp)
-    ) {
-        // Display other critter information as needed
-        Text(text = "Level: ${critterUsableUIState.critterUsable!!.level}")
-        Text(text = "Name: ${critterUsableUIState.critterUsable!!.name}")
-        Text(text = "HP: ${critterUsableUIState.critterUsable!!.hp}")
-        Text(text = "Attack: ${critterUsableUIState.critterUsable!!.atk}")
-        Text(text = "Defense: ${critterUsableUIState.critterUsable!!.def}")
-        Text(text = "Speed: ${critterUsableUIState.critterUsable!!.spd}")
-
-        // Display attacks
-        Text(text = "Attacks:")
-        LazyColumn {
-            items(critterUsableUIState.critterUsable!!.attacks.size) { attack ->
-                Text(text = "Attack Name: ${critterUsableUIState.critterUsable!!.attacks[attack]}")
-                // Display other attack information as needed
-            }
-        }
-
-        // Display critterId and critterTemplateId
-        Text(text = "Critter ID: ${critterUsableUIState.critterUsable!!.critterId}")
-        Text(text = "Critter Template ID: ${critterUsableUIState.critterUsable!!.critterTemplateId}")
-
-        Button(
-            onClick = {
-            //critterProfileViewModel.evolve(critterUsableUIState.critterUsable!!.critterId)
-            //critterProfileViewModel.loadCritterUsable(critterUIState.critter!!.id)
-            critterProfileViewModel.storeFightingCritter()
-        },
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(8.dp)
+    @Composable
+    fun CritterProfile(critterProfileViewModel: CritterProfileViewModel = viewModel()) {
+        val critterUsableUIState by critterProfileViewModel.critterUsable.collectAsState()
+        val critterUIState by critterProfileViewModel.critter.collectAsState()
+        if (critterUsableUIState.critterUsable != null && critterUIState.critter != null) {
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(16.dp)
             ) {
-            Text(text = "Select this critter to fight!")
+                // Display other critter information as needed
+                Text(text = "Level: ${critterUsableUIState.critterUsable!!.level}")
+                Text(text = "Name: ${critterUsableUIState.critterUsable!!.name}")
+                Text(text = "HP: ${critterUsableUIState.critterUsable!!.hp}")
+                Text(text = "Attack: ${critterUsableUIState.critterUsable!!.atk}")
+                Text(text = "Defense: ${critterUsableUIState.critterUsable!!.def}")
+                Text(text = "Speed: ${critterUsableUIState.critterUsable!!.spd}")
+
+                // Display attacks
+                Text(text = "Attacks:")
+                if (!critterUsableUIState.critterUsable!!.attacks.isNullOrEmpty()) {
+                    critterUsableUIState.critterUsable!!.attacks.forEach { attack ->
+                        Text(text = "Attack Name: $attack")
+                        // Display other attack information as needed
+                    }
+                }
+
+                // Display critterId and critterTemplateId
+                Text(text = "Critter ID: ${critterUsableUIState.critterUsable!!.critterId}")
+                Text(text = "Critter Template ID: ${critterUsableUIState.critterUsable!!.critterTemplateId}")
+
+                Button(
+                    onClick = {
+                        //critterProfileViewModel.evolve(critterUsableUIState.critterUsable!!.critterId)
+                        //critterProfileViewModel.loadCritterUsable(critterUIState.critter!!.id)
+                        critterProfileViewModel.storeFightingCritter()
+                    },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(8.dp)
+                ) {
+                    Text(text = "Select this critter to fight!")
+                }
+                Button(
+                    onClick = {
+                        critterProfileViewModel.loadCritterUsable(critterUIState.critter!!.id)
+                        critterProfileViewModel.evolve(critterUsableUIState.critterUsable!!.critterId)
+                    },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(8.dp)
+                ) {
+                    Text(text = "Evolve")
+                }
+                Button(
+                    onClick = {
+                        critterProfileViewModel.loadCritterUsable(critterUIState.critter!!.id)
+                        critterProfileViewModel.useRedBull(critterUsableUIState.critterUsable!!.critterId)
+                    },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(8.dp)
+                ) {
+                    Text(text = "Use Rebull")
+                }
+                Button(
+                    onClick = {
+                        critterProfileViewModel.delCritter(critterUsableUIState.critterUsable!!.critterId)
+                    },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(8.dp)
+                ) {
+                    Text(text = "Delete Critter :(")
+                }
+            }
+        }else{
+            Text("Critter data not available.")
         }
     }
-    }
-}
 
-@Composable
-fun CritterProfileScreen(critterProfileViewModel: CritterProfileViewModel = viewModel()) {
-    // A surface container using the 'background' color from the theme
-    Surface(
-        modifier = Modifier.fillMaxSize(),
-        color = MaterialTheme.colorScheme.background
-    ) {
-        CritterProfile(critterProfileViewModel)
+    @Composable
+    fun CritterProfileScreen(critterProfileViewModel: CritterProfileViewModel = viewModel()) {
+        // A surface container using the 'background' color from the theme
+        Surface(
+            modifier = Modifier.fillMaxSize(),
+            color = MaterialTheme.colorScheme.background
+        ) {
+            CritterProfile(critterProfileViewModel)
+        }
     }
-}

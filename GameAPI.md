@@ -97,7 +97,12 @@ Max User Level: max.Integer<br>
 Needed Level to create new Buildings: 5 , 10 ,15 aso.<br>
 And how many buildings: 2<br>
 
-# Other Game Rules<br>
+## Map<br>
+Refresh every 5min<br>
+Frist spawn after 30min<br>
+Critter Radius 2km -> 900 wild encounter<br>
+
+## Other Game Rules<br>
 Coins per catch: 1 <br>
 Ep per catch: 25<br>
 Coins per fight Win: 3 <br>

@@ -112,7 +112,7 @@ class NewBuildingViewModel(
         viewModelScope.launch {
             arena.update { it.copy(isLoading = true) }
             try {
-                var newArena = NewArena(name,description,lat,long,0,pic)
+                var newArena = NewArena(name,description,lat,long,userDataManager.getStudentId()!!,pic)
                 val response = arenaService.postArena(newArena).enqueue()
                 Log.d(TAG, "loadArena: $response")
                 if (response.isSuccessful) {

@@ -1,5 +1,6 @@
 package project.main.uniclash.userDataManager
 
+import android.app.Application
 import android.content.Context
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.intPreferencesKey
@@ -11,38 +12,65 @@ import project.main.uniclash.datatypes.CritterUsable
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringSetPreferencesKey
-import kotlinx.coroutines.flow.Flow
 
 class CritterListDataManager(context: Context) {
     private val context = context
     private val dataStore = context.dataStore
 
-    suspend fun storeCritterList(critterUsables: List<CritterUsable>) {
-        val CRITTER_LIST = stringSetPreferencesKey("critter_list")
-        val critterSet = critterUsables.map { it.toString() }.toSet()
+    private val userDataManager: UserDataManager by lazy {
+        UserDataManager(Application())
+    }
 
-        context.dataStore.edit { preferences ->
-            preferences[CRITTER_LIST] = critterSet
-        }
+    suspend fun storeCritterList(critterUsables: List<CritterUsable>) {
+            var id = "0"
+            if(userDataManager.getUserId() != null){
+                id = userDataManager.getUserId()!!
+            }
+            storeUserId(id)
+
+            val CRITTER_LIST = stringSetPreferencesKey("critter_list")
+            val critterSet = critterUsables.map { it.toString() }.toSet()
+
+            context.dataStore.edit { preferences ->
+                preferences[CRITTER_LIST] = critterSet
+            }
     }
 
     suspend fun getCritterList(): ArrayList<CritterUsable> {
-        val CRITTER_LIST = stringSetPreferencesKey("critter_list")
+        if(!(userDataManager.getUserId().equals(getUserId()))) {
+            clearCritterList()
+            return ArrayList()
+        }
+            val CRITTER_LIST = stringSetPreferencesKey("critter_list")
 
-        val critterSet = dataStore.data
+            val critterSet = dataStore.data
+                .map { preferences ->
+                    preferences[CRITTER_LIST] ?: emptySet()
+                }.first()
+
+            // Assuming CritterUsable has a method to create an instance from a string representation
+            return critterSet.mapTo(ArrayList()) { CritterUsable.fromString(it) }
+
+    }
+
+    private suspend fun storeUserId(id : String) {
+        println("new userid")
+        val USER_ID = stringPreferencesKey("user_idCritter")
+        context.dataStore.edit { preferences ->
+            preferences[USER_ID] = id
+        }
+    }
+
+    private suspend fun getUserId(): String? {
+        val USER_ID = stringPreferencesKey("user_idCritter")
+        return dataStore.data
             .map { preferences ->
-                preferences[CRITTER_LIST] ?: emptySet()
+                preferences[USER_ID]
             }.first()
-
-        // Assuming CritterUsable has a method to create an instance from a string representation
-        return critterSet.mapTo(ArrayList()) { CritterUsable.fromString(it) }
     }
 
     suspend fun checkCritterListIsNotEmpty() : Boolean{
-        if(getCritterList().isEmpty()){
-            return false
-        }
-            return true
+        return getCritterList().isNotEmpty()
     }
 
     suspend fun clearCritterList(){

@@ -20,7 +20,6 @@ data class CritterUsable(
     companion object {
         fun fromString(stringRepresentation: String): CritterUsable {
             val parts = stringRepresentation.split(", ")
-            println("$stringRepresentation complete")
 
             val level = parts[0].substringAfter('=').toInt()
             val name = parts[1].substringAfter("='").removeSuffix("'")

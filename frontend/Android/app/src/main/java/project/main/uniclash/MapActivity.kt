@@ -237,8 +237,6 @@ class MapActivity : ComponentActivity() {
 
         LaunchedEffect(Unit) {
             while (true) {
-                println("${mapMarkerListViewModel.mapMarkerList.value.markerList.size} die Size der MarkerList")
-
                 mapLocationViewModel.getUserLocation(contextForLocation) { location -> //has to checked here too, because in line 120 is in onCreate (only executed once).
                     mainLatitude = location.latitude
                     mainLongitude = location.longitude
@@ -282,7 +280,6 @@ class MapActivity : ComponentActivity() {
         }
 
         var markerList = mapMarkerListViewModel.mapMarkerList.collectAsState()
-        println("${markerList.value.markerList.size} CHANGES")
 
         // Use camera state and location in your OpenStreetMap Composable
             OpenStreetMap(

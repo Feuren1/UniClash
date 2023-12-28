@@ -5,13 +5,17 @@ import android.content.Context
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.google.gson.JsonObject
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import project.main.uniclash.dataStore
 import project.main.uniclash.datatypes.UserLoginRequest
 import project.main.uniclash.retrofit.UserService
+import project.main.uniclash.userDataManager.CritterListDataManager
 import project.main.uniclash.userDataManager.UserDataManager
 import retrofit2.Call
 import retrofit2.Callback
@@ -33,6 +37,7 @@ class LoginViewModel (private val userService: UserService, application: Applica
     private val userDataManager: UserDataManager by lazy {
         UserDataManager(application)
     }
+
     val text: MutableStateFlow<String> = MutableStateFlow("")
 
     val login = MutableStateFlow(

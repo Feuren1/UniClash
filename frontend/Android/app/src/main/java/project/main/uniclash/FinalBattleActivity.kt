@@ -119,19 +119,17 @@ class FinalBattleActivity : ComponentActivity() {
 
                     if(!battleViewPlayerUIState.isLoading && !battleViewcpuCritterUIState.isLoading) {
                         Column {
-                            var battleResult = finalBattleViewModel.checkResult()
+                            Image(
+                                painter = painterResource(id = R.drawable.exit),
+                                contentDescription = null,
+                                modifier = Modifier
+                                    .size(40.dp)
+                                    .clickable {
+                                        mediaPlayer?.release()
+                                        progressRequest = true
+                                    }
 
-                                Image(
-                                    painter = painterResource(id = R.drawable.exit),
-                                    contentDescription = null,
-                                    modifier = Modifier
-                                        .size(40.dp)
-                                        .clickable {
-                                            mediaPlayer?.release()
-                                            progressRequest = true
-                                        }
-
-                                )
+                            )
 
                             if (playerWon.value == true) {
                                 finalBattleViewModel.updateArenaLeader()
@@ -141,30 +139,18 @@ class FinalBattleActivity : ComponentActivity() {
                                         .background(MaterialTheme.colorScheme.background)
                                         .padding(16.dp)
                                 ) {
-                                    Image(
-                                        painter = painterResource(id = R.drawable.repeat),
-                                        contentDescription = null,
-                                        modifier = Modifier
-                                            .size(40.dp)
-                                            .clickable {
-                                                repeatRequest = true
-                                            }
-                                            .align(Alignment.TopEnd)
-                                    )
                                 }
                             }
                             Box {
                                 FinalBattle(finalBattleViewModel)
                             }
                         }
+                    }else{
+                        LoadingCircle(Modifier)
                     }
 
                 }
 
-            }
-            if(repeatRequest){
-                val intent = Intent(this, this::class.java)
-                this.startActivity(intent)
             }
             if(progressRequest){
                 val intent = Intent(this, MenuActivity::class.java)

@@ -12,6 +12,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import project.main.uniclash.battle.BattleResult
+import project.main.uniclash.datatypes.ArenaLeaderPatch
 import project.main.uniclash.datatypes.Attack
 import project.main.uniclash.datatypes.AttackType
 import project.main.uniclash.retrofit.enqueue
@@ -71,6 +72,7 @@ class FinalBattleViewModel(
     private var cpuAttackIndex = 0
 
     val battleText: MutableStateFlow<String> get() = _battleText
+    val arenaId = MutableStateFlow<Int?>(null)
 
     val playerCritter = MutableStateFlow(
         PlayerCritterTutorialUIState.HasEntries(
@@ -455,6 +457,50 @@ class FinalBattleViewModel(
                     playerCritter.update {
                         it.copy(
                             playerCritter = crittersUsable,
+                            isLoading = false
+                        )
+                    }
+                }
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
+        }
+    }
+
+    fun saveArenaId(arenaIdToSave: Int?){
+    arenaId.value = arenaIdToSave
+    }
+
+    fun updateArenaLeader(){
+        viewModelScope.launch {
+            try {
+                val arenaLeaderPatchRequest = ArenaLeaderPatch(null, userDataManager.getStudentId()!!)
+                val response = critterService.patchArenaLeader(arenaId.value!!, arenaLeaderPatchRequest).enqueue()
+                Log.d(TAG, "Patching Arena Leader: $response")
+                if (response.isSuccessful) {
+                    Log.d(TAG, "Patching Arena Leader: success")
+                }
+            } catch (e: Exception) {
+                Log.d(TAG, "Patching Arena Leader: failed!")
+                e.printStackTrace()
+            }
+        }
+    }
+
+    @SuppressLint("MissingPermission")
+    fun loadCpuCritter(cpuCritterId: Int) {
+        viewModelScope.launch {
+            cpuCritter.update { it.copy(isLoading = true) }
+            try {
+                val response = critterService.getCritterUsable(cpuCritterId).enqueue()
+                Log.d(TAG, "loadCrittersUsable: $response")
+                if (response.isSuccessful) {
+                    Log.d(TAG, "loadCrittersUsables: success")
+                    val crittersUsable = response.body()!!
+                    Log.d(TAG, "loadCrittersUsables: $crittersUsable")
+                    cpuCritter.update {
+                        it.copy(
+                            cpuCritter = crittersUsable,
                             isLoading = false
                         )
                     }

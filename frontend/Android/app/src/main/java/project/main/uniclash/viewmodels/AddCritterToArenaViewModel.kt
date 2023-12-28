@@ -50,22 +50,15 @@ class AddCritterToArenaViewModel(
     fun patchArenaCritter(arenaId: Int){
         viewModelScope.launch{
             try{
-
                 var arenaCritterPatchRequest = ArenaCritterPatch(selectedCritter.value!!.critterId, userDataManager.getStudentId()!!)
                 val response = arenaCritterService.updateArenaCritter(arenaId,arenaCritterPatchRequest).enqueue()
                 Log.d(TAG, "patchArenaCritterID: $response")
                 if (response.isSuccessful) {
                     Log.d(TAG, "patchArenaCritterID: success")
-                    val updatedArena = response.body()!!
-                    Log.d(TAG, "patchArenaCritterID: $updatedArena")
-                    arenasUIState.update {
-                        it.copy(
-                            arena = updatedArena,
-                            isLoading = false
-                        )
-                    }
+                    text.value = selectedCritter!!.value!!.name + " has been inserted"
                 }
             }catch (e: Exception) {
+                text.value = selectedCritter!!.value!!.name + " couldn't  be inserted"
                 e.printStackTrace()
             }
         }

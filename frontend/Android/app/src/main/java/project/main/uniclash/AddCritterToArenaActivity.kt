@@ -51,6 +51,7 @@ class AddCritterToArenaActivity : ComponentActivity() {
 
         super.onCreate(savedInstanceState)
         setContent {
+            val textMessage by addCritterToArenaViewModel.text.collectAsState()
             val selectedCritter by addCritterToArenaViewModel.selectedCritter.collectAsState()
             val bundle = intent.extras
             val arenaId = bundle?.getInt("ArenaID")
@@ -78,6 +79,9 @@ class AddCritterToArenaActivity : ComponentActivity() {
                         }) {
                             Text("Insert Critter")
                         }
+                    }
+                    Row {
+                        Text(text = textMessage)
                     }
                 }
 

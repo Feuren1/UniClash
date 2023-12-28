@@ -18,8 +18,6 @@ import retrofit2.http.Path
 interface ArenaCritterService {
 
 
-
-
     @PATCH("/arenas/{id}")
     fun updateArenaCritter(@Path("id") id: Int, @Body arenaCritterPatch: ArenaCritterPatch): Call<Arena>
 

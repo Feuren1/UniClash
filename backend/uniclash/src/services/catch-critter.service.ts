@@ -4,6 +4,7 @@ import {Attack, Critter, CritterUsable, Student} from "../models";
 import {AttackRepository, CritterAttackRepository, CritterRepository, StudentRepository} from "../repositories";
 import {CritterStatsService} from "./critter-stats.service";
 import {LevelCalcStudentService} from "./levelCalc-student.service";
+import { authenticate } from '../decorators';
 
 
 @injectable()
@@ -16,7 +17,7 @@ export class CatchCritterService {
     @repository(CritterAttackRepository) protected critterAttackRepository: CritterAttackRepository,
     @repository(StudentRepository) protected studentRepository: StudentRepository
   ) { }
-
+  @authenticate('jwt')
   async createCopyOfCritter(studentId: number, critterId: number): Promise<CritterUsable> {
     const critter: Critter = await this.critterRepository.findById(critterId, {
       include: ['critterAttacks'],

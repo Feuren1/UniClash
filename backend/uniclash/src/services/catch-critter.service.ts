@@ -5,6 +5,7 @@ import {AttackRepository, CritterAttackRepository, CritterRepository, StudentRep
 import {CritterStatsService} from "./critter-stats.service";
 import {LevelCalcStudentService} from "./levelCalc-student.service";
 import { authenticate } from '../decorators';
+import {BlockList} from "net";
 
 
 @injectable()
@@ -29,8 +30,11 @@ export class CatchCritterService {
     const student: Student = await this.studentRepository.findById(studentId, {
       include: ['critters'],
     })
-    const number : number = 0
-    const critters: Critter[] = student.critters;
+    let critters: Critter[] = []
+    if(student.critters != undefined){
+      critters = student.critters;
+    }
+
       if(critters.length<200) {
         const savedCritterCopy: Critter = await this.critterRepository.create({
           //critterAttacks:undefined,

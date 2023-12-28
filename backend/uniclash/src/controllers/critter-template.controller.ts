@@ -19,6 +19,7 @@ import {
 } from '@loopback/rest';
 import {CritterTemplate} from '../models';
 import {CritterTemplateRepository} from '../repositories';
+import {authenticate} from "@loopback/authentication";
 
 export class CritterTemplateController {
   constructor(
@@ -27,6 +28,7 @@ export class CritterTemplateController {
   ) {}
 
   @post('/critter-templates')
+  @authenticate('jwt')
   @response(200, {
     description: 'CritterTemplate model instance',
     content: {'application/json': {schema: getModelSchemaRef(CritterTemplate)}},
@@ -48,6 +50,7 @@ export class CritterTemplateController {
   }
 
   @get('/critter-templates/count')
+  @authenticate('jwt')
   @response(200, {
     description: 'CritterTemplate model count',
     content: {'application/json': {schema: CountSchema}},
@@ -59,6 +62,7 @@ export class CritterTemplateController {
   }
 
   @get('/critter-templates')
+  @authenticate('jwt')
   @response(200, {
     description: 'Array of CritterTemplate model instances',
     content: {
@@ -77,6 +81,7 @@ export class CritterTemplateController {
   }
 
   @patch('/critter-templates')
+  @authenticate('jwt')
   @response(200, {
     description: 'CritterTemplate PATCH success count',
     content: {'application/json': {schema: CountSchema}},
@@ -96,6 +101,7 @@ export class CritterTemplateController {
   }
 
   @get('/critter-templates/{id}')
+  @authenticate('jwt')
   @response(200, {
     description: 'CritterTemplate model instance',
     content: {
@@ -112,6 +118,7 @@ export class CritterTemplateController {
   }
 
   @patch('/critter-templates/{id}')
+  @authenticate('jwt')
   @response(204, {
     description: 'CritterTemplate PATCH success',
   })
@@ -130,6 +137,7 @@ export class CritterTemplateController {
   }
 
   @put('/critter-templates/{id}')
+  @authenticate('jwt')
   @response(204, {
     description: 'CritterTemplate PUT success',
   })
@@ -141,6 +149,7 @@ export class CritterTemplateController {
   }
 
   @del('/critter-templates/{id}')
+  @authenticate('jwt')
   @response(204, {
     description: 'CritterTemplate DELETE success',
   })

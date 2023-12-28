@@ -11,6 +11,7 @@ import {
   ItemTemplate,
 } from '../models';
 import {ItemRepository} from '../repositories';
+import {authenticate} from "@loopback/authentication";
 
 export class ItemItemTemplateController {
   constructor(
@@ -18,6 +19,7 @@ export class ItemItemTemplateController {
     public itemRepository: ItemRepository,
   ) { }
 
+  @authenticate('jwt')
   @get('/items/{id}/item-template', {
     responses: {
       '200': {

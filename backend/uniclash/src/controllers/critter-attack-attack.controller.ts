@@ -11,6 +11,7 @@ import {
   Attack,
 } from '../models';
 import {CritterAttackRepository} from '../repositories';
+import {authenticate} from "@loopback/authentication";
 
 export class CritterAttackAttackController {
   constructor(
@@ -18,6 +19,7 @@ export class CritterAttackAttackController {
     public critterAttackRepository: CritterAttackRepository,
   ) { }
 
+  @authenticate('jwt')
   @get('/critter-attacks/{id}/attack', {
     responses: {
       '200': {

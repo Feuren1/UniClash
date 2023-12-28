@@ -19,6 +19,7 @@ import {
 } from '@loopback/rest';
 import {Attack} from '../models';
 import {AttackRepository} from '../repositories';
+import {authenticate} from "@loopback/authentication";
 
 export class AttackController {
   constructor(
@@ -27,6 +28,7 @@ export class AttackController {
   ) {}
 
   @post('/attacks')
+  @authenticate('jwt')
   @response(200, {
     description: 'Attack model instance',
     content: {'application/json': {schema: getModelSchemaRef(Attack)}},
@@ -48,6 +50,7 @@ export class AttackController {
   }
 
   @get('/attacks/count')
+  @authenticate('jwt')
   @response(200, {
     description: 'Attack model count',
     content: {'application/json': {schema: CountSchema}},
@@ -59,6 +62,7 @@ export class AttackController {
   }
 
   @get('/attacks')
+  @authenticate('jwt')
   @response(200, {
     description: 'Array of Attack model instances',
     content: {
@@ -77,6 +81,7 @@ export class AttackController {
   }
 
   @patch('/attacks')
+  @authenticate('jwt')
   @response(200, {
     description: 'Attack PATCH success count',
     content: {'application/json': {schema: CountSchema}},
@@ -96,6 +101,7 @@ export class AttackController {
   }
 
   @get('/attacks/{id}')
+  @authenticate('jwt')
   @response(200, {
     description: 'Attack model instance',
     content: {
@@ -112,6 +118,7 @@ export class AttackController {
   }
 
   @patch('/attacks/{id}')
+  @authenticate('jwt')
   @response(204, {
     description: 'Attack PATCH success',
   })
@@ -130,6 +137,7 @@ export class AttackController {
   }
 
   @put('/attacks/{id}')
+  @authenticate('jwt')
   @response(204, {
     description: 'Attack PUT success',
   })
@@ -141,6 +149,7 @@ export class AttackController {
   }
 
   @del('/attacks/{id}')
+  @authenticate('jwt')
   @response(204, {
     description: 'Attack DELETE success',
   })

@@ -20,6 +20,7 @@ import {
   Student,
 } from '../models';
 import {UserRepository} from '../repositories';
+import {authenticate} from "@loopback/authentication";
 
 export class UserStudentController {
   constructor(
@@ -45,6 +46,7 @@ export class UserStudentController {
     return this.userRepository.student(id).get(filter);
   }
 
+  @authenticate('jwt')
   @post('/users/{id}/student', {
     responses: {
       '200': {
@@ -70,6 +72,7 @@ export class UserStudentController {
     return this.userRepository.student(id).create(student);
   }
 
+  @authenticate('jwt')
   @patch('/users/{id}/student', {
     responses: {
       '200': {
@@ -93,6 +96,7 @@ export class UserStudentController {
     return this.userRepository.student(id).patch(student, where);
   }
 
+  @authenticate('jwt')
   @del('/users/{id}/student', {
     responses: {
       '200': {

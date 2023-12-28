@@ -11,6 +11,7 @@ import {
   Type,
 } from '../models';
 import {AttackRepository} from '../repositories';
+import {authenticate} from "@loopback/authentication";
 
 export class AttackTypeController {
   constructor(
@@ -18,6 +19,7 @@ export class AttackTypeController {
     public attackRepository: AttackRepository,
   ) { }
 
+  @authenticate('jwt')
   @get('/attacks/{id}/type', {
     responses: {
       '200': {

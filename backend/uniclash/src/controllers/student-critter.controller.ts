@@ -24,6 +24,7 @@ import {
 import {StudentRepository} from '../repositories';
 import {CatchCritterService} from "../services/catch-critter.service";
 import {StudentCritterService} from '../services/student-critter.service';
+import {authenticate} from "@loopback/authentication";
 
 export class StudentCritterController {
   constructor(
@@ -32,6 +33,7 @@ export class StudentCritterController {
     @service(CatchCritterService) protected catchCritterService: CatchCritterService,
   ) { }
 
+  @authenticate('jwt')
   @get('/students/{id}/critters', {
     responses: {
       '200': {
@@ -51,6 +53,7 @@ export class StudentCritterController {
     return this.studentRepository.critters(id).find(filter);
   }
 
+  @authenticate('jwt')
   @post('/students/{id}/critters', {
     responses: {
       '200': {
@@ -76,6 +79,7 @@ export class StudentCritterController {
     return this.studentRepository.critters(id).create(critter);
   }
 
+  @authenticate('jwt')
   @patch('/students/{id}/critters', {
     responses: {
       '200': {
@@ -99,6 +103,7 @@ export class StudentCritterController {
     return this.studentRepository.critters(id).patch(critter, where);
   }
 
+  @authenticate('jwt')
   @del('/students/{id}/critters', {
     responses: {
       '200': {
@@ -114,6 +119,7 @@ export class StudentCritterController {
     return this.studentRepository.critters(id).delete(where);
   }
 
+  @authenticate('jwt')
   @get('/students/{id}/usables', {
     responses: {
       '200': {
@@ -131,6 +137,7 @@ export class StudentCritterController {
   ): Promise<CritterUsable[]> {
     return this.studentCritterService.createCritterUsableListOnStudentId(id);
   }
+  @authenticate('jwt')
   @post('/students/{studentId}/critters/{critterId}/catchCritter', {
     responses: {
       '200': {

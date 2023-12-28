@@ -21,6 +21,7 @@ import {
 import {Student} from '../models';
 import {StudentRepository} from '../repositories';
 import {LevelCalcStudentService} from "../services";
+import {authenticate} from "@loopback/authentication";
 
 
 export class StudentController {
@@ -30,6 +31,7 @@ export class StudentController {
     @service(LevelCalcStudentService) protected levelCalcStudentService: LevelCalcStudentService,
   ) {}
 
+  @authenticate('jwt')
   @post('/students')
   @response(200, {
     description: 'Student model instance',
@@ -51,6 +53,7 @@ export class StudentController {
     return this.studentRepository.create(student);
   }
 
+  @authenticate('jwt')
   @get('/students/count')
   @response(200, {
     description: 'Student model count',
@@ -62,6 +65,7 @@ export class StudentController {
     return this.studentRepository.count(where);
   }
 
+  @authenticate('jwt')
   @get('/students')
   @response(200, {
     description: 'Array of Student model instances',
@@ -80,6 +84,7 @@ export class StudentController {
     return this.studentRepository.find(filter);
   }
 
+  @authenticate('jwt')
   @patch('/students')
   @response(200, {
     description: 'Student PATCH success count',
@@ -99,6 +104,7 @@ export class StudentController {
     return this.studentRepository.updateAll(student, where);
   }
 
+  @authenticate('jwt')
   @get('/students/{id}')
   @response(200, {
     description: 'Student model instance',
@@ -115,6 +121,7 @@ export class StudentController {
     return this.studentRepository.findById(id, filter);
   }
 
+  @authenticate('jwt')
   @patch('/students/{id}')
   @response(204, {
     description: 'Student PATCH success',
@@ -133,6 +140,7 @@ export class StudentController {
     await this.studentRepository.updateById(id, student);
   }
 
+  @authenticate('jwt')
   @put('/students/{id}')
   @response(204, {
     description: 'Student PUT success',
@@ -144,6 +152,7 @@ export class StudentController {
     await this.studentRepository.replaceById(id, student);
   }
 
+  @authenticate('jwt')
   @del('/students/{id}')
   @response(204, {
     description: 'Student DELETE success',
@@ -152,6 +161,7 @@ export class StudentController {
     await this.studentRepository.deleteById(id);
   }
 
+  @authenticate('jwt')
   @patch('/students/{id}/increaseBuilding')
   @response(204, {
     description: 'increases placed Buildings from Student',

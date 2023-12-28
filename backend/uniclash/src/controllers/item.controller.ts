@@ -19,6 +19,7 @@ import {
 } from '@loopback/rest';
 import {Item} from '../models';
 import {ItemRepository} from '../repositories';
+import {authenticate} from "@loopback/authentication";
 
 export class ItemController {
   constructor(
@@ -26,6 +27,7 @@ export class ItemController {
     public itemRepository : ItemRepository,
   ) {}
 
+  @authenticate('jwt')
   @post('/items')
   @response(200, {
     description: 'Item model instance',
@@ -47,6 +49,7 @@ export class ItemController {
     return this.itemRepository.create(item);
   }
 
+  @authenticate('jwt')
   @get('/items/count')
   @response(200, {
     description: 'Item model count',
@@ -58,6 +61,7 @@ export class ItemController {
     return this.itemRepository.count(where);
   }
 
+  @authenticate('jwt')
   @get('/items')
   @response(200, {
     description: 'Array of Item model instances',
@@ -76,6 +80,7 @@ export class ItemController {
     return this.itemRepository.find(filter);
   }
 
+  @authenticate('jwt')
   @patch('/items')
   @response(200, {
     description: 'Item PATCH success count',
@@ -95,6 +100,7 @@ export class ItemController {
     return this.itemRepository.updateAll(item, where);
   }
 
+  @authenticate('jwt')
   @get('/items/{id}')
   @response(200, {
     description: 'Item model instance',
@@ -111,6 +117,7 @@ export class ItemController {
     return this.itemRepository.findById(id, filter);
   }
 
+  @authenticate('jwt')
   @patch('/items/{id}')
   @response(204, {
     description: 'Item PATCH success',
@@ -129,6 +136,7 @@ export class ItemController {
     await this.itemRepository.updateById(id, item);
   }
 
+  @authenticate('jwt')
   @put('/items/{id}')
   @response(204, {
     description: 'Item PUT success',
@@ -140,6 +148,7 @@ export class ItemController {
     await this.itemRepository.replaceById(id, item);
   }
 
+  @authenticate('jwt')
   @del('/items/{id}')
   @response(204, {
     description: 'Item DELETE success',

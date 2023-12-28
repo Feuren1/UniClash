@@ -23,6 +23,7 @@ import {StudentRepository} from '../repositories';
 import {ItemUsable} from "../models/item-usable.model";
 import {service} from "@loopback/core";
 import {StudentItemService} from "../services/student-Item.service";
+import {authenticate} from "@loopback/authentication";
 
 export class StudentItemController {
   constructor(
@@ -31,6 +32,7 @@ export class StudentItemController {
   ) {
   }
 
+  @authenticate('jwt')
   @get('/students/{id}/items', {
     responses: {
       '200': {
@@ -50,6 +52,7 @@ export class StudentItemController {
     return this.studentRepository.items(id).find(filter);
   }
 
+  @authenticate('jwt')
   @post('/students/{id}/items', {
     responses: {
       '200': {
@@ -75,6 +78,7 @@ export class StudentItemController {
     return this.studentRepository.items(id).create(item);
   }
 
+  @authenticate('jwt')
   @patch('/students/{id}/items', {
     responses: {
       '200': {
@@ -98,6 +102,7 @@ export class StudentItemController {
     return this.studentRepository.items(id).patch(item, where);
   }
 
+  @authenticate('jwt')
   @del('/students/{id}/items', {
     responses: {
       '200': {
@@ -113,6 +118,7 @@ export class StudentItemController {
     return this.studentRepository.items(id).delete(where);
   }
 
+  @authenticate('jwt')
   @get('/students/{id}/Itemusables', {
     responses: {
       '200': {
@@ -131,6 +137,7 @@ export class StudentItemController {
     return this.studentItemService.createItemUsableListOnStudentId(id);
   }
 
+  @authenticate('jwt')
   @patch('/students/{studentId}/itemTemplate/{itemTemplateId}/buy', {
     responses: {
       '200': {
@@ -149,7 +156,7 @@ export class StudentItemController {
   ): Promise<Boolean> {
     return this.studentItemService.buyItem(studentId, itemTemplateId);
   }
-
+  @authenticate('jwt')
 @patch('/students/{studentId}/itemTemplate/{itemTemplateId}/use', {
   responses: {
     '200': {
@@ -169,6 +176,7 @@ async useItem(
   return this.studentItemService.useItem(studentId,itemTemplateId);
 }
 
+  @authenticate('jwt')
 @patch('/critter/{critterId}/useRedBull', {
   responses: {
     '200': {

@@ -20,12 +20,14 @@ import {
   CritterAttack,
 } from '../models';
 import {CritterRepository} from '../repositories';
+import {authenticate} from "@loopback/authentication";
 
 export class CritterCritterAttackController {
   constructor(
     @repository(CritterRepository) protected critterRepository: CritterRepository,
   ) { }
 
+  @authenticate('jwt')
   @get('/critters/{id}/critter-attacks', {
     responses: {
       '200': {
@@ -45,6 +47,7 @@ export class CritterCritterAttackController {
     return this.critterRepository.critterAttacks(id).find(filter);
   }
 
+  @authenticate('jwt')
   @post('/critters/{id}/critter-attacks', {
     responses: {
       '200': {
@@ -70,6 +73,7 @@ export class CritterCritterAttackController {
     return this.critterRepository.critterAttacks(id).create(critterAttack);
   }
 
+  @authenticate('jwt')
   @patch('/critters/{id}/critter-attacks', {
     responses: {
       '200': {
@@ -93,6 +97,7 @@ export class CritterCritterAttackController {
     return this.critterRepository.critterAttacks(id).patch(critterAttack, where);
   }
 
+  @authenticate('jwt')
   @del('/critters/{id}/critter-attacks', {
     responses: {
       '200': {

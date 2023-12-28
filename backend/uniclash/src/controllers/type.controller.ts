@@ -19,6 +19,7 @@ import {
 } from '@loopback/rest';
 import {Type} from '../models';
 import {TypeRepository} from '../repositories';
+import {authenticate} from "@loopback/authentication";
 
 export class TypeController {
   constructor(
@@ -26,6 +27,7 @@ export class TypeController {
     public typeRepository : TypeRepository,
   ) {}
 
+  @authenticate('jwt')
   @post('/types')
   @response(200, {
     description: 'Type model instance',
@@ -47,6 +49,7 @@ export class TypeController {
     return this.typeRepository.create(type);
   }
 
+  @authenticate('jwt')
   @get('/types/count')
   @response(200, {
     description: 'Type model count',
@@ -58,6 +61,7 @@ export class TypeController {
     return this.typeRepository.count(where);
   }
 
+  @authenticate('jwt')
   @get('/types')
   @response(200, {
     description: 'Array of Type model instances',
@@ -76,6 +80,7 @@ export class TypeController {
     return this.typeRepository.find(filter);
   }
 
+  @authenticate('jwt')
   @patch('/types')
   @response(200, {
     description: 'Type PATCH success count',
@@ -95,6 +100,7 @@ export class TypeController {
     return this.typeRepository.updateAll(type, where);
   }
 
+  @authenticate('jwt')
   @get('/types/{id}')
   @response(200, {
     description: 'Type model instance',
@@ -111,6 +117,7 @@ export class TypeController {
     return this.typeRepository.findById(id, filter);
   }
 
+  @authenticate('jwt')
   @patch('/types/{id}')
   @response(204, {
     description: 'Type PATCH success',
@@ -129,6 +136,7 @@ export class TypeController {
     await this.typeRepository.updateById(id, type);
   }
 
+  @authenticate('jwt')
   @put('/types/{id}')
   @response(204, {
     description: 'Type PUT success',
@@ -140,6 +148,7 @@ export class TypeController {
     await this.typeRepository.replaceById(id, type);
   }
 
+  @authenticate('jwt')
   @del('/types/{id}')
   @response(204, {
     description: 'Type DELETE success',

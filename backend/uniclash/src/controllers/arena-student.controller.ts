@@ -11,6 +11,7 @@ import {
   Student,
 } from '../models';
 import {ArenaRepository} from '../repositories';
+import {authenticate} from "@loopback/authentication";
 
 export class ArenaStudentController {
   constructor(
@@ -18,6 +19,7 @@ export class ArenaStudentController {
     public arenaRepository: ArenaRepository,
   ) { }
 
+  @authenticate('jwt')
   @get('/arenas/{id}/student', {
     responses: {
       '200': {

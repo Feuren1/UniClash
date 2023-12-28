@@ -19,12 +19,14 @@ import {
   CritterTemplate,
 } from '../models';
 import {CritterTemplateRepository} from '../repositories';
+import {authenticate} from "@loopback/authentication";
 
 export class CritterTemplateCritterTemplateController {
   constructor(
     @repository(CritterTemplateRepository) protected critterTemplateRepository: CritterTemplateRepository,
   ) { }
 
+  @authenticate('jwt')
   @get('/critter-templates/{id}/critter-template', {
     responses: {
       '200': {
@@ -44,6 +46,7 @@ export class CritterTemplateCritterTemplateController {
     return this.critterTemplateRepository.evolvesInto(id).get(filter);
   }
 
+  @authenticate('jwt')
   @post('/critter-templates/{id}/critter-template', {
     responses: {
       '200': {
@@ -69,6 +72,7 @@ export class CritterTemplateCritterTemplateController {
     return this.critterTemplateRepository.evolvesInto(id).create(critterTemplate);
   }
 
+  @authenticate('jwt')
   @patch('/critter-templates/{id}/critter-template', {
     responses: {
       '200': {
@@ -92,6 +96,7 @@ export class CritterTemplateCritterTemplateController {
     return this.critterTemplateRepository.evolvesInto(id).patch(critterTemplate, where);
   }
 
+  @authenticate('jwt')
   @del('/critter-templates/{id}/critter-template', {
     responses: {
       '200': {

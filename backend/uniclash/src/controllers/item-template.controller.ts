@@ -19,6 +19,7 @@ import {
 } from '@loopback/rest';
 import {ItemTemplate} from '../models';
 import {ItemTemplateRepository} from '../repositories';
+import {authenticate} from "@loopback/authentication";
 
 export class ItemTemplateController {
   constructor(
@@ -26,6 +27,7 @@ export class ItemTemplateController {
     public itemTemplateRepository : ItemTemplateRepository,
   ) {}
 
+  @authenticate('jwt')
   @post('/item-templates')
   @response(200, {
     description: 'ItemTemplate model instance',
@@ -47,6 +49,7 @@ export class ItemTemplateController {
     return this.itemTemplateRepository.create(itemTemplate);
   }
 
+  @authenticate('jwt')
   @get('/item-templates/count')
   @response(200, {
     description: 'ItemTemplate model count',
@@ -58,6 +61,7 @@ export class ItemTemplateController {
     return this.itemTemplateRepository.count(where);
   }
 
+  @authenticate('jwt')
   @get('/item-templates')
   @response(200, {
     description: 'Array of ItemTemplate model instances',
@@ -76,6 +80,7 @@ export class ItemTemplateController {
     return this.itemTemplateRepository.find(filter);
   }
 
+  @authenticate('jwt')
   @patch('/item-templates')
   @response(200, {
     description: 'ItemTemplate PATCH success count',
@@ -95,6 +100,7 @@ export class ItemTemplateController {
     return this.itemTemplateRepository.updateAll(itemTemplate, where);
   }
 
+  @authenticate('jwt')
   @get('/item-templates/{id}')
   @response(200, {
     description: 'ItemTemplate model instance',
@@ -111,6 +117,7 @@ export class ItemTemplateController {
     return this.itemTemplateRepository.findById(id, filter);
   }
 
+  @authenticate('jwt')
   @patch('/item-templates/{id}')
   @response(204, {
     description: 'ItemTemplate PATCH success',
@@ -129,6 +136,7 @@ export class ItemTemplateController {
     await this.itemTemplateRepository.updateById(id, itemTemplate);
   }
 
+  @authenticate('jwt')
   @put('/item-templates/{id}')
   @response(204, {
     description: 'ItemTemplate PUT success',
@@ -140,6 +148,7 @@ export class ItemTemplateController {
     await this.itemTemplateRepository.replaceById(id, itemTemplate);
   }
 
+  @authenticate('jwt')
   @del('/item-templates/{id}')
   @response(204, {
     description: 'ItemTemplate DELETE success',

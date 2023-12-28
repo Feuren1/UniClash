@@ -23,6 +23,7 @@ import {CritterRepository} from '../repositories';
 import {EvolveCritterService} from '../services';
 import {StudentCritterService} from '../services/student-critter.service';
 import {LevelCalcCritterService} from "../services/levelCalc-critter.service";
+import {authenticate} from "@loopback/authentication";
 
 export class CritterController {
   constructor(
@@ -33,6 +34,7 @@ export class CritterController {
     @service(LevelCalcCritterService) protected levelCalcCritterService : LevelCalcCritterService
   ) { }
 
+  @authenticate('jwt')
   @post('/critters')
   @response(200, {
     description: 'Critter model instance',
@@ -54,6 +56,7 @@ export class CritterController {
     return this.critterRepository.create(critter);
   }
 
+  @authenticate('jwt')
   @get('/critters/count')
   @response(200, {
     description: 'Critter model count',
@@ -65,6 +68,7 @@ export class CritterController {
     return this.critterRepository.count(where);
   }
 
+  @authenticate('jwt')
   @get('/critters')
   @response(200, {
     description: 'Array of Critter model instances',
@@ -83,6 +87,7 @@ export class CritterController {
     return this.critterRepository.find(filter);
   }
 
+  @authenticate('jwt')
   @patch('/critters')
   @response(200, {
     description: 'Critter PATCH success count',
@@ -102,6 +107,7 @@ export class CritterController {
     return this.critterRepository.updateAll(critter, where);
   }
 
+  @authenticate('jwt')
   @get('/critters/{id}')
   @response(200, {
     description: 'Critter model instance',
@@ -118,6 +124,7 @@ export class CritterController {
     return this.critterRepository.findById(id, filter);
   }
 
+  @authenticate('jwt')
   @patch('/critters/{id}')
   @response(204, {
     description: 'Critter PATCH success',
@@ -136,6 +143,7 @@ export class CritterController {
     await this.critterRepository.updateById(id, critter);
   }
 
+  @authenticate('jwt')
   @put('/critters/{id}')
   @response(204, {
     description: 'Critter PUT success',
@@ -147,6 +155,7 @@ export class CritterController {
     await this.critterRepository.replaceById(id, critter);
   }
 
+  @authenticate('jwt')
   @del('/critters/{id}')
   @response(204, {
     description: 'Critter DELETE success',
@@ -155,6 +164,7 @@ export class CritterController {
     await this.critterRepository.deleteById(id);
   }
 
+  @authenticate('jwt')
   @get('/critters/{id}/evolve', {
     responses: {
       '200': {
@@ -172,8 +182,8 @@ export class CritterController {
   ): Promise<Critter> {
     return this.levelCalcCritterService.evolveCritter(id);
   }
-
-  /*@get('/critters/{id}/evolveUsable', {
+  /*@authenticate('jwt')
+  @get('/critters/{id}/evolveUsable', {
     responses: {
       '200': {
         description: 'Evolve Critter and return CritterUsable',
@@ -191,6 +201,7 @@ export class CritterController {
     return this.evolveCritterService.evolveCritterUsable(id);
   }*/
 
+  @authenticate('jwt')
   @get('/critters/{id}/exp/{exp}/expCritter', {
     responses: {
       '200': {
@@ -210,6 +221,7 @@ export class CritterController {
     return this.levelCalcCritterService.increaseCritterExp(id,exp);
   }
 
+  @authenticate('jwt')
   @get('/usables', {
     responses: {
       '200': {

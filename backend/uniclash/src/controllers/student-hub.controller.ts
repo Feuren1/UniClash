@@ -19,6 +19,7 @@ import {
 } from '@loopback/rest';
 import {StudentHub} from '../models';
 import {StudentHubRepository} from '../repositories';
+import {authenticate} from "@loopback/authentication";
 
 export class StudentHubController {
   constructor(
@@ -27,6 +28,7 @@ export class StudentHubController {
   ) {}
 
   @post('/student-hubs')
+  @authenticate('jwt')
   @response(200, {
     description: 'StudentHub model instance',
     content: {'application/json': {schema: getModelSchemaRef(StudentHub)}},
@@ -48,6 +50,7 @@ export class StudentHubController {
   }
 
   @get('/student-hubs/count')
+  @authenticate('jwt')
   @response(200, {
     description: 'StudentHub model count',
     content: {'application/json': {schema: CountSchema}},
@@ -59,6 +62,7 @@ export class StudentHubController {
   }
 
   @get('/student-hubs')
+  @authenticate('jwt')
   @response(200, {
     description: 'Array of StudentHub model instances',
     content: {
@@ -77,6 +81,7 @@ export class StudentHubController {
   }
 
   @patch('/student-hubs')
+  @authenticate('jwt')
   @response(200, {
     description: 'StudentHub PATCH success count',
     content: {'application/json': {schema: CountSchema}},
@@ -96,6 +101,7 @@ export class StudentHubController {
   }
 
   @get('/student-hubs/{id}')
+  @authenticate('jwt')
   @response(200, {
     description: 'StudentHub model instance',
     content: {
@@ -112,6 +118,7 @@ export class StudentHubController {
   }
 
   @patch('/student-hubs/{id}')
+  @authenticate('jwt')
   @response(204, {
     description: 'StudentHub PATCH success',
   })
@@ -130,6 +137,7 @@ export class StudentHubController {
   }
 
   @put('/student-hubs/{id}')
+  @authenticate('jwt')
   @response(204, {
     description: 'StudentHub PUT success',
   })
@@ -141,6 +149,7 @@ export class StudentHubController {
   }
 
   @del('/student-hubs/{id}')
+  @authenticate('jwt')
   @response(204, {
     description: 'StudentHub DELETE success',
   })

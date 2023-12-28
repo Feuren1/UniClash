@@ -19,6 +19,7 @@ import {
 } from '@loopback/rest';
 import {Arena} from '../models';
 import {ArenaRepository} from '../repositories';
+import {authenticate} from "@loopback/authentication";
 
 export class ArenaController {
   constructor(
@@ -27,6 +28,7 @@ export class ArenaController {
   ) {}
 
   @post('/arenas')
+  @authenticate('jwt')
   @response(200, {
     description: 'Arena model instance',
     content: {'application/json': {schema: getModelSchemaRef(Arena)}},
@@ -48,6 +50,7 @@ export class ArenaController {
   }
 
   @get('/arenas/count')
+  @authenticate('jwt')
   @response(200, {
     description: 'Arena model count',
     content: {'application/json': {schema: CountSchema}},
@@ -59,6 +62,7 @@ export class ArenaController {
   }
 
   @get('/arenas')
+  @authenticate('jwt')
   @response(200, {
     description: 'Array of Arena model instances',
     content: {
@@ -77,6 +81,7 @@ export class ArenaController {
   }
 
   @patch('/arenas')
+  @authenticate('jwt')
   @response(200, {
     description: 'Arena PATCH success count',
     content: {'application/json': {schema: CountSchema}},
@@ -96,6 +101,7 @@ export class ArenaController {
   }
 
   @get('/arenas/{id}')
+  @authenticate('jwt')
   @response(200, {
     description: 'Arena model instance',
     content: {
@@ -112,6 +118,7 @@ export class ArenaController {
   }
 
   @patch('/arenas/{id}')
+  @authenticate('jwt')
   @response(204, {
     description: 'Arena PATCH success',
   })
@@ -130,6 +137,7 @@ export class ArenaController {
   }
 
   @put('/arenas/{id}')
+  @authenticate('jwt')
   @response(204, {
     description: 'Arena PUT success',
   })
@@ -141,6 +149,7 @@ export class ArenaController {
   }
 
   @del('/arenas/{id}')
+  @authenticate('jwt')
   @response(204, {
     description: 'Arena DELETE success',
   })

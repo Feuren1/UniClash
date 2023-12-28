@@ -20,12 +20,14 @@ import {
   Item,
 } from '../models';
 import {ItemTemplateRepository} from '../repositories';
+import {authenticate} from "@loopback/authentication";
 
 export class ItemTemplateItemController {
   constructor(
     @repository(ItemTemplateRepository) protected itemTemplateRepository: ItemTemplateRepository,
   ) { }
 
+  @authenticate('jwt')
   @get('/item-templates/{id}/items', {
     responses: {
       '200': {
@@ -45,6 +47,7 @@ export class ItemTemplateItemController {
     return this.itemTemplateRepository.items(id).find(filter);
   }
 
+  @authenticate('jwt')
   @post('/item-templates/{id}/items', {
     responses: {
       '200': {
@@ -70,6 +73,7 @@ export class ItemTemplateItemController {
     return this.itemTemplateRepository.items(id).create(item);
   }
 
+  @authenticate('jwt')
   @patch('/item-templates/{id}/items', {
     responses: {
       '200': {
@@ -93,6 +97,7 @@ export class ItemTemplateItemController {
     return this.itemTemplateRepository.items(id).patch(item, where);
   }
 
+  @authenticate('jwt')
   @del('/item-templates/{id}/items', {
     responses: {
       '200': {

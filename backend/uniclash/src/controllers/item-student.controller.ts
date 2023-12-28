@@ -11,6 +11,7 @@ import {
   Student,
 } from '../models';
 import {ItemRepository} from '../repositories';
+import {authenticate} from "@loopback/authentication";
 
 export class ItemStudentController {
   constructor(
@@ -18,6 +19,7 @@ export class ItemStudentController {
     public itemRepository: ItemRepository,
   ) { }
 
+  @authenticate('jwt')
   @get('/items/{id}/student', {
     responses: {
       '200': {

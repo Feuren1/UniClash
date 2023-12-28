@@ -20,12 +20,14 @@ import {
   Arena,
 } from '../models';
 import {StudentRepository} from '../repositories';
+import {authenticate} from "@loopback/authentication";
 
 export class StudentArenaController {
   constructor(
     @repository(StudentRepository) protected studentRepository: StudentRepository,
   ) { }
 
+  @authenticate('jwt')
   @get('/students/{id}/arenas', {
     responses: {
       '200': {
@@ -45,6 +47,7 @@ export class StudentArenaController {
     return this.studentRepository.arenas(id).find(filter);
   }
 
+  @authenticate('jwt')
   @post('/students/{id}/arenas', {
     responses: {
       '200': {
@@ -70,6 +73,7 @@ export class StudentArenaController {
     return this.studentRepository.arenas(id).create(arena);
   }
 
+  @authenticate('jwt')
   @patch('/students/{id}/arenas', {
     responses: {
       '200': {
@@ -93,6 +97,7 @@ export class StudentArenaController {
     return this.studentRepository.arenas(id).patch(arena, where);
   }
 
+  @authenticate('jwt')
   @del('/students/{id}/arenas', {
     responses: {
       '200': {

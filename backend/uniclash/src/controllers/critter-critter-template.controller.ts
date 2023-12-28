@@ -14,6 +14,7 @@ import {
 } from '../models';
 import {CritterRepository} from '../repositories';
 import {CritterStatsService} from '../services/critter-stats.service';
+import {authenticate} from "@loopback/authentication";
 
 export class CritterCritterTemplateController {
   constructor(
@@ -22,6 +23,7 @@ export class CritterCritterTemplateController {
     public critterRepository: CritterRepository,
   ) { }
 
+  @authenticate('jwt')
   @get('/critters/{id}/critter-template', {
     responses: {
       '200': {
@@ -58,6 +60,7 @@ export class CritterCritterTemplateController {
     return this.critterStatsService.calculateActualStats(id);
   }
 
+  @authenticate('jwt')
   @get('/critters/{id}/usable', {
     responses: {
       '200': {

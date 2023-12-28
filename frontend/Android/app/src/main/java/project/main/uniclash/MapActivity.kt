@@ -5,6 +5,7 @@ import android.content.Intent
 import android.graphics.drawable.Drawable
 import android.os.Bundle
 import android.util.Log
+import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
@@ -24,6 +25,8 @@ import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentSize
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
@@ -38,9 +41,11 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -71,8 +76,10 @@ import project.main.uniclash.map.MapCalculations
 import project.main.uniclash.viewmodels.MapMarkerListViewModel
 import project.main.uniclash.retrofit.ArenaService
 import project.main.uniclash.retrofit.CritterService
+import project.main.uniclash.retrofit.InventoryService
 import project.main.uniclash.retrofit.StudentHubService
 import project.main.uniclash.ui.theme.UniClashTheme
+import project.main.uniclash.viewmodels.MapItemViewModel
 import project.main.uniclash.viewmodels.MapLocationViewModel
 import project.main.uniclash.viewmodels.MapMarkerViewModel
 
@@ -89,6 +96,10 @@ class MapActivity : ComponentActivity() {
 
     private val mapMarkerViewModel: MapMarkerViewModel by viewModels(factoryProducer = {
         MapMarkerViewModel.provideFactory(CritterService.getInstance(this), StudentHubService.getInstance(this), ArenaService.getInstance(this),this,markerList)
+    })
+
+    private val mapItemViewModel : MapItemViewModel by viewModels(factoryProducer = {
+        MapItemViewModel.provideFactory(InventoryService.getInstance(this))
     })
 
     private var markerList = MapMarkerListViewModel()//dependency injection
@@ -338,8 +349,10 @@ class MapActivity : ComponentActivity() {
         MenuTaskBar()
     }
 
+    private var openFartSprayInfo by mutableStateOf(false)
     @Composable
     fun MenuTaskBar() {
+        FartSprayInfo()
         Box(
             modifier = Modifier
                 .fillMaxSize()
@@ -362,27 +375,26 @@ class MapActivity : ComponentActivity() {
                     Spacer(modifier = Modifier.width(16.dp))
 
                     // Timer
-                    val drawableTimer = painterResource(id = R.drawable.hourglass)
-                    Image(
-                        painter = drawableTimer,
-                        contentDescription = null,
-                        modifier = Modifier
-                            .size(40.dp)
-                            .offset(x = 130.dp)
-                    )
-                    var minutes: Int = newCritterNotification / 60 //20
-                    Text(//newCritterNotification *3 = seconds
-                        text = if (newCritterNotification < 60) { //20
-                            "${newCritterNotification * 1} sec" //3
-                        } else {
-                            "${minutes}:${newCritterNotification * 1 - minutes * 60}min" //3
-                        },
-                        color = Color.White,
-                        fontWeight = FontWeight.Bold,
-                        modifier = Modifier
-                            .padding(end = 24.dp)
-                            .offset(x = (15).dp)
-                    )
+                        Image(
+                            painter = painterResource(id = R.drawable.hourglass),
+                            contentDescription = null,
+                            modifier = Modifier
+                                .size(40.dp)
+                                .offset(x = 130.dp)
+                        )
+                        var minutes: Int = newCritterNotification / 60 //20
+                        Text(//newCritterNotification *3 = seconds
+                            text = if (newCritterNotification < 60) { //20
+                                "${newCritterNotification * 1} sec" //3
+                            } else {
+                                "${minutes}:${newCritterNotification * 1 - minutes * 60}min" //3
+                            },
+                            color = Color.White,
+                            fontWeight = FontWeight.Bold,
+                            modifier = Modifier
+                                .padding(end = 24.dp)
+                                .offset(x = (15).dp)
+                        )
                 }
             }
             val drawableImage = painterResource(id = R.drawable.profile)
@@ -390,6 +402,7 @@ class MapActivity : ComponentActivity() {
             val drawableLocation = painterResource(id = R.drawable.location)
             val drawableZoomIn = painterResource(id = R.drawable.zoom)
             val drawableZoomOut = painterResource(id = R.drawable.zoomout)
+            val fartspray = painterResource(id = R.drawable.fartspray)
             Image(
                 painter = drawableImage,
                 contentDescription = null,
@@ -422,34 +435,116 @@ class MapActivity : ComponentActivity() {
                         MapSettings.MOVINGCAMERA.setMapSetting(!MapSettings.MOVINGCAMERA.getMapSetting())
                     }
             )
+            if(Counter.FIRSTSPAWN.getCounter()<1) {
+                Image(
+                    painter = fartspray,
+                    contentDescription = null,
+                    modifier = Modifier
+                        .size(40.dp)
+                        .align(Alignment.TopEnd)
+                        .clickable {
+                            openFartSprayInfo = true
+                        }
+                )
+            }
 
-            Column(
-                modifier = Modifier
-                    .fillMaxHeight()
-                    .fillMaxWidth()
-                    .padding(end = 16.dp),
-                verticalArrangement = Arrangement.Center,
-                horizontalAlignment = Alignment.End
-            ) {
-                Image(
-                    painter = drawableZoomIn,
-                    contentDescription = null,
+            if(!openFartSprayInfo) {
+                Column(
                     modifier = Modifier
-                        .size(60.dp)
-                        .offset(y = (-5).dp)
-                        .clickable { cameraState.zoom = cameraState.zoom + 1.0 }
-                )
-                Image(
-                    painter = drawableZoomOut,
-                    contentDescription = null,
-                    modifier = Modifier
-                        .size(60.dp)
-                        .offset(y = (-5).dp)
-                        .clickable { cameraState.zoom = cameraState.zoom - 1.0 }
-                )
+                        .fillMaxHeight()
+                        .fillMaxWidth()
+                        .padding(end = 16.dp),
+                    verticalArrangement = Arrangement.Center,
+                    horizontalAlignment = Alignment.End
+                ) {
+                    Image(
+                        painter = drawableZoomIn,
+                        contentDescription = null,
+                        modifier = Modifier
+                            .size(60.dp)
+                            .offset(y = (-5).dp)
+                            .clickable { cameraState.zoom = cameraState.zoom + 1.0 }
+                    )
+                    Image(
+                        painter = drawableZoomOut,
+                        contentDescription = null,
+                        modifier = Modifier
+                            .size(60.dp)
+                            .offset(y = (-5).dp)
+                            .clickable { cameraState.zoom = cameraState.zoom - 1.0 }
+                    )
+                }
             }
         }
     }
+
+    @Composable
+    fun FartSprayInfo() {
+        val usedItem = mapItemViewModel.useFartSpray.collectAsState()
+        if(usedItem.value.canBeUsed == 0){
+            Toast.makeText(baseContext, "No fart spray was used.", Toast.LENGTH_SHORT).show()
+            mapItemViewModel.resetCanBeUsedValue()
+        } else if (usedItem.value.canBeUsed == 1) {
+            Toast.makeText(baseContext, "You used a fart spray.", Toast.LENGTH_SHORT).show()
+            mapItemViewModel.resetCanBeUsedValue()
+        }
+
+        if (openFartSprayInfo) {
+            Box(
+                modifier = Modifier
+                    .padding(16.dp)
+                    .wrapContentSize(Alignment.Center),
+                contentAlignment = Alignment.Center
+            ) {
+                Column(
+                    modifier = Modifier
+                        .wrapContentSize(Alignment.Center)
+                        .background(Color.LightGray, shape = RoundedCornerShape(8.dp))
+                ) {
+                    Row(modifier = Modifier.padding(all = 8.dp), verticalAlignment = Alignment.CenterVertically) {
+                        Image(
+                            painter = painterResource(id = R.drawable.fartspray),
+                            contentDescription = null,
+                            modifier = Modifier
+                                .size(60.dp)
+                        )
+                        Text(
+                            text = "Use a fart spray to respawn all critters.",
+                            fontSize = 18.sp,
+                            color = MaterialTheme.colorScheme.secondary,
+                            style = MaterialTheme.typography.titleSmall
+                        )
+                    }
+
+                    Spacer(modifier = Modifier.height(16.dp))
+
+                    Button(
+                        onClick = {
+                            mapItemViewModel.useFartSpray()
+                            openFartSprayInfo = false
+                            },
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(50.dp)
+                    ) {
+                        Text(text = "Use spray")
+                    }
+
+                    Spacer(modifier = Modifier.height(8.dp))
+
+                    Button(
+                        onClick = { openFartSprayInfo = false },
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(50.dp)
+                    ) {
+                        Text(text = "No thanks")
+                    }
+                }
+            }
+        }
+    }
+
     @Composable
     fun OpenActivityButton(marker : MarkerData) {
         val context = LocalContext.current

@@ -26,7 +26,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentSize
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
@@ -41,11 +40,9 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -95,14 +92,15 @@ class MapActivity : ComponentActivity() {
     })
 
     private val mapMarkerViewModel: MapMarkerViewModel by viewModels(factoryProducer = {
-        MapMarkerViewModel.provideFactory(CritterService.getInstance(this), StudentHubService.getInstance(this), ArenaService.getInstance(this),this,markerList)
+        MapMarkerViewModel.provideFactory(CritterService.getInstance(this), StudentHubService.getInstance(this), ArenaService.getInstance(this),this,mapMarkerListViewModel)
     })
 
     private val mapItemViewModel : MapItemViewModel by viewModels(factoryProducer = {
         MapItemViewModel.provideFactory(InventoryService.getInstance(this))
     })
 
-    private var markerList = MapMarkerListViewModel()//dependency injection
+    private val mapMarkerListViewModel : MapMarkerListViewModel by viewModels(factoryProducer = null)
+
     private var reloadMap by mutableStateOf(true)
 
     private var startMapRequested by mutableStateOf(false)
@@ -121,7 +119,7 @@ class MapActivity : ComponentActivity() {
 
         //markerList observer and updater
         lifecycleScope.launch {
-            markerList.markerList.collect {
+            mapMarkerListViewModel.mapMarkerList.collect {
                reloadMap = false
                 reloadMap = true
             }
@@ -139,20 +137,20 @@ class MapActivity : ComponentActivity() {
                 mapMarkerViewModel.loadStudentHubs()
                 val markersStudentHubUIState by mapMarkerViewModel.markersStudentHub.collectAsState()
                 val studentHubMarkers = markersStudentHubUIState.markersStudentHub
-                markerList.addListOfMarkersQ(studentHubMarkers)
+                mapMarkerListViewModel.addListOfMarkersQ(studentHubMarkers)
                 MapSaver.STUDENTHUB.setMarker(studentHubMarkers)
             } else{
-                markerList.addListOfMarkersQ(MapSaver.STUDENTHUB.getMarker()!!)
+                mapMarkerListViewModel.addListOfMarkersQ(MapSaver.STUDENTHUB.getMarker()!!)
             }
 
             if(MapSaver.ARENA.getMarker().isEmpty()) {
                 mapMarkerViewModel.loadArenas()
                 val markersArenaUIState by mapMarkerViewModel.markersArena.collectAsState()
                 val arenaMarkers = markersArenaUIState.makersArena
-                markerList.addListOfMarkersQ(arenaMarkers)
+                mapMarkerListViewModel.addListOfMarkersQ(arenaMarkers)
                 MapSaver.ARENA.setMarker(arenaMarkers)
             } else{
-                markerList.addListOfMarkersQ(MapSaver.ARENA.getMarker()!!)
+                mapMarkerListViewModel.addListOfMarkersQ(MapSaver.ARENA.getMarker()!!)
             }
 
             if(MapSaver.WILDENCOUNTER.getMarker().isEmpty()) {
@@ -162,7 +160,7 @@ class MapActivity : ComponentActivity() {
                 //markerList.addListOfMarkersQ(wildEncounterMarkers) //should be set in LoadFirstWildEncounter
                 MapSaver.WILDENCOUNTER.setMarker(wildEncounterMarkers)
             } else if (Counter.FIRSTSPAWN.getCounter() < 1){ //to avoid that wildencounter will spawn before time times to zero
-                markerList.addListOfMarkersQ(MapSaver.WILDENCOUNTER.getMarker()!!)
+                mapMarkerListViewModel.addListOfMarkersQ(MapSaver.WILDENCOUNTER.getMarker()!!)
             }
 
 
@@ -239,7 +237,7 @@ class MapActivity : ComponentActivity() {
 
         LaunchedEffect(Unit) {
             while (true) {
-                println("${markerList.getMarkerList().size} die Size der MarkerList")
+                println("${mapMarkerListViewModel.mapMarkerList.value.markerList.size} die Size der MarkerList")
 
                 mapLocationViewModel.getUserLocation(contextForLocation) { location -> //has to checked here too, because in line 120 is in onCreate (only executed once).
                     mainLatitude = location.latitude
@@ -283,6 +281,9 @@ class MapActivity : ComponentActivity() {
             mutableStateOf(mapCalculations.resizeDrawable(context, R.drawable.arrow, 50.0F))
         }
 
+        var markerList = mapMarkerListViewModel.mapMarkerList.collectAsState()
+        println("${markerList.value.markerList.size} CHANGES")
+
         // Use camera state and location in your OpenStreetMap Composable
             OpenStreetMap(
                 modifier = Modifier.fillMaxSize(),
@@ -297,7 +298,8 @@ class MapActivity : ComponentActivity() {
                 }
 
                 // Add markers and other map components here s)
-                markerList.getMarkerList().forEach() { marker ->
+                    markerList.value.markerList.forEach() { marker ->
+                        println("lade marker neu ${markerList.value.markerList.size}")
                     val distance = mapCalculations.haversineDistance(marker.state.latitude, marker.state.longitude, Locations.USERLOCATION.getLocation().latitude, Locations.USERLOCATION.getLocation().longitude)
                     Log.d(
                         LOCATION_TAG,
@@ -384,8 +386,10 @@ class MapActivity : ComponentActivity() {
                         )
                         var minutes: Int = newCritterNotification / 60 //20
                         Text(//newCritterNotification *3 = seconds
-                            text = if (newCritterNotification < 60) { //20
+                            text = if (newCritterNotification < 60 && newCritterNotification > -1) { //20
                                 "${newCritterNotification * 1} sec" //3
+                            } else if(newCritterNotification <60){
+                                "0 sec"
                             } else {
                                 "${minutes}:${newCritterNotification * 1 - minutes * 60}min" //3
                             },
@@ -585,7 +589,7 @@ class MapActivity : ComponentActivity() {
         if(shouldLoadFirstWildEncounter) {
             if(alreadyLoaded == false) {
                 Log.d(LOCATION_TAG, "Excecuted first loadwildencounter")
-                     markerList.addListOfMarkersQ(MapSaver.WILDENCOUNTER.getMarker())
+                     mapMarkerListViewModel.addListOfMarkersQ(MapSaver.WILDENCOUNTER.getMarker())
                 shouldLoadFirstWildEncounter = false
                 if(MapSaver.WILDENCOUNTER.getMarker().isEmpty()){
                     mapMarkerViewModel.loadCritterUsables(1)

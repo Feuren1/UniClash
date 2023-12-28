@@ -517,8 +517,9 @@ class FinalBattleViewModel(
             cpuCritter.update { it.copy(isLoading = true) }
             try {
 
-                var postArenaBattleUpdate = PostArenaBattleUpdate(userDataManager.getStudentId()!!,playerCritter.value.playerCritter.critterId,)
-                val response = critterService.postArenaBattleUpdates().enqueue()
+                //TODO dirty fix by elias
+                var postArenaBattleUpdate = PostArenaBattleUpdate(userDataManager.getStudentId()!!,playerCritter.value.playerCritter!!.critterId,20)
+                val response = critterService.postArenaBattleUpdates(postArenaBattleUpdate).enqueue()
                 Log.d(TAG, "postArenaBattleUpdates: $response")
                 if (response.isSuccessful) {
                     Log.d(TAG, "postArenaBattleUpdates: success")

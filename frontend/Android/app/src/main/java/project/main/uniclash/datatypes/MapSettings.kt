@@ -75,9 +75,7 @@ enum class Counter(private var count : Int){
     }
 
     fun minusCounter(minusCounter : Int){
-        if(count > 0) {
             count -= minusCounter
-        }
     }
 
     fun plusCounter(plusCounter : Int){

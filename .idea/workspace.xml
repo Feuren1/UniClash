@@ -4,7 +4,13 @@
     <option name="autoReloadType" value="NONE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="2664f604-c89e-4413-893f-fd324c0a096b" name="Changes" comment="" />
+    <list default="true" id="2664f604-c89e-4413-893f-fd324c0a096b" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/frontend/Android/app/src/main/java/project/main/uniclash/AddCritterToArenaActivity.kt" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/Android/app/src/main/java/project/main/uniclash/AddCritterToArenaActivity.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/Android/app/src/main/java/project/main/uniclash/ArenaActivity.kt" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/Android/app/src/main/java/project/main/uniclash/ArenaActivity.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/Android/app/src/main/java/project/main/uniclash/FinalBattleActivity.kt" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/Android/app/src/main/java/project/main/uniclash/FinalBattleActivity.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/Android/app/src/main/java/project/main/uniclash/viewmodels/AddCritterToArenaViewModel.kt" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/Android/app/src/main/java/project/main/uniclash/viewmodels/AddCritterToArenaViewModel.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/Android/app/src/main/java/project/main/uniclash/viewmodels/FinalBattleViewModel.kt" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/Android/app/src/main/java/project/main/uniclash/viewmodels/FinalBattleViewModel.kt" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -45,22 +51,22 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "ASKED_ADD_EXTERNAL_FILES": "true",
-    "RunOnceActivity.OpenProjectViewOnStart": "true",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "RunOnceActivity.cidr.known.project.marker": "true",
-    "WebServerToolWindowFactoryState": "false",
-    "cidr.known.project.marker": "true",
-    "git-widget-placeholder": "ItemQuantityIncrease",
-    "last_opened_file_path": "D:/Uni Stuff/prj3-2023-android-02/frontend/Android",
-    "project.structure.last.edited": "Modules",
-    "project.structure.proportion": "0.17",
-    "project.structure.side.proportion": "0.2",
-    "vue.rearranger.settings.migration": "true"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;ASKED_ADD_EXTERNAL_FILES&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.cidr.known.project.marker&quot;: &quot;true&quot;,
+    &quot;WebServerToolWindowFactoryState&quot;: &quot;false&quot;,
+    &quot;cidr.known.project.marker&quot;: &quot;true&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;ItemQuantityIncrease&quot;,
+    &quot;last_opened_file_path&quot;: &quot;D:/Uni Stuff/prj3-2023-android-02/frontend/Android&quot;,
+    &quot;project.structure.last.edited&quot;: &quot;Modules&quot;,
+    &quot;project.structure.proportion&quot;: &quot;0.17&quot;,
+    &quot;project.structure.side.proportion&quot;: &quot;0.2&quot;,
+    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
   }
-}]]></component>
+}</component>
   <component name="RecentsManager">
     <key name="MoveFile.RECENT_KEYS">
       <recent name="C:\Users\havoc\OneDrive\Desktop\prj impl\prj3-2023-android-02\frontend\Android" />

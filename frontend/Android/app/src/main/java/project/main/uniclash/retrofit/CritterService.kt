@@ -1,6 +1,9 @@
 package project.main.uniclash.retrofit
 
 import android.content.Context
+import project.main.uniclash.datatypes.Arena
+import project.main.uniclash.datatypes.ArenaCritterPatch
+import project.main.uniclash.datatypes.ArenaLeaderPatch
 import project.main.uniclash.datatypes.Critter
 import project.main.uniclash.datatypes.CritterForStudent
 import project.main.uniclash.datatypes.CritterTemplate
@@ -10,6 +13,7 @@ import retrofit2.create
 import retrofit2.http.Body
 import retrofit2.http.DELETE
 import retrofit2.http.GET
+import retrofit2.http.PATCH
 import retrofit2.http.POST
 import retrofit2.http.Path
 
@@ -40,6 +44,9 @@ interface CritterService {
 
     @GET("/critter-templates")
     fun getCrittersTemplates(): Call<List<CritterTemplate>>
+
+    @PATCH("/arenas/{id}")
+    fun patchArenaLeader(@Path("id") id: Int, @Body arenaLeaderPatch: ArenaLeaderPatch): Call<Arena>
 
     /*
     @POST("/todo-lists")

@@ -145,13 +145,14 @@ fun ArenaListItem(arena: Arena) {
     @Composable
     fun startBattleButton(){
         Button(onClick = {
-            val intent = Intent(this, Battle::class.java)
+            val intent = Intent(this, FinalBattleActivity::class.java)
             // creating a bundle object
             val bundle = Bundle()
             // storing the string value in the bundle
             // which is mapped to key
-            bundle.putString("CpuCritterId", "${arenaViewModel.getselectedArena()!!.arena!!.critterId}")
-
+            bundle.putInt("CpuCritterId", arenaViewModel.getselectedArena()!!.arena!!.critterId)
+            var arenaIdInt = arenaViewModel.getselectedArena()!!.arena!!.id.toInt()
+            bundle.putInt("ArenaID", arenaViewModel.getselectedArena()!!.arena!!.id)
             intent.putExtras(bundle)
             startActivity(intent)
         }) {

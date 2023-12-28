@@ -74,12 +74,18 @@ class FinalBattleActivity : ComponentActivity() {
     private var progressRequest by mutableStateOf(false)
     private var exitRequest by mutableStateOf(false)
     private var mediaPlayer: MediaPlayer? = null
+
     //TODO Rename into BattleActivity
     private val finalBattleViewModel by viewModels<FinalBattleViewModel> {
         FinalBattleViewModel.provideFactory(CritterService.getInstance(this))
     }
     @SuppressLint("SuspiciousIndentation")
     override fun onCreate(savedInstanceState: Bundle?) {
+        val bundle = intent.extras
+        val cpuCritterId = bundle?.getInt("CpuCritterId")
+        val arenaId = bundle?.getInt("ArenaID")
+        finalBattleViewModel.loadCpuCritter(cpuCritterId!!)
+        finalBattleViewModel.saveArenaId(arenaId)
         super.onCreate(savedInstanceState)
         mediaPlayer = MediaPlayer.create(this, R.raw.battlesoundtrack1)
         mediaPlayer?.isLooping = true
@@ -99,6 +105,7 @@ class FinalBattleActivity : ComponentActivity() {
                     var playerCritter = battleViewPlayerUIState.playerCritter
                     val battleViewcpuCritterUIState by finalBattleViewModel.cpuCritter.collectAsState()
                     var cpuCritter = battleViewcpuCritterUIState.cpuCritter
+                    var playerWon = finalBattleViewModel.playerWon.collectAsState()
                     Box(
                         modifier = Modifier.fillMaxSize()
                     ) {
@@ -126,7 +133,8 @@ class FinalBattleActivity : ComponentActivity() {
 
                                 )
 
-                            if (battleResult == BattleResult.CPU_WINS) {
+                            if (playerWon.value == true) {
+                                finalBattleViewModel.updateArenaLeader()
                                 Box(
                                     modifier = Modifier
                                         .fillMaxWidth()

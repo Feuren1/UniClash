@@ -49,8 +49,8 @@ interface CritterService {
     @PATCH("/arenas/{id}")
     fun patchArenaLeader(@Path("id") id: Int, @Body arenaLeaderPatch: ArenaLeaderPatch): Call<Arena>
 
-    @PATCH("/arenas/{id}")
-    fun postArenaBattleUpdates(@Body postArenaBattleUpdate: PostArenaBattleUpdate): Call<Arena>
+    @POST("/critters/increaseXp")
+    fun postArenaBattleUpdates(@Body postArenaBattleUpdate: PostArenaBattleUpdate): Call<Critter>
 
     /*
     @POST("/todo-lists")

@@ -15,6 +15,7 @@ import project.main.uniclash.battle.BattleResult
 import project.main.uniclash.datatypes.ArenaLeaderPatch
 import project.main.uniclash.datatypes.Attack
 import project.main.uniclash.datatypes.AttackType
+import project.main.uniclash.datatypes.PostArenaBattleUpdate
 import project.main.uniclash.retrofit.enqueue
 import project.main.uniclash.userDataManager.UserDataManager
 
@@ -504,6 +505,25 @@ class FinalBattleViewModel(
                             isLoading = false
                         )
                     }
+                }
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
+        }
+    }
+
+    fun arenaBattleUpdates(){
+        viewModelScope.launch {
+            cpuCritter.update { it.copy(isLoading = true) }
+            try {
+
+                var postArenaBattleUpdate = PostArenaBattleUpdate(userDataManager.getStudentId()!!,playerCritter.value.playerCritter.critterId,)
+                val response = critterService.postArenaBattleUpdates().enqueue()
+                Log.d(TAG, "postArenaBattleUpdates: $response")
+                if (response.isSuccessful) {
+                    Log.d(TAG, "postArenaBattleUpdates: success")
+                    val critterUpdated = response.body()!!
+                    Log.d(TAG, "postArenaBattleUpdates: $critterUpdated")
                 }
             } catch (e: Exception) {
                 e.printStackTrace()

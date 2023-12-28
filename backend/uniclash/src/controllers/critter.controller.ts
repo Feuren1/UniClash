@@ -32,9 +32,39 @@ export class CritterController {
     @repository(CritterRepository)
     public critterRepository: CritterRepository,
     @service(StudentCritterService) protected studentCritterService: StudentCritterService,
-    @service(LevelCalcCritterService) protected levelCalcCritterService : LevelCalcCritterService
-    @service(CritterBattleUpdateService) protected critterBattleUpdateService : CritterBattleUpdateService
+    @service(LevelCalcCritterService) protected levelCalcCritterService : LevelCalcCritterService,
+    @service(CritterBattleUpdateService) protected critterBattleUpdateService: CritterBattleUpdateService
   ) { }
+
+  @authenticate('jwt')
+  @post('/critters/increaseXp')
+  @response(200, {
+    description: 'Increases Critter Xp and executes Level up. Also increases Student Credits and Xp.',
+    content: {'application/json': {schema: getModelSchemaRef(Critter)}},
+  })
+  async increaseCritterXpForStudent(
+    @requestBody({
+      content: {
+        'application/json': {
+          schema: {
+            type: 'object',
+            properties: {
+              studentId: {type: 'number'},
+              critterId: {type: 'number'},
+              xpIncrease: {type: 'number'},
+            },
+            required: ['studentId', 'critterId', 'xpIncrease'],
+          },
+        },
+      },
+    })
+    requestBody: { studentId: number, critterId: number, xpIncrease: number },
+  ): Promise<Critter> {
+    const { studentId, critterId, xpIncrease } = requestBody;
+    // Call the method from the service to increase XP and level up
+    const updatedCritter = await this.critterBattleUpdateService.increaseCritterXp(studentId, critterId, xpIncrease);
+    return updatedCritter;
+  }
 
   @authenticate('jwt')
   @post('/critters')
@@ -145,8 +175,6 @@ export class CritterController {
     await this.critterRepository.updateById(id, critter);
   }
 
-
-
   @authenticate('jwt')
   @put('/critters/{id}')
   @response(204, {
@@ -241,36 +269,6 @@ export class CritterController {
   async calculateAllCritterUsable(
   ): Promise<CritterUsable[]> {
     return this.studentCritterService.createCritterUsableListOfAll();
-  }
-
-  @authenticate('jwt')
-  @post('/critters/increaseXp')
-  @response(200, {
-    description: 'Increases Critter Xp and executes Level up. Also increases Student Credits and Xp.',
-    content: {'application/json': {schema: getModelSchemaRef(Critter)}},
-  })
-  async increaseCritterXpForStudent(
-    @requestBody({
-      content: {
-        'application/json': {
-          schema: {
-            type: 'object',
-            properties: {
-              studentId: {type: 'number'},
-              critterId: {type: 'number'},
-              xpIncrease: {type: 'number'},
-            },
-            required: ['studentId', 'critterId', 'xpIncrease'],
-          },
-        },
-      },
-    })
-    requestBody: { studentId: number, critterId: number, xpIncrease: number },
-  ): Promise<Critter> {
-    const { studentId, critterId, xpIncrease } = requestBody;
-    // Call the method from the service to increase XP and level up
-    const updatedCritter = await this.critterBattleUpdateService.increaseCritterXp(studentId, critterId, xpIncrease);
-    return updatedCritter;
   }
 
 }

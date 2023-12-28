@@ -8,6 +8,7 @@ import project.main.uniclash.datatypes.Critter
 import project.main.uniclash.datatypes.CritterForStudent
 import project.main.uniclash.datatypes.CritterTemplate
 import project.main.uniclash.datatypes.CritterUsable
+import project.main.uniclash.datatypes.PostArenaBattleUpdate
 import retrofit2.Call
 import retrofit2.create
 import retrofit2.http.Body
@@ -47,6 +48,9 @@ interface CritterService {
 
     @PATCH("/arenas/{id}")
     fun patchArenaLeader(@Path("id") id: Int, @Body arenaLeaderPatch: ArenaLeaderPatch): Call<Arena>
+
+    @PATCH("/arenas/{id}")
+    fun postArenaBattleUpdates(@Body postArenaBattleUpdate: PostArenaBattleUpdate): Call<Arena>
 
     /*
     @POST("/todo-lists")

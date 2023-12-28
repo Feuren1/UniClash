@@ -32,7 +32,7 @@ export class CritterController {
     @repository(CritterRepository)
     public critterRepository: CritterRepository,
     @service(StudentCritterService) protected studentCritterService: StudentCritterService,
-    @service(LevelCalcCritterService) protected levelCalcCritterService : LevelCalcCritterService,
+    @service(LevelCalcCritterService) protected levelCalcCritterService : LevelCalcCritterService
     @service(CritterBattleUpdateService) protected critterBattleUpdateService : CritterBattleUpdateService
   ) { }
 
@@ -238,7 +238,11 @@ export class CritterController {
       },
     },
   })
-  
+  async calculateAllCritterUsable(
+  ): Promise<CritterUsable[]> {
+    return this.studentCritterService.createCritterUsableListOfAll();
+  }
+
   @authenticate('jwt')
   @post('/critters/increaseXp')
   @response(200, {

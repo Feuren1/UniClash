@@ -57,10 +57,6 @@ internal class AuthInterceptor(private val context: Context) : Interceptor {
     }
     override fun intercept(chain: Interceptor.Chain): okhttp3.Response {
         var request = chain.request()
-        //val preferences = context.getSharedPreferences("Token", Context.MODE_PRIVATE)
-        //
-        // Retrieve the token from SharedPreferences
-        //val token = preferences.getString("JWT-Token", "") ?: ""
         val token : String?
         runBlocking {
             token = userDataManager.getJWTToken()
@@ -72,12 +68,7 @@ internal class AuthInterceptor(private val context: Context) : Interceptor {
                 .addHeader("Authorization", "Bearer $token")
                 .build()
 
-
         println("Request headers: ${request.headers}")
-        //var response = chain.proceed(request)
-        //if(response.code== HttpURLConnection.HTTP_UNAUTHORIZED){
-        //    response.close()
-        //}
         return chain.proceed(request)
     }
 }

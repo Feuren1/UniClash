@@ -103,6 +103,8 @@ class MapActivity : ComponentActivity() {
 
     private var reloadMap by mutableStateOf(true)
 
+    private var numberOfMarkersOnMap = 0
+
     private var startMapRequested by mutableStateOf(false)
     private var mainLatitude: Double by mutableStateOf(Locations.USERLOCATION.getLocation().latitude) //for gps location
     private var mainLongitude: Double by mutableStateOf(Locations.USERLOCATION.getLocation().longitude)//"
@@ -269,6 +271,16 @@ class MapActivity : ComponentActivity() {
                 }
                 newCritterNotification = Counter.WILDENCOUNTERREFRESHER.getCounter()
 
+
+                //in case of markers were not loaded successfully, the map activity will completely reload.
+                if(Counter.WILDENCOUNTERREFRESHER.getCounter()<1){
+                    numberOfMarkersOnMap = 0
+                }
+                if(numberOfMarkersOnMap < 800 && Counter.WILDENCOUNTERREFRESHER.getCounter()>5&&Counter.WILDENCOUNTERREFRESHER.getCounter()<295){
+                    println("complete map reload")
+                    OpenActivityButton(MapActivity::class.java)
+                }
+
             }
         }
 
@@ -306,6 +318,8 @@ class MapActivity : ComponentActivity() {
                     val state = rememberMarkerState(
                         geoPoint = marker.state
                         )
+
+                        numberOfMarkersOnMap ++
 
                     Marker(
                         state = state,
@@ -403,7 +417,7 @@ class MapActivity : ComponentActivity() {
             val drawableLocation = painterResource(id = R.drawable.location)
             val drawableZoomIn = painterResource(id = R.drawable.zoom)
             val drawableZoomOut = painterResource(id = R.drawable.zoomout)
-            val fartspray = painterResource(id = R.drawable.fartspray)
+            val fartSpray = painterResource(id = R.drawable.fartspray)
             Image(
                 painter = drawableImage,
                 contentDescription = null,
@@ -436,9 +450,9 @@ class MapActivity : ComponentActivity() {
                         MapSettings.MOVINGCAMERA.setMapSetting(!MapSettings.MOVINGCAMERA.getMapSetting())
                     }
             )
-            if(Counter.FIRSTSPAWN.getCounter()<1) {
+            if(Counter.FIRSTSPAWN.getCounter()<1&&Counter.WILDENCOUNTERREFRESHER.getCounter()<280&&Counter.WILDENCOUNTERREFRESHER.getCounter()>5) {
                 Image(
-                    painter = fartspray,
+                    painter = fartSpray,
                     contentDescription = null,
                     modifier = Modifier
                         .size(40.dp)

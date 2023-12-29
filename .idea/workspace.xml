@@ -5,11 +5,7 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="2664f604-c89e-4413-893f-fd324c0a096b" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/frontend/Android/app/src/main/java/project/main/uniclash/AddCritterToArenaActivity.kt" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/Android/app/src/main/java/project/main/uniclash/AddCritterToArenaActivity.kt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/frontend/Android/app/src/main/java/project/main/uniclash/ArenaActivity.kt" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/Android/app/src/main/java/project/main/uniclash/ArenaActivity.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/Android/app/src/main/java/project/main/uniclash/FinalBattleActivity.kt" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/Android/app/src/main/java/project/main/uniclash/FinalBattleActivity.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/Android/app/src/main/java/project/main/uniclash/viewmodels/AddCritterToArenaViewModel.kt" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/Android/app/src/main/java/project/main/uniclash/viewmodels/AddCritterToArenaViewModel.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/Android/app/src/main/java/project/main/uniclash/viewmodels/FinalBattleViewModel.kt" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/Android/app/src/main/java/project/main/uniclash/viewmodels/FinalBattleViewModel.kt" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />

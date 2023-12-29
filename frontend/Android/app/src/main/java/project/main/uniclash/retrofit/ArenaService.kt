@@ -3,6 +3,7 @@ package project.main.uniclash.retrofit
 import android.content.Context
 import project.main.uniclash.datatypes.Arena
 import project.main.uniclash.datatypes.CritterForStudent
+import project.main.uniclash.datatypes.CritterUsable
 import project.main.uniclash.datatypes.NewArena
 import retrofit2.Call
 import retrofit2.create
@@ -22,7 +23,9 @@ interface ArenaService {
     @POST("/arenas")
     fun postArena(@Body newArena: NewArena):Call<Arena>
 
-    
+    @GET("/critters/{id}/usable")
+    fun getCritterUsable(@Path("id") id: Int): Call<CritterUsable>
+
 
 
 

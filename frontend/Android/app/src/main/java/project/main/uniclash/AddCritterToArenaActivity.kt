@@ -32,6 +32,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
@@ -61,7 +62,17 @@ class AddCritterToArenaActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-
+                    Box(
+                        modifier = Modifier.fillMaxSize()
+                    ) {
+                        // Set the background image
+                        Image(
+                            painter = painterResource(id = R.drawable.arenam),
+                            contentDescription = null,
+                            modifier = Modifier.fillMaxSize(),
+                            contentScale = ContentScale.Crop
+                        )
+                    }
                 }
             }
             if (selectedCritter != null){
@@ -82,6 +93,9 @@ class AddCritterToArenaActivity : ComponentActivity() {
                     }
                     Row {
                         Text(text = textMessage)
+                    }
+                    Row{
+                        GifImage(gifName = "pokemonwalking", modifier = Modifier.size(100.dp) )
                     }
                 }
 

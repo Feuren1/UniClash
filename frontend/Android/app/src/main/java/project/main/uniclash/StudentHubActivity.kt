@@ -333,7 +333,7 @@ fun Exit(modifier: Modifier, context: Context) {
             modifier = Modifier
                 .size(40.dp)
                 .clickable {
-                    val intent = Intent(context, MenuActivity::class.java)
+                    val intent = Intent(context, MapActivity::class.java)
                     context.startActivity(intent)
                 }
                 .align(Alignment.TopEnd)

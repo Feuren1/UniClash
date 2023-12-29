@@ -1,5 +1,6 @@
 package project.main.uniclash.viewmodels
 
+import android.annotation.SuppressLint
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
@@ -54,6 +55,14 @@ class ArenaViewModel(
         )
     )
 
+
+    val critterUsable = MutableStateFlow(
+        CritterUsableUIState.HasEntries(
+            critterUsable = null,
+            isLoading = false
+        )
+    )
+
     val arenas = MutableStateFlow(
         ArenasUIState.HasEntries(
             arenas = emptyList(),
@@ -62,9 +71,7 @@ class ArenaViewModel(
     )
 
     init {
-        loadArena(5)
-    loadArenas()
-
+    loadArenaCritter()
     }
     fun loadArenas(){
         viewModelScope.launch {
@@ -81,6 +88,31 @@ class ArenaViewModel(
                             isLoading = false
                         )
                     }
+                }
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
+        }
+    }
+
+
+    fun loadArenaCritter() {
+        viewModelScope.launch {
+            critterUsable.update { it.copy(isLoading = true) }
+            try {
+                val response = arenaService.getCritterUsable(getselectedArena()!!.arena!!.critterId).enqueue()
+                Log.d(TAG, "loadArenaCritter: $response")
+                if (response.isSuccessful) {
+                    Log.d(TAG, "loadArenaCritter: success")
+                    val crittersUsable = response.body()!!
+                    Log.d(TAG, "loadArenaCritter: $crittersUsable")
+                    critterUsable.update {
+                        it.copy(
+                            critterUsable = crittersUsable,
+                            isLoading = false
+                        )
+                    }
+                    Log.d(TAG, "LoadedCritter: ${critterUsable.value.critterUsable}")
                 }
             } catch (e: Exception) {
                 e.printStackTrace()

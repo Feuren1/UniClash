@@ -6,7 +6,12 @@ import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
 import android.os.Build
+import android.util.Log
 import androidx.core.app.NotificationCompat
+import com.google.firebase.Firebase
+import com.google.firebase.firestore.FieldValue
+import com.google.firebase.firestore.firestore
+
 import com.google.firebase.messaging.FirebaseMessagingService
 import com.google.firebase.messaging.RemoteMessage
 
@@ -54,4 +59,29 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
 
         notificationManager.notify(0, builder.build())
     }
+
+    private fun sendTokenToServer(token: String?) {
+        // If you're running your own server, call API to send token and today's date for the user
+
+        // Example shown below with Firestore
+        // Add token and timestamp to Firestore for this user
+        val deviceToken = hashMapOf(
+            "token" to token,
+            "timestamp" to FieldValue.serverTimestamp(),
+        )
+        // Get user ID from Firebase Auth or your own server
+        Firebase.firestore.collection("fcmTokens").document("myuserid")
+            .set(deviceToken)
+    }
+
+
+    override fun onNewToken(token: String) {
+        super.onNewToken(token)
+        Log.d("FCM Token", "Refreshed token: $token")
+
+        // TODO: Send the token to your server for storage
+
+    }
+
+
 }

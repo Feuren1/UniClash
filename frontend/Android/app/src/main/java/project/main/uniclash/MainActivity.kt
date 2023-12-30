@@ -74,7 +74,9 @@ class MainActivity : ComponentActivity() {
             if (task.isSuccessful) {
                 val token = task.result
                 Log.d("FCM Token", "onCreate: FCM Token retrieved successfully: $token")
-
+                runBlocking {
+                    userDataManager.storeFCMToken(token)
+                }
                 // Here, you can use the token as needed (e.g., display it in UI, send to server, etc.)
             } else {
                 Log.e("FCM Token", "onCreate: Error getting FCM token: ${task.exception}")

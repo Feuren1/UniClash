@@ -57,6 +57,21 @@ class UserDataManager(context: Context) {
             }.first()
     }
 
+    suspend fun storeFCMToken(token: String) {
+        val FCM_TOKEN = stringPreferencesKey("fcm_token")
+        context.dataStore.edit { preferences ->
+            preferences[FCM_TOKEN] = token
+        }
+    }
+
+    suspend fun getFCMToken(): String? {
+        val FCM_TOKEN = stringPreferencesKey("fcm_token")
+        return dataStore.data
+            .map { preferences ->
+                preferences[FCM_TOKEN]
+            }.first()
+    }
+
     suspend fun storeStudentId(id: Int) {
         val STUDENT_ID = intPreferencesKey("student_id")
         context.dataStore.edit { preferences ->

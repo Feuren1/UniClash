@@ -13,6 +13,7 @@ import {UserService} from './user.service';
 export type Credentials = {
   email: string;
   password: string;
+  fcmToken: string;
 };
 
 export class MyUserService implements UserService<User, Credentials> {
@@ -55,6 +56,7 @@ export class MyUserService implements UserService<User, Credentials> {
       name: user.username,
       id: user.id,
       email: user.email,
+      
     };
   }
 

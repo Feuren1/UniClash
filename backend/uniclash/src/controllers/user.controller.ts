@@ -56,6 +56,10 @@ const CredentialsSchema: SchemaObject = {
       type: 'string',
       minLength: 8,
     },
+    fcmToken: {
+      type: 'string',
+      minLength: 0,
+    },
   },
 };
 
@@ -179,7 +183,12 @@ export class UserController {
 
     // create a JSON Web Token based on the user profile
     const token = await this.jwtService.generateToken(userProfile);
+      // Use the repository to update the FCM token
 
+      if (user) {
+        user.fcmtoken = credentials.fcmToken;
+        await this.userRepository.update(user);
+      }
     return {token};
   }
 
@@ -263,4 +272,6 @@ export class UserController {
   ): Promise<TokenObject> {
     return this.refreshService.refreshToken(refreshGrant.refreshToken);
   }
+
+  
 }

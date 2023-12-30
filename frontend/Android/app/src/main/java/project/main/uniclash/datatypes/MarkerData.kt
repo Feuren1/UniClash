@@ -5,6 +5,10 @@ import android.graphics.drawable.Drawable
 import org.osmdroid.util.GeoPoint
 import project.main.uniclash.MainActivity
 
+/* Marker Data
+    MarkerData object will be used to create marker object provided by the opm library
+    MarkerData has extended class which include the object what a marker should actually represent
+ */
 open class MarkerData(
     open var state : GeoPoint,
     open var icon : Drawable? = null,

@@ -55,7 +55,7 @@ class MapLocationViewModel(private val locationPermissions: LocationPermissions)
 
 
     //data class to store the user Latitude and longitude
-    data class LatandLong( //set the first maker
+    data class LatandLong( //set the first maker (arrow marker(user location))
         var latitude: Double = 0.0,
         var longitude: Double = 0.0
     )

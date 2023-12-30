@@ -8,8 +8,6 @@ import android.graphics.BitmapFactory
 import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.Drawable
 import android.util.Base64
-import android.util.Log
-import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
@@ -18,7 +16,6 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import org.osmdroid.util.GeoPoint
 import project.main.uniclash.ArenaActivity
-import project.main.uniclash.MapActivity
 import project.main.uniclash.R
 import project.main.uniclash.StudentHubActivity
 import project.main.uniclash.WildEncounterActivity
@@ -376,22 +373,22 @@ class MapMarkerViewModel(
 
     fun counterLogic(){
         Counter.FIRSTSPAWN.minusCounter(1)
-        Counter.WILDENCOUNTERREFRESHER.minusCounter(1)
+        Counter.RESPAWN.minusCounter(1)
 
         var distance = mapCalculations.haversineDistance(Locations.USERLOCATION.getLocation().latitude,Locations.USERLOCATION.getLocation().longitude,Locations.INTERSECTION.getLocation().latitude,Locations.INTERSECTION.getLocation().longitude)
         if(distance > 2100){
             Locations.INTERSECTION.setLocation(Locations.USERLOCATION.getLocation()) //otherwise endless loop
-            Counter.WILDENCOUNTERREFRESHER.setCounter(1)
+            Counter.RESPAWN.setCounter(1)
         }
 
-        if(Counter.WILDENCOUNTERREFRESHER.getCounter() == 1 && Counter.FIRSTSPAWN.getCounter()<1){
+        if(Counter.RESPAWN.getCounter() == 1 && Counter.FIRSTSPAWN.getCounter()<1){
             mapMarkerListViewModel.removeMarkersQ(MapSaver.WILDENCOUNTER.getMarker())
             MapSaver.WILDENCOUNTER.setMarker(ArrayList<MarkerData?>())
         }
 
-        if(Counter.WILDENCOUNTERREFRESHER.getCounter() < -4 && Counter.FIRSTSPAWN.getCounter() < 1){
+        if(Counter.RESPAWN.getCounter() < -4 && Counter.FIRSTSPAWN.getCounter() < 1){
             loadWildEncounter()
-            Counter.WILDENCOUNTERREFRESHER.setCounter(300)
+            Counter.RESPAWN.setCounter(300)
         }
     }
 
@@ -400,13 +397,13 @@ class MapMarkerViewModel(
              mapMarkerListViewModel.addListOfMarkersQ(MapSaver.WILDENCOUNTER.getMarker())
 
             if(MapSaver.WILDENCOUNTER.getMarker().isEmpty()) {
-                Counter.WILDENCOUNTERREFRESHER.setCounter(0)
+                Counter.RESPAWN.setCounter(0)
             }
         }
 
     init {
         viewModelScope.launch {
-            studentHubs.collect {
+            studentHubs.collect {//if something changes in studentHubs, initMarker... will be executed
                 initMarkersStudentHub()
             }
         }

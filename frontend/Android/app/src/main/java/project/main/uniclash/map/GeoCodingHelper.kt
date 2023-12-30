@@ -8,6 +8,8 @@ import java.util.Locale
 
 class GeoCodingHelper(private val context: Context) {
 
+    //uses an extern library which provides the methode to know the address of specific coordinates
+
     //is only executed by opening the marker
     fun getAddressFromLocation(latitude: Double, longitude: Double): String {
         val geocoder = Geocoder(context, Locale.getDefault())

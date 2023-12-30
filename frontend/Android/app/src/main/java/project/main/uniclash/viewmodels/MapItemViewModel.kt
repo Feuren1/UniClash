@@ -7,11 +7,9 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import project.main.uniclash.datatypes.Counter
-import project.main.uniclash.datatypes.StudentHub
 import project.main.uniclash.retrofit.InventoryService
 import project.main.uniclash.retrofit.enqueue
 import project.main.uniclash.userDataManager.UserDataManager
@@ -53,7 +51,7 @@ class MapItemViewModel(private val inventoryService: InventoryService,) : ViewMo
                         Log.d(TAG, "Success: ${response.body()}")
                         response.body()?.let {
                             if (it) {
-                                Counter.WILDENCOUNTERREFRESHER.setCounter(5)
+                                Counter.RESPAWN.setCounter(5)
                                 useFartSpray.update { state ->
                                     state.copy(canBeUsed = 1, isLoading = false)
                                 }

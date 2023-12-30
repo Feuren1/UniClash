@@ -14,4 +14,14 @@ export class MyUserProfile implements UserProfile {
     required: true,
   })
   name?: string;
+
+  @property({
+    type: 'string',
+    required: true,
+  })
+  fcmtoken?: string;
+
+
+
+  
 }

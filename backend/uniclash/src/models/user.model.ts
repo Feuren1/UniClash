@@ -22,6 +22,17 @@ export class User extends Entity {
   })
   email: string;
 
+
+  @property({
+    type: 'string',
+    required: false,
+    index: {
+      unique: true,
+    },
+  })
+  fcmtoken: string;
+
+
   @property({
     type: 'string',
   })

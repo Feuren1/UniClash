@@ -54,7 +54,12 @@ class LoginViewModel (private val userService: UserService, application: Applica
         context: Context,
         callback: (UserLoginTokenCallback) -> Unit = {}
     ) {
-        val call = userService.login(UserLoginRequest(email = email, password = password))
+        var fcmToken: String?
+        runBlocking {
+            fcmToken = userDataManager.getFCMToken()
+        }
+
+        val call = userService.login(UserLoginRequest(email = email, password = password, fcmtoken = fcmToken!!))
         call.enqueue(object : Callback<JsonObject> {
             override fun onResponse(
                 call: Call<JsonObject>,

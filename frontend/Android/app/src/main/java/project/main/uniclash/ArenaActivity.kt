@@ -1,5 +1,6 @@
 package project.main.uniclash
 
+import android.app.Application
 import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -53,11 +54,13 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.rememberImagePainter
+import kotlinx.coroutines.runBlocking
 import project.main.uniclash.datatypes.CritterUsable
 import project.main.uniclash.datatypes.Student
 import project.main.uniclash.retrofit.ArenaService
 import project.main.uniclash.retrofit.StudentService
 import project.main.uniclash.ui.theme.UniClashTheme
+import project.main.uniclash.userDataManager.UserDataManager
 import project.main.uniclash.viewmodels.ArenaViewModel
 import project.main.uniclash.viewmodels.StudentViewModel
 
@@ -73,6 +76,16 @@ class ArenaActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        val userDataManager: UserDataManager by lazy {
+            UserDataManager(Application())
+        }
+        val studentId: Int?
+        runBlocking {
+            studentId = userDataManager.getStudentId()
+        }
+
+
+
         setContent {
             UniClashTheme {
                 // A surface container using the 'background' color from the theme
@@ -118,15 +131,20 @@ class ArenaActivity : ComponentActivity() {
                                 StudentDetail(studentUIState.student!!)
                             }
 
-                            //if(arenaViewModel.getselectedArena()!!.arena!!.critterId==0) {
+                            if(arenaViewModel.getselectedArena()!!.arena!!.critterId==0 && arenaViewModel.getselectedArena()!!.arena!!.studentId == studentId) {
                                 addCritterToArenaButton()
-                            //}
+                            }
                             if(arenaViewModel.getselectedArena()!!.arena!!.critterId !=0) {
                                 if(arenaCritterUIState.critterUsable != null){
                                     CritterDetail(arenaCritterUIState.critterUsable!!)
                                 }
                             }
-                            startBattleButton()
+                            if(arenaViewModel.getselectedArena()!!.arena!!.studentId != studentId){
+                                startBattleButton()
+                            }
+                            else {
+                                Text ("You own this arena!")
+                            }
                             Row(Modifier.fillMaxSize()){
                                 GifImage(gifName = "pokemonwalking", modifier = Modifier.size(140.dp) )
                             }

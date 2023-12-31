@@ -15,6 +15,8 @@ import project.main.uniclash.battle.BattleResult
 import project.main.uniclash.datatypes.ArenaLeaderPatch
 import project.main.uniclash.datatypes.Attack
 import project.main.uniclash.datatypes.AttackType
+import project.main.uniclash.datatypes.MapSaver
+import project.main.uniclash.datatypes.MarkerData
 import project.main.uniclash.datatypes.PostArenaBattleUpdate
 import project.main.uniclash.retrofit.enqueue
 import project.main.uniclash.dataManagers.UserDataManager
@@ -232,10 +234,12 @@ class FinalBattleViewModel(
     fun checkResult(): BattleResult {
         if(playerCritter.value.playerCritter!!.hp<=0){
             playerWon.value = false
+            MapSaver.ARENA.setMarker(ArrayList<MarkerData?>())
             return BattleResult.CPU_WINS;
         }
         if(cpuCritter.value.cpuCritter!!.hp<=0){
             playerWon.value = true
+            MapSaver.ARENA.setMarker(ArrayList<MarkerData?>())
             return BattleResult.PLAYER_WINS
         }
         return BattleResult.NOTOVER

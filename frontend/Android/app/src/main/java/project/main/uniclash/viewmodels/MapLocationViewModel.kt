@@ -70,7 +70,7 @@ class MapLocationViewModel(private val locationPermissions: LocationPermissions)
                 LocationRequest.create().apply {
                     interval = TimeUnit.SECONDS.toMillis(1) //TimeUnit.SECONDS.toMillis(60)
                     fastestInterval = TimeUnit.SECONDS.toMillis(1) //TimeUnit.SECONDS.toMillis(30)
-                    maxWaitTime = TimeUnit.SECONDS.toMillis(2) //TimeUnit.MINUTES.toMillis(2)
+                    maxWaitTime = TimeUnit.SECONDS.toMillis(1) //TimeUnit.MINUTES.toMillis(2)
                     priority = LocationRequest.PRIORITY_HIGH_ACCURACY
                 }
             //use FusedLocationProviderClient to request location update

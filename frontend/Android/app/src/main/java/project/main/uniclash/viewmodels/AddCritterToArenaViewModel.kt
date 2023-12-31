@@ -1,6 +1,5 @@
 package project.main.uniclash.viewmodels
 
-import android.annotation.SuppressLint
 import android.app.Application
 import android.util.Log
 import androidx.lifecycle.ViewModel
@@ -9,12 +8,11 @@ import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import project.main.uniclash.datatypes.Arena
 import project.main.uniclash.datatypes.ArenaCritterPatch
 import project.main.uniclash.datatypes.CritterUsable
 import project.main.uniclash.retrofit.ArenaCritterService
 import project.main.uniclash.retrofit.enqueue
-import project.main.uniclash.userDataManager.UserDataManager
+import project.main.uniclash.dataManagers.UserDataManager
 
 class AddCritterToArenaViewModel(
     private val arenaCritterService: ArenaCritterService

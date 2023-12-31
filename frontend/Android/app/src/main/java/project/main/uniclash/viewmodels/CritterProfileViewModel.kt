@@ -2,19 +2,17 @@ package project.main.uniclash.viewmodels
 
 import android.app.Application
 import android.util.Log
-import androidx.datastore.dataStore
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import project.main.uniclash.datatypes.Critter
 import project.main.uniclash.retrofit.CritterService
 import project.main.uniclash.retrofit.InventoryService
 import project.main.uniclash.retrofit.enqueue
-import project.main.uniclash.userDataManager.CritterListDataManager
-import project.main.uniclash.userDataManager.UserDataManager
+import project.main.uniclash.dataManagers.CritterListDataManager
+import project.main.uniclash.dataManagers.UserDataManager
 
 
 sealed interface DelCritterUIState {

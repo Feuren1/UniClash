@@ -12,7 +12,7 @@ import kotlinx.coroutines.launch
 import project.main.uniclash.datatypes.Counter
 import project.main.uniclash.retrofit.InventoryService
 import project.main.uniclash.retrofit.enqueue
-import project.main.uniclash.userDataManager.UserDataManager
+import project.main.uniclash.dataManagers.UserDataManager
 
 
 sealed interface UseFartSprayUIState {

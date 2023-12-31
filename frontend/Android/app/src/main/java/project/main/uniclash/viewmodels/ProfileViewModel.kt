@@ -15,10 +15,9 @@ import project.main.uniclash.JWT.TokenManager
 import project.main.uniclash.datatypes.Student
 import project.main.uniclash.datatypes.StudentRegisterRequest
 import project.main.uniclash.datatypes.User
-import project.main.uniclash.datatypes.UserSignUpRequest
 import project.main.uniclash.retrofit.UserService
 import project.main.uniclash.retrofit.enqueue
-import project.main.uniclash.userDataManager.UserDataManager
+import project.main.uniclash.dataManagers.UserDataManager
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response

@@ -17,7 +17,7 @@ import project.main.uniclash.datatypes.Attack
 import project.main.uniclash.datatypes.AttackType
 import project.main.uniclash.datatypes.PostArenaBattleUpdate
 import project.main.uniclash.retrofit.enqueue
-import project.main.uniclash.userDataManager.UserDataManager
+import project.main.uniclash.dataManagers.UserDataManager
 
 
 class FinalBattleViewModel(

@@ -1,6 +1,7 @@
 package project.main.uniclash.viewmodels
 
 import android.annotation.SuppressLint
+import android.app.Application
 import android.content.Context
 import android.content.res.Resources
 import android.graphics.Bitmap
@@ -19,6 +20,7 @@ import project.main.uniclash.ArenaActivity
 import project.main.uniclash.R
 import project.main.uniclash.StudentHubActivity
 import project.main.uniclash.WildEncounterActivity
+import project.main.uniclash.dataManagers.UserDataManager
 import project.main.uniclash.datatypes.Arena
 import project.main.uniclash.datatypes.Counter
 import project.main.uniclash.datatypes.CritterUsable
@@ -84,6 +86,10 @@ class MapMarkerViewModel(
     private val context : Context,
     private val mapMarkerListViewModel : MapMarkerListViewModel,
 ) : ViewModel() {
+
+    private val userDataManager: UserDataManager by lazy {
+        UserDataManager(Application())
+    }
 
     private var mapCalculations = MapCalculations()
 
@@ -167,7 +173,7 @@ class MapMarkerViewModel(
                 val geoPoint = GeoPoint(studentHub?.lat!!, studentHub?.lon!!)
 
                 val icon: Drawable? =
-                    mapCalculations.resizeDrawable(context, R.drawable.store, 50.0F)
+                    mapCalculations.resizeDrawable(context, R.drawable.storem, 50.0F)
 
                 val base64EncodedBitmap = studentHub.picture
                 val decodedBytes: ByteArray = Base64.decode(base64EncodedBitmap, Base64.DEFAULT)
@@ -219,7 +225,8 @@ class MapMarkerViewModel(
         }
     }
 
-    private fun initMarkersArena(){
+    @SuppressLint("SuspiciousIndentation")
+    private suspend fun initMarkersArena(){
             if(arenas.value.arenas.isNotEmpty()) {
                 this@MapMarkerViewModel.markersArena.update {
                     it.copy(
@@ -231,11 +238,16 @@ class MapMarkerViewModel(
             var arenasMarkerList = ArrayList<MarkerData?>()
             var i = 0
             while (i < arenas.size) {
-                val arena = arenas.get(i)
+                val arena = arenas[i]
                 val geoPoint = GeoPoint(arena?.lat!!, arena?.lon!!)
 
-                val icon: Drawable? =
-                    mapCalculations.resizeDrawable(context, R.drawable.arena, 50.0F)
+                var icon: Drawable? = mapCalculations.resizeDrawable(context, R.drawable.arenaenemym, 50.0F)
+
+                    if(arena.studentId == userDataManager.getStudentId()) {
+                        icon =  mapCalculations.resizeDrawable(context, R.drawable.arenacapturedm, 50.0F)
+                    } else if (arena.studentId == 0) {
+                        icon = mapCalculations.resizeDrawable(context, R.drawable.arenam, 50.0F)
+                    }
 
                 val base64EncodedBitmap = arena.picture
                 val decodedBytes: ByteArray = Base64.decode(base64EncodedBitmap, Base64.DEFAULT)

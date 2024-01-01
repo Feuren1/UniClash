@@ -131,6 +131,8 @@ class MapActivity : ComponentActivity() {
 
         mapLocationViewModel.getUserLocation(this) { location -> //this step could also be in the mapLocationViewModel, updates USERLOCATION ENUM
             Locations.USERLOCATION.setLocation(GeoPoint(location.latitude,location.longitude))
+            reloadMap = false //reload necessary otherwise critter visibility will not change if user is moving
+            reloadMap = true
         }
 
         setContent {
@@ -420,6 +422,7 @@ class MapActivity : ComponentActivity() {
             val drawableImage = painterResource(id = R.drawable.profile)
             val drawableBinoculars = painterResource(id = R.drawable.binoculars)
             val drawableLocation = painterResource(id = R.drawable.location)
+            val drawableLocationGray = painterResource(id = R.drawable.locationgray)
             val drawableZoomIn = painterResource(id = R.drawable.zoom)
             val drawableZoomOut = painterResource(id = R.drawable.zoomout)
             val fartSpray = painterResource(id = R.drawable.fartspray)
@@ -445,7 +448,7 @@ class MapActivity : ComponentActivity() {
                     }
             )
             Image(
-                painter = drawableLocation,
+                painter = if(MapSettings.MOVINGCAMERA.getMapSetting()){drawableLocation}else{drawableLocationGray},
                 contentDescription = null,
                 modifier = Modifier
                     .size(40.dp)

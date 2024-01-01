@@ -60,7 +60,7 @@ import project.main.uniclash.datatypes.Student
 import project.main.uniclash.retrofit.ArenaService
 import project.main.uniclash.retrofit.StudentService
 import project.main.uniclash.ui.theme.UniClashTheme
-import project.main.uniclash.userDataManager.UserDataManager
+import project.main.uniclash.dataManagers.UserDataManager
 import project.main.uniclash.viewmodels.ArenaViewModel
 import project.main.uniclash.viewmodels.StudentViewModel
 
@@ -99,7 +99,7 @@ class ArenaActivity : ComponentActivity() {
                     ) {
                         // Set the background image
                         Image(
-                            painter = painterResource(id = R.drawable.arenam),
+                            painter = painterResource(id = R.drawable.arenabackground),
                             contentDescription = null,
                             modifier = Modifier.fillMaxSize(),
                             contentScale = ContentScale.Crop

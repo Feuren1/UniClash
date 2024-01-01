@@ -70,7 +70,7 @@ class AddCritterToArenaActivity : ComponentActivity() {
                     ) {
                         // Set the background image
                         Image(
-                            painter = painterResource(id = R.drawable.arenam),
+                            painter = painterResource(id = R.drawable.arenabackground),
                             contentDescription = null,
                             modifier = Modifier.fillMaxSize(),
                             contentScale = ContentScale.Crop

@@ -87,6 +87,9 @@ class ProfileViewModel (private val userService: UserService, application: Appli
                     text.value = "Game progress loaded successfully"
                     Log.d(TAG, "Student/Game-progress has been loaded ${user.value.user}")
                 }else{
+                    user.update { state ->
+                        state.copy(user = state.user!!, isLoading = false)
+                    }
                     hasStudent.value= false
                     text.value = "Loading Game Progress failed, Have you created a Student yet?"
                 }

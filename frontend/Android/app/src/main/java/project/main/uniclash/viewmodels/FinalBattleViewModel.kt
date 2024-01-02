@@ -526,6 +526,7 @@ class FinalBattleViewModel(
                 val response = critterService.postArenaBattleUpdates(postArenaBattleUpdate).enqueue()
                 Log.d(TAG, "postArenaBattleUpdates: $response")
                 if (response.isSuccessful) {
+                    cpuCritter.update { it.copy(isLoading = false) }
                     Log.d(TAG, "postArenaBattleUpdates: success")
                     val critterUpdated = response.body()!!
                     Log.d(TAG, "postArenaBattleUpdates: $critterUpdated")

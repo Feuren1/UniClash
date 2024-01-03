@@ -21,6 +21,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Email
+import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -168,8 +169,11 @@ class LoginActivity : ComponentActivity() {
                     keyboardType = KeyboardType.Password,
                     imeAction = ImeAction.Done
                 ),
+                leadingIcon = {
+                    Icon(Icons.Filled.Lock, contentDescription = "Password")
+                },
                 visualTransformation = if (passwordVisibility) {
-                    VisualTransformation.None
+                    PasswordVisualTransformation()
                 } else {
                     PasswordVisualTransformation()
                 },
@@ -191,11 +195,9 @@ class LoginActivity : ComponentActivity() {
                 onClick = {
                     loginViewModel.login(email, password, context) { callback ->
                         if (callback.success) {
-                            // Login successful
-                            // Handle the success scenario (e.g., navigate to the next screen)
-                        } else {
-                            // Login failed
-                            // Handle the failure scenario (e.g., show an error message)
+                            val intent = Intent(context, ProfileActivity::class.java)
+                            context.startActivity(intent)
+                            finish()
                         }
                     }
                 },
@@ -210,23 +212,9 @@ class LoginActivity : ComponentActivity() {
 
     @Composable
     fun ReturnToProfile(context: Context) {
-        /*Button(
-        onClick = {*/
         val intent = Intent(context, ProfileActivity::class.java)
         context.startActivity(intent)
         finish()
-        /* },
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(8.dp),
-        colors = ButtonDefaults.buttonColors(
-        )
-    ) {
-        Text(
-            text = "Return to Menu",
-            color = Color.White
-        )
-    }*/
     }
 
     @Composable

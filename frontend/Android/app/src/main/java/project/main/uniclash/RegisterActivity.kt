@@ -16,6 +16,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Email
+import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -194,10 +195,13 @@ class RegisterActivity : ComponentActivity() {
                     keyboardType = KeyboardType.Password,
                     imeAction = ImeAction.Done
                 ),
+                leadingIcon = {
+                    Icon(Icons.Filled.Lock, contentDescription = "Password")
+                },
                 visualTransformation = if (passwordVisibility) {
                     PasswordVisualTransformation()
                 } else {
-                    VisualTransformation.None
+                    PasswordVisualTransformation()
                 },
                 trailingIcon = {
 
@@ -218,12 +222,9 @@ class RegisterActivity : ComponentActivity() {
                     registerViewModel.signup(email, password, username) { callback ->
                         // Handle the registration result here
                         if (callback.success) {
-                            // Registration successful
-                            // Optionally, you can navigate to the next screen or show a success message
-
-                        } else {
-                            // Registration failed
-                            // Optionally, you can show an error message
+                            val intent = Intent(context, LoginActivity::class.java)
+                            context.startActivity(intent)
+                            finish()
                         }
                     }
                 },

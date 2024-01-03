@@ -146,7 +146,6 @@ class FinalBattleViewModel(
         val cpuCritter = cpuCritter.value.cpuCritter
         cpuCritter?.attacks?.random()
         val selectedAttack = cpuCritter?.attacks?.random()
-
             viewModelScope.launch() {
                 cpuInput.update { currentState ->
                     currentState.copy(

@@ -315,7 +315,6 @@ class MapActivity : ComponentActivity() {
 
                 // Add markers and other map components here s)
                     markerList.markerList.forEach() { marker ->
-                        println("lade marker neu ${markerList.markerList.size}")
                     val distance = mapCalculations.haversineDistance(marker.state.latitude, marker.state.longitude, Locations.USERLOCATION.getLocation().latitude, Locations.USERLOCATION.getLocation().longitude)
                     Log.d(
                         LOCATION_TAG,

@@ -105,7 +105,7 @@ class FinalBattleActivity : ComponentActivity() {
                     var playerCritter = battleViewPlayerUIState.playerCritter
                     val battleViewcpuCritterUIState by finalBattleViewModel.cpuCritter.collectAsState()
                     var cpuCritter = battleViewcpuCritterUIState.cpuCritter
-                    var playerWon = finalBattleViewModel.playerWon.collectAsState()
+                    val playerWon by finalBattleViewModel.playerWon.collectAsState()
                     Box(
                         modifier = Modifier.fillMaxSize()
                     ) {
@@ -130,23 +130,66 @@ class FinalBattleActivity : ComponentActivity() {
                                     }
 
                             )
-
-                            if (playerWon.value == true) {
-                                finalBattleViewModel.updateArenaLeader()
-                                Box(
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .background(MaterialTheme.colorScheme.background)
-                                        .padding(16.dp)
-                                ) {
+                            if(playerWon==null) {
+                                Box {
+                                    FinalBattle(finalBattleViewModel)
                                 }
                             }
-                            Box {
-                                FinalBattle(finalBattleViewModel)
+                            else if (playerWon == true) {
+                                finalBattleViewModel.updateArenaLeader()
+                                Column(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .padding(16.dp)
+                                ) {
+                                    Text(
+                                        text = "YOU WON!",
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .padding(2.dp),
+                                        style = TextStyle(
+                                            fontWeight = FontWeight.Bold,
+                                            fontSize = 24.sp,
+                                            color = Color.Green
+                                        )
+                                    )
+                                    GifImage(modifier = Modifier
+                                        .fillMaxSize(0.8f)
+                                        .padding(0.dp), gifName = "vibe")
+                                    Text(
+                                        text = "YOU WON!",
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .padding(8.dp),
+                                        style = TextStyle(
+                                            fontSize = 16.sp,
+                                            color = Color.Gray
+                                        )
+                                    )
+                                }
+                            } else if (playerWon == false) {
+                                Column(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .padding(16.dp)
+                                ) {
+                                    Text(
+                                        text = "YOU LOST!",
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .padding(8.dp),
+                                        style = TextStyle(
+                                            fontWeight = FontWeight.Bold,
+                                            fontSize = 24.sp,
+                                            color = Color.Red
+                                        )
+                                    )
+                                    GifImage(modifier = Modifier
+                                        .fillMaxWidth()
+                                        .padding(8.dp), gifName = "finalbattle")
+                                }
                             }
                         }
-                    }else{
-                        LoadingCircle(Modifier)
                     }
 
                 }
@@ -189,7 +232,7 @@ fun FinalBattle(finalBattleViewModel:FinalBattleViewModel = viewModel()) {
     val cpuMaxHealth by remember {
         mutableStateOf(battleViewcpuCritterUIState.cpuCritter?.hp ?: 0)
     }
-    if(playerWon==null){
+
         Column(
             modifier = Modifier
                 .fillMaxSize()
@@ -422,61 +465,6 @@ fun FinalBattle(finalBattleViewModel:FinalBattleViewModel = viewModel()) {
             GifImage("vibe", Modifier.padding(4.dp))
 
         }
-    }
-    else if (playerWon == true) {
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(16.dp)
-        ) {
-            Text(
-                text = "YOU WON!",
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(2.dp),
-                style = TextStyle(
-                    fontWeight = FontWeight.Bold,
-                    fontSize = 24.sp,
-                    color = Color.Green
-                )
-            )
-            GifImage(modifier = Modifier
-                .fillMaxSize(0.8f)
-                .padding(0.dp), gifName = "vibe")
-            Text(
-                text = "Please fill in your Post Experiment Questions and please be brutally honest :)\n" +
-                        "Thank you very much for participating!",
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(8.dp),
-                style = TextStyle(
-                    fontSize = 16.sp,
-                    color = Color.Gray
-                )
-            )
-        }
-    } else if (playerWon == false) {
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(16.dp)
-        ) {
-            Text(
-                text = "You Lost! Please try again :)",
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(8.dp),
-                style = TextStyle(
-                    fontWeight = FontWeight.Bold,
-                    fontSize = 24.sp,
-                    color = Color.Red
-                )
-            )
-            GifImage(modifier = Modifier
-                .fillMaxWidth()
-                .padding(8.dp), gifName = "finalbattle")
-        }
-    }
 
 }
 

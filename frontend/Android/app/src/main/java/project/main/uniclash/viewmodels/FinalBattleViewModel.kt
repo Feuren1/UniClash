@@ -34,45 +34,6 @@ class FinalBattleViewModel(
     private val _battleText = MutableStateFlow("Battle started!")
     val isPlayerTurn = MutableStateFlow<Boolean>(false)
     val playerWon = MutableStateFlow<Boolean?>(null)
-    private val cpuAttackOrder = listOf(
-        Attack(2, "Super Guard", 25, AttackType.DEF_BUFF),
-        Attack(2, "Super Guard", 25, AttackType.DEF_BUFF),
-        Attack(4, "Beak Sharpener", 25, AttackType.ATK_BUFF),
-        Attack(3, "ShieldBreak", 20, AttackType.DEF_DEBUFF),
-        Attack(1, "Dive Attack", 70, AttackType.DAMAGE_DEALER),
-        Attack(2, "Super Guard", 25, AttackType.DEF_BUFF),
-        Attack(3, "ShieldBreak", 20, AttackType.DEF_DEBUFF),
-        Attack(4, "Beak Sharpener", 25, AttackType.ATK_BUFF),
-        Attack(1, "Dive Attack", 70, AttackType.DAMAGE_DEALER),
-        Attack(1, "Dive Attack", 70, AttackType.DAMAGE_DEALER),
-        Attack(2, "Super Guard", 25, AttackType.DEF_BUFF),
-        Attack(1, "Dive Attack", 70, AttackType.DAMAGE_DEALER),
-        Attack(1, "Dive Attack", 70, AttackType.DAMAGE_DEALER),
-        Attack(3, "ShieldBreak", 20, AttackType.DEF_DEBUFF),
-        Attack(4, "Beak Sharpener", 25, AttackType.ATK_BUFF),
-        Attack(1, "Dive Attack", 70, AttackType.DAMAGE_DEALER),
-        Attack(2, "Super Guard", 25, AttackType.DEF_BUFF),
-        Attack(1, "Dive Attack", 70, AttackType.DAMAGE_DEALER),
-        Attack(3, "ShieldBreak", 20, AttackType.DEF_DEBUFF),
-        Attack(4, "Beak Sharpener", 25, AttackType.ATK_BUFF),
-        Attack(1, "Dive Attack", 70, AttackType.DAMAGE_DEALER),
-        Attack(3, "ShieldBreak", 20, AttackType.DEF_DEBUFF),
-        Attack(3, "ShieldBreak", 20, AttackType.DEF_DEBUFF),
-        Attack(2, "Super Guard", 25, AttackType.DEF_BUFF),
-        Attack(1, "Dive Attack", 70, AttackType.DAMAGE_DEALER),
-        Attack(1, "Dive Attack", 70, AttackType.DAMAGE_DEALER),
-        Attack(2, "Super Guard", 25, AttackType.DEF_BUFF),
-        Attack(2, "Super Guard", 25, AttackType.DEF_BUFF),
-        Attack(1, "Dive Attack", 70, AttackType.DAMAGE_DEALER),
-        Attack(1, "Dive Attack", 70, AttackType.DAMAGE_DEALER),
-        Attack(3, "ShieldBreak", 20, AttackType.DEF_DEBUFF),
-        Attack(1, "Dive Attack", 70, AttackType.DAMAGE_DEALER),
-        Attack(2, "Super Guard", 25, AttackType.DEF_BUFF),
-        Attack(3, "ShieldBreak", 20, AttackType.DEF_DEBUFF),
-        Attack(4, "Beak Sharpener", 25, AttackType.ATK_BUFF),
-    )
-
-    private var cpuAttackIndex = 0
 
     val battleText: MutableStateFlow<String> get() = _battleText
     val arenaId = MutableStateFlow<Int?>(null)
@@ -109,19 +70,8 @@ class FinalBattleViewModel(
 
     init {
         viewModelScope.launch {
-            Log.d(TAG, "Fetching initial critters data: ")
+            Log.d(TAG, "Loading Player Critter ")
             loadPlayerCritter()
-
-            val cpuAttack1 = Attack(1, "Dive Attack", 70, AttackType.DAMAGE_DEALER)
-            val cpuAttack2 = Attack(2, "Super Guard", 25, AttackType.DEF_BUFF)
-            val cpuAttack3 = Attack(3, "Shield Break", 15, AttackType.DEF_DEBUFF)
-            val cpuAttack4 = Attack(4, "Beak Sharpener", 25, AttackType.ATK_BUFF)
-            val listOfCpuAttacks = listOf(cpuAttack1, cpuAttack2, cpuAttack3, cpuAttack4)
-            val cpuTutorialCritter = CritterUsable(40, "Linuxpenguin", 250, 80, 85, 40, listOfCpuAttacks,1, 1)
-
-            cpuCritter.update { state ->
-                state.copy(cpuCritter = cpuTutorialCritter, isLoading = false)
-            }
         }
         if(!playerCritter.value.isLoading) {
             doesPlayerStart()
@@ -194,29 +144,19 @@ class FinalBattleViewModel(
 
     fun selectCpuAttack() {
         val cpuCritter = cpuCritter.value.cpuCritter
-        cpuCritter?.let {
-            val attack = if (cpuAttackIndex < cpuAttackOrder.size) {
-                cpuAttackOrder[cpuAttackIndex]
-            } else {
-                // If the predefined attack order is exhausted, choose a random attack or handle as needed
-                // For simplicity, this example chooses a random attack
-                it.attacks.random()
-            }
-
+        cpuCritter?.attacks?.random()
+        val selectedAttack = cpuCritter?.attacks?.random()
             viewModelScope.launch() {
                 cpuInput.update { currentState ->
                     currentState.copy(
                         isCpuAttackSelected = true,
-                        selectedCpuAttack = attack,
+                        selectedCpuAttack = selectedAttack,
                     )
                 }
 
-                _battleText.value = "${cpuCritter.name} attacks with ${attack.name}!"
+                _battleText.value = "${cpuCritter!!.name} attacks with ${selectedAttack!!.name}!"
             }
-
-            cpuAttackIndex++
         }
-    }
 
 
     fun doesPlayerStart(){
@@ -526,6 +466,7 @@ class FinalBattleViewModel(
                 val response = critterService.postArenaBattleUpdates(postArenaBattleUpdate).enqueue()
                 Log.d(TAG, "postArenaBattleUpdates: $response")
                 if (response.isSuccessful) {
+                    cpuCritter.update { it.copy(isLoading = false) }
                     Log.d(TAG, "postArenaBattleUpdates: success")
                     val critterUpdated = response.body()!!
                     Log.d(TAG, "postArenaBattleUpdates: $critterUpdated")

@@ -60,14 +60,10 @@ internal class AuthInterceptor(private val context: Context) : Interceptor {
         runBlocking {
             token = userDataManager.getJWTToken()
         }
-
-        println(token)
             // Add Authorization header only if the token is not empty
             request = request.newBuilder()
                 .addHeader("Authorization", "Bearer $token")
                 .build()
-
-        println("Request headers: ${request.headers}")
         return chain.proceed(request)
     }
 }

@@ -16,6 +16,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Email
+import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -130,7 +131,6 @@ class RegisterActivity : ComponentActivity() {
         var email by remember { mutableStateOf("") }
         var username by remember { mutableStateOf("") }
         var password by remember { mutableStateOf("") }
-        var passwordVisibility by remember { mutableStateOf(false) }
 
         val context = LocalContext.current
         val keyboardController = LocalSoftwareKeyboardController.current
@@ -194,14 +194,10 @@ class RegisterActivity : ComponentActivity() {
                     keyboardType = KeyboardType.Password,
                     imeAction = ImeAction.Done
                 ),
-                visualTransformation = if (passwordVisibility) {
-                    PasswordVisualTransformation()
-                } else {
-                    VisualTransformation.None
+                leadingIcon = {
+                    Icon(Icons.Filled.Lock, contentDescription = "Password")
                 },
-                trailingIcon = {
-
-                },
+                visualTransformation = PasswordVisualTransformation(),
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(8.dp),
@@ -216,14 +212,10 @@ class RegisterActivity : ComponentActivity() {
             Button(
                 onClick = {
                     registerViewModel.signup(email, password, username) { callback ->
-                        // Handle the registration result here
                         if (callback.success) {
-                            // Registration successful
-                            // Optionally, you can navigate to the next screen or show a success message
-
-                        } else {
-                            // Registration failed
-                            // Optionally, you can show an error message
+                            val intent = Intent(context, LoginActivity::class.java)
+                            context.startActivity(intent)
+                            finish()
                         }
                     }
                 },

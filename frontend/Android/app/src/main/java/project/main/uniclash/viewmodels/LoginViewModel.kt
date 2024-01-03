@@ -56,13 +56,9 @@ class LoginViewModel (private val userService: UserService, application: Applica
 
         val call = userService.login(UserLoginRequest(email = email, password = password, fcmtoken = fcmToken!!))
         call.enqueue(object : Callback<JsonObject> {
-            override fun onResponse(
-                call: Call<JsonObject>,
-                response: Response<JsonObject>
-            ) {
+            override fun onResponse(call: Call<JsonObject>, response: Response<JsonObject>) {
                 if (response.isSuccessful) {
                     Log.d(TAG, "Login: success, Token: ${response.body()}")
-                    // Save the JWT token securely
                     val jsonObject = response.body()
                     val jwtToken = jsonObject?.get("token")?.asString
                     if (jwtToken != null) {
@@ -88,9 +84,8 @@ class LoginViewModel (private val userService: UserService, application: Applica
                     Log.d(TAG, "Login failed with code: ${response.code()}")
                     Log.d(TAG, "Error: ${response.message()}")
 
-                    // Invoke the callback with failure
                     callback(UserLoginTokenCallback(false, ""))
-                    text.value = "Something went wrong check your username and password please"
+                    text.value = "Something went wrong check your username and password please. Have you registered yet?"
                 }
             }
 
@@ -98,7 +93,6 @@ class LoginViewModel (private val userService: UserService, application: Applica
                 Log.d(TAG, "Login: FAILED")
                 t.printStackTrace()
 
-                // Invoke the callback with failure
                 callback(UserLoginTokenCallback(false, ""))
                 text.value = "Something went wrong contacting the server, do you have an internet connection?"
             }

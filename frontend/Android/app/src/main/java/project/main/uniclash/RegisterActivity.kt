@@ -131,7 +131,6 @@ class RegisterActivity : ComponentActivity() {
         var email by remember { mutableStateOf("") }
         var username by remember { mutableStateOf("") }
         var password by remember { mutableStateOf("") }
-        var passwordVisibility by remember { mutableStateOf(false) }
 
         val context = LocalContext.current
         val keyboardController = LocalSoftwareKeyboardController.current
@@ -198,14 +197,7 @@ class RegisterActivity : ComponentActivity() {
                 leadingIcon = {
                     Icon(Icons.Filled.Lock, contentDescription = "Password")
                 },
-                visualTransformation = if (passwordVisibility) {
-                    PasswordVisualTransformation()
-                } else {
-                    PasswordVisualTransformation()
-                },
-                trailingIcon = {
-
-                },
+                visualTransformation = PasswordVisualTransformation(),
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(8.dp),
@@ -220,7 +212,6 @@ class RegisterActivity : ComponentActivity() {
             Button(
                 onClick = {
                     registerViewModel.signup(email, password, username) { callback ->
-                        // Handle the registration result here
                         if (callback.success) {
                             val intent = Intent(context, LoginActivity::class.java)
                             context.startActivity(intent)

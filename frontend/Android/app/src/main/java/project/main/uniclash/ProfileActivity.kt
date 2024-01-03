@@ -200,6 +200,7 @@ fun MenuHeader() {
 @Composable
 fun PlayerProfile(profileViewModel: ProfileViewModel) {
     val userUIState by profileViewModel.user.collectAsState()
+
         Box(
             modifier = Modifier
                 .padding(all = 8.dp)

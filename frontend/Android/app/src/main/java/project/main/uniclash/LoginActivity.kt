@@ -128,8 +128,6 @@ class LoginActivity : ComponentActivity() {
     fun LoginForm(loginViewModel: LoginViewModel) {
         var email by remember { mutableStateOf("") }
         var password by remember { mutableStateOf("") }
-        var passwordVisibility by remember { mutableStateOf(false) }
-
         val context = LocalContext.current
         val keyboardController = LocalSoftwareKeyboardController.current
 
@@ -172,11 +170,7 @@ class LoginActivity : ComponentActivity() {
                 leadingIcon = {
                     Icon(Icons.Filled.Lock, contentDescription = "Password")
                 },
-                visualTransformation = if (passwordVisibility) {
-                    PasswordVisualTransformation()
-                } else {
-                    PasswordVisualTransformation()
-                },
+                visualTransformation = PasswordVisualTransformation(),
                 trailingIcon = {
 
                 },

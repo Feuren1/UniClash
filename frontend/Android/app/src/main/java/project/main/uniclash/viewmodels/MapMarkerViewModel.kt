@@ -6,6 +6,7 @@ import android.content.Context
 import android.content.res.Resources
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
+import android.graphics.Picture
 import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.Drawable
 import android.util.Base64
@@ -177,7 +178,10 @@ class MapMarkerViewModel(
 
                 val base64EncodedBitmap = studentHub.picture
                 val decodedBytes: ByteArray = Base64.decode(base64EncodedBitmap, Base64.DEFAULT)
-                val bitmap: Bitmap = BitmapFactory.decodeByteArray(decodedBytes, 0, decodedBytes.size)
+                var bitmap: Bitmap =BitmapFactory.decodeResource(context.resources, R.drawable.store)
+                if(decodedBytes.isNotEmpty()) {
+                    bitmap = BitmapFactory.decodeByteArray(decodedBytes, 0, decodedBytes.size)
+                }
                 val bitmapDrawable = BitmapDrawable(Resources.getSystem(), bitmap)
 
                 val myMarker = MarkerStudentHub(
@@ -251,7 +255,10 @@ class MapMarkerViewModel(
 
                 val base64EncodedBitmap = arena.picture
                 val decodedBytes: ByteArray = Base64.decode(base64EncodedBitmap, Base64.DEFAULT)
-                val bitmap: Bitmap = BitmapFactory.decodeByteArray(decodedBytes, 0, decodedBytes.size)
+                var bitmap: Bitmap =BitmapFactory.decodeResource(context.resources, R.drawable.arena)
+                if(decodedBytes.isNotEmpty()) {
+                     bitmap = BitmapFactory.decodeByteArray(decodedBytes, 0, decodedBytes.size)
+                }
                 val bitmapDrawable = BitmapDrawable(Resources.getSystem(), bitmap)
 
                 val myMarker = MarkerArena(

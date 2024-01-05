@@ -11,9 +11,10 @@ import androidx.core.app.NotificationCompat
 import com.google.firebase.Firebase
 import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.firestore
-
 import com.google.firebase.messaging.FirebaseMessagingService
 import com.google.firebase.messaging.RemoteMessage
+
+
 
 const val channelId = "notification_channel"
 const val channelName = "project.main.uniclash"
@@ -26,7 +27,6 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
             generateNotification(message.notification!!.title!!, message.notification!!.body!!)
         }
     }
-
     // Generate the notification
     private fun generateNotification(title: String, message: String) {
         val intent = Intent(this, MainActivity::class.java)
@@ -58,20 +58,6 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
         }
 
         notificationManager.notify(0, builder.build())
-    }
-
-    private fun sendTokenToServer(token: String?) {
-        // If you're running your own server, call API to send token and today's date for the user
-
-        // Example shown below with Firestore
-        // Add token and timestamp to Firestore for this user
-        val deviceToken = hashMapOf(
-            "token" to token,
-            "timestamp" to FieldValue.serverTimestamp(),
-        )
-        // Get user ID from Firebase Auth or your own server
-        Firebase.firestore.collection("fcmTokens").document("myuserid")
-            .set(deviceToken)
     }
 
 

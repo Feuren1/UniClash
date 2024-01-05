@@ -18,11 +18,14 @@ import {
   response,
 } from '@loopback/rest';
 import {Arena} from '../models';
-import {ArenaRepository} from '../repositories';
+import {ArenaRepository, UserRepository} from '../repositories';
 import {authenticate} from "@loopback/authentication";
+import { NotificationService } from '../services/NotificationService';
 
 export class ArenaController {
   constructor(
+    @repository(UserRepository)
+    public userRepository : UserRepository,
     @repository(ArenaRepository)
     public arenaRepository : ArenaRepository,
   ) {}
@@ -117,13 +120,14 @@ export class ArenaController {
     return this.arenaRepository.findById(id, filter);
   }
 
-  @patch('/arenas/{id}')
+  @patch('/arenas/{id}/{userId}')
   @authenticate('jwt')
   @response(204, {
     description: 'Arena PATCH success',
   })
   async updateById(
     @param.path.number('id') id: number,
+    @param.path.string("userId") userId: string,
     @requestBody({
       content: {
         'application/json': {
@@ -134,6 +138,10 @@ export class ArenaController {
     arena: Arena,
   ): Promise<void> {
     await this.arenaRepository.updateById(id, arena);
+    const user = await this.userRepository.findById(userId);
+    console.log("User fcm token" + user.fcmtoken)
+    const sendPushNotificationService = new NotificationService();
+    sendPushNotificationService.sendPushNotificationArenaupdate(user.fcmtoken,"ArenaUpdate","Arena has been updated")
   }
 
   @put('/arenas/{id}')

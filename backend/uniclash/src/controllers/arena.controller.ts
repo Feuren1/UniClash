@@ -18,7 +18,7 @@ import {
   response,
 } from '@loopback/rest';
 import {Arena} from '../models';
-import {ArenaRepository, UserRepository} from '../repositories';
+import {ArenaRepository, StudentRepository, UserRepository} from '../repositories';
 import {authenticate} from "@loopback/authentication";
 import { NotificationService } from '../services/NotificationService';
 
@@ -28,6 +28,8 @@ export class ArenaController {
     public userRepository : UserRepository,
     @repository(ArenaRepository)
     public arenaRepository : ArenaRepository,
+    @repository (StudentRepository)
+    public studentRepository: StudentRepository
   ) {}
 
   @post('/arenas')
@@ -120,14 +122,13 @@ export class ArenaController {
     return this.arenaRepository.findById(id, filter);
   }
 
-  @patch('/arenas/{id}/{userId}')
+  @patch('/arenas/{id}')
   @authenticate('jwt')
   @response(204, {
     description: 'Arena PATCH success',
   })
   async updateById(
     @param.path.number('id') id: number,
-    @param.path.string("userId") userId: string,
     @requestBody({
       content: {
         'application/json': {
@@ -138,10 +139,10 @@ export class ArenaController {
     arena: Arena,
   ): Promise<void> {
     await this.arenaRepository.updateById(id, arena);
-    const user = await this.userRepository.findById(userId);
+    const user = await this.studentRepository.user(arena.studentId)
     console.log("User fcm token" + user.fcmtoken)
     const sendPushNotificationService = new NotificationService();
-    sendPushNotificationService.sendPushNotificationArenaupdate(user.fcmtoken,"ArenaUpdate","Arena has been updated")
+    sendPushNotificationService.sendPushNotification(user.fcmtoken,"ArenaUpdate","Your arena has been defeated!!!")
   }
 
   @put('/arenas/{id}')

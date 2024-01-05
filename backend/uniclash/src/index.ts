@@ -8,7 +8,7 @@ export async function main(options: ApplicationConfig = {}) {
   const notificationService = new NotificationService();
 
   const startTasks = async () => {
-    await notificationService.sendPushNotification('drk-4D87SHuWHAH0kH_pWm:APA91bHWiJes8l5AES9KegTxQADJBNhEIpLIw946tdAVo0sjHm5uwLqSUaFeMBBavPFPiaTZuuyAlpaLiAyQnVIQyPBc3cokyN3eJCX6SdHY4Xs___uYfoeJ75P6ebnGpYZ7DGGnQUTz', 'Test Title', 'Test Body');
+    await notificationService.sendPushNotification('c5MLeBPpTT27a9Mp376WXb:APA91bGfq0llhpTjNolQwAwxQWSwtVj3vmr-gM6qqLIADU2UG53I5bWMHhDciHmU78LUZuk8otOpV7mYUIPekbixYA9ksyPttY93kPZ2vy1SykuC0TWaXvyBPZ9mcOW0dLA2xY_WNzGY', 'Test Title', 'Test Body');
 
   };
 

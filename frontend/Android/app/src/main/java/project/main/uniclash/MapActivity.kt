@@ -81,6 +81,9 @@ import project.main.uniclash.viewmodels.MapItemViewModel
 import project.main.uniclash.viewmodels.MapLocationViewModel
 import project.main.uniclash.viewmodels.MapMarkerViewModel
 
+/*
+OpenStreetMap for Android Compose : https://utsmannn.github.io/osm-android-compose/usage/
+ */
 class MapActivity : ComponentActivity() {
     //is not in onCreate because it is used in complete class => solution would be parameters in methods
     private lateinit var fusedLocationClient: FusedLocationProviderClient
@@ -593,7 +596,7 @@ class MapActivity : ComponentActivity() {
         }
     }
 
-    fun OpenActivityButton(activity: Class<out Activity> = MenuActivity::class.java) {
+    private fun OpenActivityButton(activity: Class<out Activity> = MenuActivity::class.java) {
                 // Handle the button click to open the new activity here
                 val intent = Intent(this,activity)
                 this.startActivity(intent, null)

@@ -1,11 +1,9 @@
 package project.main.uniclash
 
-import android.R.attr.path
 import android.app.Application
 import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
-import android.graphics.Matrix
 import android.os.Bundle
 import android.util.Base64
 import androidx.activity.ComponentActivity
@@ -53,7 +51,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.rememberImagePainter
-import project.main.uniclash.NewBuildingLogic.NewBuildingSingleTon
+import project.main.uniclash.newBuildingLogic.NewBuildingSingleTon
 import project.main.uniclash.datatypes.Locations
 import project.main.uniclash.datatypes.MapSaver
 import project.main.uniclash.datatypes.MarkerData

@@ -10,6 +10,9 @@ import project.main.uniclash.dataStore
 import project.main.uniclash.datatypes.CritterUsable
 import androidx.datastore.preferences.core.stringSetPreferencesKey
 
+/*
+Could violate against "Single source of truth"
+ */
 class CritterListDataManager(context: Context) {
     private val context = context
     private val dataStore = context.dataStore

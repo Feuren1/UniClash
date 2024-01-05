@@ -1,4 +1,4 @@
-package project.main.uniclash.NewBuildingLogic
+package project.main.uniclash.newBuildingLogic
 
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf

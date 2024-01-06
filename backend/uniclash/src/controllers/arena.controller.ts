@@ -140,7 +140,7 @@ export class ArenaController {
   ): Promise<void> {
     const currentArena = this.arenaRepository.findById(id)
     if(arena.studentId != (await currentArena).studentId){
-    const user = await this.studentRepository.user(arena.studentId)
+    const user = await this.studentRepository.user((await currentArena).studentId)
     const sendPushNotificationService = new NotificationService();
     sendPushNotificationService.sendPushNotification(user.fcmtoken,"ArenaUpdate","Your arena has been defeated!!!")
     }

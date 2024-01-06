@@ -120,7 +120,6 @@ dependencies {
     androidTestImplementation(platform("androidx.compose:compose-bom:2023.03.00"))
     debugImplementation("androidx.compose.ui:ui-tooling")
     debugImplementation("androidx.compose.ui:ui-test-manifest")
-
     implementation ("tech.utsmankece:osm-android-compose:0.0.5")
     implementation("org.osmdroid:osmdroid-android:6.1.16")
     implementation ("com.google.android.gms:play-services-location:17.1.0")
@@ -131,5 +130,6 @@ dependencies {
     implementation(platform("com.google.firebase:firebase-bom:32.5.0"))
     implementation("com.google.firebase:firebase-analytics")
     implementation ("com.google.firebase:firebase-messaging")
+    implementation("com.google.firebase:firebase-inappmessaging-display")
     implementation ("androidx.lifecycle:lifecycle-viewmodel-compose:2.6.1")
 }

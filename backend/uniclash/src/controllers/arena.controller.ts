@@ -18,13 +18,18 @@ import {
   response,
 } from '@loopback/rest';
 import {Arena} from '../models';
-import {ArenaRepository} from '../repositories';
+import {ArenaRepository, StudentRepository, UserRepository} from '../repositories';
 import {authenticate} from "@loopback/authentication";
+import { NotificationService } from '../services/NotificationService';
 
 export class ArenaController {
   constructor(
+    @repository(UserRepository)
+    public userRepository : UserRepository,
     @repository(ArenaRepository)
     public arenaRepository : ArenaRepository,
+    @repository (StudentRepository)
+    public studentRepository: StudentRepository
   ) {}
 
   @post('/arenas')
@@ -134,6 +139,10 @@ export class ArenaController {
     arena: Arena,
   ): Promise<void> {
     await this.arenaRepository.updateById(id, arena);
+    const user = await this.studentRepository.user(arena.studentId)
+    console.log("User fcm token" + user.fcmtoken)
+    const sendPushNotificationService = new NotificationService();
+    sendPushNotificationService.sendPushNotification(user.fcmtoken,"ArenaUpdate","Your arena has been defeated!!!")
   }
 
   @put('/arenas/{id}')

@@ -86,12 +86,14 @@
 |----|----------------|-------|
 | 1  | RedBull        | 5     |
 | 2  | CHOCOLATEWAFFLE| 3     |
+| 2  | FART SPRAY     | 1     |
 
 ## Critter Values<br>
 Max Level: 100<br>
+Ep for one Redbull: 100ep<br>
 
 ## Student / User Rules<br>
-Every user gets 100 coins by register<br>
+Every user gets 100 coins by registering <br>
 Ep for reaching a User Level: 500 <br>
 Max User Level: max.Integer<br>
 Needed Level to create new Buildings: 5 , 10 ,15 aso.<br>
@@ -100,7 +102,7 @@ And how many buildings: 2<br>
 ## Map<br>
 Refresh every 5min<br>
 Frist spawn after 30min<br>
-Critter Radius 2km -> 900 wild encounter<br>
+Critter Radius 2km -> 800 wild encounter<br>
 
 ## Other Game Rules<br>
 Coins per catch: 1 <br>
@@ -109,4 +111,4 @@ Coins per fight Win: 3 <br>
 Ep per fight Win: 100<br>
 Coins per captured Arena: 3<br>
 Ep per captured Arena: 150<br>
-Legendary critter can not set in arenas.<br>
+Legendary critters can not be set in arenas.<br>

@@ -1,15 +1,15 @@
 package project.main.uniclash.viewmodels
 
 import android.annotation.SuppressLint
+import android.app.Application
 import android.content.Context
 import android.content.res.Resources
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
+import android.graphics.Picture
 import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.Drawable
 import android.util.Base64
-import android.util.Log
-import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
@@ -18,10 +18,10 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import org.osmdroid.util.GeoPoint
 import project.main.uniclash.ArenaActivity
-import project.main.uniclash.MapActivity
 import project.main.uniclash.R
 import project.main.uniclash.StudentHubActivity
 import project.main.uniclash.WildEncounterActivity
+import project.main.uniclash.dataManagers.UserDataManager
 import project.main.uniclash.datatypes.Arena
 import project.main.uniclash.datatypes.Counter
 import project.main.uniclash.datatypes.CritterUsable
@@ -87,6 +87,10 @@ class MapMarkerViewModel(
     private val context : Context,
     private val mapMarkerListViewModel : MapMarkerListViewModel,
 ) : ViewModel() {
+
+    private val userDataManager: UserDataManager by lazy {
+        UserDataManager(Application())
+    }
 
     private var mapCalculations = MapCalculations()
 
@@ -170,11 +174,14 @@ class MapMarkerViewModel(
                 val geoPoint = GeoPoint(studentHub?.lat!!, studentHub?.lon!!)
 
                 val icon: Drawable? =
-                    mapCalculations.resizeDrawable(context, R.drawable.store, 50.0F)
+                    mapCalculations.resizeDrawable(context, R.drawable.storem, 50.0F)
 
                 val base64EncodedBitmap = studentHub.picture
                 val decodedBytes: ByteArray = Base64.decode(base64EncodedBitmap, Base64.DEFAULT)
-                val bitmap: Bitmap = BitmapFactory.decodeByteArray(decodedBytes, 0, decodedBytes.size)
+                var bitmap: Bitmap =BitmapFactory.decodeResource(context.resources, R.drawable.store)
+                if(decodedBytes.isNotEmpty()) {
+                    bitmap = BitmapFactory.decodeByteArray(decodedBytes, 0, decodedBytes.size)
+                }
                 val bitmapDrawable = BitmapDrawable(Resources.getSystem(), bitmap)
 
                 val myMarker = MarkerStudentHub(
@@ -222,7 +229,8 @@ class MapMarkerViewModel(
         }
     }
 
-    private fun initMarkersArena(){
+    @SuppressLint("SuspiciousIndentation")
+    private suspend fun initMarkersArena(){
             if(arenas.value.arenas.isNotEmpty()) {
                 this@MapMarkerViewModel.markersArena.update {
                     it.copy(
@@ -234,15 +242,23 @@ class MapMarkerViewModel(
             var arenasMarkerList = ArrayList<MarkerData?>()
             var i = 0
             while (i < arenas.size) {
-                val arena = arenas.get(i)
+                val arena = arenas[i]
                 val geoPoint = GeoPoint(arena?.lat!!, arena?.lon!!)
 
-                val icon: Drawable? =
-                    mapCalculations.resizeDrawable(context, R.drawable.arena, 50.0F)
+                var icon: Drawable? = mapCalculations.resizeDrawable(context, R.drawable.arenaenemym, 50.0F)
+
+                    if(arena.studentId == userDataManager.getStudentId()) {
+                        icon =  mapCalculations.resizeDrawable(context, R.drawable.arenacapturedm, 50.0F)
+                    } else if (arena.studentId == 0) {
+                        icon = mapCalculations.resizeDrawable(context, R.drawable.arenam, 50.0F)
+                    }
 
                 val base64EncodedBitmap = arena.picture
                 val decodedBytes: ByteArray = Base64.decode(base64EncodedBitmap, Base64.DEFAULT)
-                val bitmap: Bitmap = BitmapFactory.decodeByteArray(decodedBytes, 0, decodedBytes.size)
+                var bitmap: Bitmap =BitmapFactory.decodeResource(context.resources, R.drawable.arena)
+                if(decodedBytes.isNotEmpty()) {
+                     bitmap = BitmapFactory.decodeByteArray(decodedBytes, 0, decodedBytes.size)
+                }
                 val bitmapDrawable = BitmapDrawable(Resources.getSystem(), bitmap)
 
                 val myMarker = MarkerArena(
@@ -376,22 +392,22 @@ class MapMarkerViewModel(
 
     fun counterLogic(){
         Counter.FIRSTSPAWN.minusCounter(1)
-        Counter.WILDENCOUNTERREFRESHER.minusCounter(1)
+        Counter.RESPAWN.minusCounter(1)
 
         var distance = mapCalculations.haversineDistance(Locations.USERLOCATION.getLocation().latitude,Locations.USERLOCATION.getLocation().longitude,Locations.INTERSECTION.getLocation().latitude,Locations.INTERSECTION.getLocation().longitude)
         if(distance > 2100){
             Locations.INTERSECTION.setLocation(Locations.USERLOCATION.getLocation()) //otherwise endless loop
-            Counter.WILDENCOUNTERREFRESHER.setCounter(1)
+            Counter.RESPAWN.setCounter(1)
         }
 
-        if(Counter.WILDENCOUNTERREFRESHER.getCounter() == 1 && Counter.FIRSTSPAWN.getCounter()<1){
+        if(Counter.RESPAWN.getCounter() == 1 && Counter.FIRSTSPAWN.getCounter()<1){
             mapMarkerListViewModel.removeMarkersQ(MapSaver.WILDENCOUNTER.getMarker())
             MapSaver.WILDENCOUNTER.setMarker(ArrayList<MarkerData?>())
         }
 
-        if(Counter.WILDENCOUNTERREFRESHER.getCounter() < -4 && Counter.FIRSTSPAWN.getCounter() < 1){
+        if(Counter.RESPAWN.getCounter() < -4 && Counter.FIRSTSPAWN.getCounter() < 1){
             loadWildEncounter()
-            Counter.WILDENCOUNTERREFRESHER.setCounter(300)
+            Counter.RESPAWN.setCounter(300)
         }
     }
 
@@ -400,13 +416,13 @@ class MapMarkerViewModel(
              mapMarkerListViewModel.addListOfMarkersQ(MapSaver.WILDENCOUNTER.getMarker())
 
             if(MapSaver.WILDENCOUNTER.getMarker().isEmpty()) {
-                Counter.WILDENCOUNTERREFRESHER.setCounter(0)
+                Counter.RESPAWN.setCounter(0)
             }
         }
 
     init {
         viewModelScope.launch {
-            studentHubs.collect {
+            studentHubs.collect {//if something changes in studentHubs, initMarker... will be executed
                 initMarkersStudentHub()
             }
         }

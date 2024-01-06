@@ -1,10 +1,9 @@
-package project.main.uniclash.userDataManager
+package project.main.uniclash.dataManagers
 
 import android.content.Context
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.intPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import project.main.uniclash.dataStore

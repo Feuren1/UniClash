@@ -11,14 +11,12 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
-import project.main.uniclash.JWT.TokenManager
 import project.main.uniclash.datatypes.Student
 import project.main.uniclash.datatypes.StudentRegisterRequest
 import project.main.uniclash.datatypes.User
-import project.main.uniclash.datatypes.UserSignUpRequest
 import project.main.uniclash.retrofit.UserService
 import project.main.uniclash.retrofit.enqueue
-import project.main.uniclash.userDataManager.UserDataManager
+import project.main.uniclash.dataManagers.UserDataManager
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -44,7 +42,6 @@ sealed interface StudentRequestUIState {
 }
 
 class ProfileViewModel (private val userService: UserService, application: Application) : ViewModel() {
-    private val tokenManager: TokenManager = TokenManager(application)
     private val TAG = LoginViewModel::class.java.simpleName
     private val context: Application = application
     val text: MutableStateFlow<String> = MutableStateFlow("")
@@ -88,6 +85,9 @@ class ProfileViewModel (private val userService: UserService, application: Appli
                     text.value = "Game progress loaded successfully"
                     Log.d(TAG, "Student/Game-progress has been loaded ${user.value.user}")
                 }else{
+                    user.update { state ->
+                        state.copy(user = state.user!!, isLoading = false)
+                    }
                     hasStudent.value= false
                     text.value = "Loading Game Progress failed, Have you created a Student yet?"
                 }
@@ -99,9 +99,7 @@ class ProfileViewModel (private val userService: UserService, application: Appli
         }
     }
 
-    fun createStudent(
-                       userId: String,
-                       ){
+    fun createStudent(userId: String){
         viewModelScope.launch {
             val studentRegisterRequest = StudentRegisterRequest(
                 level = 1,
@@ -123,7 +121,6 @@ class ProfileViewModel (private val userService: UserService, application: Appli
                             // Parse the response body to get user information
                             val studentResponse = response.body()
                             Log.d(TAG, response.body().toString())
-                            // Assuming UserResponse is the data type returned by /whoAmI
                             if (studentResponse != null) {
                                 // Extract the user details
                                 response.body().let {

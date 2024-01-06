@@ -3,11 +3,6 @@ package project.main.uniclash.viewmodels
 import android.app.Application
 import android.content.ContentValues.TAG
 import android.util.Log
-import androidx.activity.viewModels
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
@@ -15,21 +10,15 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import project.main.uniclash.datatypes.Arena
-import project.main.uniclash.datatypes.CritterUsable
-import project.main.uniclash.datatypes.MarkerWildEncounter
 import project.main.uniclash.datatypes.NewArena
 import project.main.uniclash.datatypes.NewStudentHub
-import project.main.uniclash.datatypes.SelectedMarker
 import project.main.uniclash.datatypes.Student
 import project.main.uniclash.datatypes.StudentHub
-import project.main.uniclash.datatypes.User
 import project.main.uniclash.retrofit.ArenaService
-import project.main.uniclash.retrofit.CritterService
 import project.main.uniclash.retrofit.StudentHubService
 import project.main.uniclash.retrofit.StudentService
-import project.main.uniclash.retrofit.UserService
 import project.main.uniclash.retrofit.enqueue
-import project.main.uniclash.userDataManager.UserDataManager
+import project.main.uniclash.dataManagers.UserDataManager
 
 sealed interface PostArenaUIState {
     data class HasEntries(

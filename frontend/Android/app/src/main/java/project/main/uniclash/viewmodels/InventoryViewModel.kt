@@ -1,19 +1,16 @@
 package project.main.uniclash.viewmodels
 import android.annotation.SuppressLint
 import android.app.Application
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import project.main.uniclash.datatypes.CritterUsable
 import project.main.uniclash.datatypes.ItemUsable
-import project.main.uniclash.retrofit.ArenaService
 import project.main.uniclash.retrofit.InventoryService
 import project.main.uniclash.retrofit.enqueue
-import project.main.uniclash.userDataManager.UserDataManager
+import project.main.uniclash.dataManagers.UserDataManager
 
 sealed interface ItemUsablesUIState {
     data class HasEntries(

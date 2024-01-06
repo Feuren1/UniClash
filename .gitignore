@@ -297,3 +297,4 @@ xcuserdata/
 *.xcscmblueprint
 *.xccheckout
 backend/uniclash/src/datasources/db.datasource.ts
+frontend/Android/.idea/deploymentTargetDropDown.xml

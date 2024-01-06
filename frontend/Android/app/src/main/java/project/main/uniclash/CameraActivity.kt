@@ -31,6 +31,10 @@ import java.nio.file.Files
 import java.nio.file.Paths
 import java.nio.file.StandardOpenOption
 
+/*
+Normally we should not use xml files because activitys (using Jetpack compose) gives the possibility to work completely without xml files.
+advantages: reusability and separation of logic and representation => better readability
+ */
 class CameraActivity : AppCompatActivity() {
     private lateinit var viewBinding: ActivityCameraBinding
 

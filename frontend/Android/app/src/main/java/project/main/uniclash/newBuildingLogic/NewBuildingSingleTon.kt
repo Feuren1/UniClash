@@ -1,10 +1,14 @@
-package project.main.uniclash.NewBuildingLogic
+package project.main.uniclash.newBuildingLogic
 
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import project.main.uniclash.BuildingType
 
+/*
+Saves user input, in case of user has to leave the activity, he had not to reenter the information.
+Singleton, are not good praxis for this => bad controlling (life time controlling)
+ */
 class NewBuildingSingleTon private constructor() {
     private var title by mutableStateOf("")
     private var description by mutableStateOf("")

@@ -1,11 +1,10 @@
 package project.main.uniclash.datatypes
 
-import android.content.Intent
 import org.osmdroid.util.GeoPoint
 
 enum class MapSettings(private var selection : Boolean){
-    MOVINGCAMERA(true),
-    CRITTERBINOCULARS(false);
+    MOVINGCAMERA(true), //If camera follows the gps location (arrow marker)
+    CRITTERBINOCULARS(false); //critter visibility 250 false -> 1km true
 
     fun getMapSetting():Boolean{
         return selection
@@ -15,6 +14,8 @@ enum class MapSettings(private var selection : Boolean){
         selection = setSelection
     }
 }
+
+//Saves all Markers
 enum class MapSaver(private var markers: ArrayList<MarkerData?>) {
     WILDENCOUNTER(ArrayList<MarkerData?>()),
     ARENA(ArrayList<MarkerData?>()),
@@ -33,6 +34,7 @@ enum class MapSaver(private var markers: ArrayList<MarkerData?>) {
     }
 }
 
+//saves markers which was selected by an user (button in the detailed marker window).
 enum class SelectedMarker(private var marker:MarkerData?) {
     SELECTEDMARKER(null);
 
@@ -49,6 +51,8 @@ enum class SelectedMarker(private var marker:MarkerData?) {
 
 enum class Locations(private var location : GeoPoint){
     USERLOCATION(GeoPoint(0.0,0.0)),
+    //saves the userLocation from where the critters were spawn
+    //this will be used to calculated the distance between userlocation and the point from where the ritter spawns
     INTERSECTION(GeoPoint(0.0,0.0));
 
     fun getLocation(): GeoPoint {
@@ -63,8 +67,8 @@ enum class Locations(private var location : GeoPoint){
 }
 
 enum class Counter(private var count : Int){
-    FIRSTSPAWN(30),
-    WILDENCOUNTERREFRESHER(300);
+    FIRSTSPAWN(30),//to start firstSpawn event
+    RESPAWN(300);//to start reSpawn event
 
     fun getCounter():Int{
         return count

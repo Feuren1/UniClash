@@ -12,10 +12,9 @@ import project.main.uniclash.retrofit.CritterService
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import project.main.uniclash.datatypes.CritterTemplate
 import project.main.uniclash.retrofit.enqueue
-import project.main.uniclash.userDataManager.CritterListDataManager
-import project.main.uniclash.userDataManager.UserDataManager
+import project.main.uniclash.dataManagers.CritterListDataManager
+import project.main.uniclash.dataManagers.UserDataManager
 
 public data class CritterIdCallback(val success: Boolean, val id: String)
 

@@ -2,15 +2,11 @@ package project.main.uniclash
 // ProfileActivity.kt
 
 import android.app.Application
-import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
-import androidx.compose.animation.core.Animatable
-import androidx.compose.animation.core.keyframes
-import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -18,11 +14,9 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -38,8 +32,7 @@ import androidx.compose.ui.unit.sp
 import kotlinx.coroutines.runBlocking
 import project.main.uniclash.retrofit.UserService
 import project.main.uniclash.ui.theme.UniClashTheme
-import project.main.uniclash.userDataManager.UserDataManager
-import project.main.uniclash.viewmodels.LoginViewModel
+import project.main.uniclash.dataManagers.UserDataManager
 import project.main.uniclash.viewmodels.ProfileViewModel
 
 class ProfileActivity : ComponentActivity() {
@@ -91,7 +84,80 @@ class ProfileActivity : ComponentActivity() {
                                     .align(Alignment.TopEnd)
                             )
                         }
-                        PlayerProfile(profileViewModel)
+                        val userUIState by profileViewModel.user.collectAsState()
+                        val hasStudent by profileViewModel.hasStudent.collectAsState()
+                        val text by profileViewModel.text.collectAsState()
+                        if(userUIState.isLoading){
+                            Box(
+                                modifier = Modifier
+                                    .padding(all = 8.dp)
+                                    .fillMaxWidth() // making box from left to right site
+                                    .background(
+                                        Color.LightGray,
+                                        shape = RoundedCornerShape(8.dp)
+                                    ) // Hintergrundfarbe und abgeflachte Ecken
+
+                            ) {
+                                Row(modifier = Modifier.padding(all = 8.dp)) {
+                                    val context = LocalContext.current
+
+                                    Spacer(modifier = Modifier.width(8.dp))
+                                    Column {
+                                        Spacer(modifier = Modifier.height(18.dp))
+                                        Text(
+                                            text = "Loading profile...",
+                                            fontSize = 18.sp,
+                                            color = MaterialTheme.colorScheme.secondary,
+                                            style = MaterialTheme.typography.titleSmall
+                                        )
+
+                                    }
+                                }
+                            }
+                        }
+                        if(!userUIState.isLoading&&userUIState.user!=null&&hasStudent == true) {
+                            PlayerProfile(profileViewModel)
+                        }
+                        if (hasStudent == false) {
+                            // Display button to go back to the menu
+                            Button(
+                                onClick = {
+                                    profileViewModel.createStudent(userUIState.user!!.id)
+
+                                },
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .clip(MaterialTheme.shapes.medium)
+                            ) {
+                                Text("Start your journey and create your Student")
+                            }
+                        }
+                        Box(
+                            modifier = Modifier
+                                .padding(all = 8.dp)
+                                .fillMaxWidth() // making box from left to right site
+                                .background(
+                                    Color.LightGray,
+                                    shape = RoundedCornerShape(8.dp)
+                                ) // Hintergrundfarbe und abgeflachte Ecken
+
+                        ) {
+                            Row(modifier = Modifier.padding(all = 8.dp)) {
+                                val context = LocalContext.current
+
+                                Spacer(modifier = Modifier.width(8.dp))
+                                Column {
+                                    Spacer(modifier = Modifier.height(18.dp))
+                                    Text(
+                                        text = text,
+                                        fontSize = 18.sp,
+                                        color = MaterialTheme.colorScheme.secondary,
+                                        style = MaterialTheme.typography.titleSmall
+                                    )
+
+                                }
+                            }
+                        }
                     }
                 }
             }
@@ -134,10 +200,7 @@ fun MenuHeader() {
 @Composable
 fun PlayerProfile(profileViewModel: ProfileViewModel) {
     val userUIState by profileViewModel.user.collectAsState()
-    val responseText by profileViewModel.text.collectAsState()
-    val hasStudent by profileViewModel.hasStudent.collectAsState()
-    val text by profileViewModel.text.collectAsState()
-    if(!userUIState.isLoading&&userUIState.user!=null) {
+
         Box(
             modifier = Modifier
                 .padding(all = 8.dp)
@@ -219,92 +282,6 @@ fun PlayerProfile(profileViewModel: ProfileViewModel) {
                 }
             }
         }
-
-
-            // Display other game progress details as needed
-            if (hasStudent == true) {
-                // Display button to go back to the menu
-            }
-            if (hasStudent == false) {
-                // Display button to go back to the menu
-                Button(
-                    onClick = {
-                        profileViewModel.createStudent(userUIState.user!!.id)
-
-                    },
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .clip(MaterialTheme.shapes.medium)
-                ) {
-                    Text("Start your journey and create your Student")
-                }
-            }
-
-        Box(
-            modifier = Modifier
-                .padding(all = 8.dp)
-                .fillMaxWidth() // making box from left to right site
-                .background(
-                    Color.LightGray,
-                    shape = RoundedCornerShape(8.dp)
-                ) // Hintergrundfarbe und abgeflachte Ecken
-
-        ) {
-            Row(modifier = Modifier.padding(all = 8.dp)) {
-                val context = LocalContext.current
-
-                Spacer(modifier = Modifier.width(8.dp))
-                Column {
-                    Spacer(modifier = Modifier.height(18.dp))
-                    Text(
-                        text = text,
-                        fontSize = 18.sp,
-                        color = MaterialTheme.colorScheme.secondary,
-                        style = MaterialTheme.typography.titleSmall
-                    )
-
-                }
-            }
-        }
-            Button(
-                onClick = {
-                    // Handle the action (e.g., navigate to edit profile)
-                },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .clip(MaterialTheme.shapes.medium)
-            ) {
-                Text("Edit Profile")
-            }
-        } else {
-
-        Box(
-            modifier = Modifier
-                .padding(all = 8.dp)
-                .fillMaxWidth() // making box from left to right site
-                .background(
-                    Color.LightGray,
-                    shape = RoundedCornerShape(8.dp)
-                ) // Hintergrundfarbe und abgeflachte Ecken
-
-        ) {
-            Row(modifier = Modifier.padding(all = 8.dp)) {
-                val context = LocalContext.current
-
-                Spacer(modifier = Modifier.width(8.dp))
-                Column {
-                    Spacer(modifier = Modifier.height(18.dp))
-                    Text(
-                        text = "Loading profile...",
-                        fontSize = 18.sp,
-                        color = MaterialTheme.colorScheme.secondary,
-                        style = MaterialTheme.typography.titleSmall
-                    )
-
-                }
-            }
-        }
-    }
 
 }
 

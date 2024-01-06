@@ -39,6 +39,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import project.main.uniclash.datatypes.CritterUsable
+import project.main.uniclash.datatypes.MapSaver
+import project.main.uniclash.datatypes.MarkerArena
+import project.main.uniclash.datatypes.MarkerData
 import project.main.uniclash.retrofit.ArenaCritterService
 import project.main.uniclash.ui.theme.UniClashTheme
 import project.main.uniclash.viewmodels.AddCritterToArenaViewModel
@@ -48,7 +51,7 @@ class AddCritterToArenaActivity : ComponentActivity() {
         val addCritterToArenaViewModel: AddCritterToArenaViewModel by viewModels(factoryProducer = {
             AddCritterToArenaViewModel.provideFactory(ArenaCritterService.getInstance(this))
         })
-
+        MapSaver.ARENA.setMarker(ArrayList<MarkerData?>())
 
         super.onCreate(savedInstanceState)
         setContent {
@@ -67,7 +70,7 @@ class AddCritterToArenaActivity : ComponentActivity() {
                     ) {
                         // Set the background image
                         Image(
-                            painter = painterResource(id = R.drawable.arenam),
+                            painter = painterResource(id = R.drawable.arenabackground),
                             contentDescription = null,
                             modifier = Modifier.fillMaxSize(),
                             contentScale = ContentScale.Crop

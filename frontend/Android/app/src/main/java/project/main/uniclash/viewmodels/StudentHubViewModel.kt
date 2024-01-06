@@ -12,7 +12,7 @@ import kotlinx.coroutines.launch
 import project.main.uniclash.datatypes.ItemTemplate
 import project.main.uniclash.retrofit.StudentHubService
 import project.main.uniclash.retrofit.enqueue
-import project.main.uniclash.userDataManager.UserDataManager
+import project.main.uniclash.dataManagers.UserDataManager
 
 sealed interface ItemTemplatesUIState {
     data class HasEntries(

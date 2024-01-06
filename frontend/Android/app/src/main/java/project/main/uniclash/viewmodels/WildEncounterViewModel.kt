@@ -1,6 +1,5 @@
 package project.main.uniclash.viewmodels
 
-import android.R
 import android.app.Application
 import android.content.ContentValues.TAG
 import android.util.Log
@@ -20,8 +19,8 @@ import project.main.uniclash.datatypes.SelectedMarker
 import project.main.uniclash.retrofit.CritterService
 import project.main.uniclash.retrofit.InventoryService
 import project.main.uniclash.retrofit.enqueue
-import project.main.uniclash.userDataManager.CritterListDataManager
-import project.main.uniclash.userDataManager.UserDataManager
+import project.main.uniclash.dataManagers.CritterListDataManager
+import project.main.uniclash.dataManagers.UserDataManager
 
 sealed interface PostCrittersUIState { //TODO: CritterS to Critter?
     data class HasEntries(

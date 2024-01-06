@@ -1,18 +1,18 @@
-package project.main.uniclash.userDataManager
+package project.main.uniclash.dataManagers
 
 import android.app.Application
 import android.content.Context
 import androidx.datastore.preferences.core.edit
-import androidx.datastore.preferences.core.intPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import project.main.uniclash.dataStore
 import project.main.uniclash.datatypes.CritterUsable
-import androidx.datastore.core.DataStore
-import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringSetPreferencesKey
 
+/*
+Could violate against "Single source of truth"
+ */
 class CritterListDataManager(context: Context) {
     private val context = context
     private val dataStore = context.dataStore

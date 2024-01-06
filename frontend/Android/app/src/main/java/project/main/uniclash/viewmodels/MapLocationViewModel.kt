@@ -55,7 +55,7 @@ class MapLocationViewModel(private val locationPermissions: LocationPermissions)
 
 
     //data class to store the user Latitude and longitude
-    data class LatandLong( //set the first maker
+    data class LatandLong( //set the first maker (arrow marker(user location))
         var latitude: Double = 0.0,
         var longitude: Double = 0.0
     )
@@ -68,9 +68,9 @@ class MapLocationViewModel(private val locationPermissions: LocationPermissions)
             // location through FusedLocationProviderClient.
             val locationRequest: LocationRequest =
                 LocationRequest.create().apply {
-                    interval = TimeUnit.SECONDS.toMillis(60) //TimeUnit.SECONDS.toMillis(60)
-                    fastestInterval = TimeUnit.SECONDS.toMillis(60) //TimeUnit.SECONDS.toMillis(30)
-                    maxWaitTime = TimeUnit.SECONDS.toMillis(2) //TimeUnit.MINUTES.toMillis(2)
+                    interval = TimeUnit.SECONDS.toMillis(1) //TimeUnit.SECONDS.toMillis(60)
+                    fastestInterval = TimeUnit.SECONDS.toMillis(1) //TimeUnit.SECONDS.toMillis(30)
+                    maxWaitTime = TimeUnit.SECONDS.toMillis(1) //TimeUnit.MINUTES.toMillis(2)
                     priority = LocationRequest.PRIORITY_HIGH_ACCURACY
                 }
             //use FusedLocationProviderClient to request location update

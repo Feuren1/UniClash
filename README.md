@@ -21,6 +21,8 @@
 •	Product owner = Customer<br>
 •	Estimated Time and real Estimated Time has to be documented.<br>
 To improve time calculation for future sprints.<br>
+•	We set our working time per Sprint at 10 hours.<br>
+• A Sprint end and start is every tuesday.<br>
 
 ## **Team expectations**
 

@@ -1,6 +1,5 @@
 package project.main.uniclash.viewmodels
 
-import android.annotation.SuppressLint
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
@@ -10,11 +9,9 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import project.main.uniclash.datatypes.Arena
 import project.main.uniclash.datatypes.MarkerArena
-import project.main.uniclash.datatypes.MarkerWildEncounter
 import project.main.uniclash.datatypes.SelectedMarker
 import project.main.uniclash.retrofit.ArenaService
 import project.main.uniclash.retrofit.enqueue
-import project.main.uniclash.userDataManager.UserDataManager
 
 
 sealed interface ArenasUIState{

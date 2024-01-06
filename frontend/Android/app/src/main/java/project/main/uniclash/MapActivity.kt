@@ -1,5 +1,6 @@
 package project.main.uniclash
 
+import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Intent
 import android.graphics.drawable.Drawable
@@ -80,11 +81,15 @@ import project.main.uniclash.viewmodels.MapItemViewModel
 import project.main.uniclash.viewmodels.MapLocationViewModel
 import project.main.uniclash.viewmodels.MapMarkerViewModel
 
+/*
+OpenStreetMap for Android Compose : https://utsmannn.github.io/osm-android-compose/usage/
+ */
 class MapActivity : ComponentActivity() {
+    //is not in onCreate because it is used in complete class => solution would be parameters in methods
     private lateinit var fusedLocationClient: FusedLocationProviderClient
 
     private val locationPermissions = LocationPermissions(this, this)
-    private val mapCalculations = MapCalculations()
+    private val mapCalculations = MapCalculations() //business logic with were not related to specific class / view model "Single responsibility principle"
     private val geoCodingHelper = GeoCodingHelper(this)
 
     private val mapLocationViewModel: MapLocationViewModel by viewModels(factoryProducer = {
@@ -101,7 +106,7 @@ class MapActivity : ComponentActivity() {
 
     private val mapMarkerListViewModel : MapMarkerListViewModel by viewModels(factoryProducer = null)
 
-    private var reloadMap by mutableStateOf(true)
+    private var reloadMap by mutableStateOf(true) //reloads all markers
 
     private var numberOfMarkersOnMap = 0
 
@@ -109,11 +114,11 @@ class MapActivity : ComponentActivity() {
     private var mainLatitude: Double by mutableStateOf(Locations.USERLOCATION.getLocation().latitude) //for gps location
     private var mainLongitude: Double by mutableStateOf(Locations.USERLOCATION.getLocation().longitude)//"
 
-    private var movingCamera : Boolean ? = true
+    private var movingCamera : Boolean ? = true //if camera follows your location
 
     private var shouldLoadFirstWildEncounter by mutableStateOf(false)
 
-    private var newCritterNotification by mutableStateOf(11)
+    private var newCritterNotification by mutableStateOf(11) //time left side at the bottom
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -127,9 +132,9 @@ class MapActivity : ComponentActivity() {
             }
         }
 
-        mapLocationViewModel.getUserLocation(this) { location ->
+        mapLocationViewModel.getUserLocation(this) { location -> //this step could also be in the mapLocationViewModel, updates USERLOCATION ENUM
             Locations.USERLOCATION.setLocation(GeoPoint(location.latitude,location.longitude))
-            reloadMap = false
+            reloadMap = false //reload necessary otherwise critter visibility will not change if user is moving
             reloadMap = true
         }
 
@@ -219,8 +224,8 @@ class MapActivity : ComponentActivity() {
         }
     }
 
-    lateinit var gpsLocation : MarkerState
-    lateinit var cameraState : CameraState
+    lateinit var gpsLocation : MarkerState //arrow marker
+    lateinit var cameraState : CameraState //camera (how you see the map)
     var alreadySetedUpMap = false
     @Composable
     fun SettingUpMap() {
@@ -231,6 +236,7 @@ class MapActivity : ComponentActivity() {
         alreadySetedUpMap = true
     }
 
+    @SuppressLint("SuspiciousIndentation")
     @Composable
     fun Map() {
         LoadFirstWildEncounter()
@@ -263,22 +269,26 @@ class MapActivity : ComponentActivity() {
                         movingCamera = false
                     }
                 }
-                delay(1000) //1sec.
+                delay(1000) //1sec. //a delay will not froze the complete application
 
                 mapMarkerViewModel.counterLogic()
                 if (Counter.FIRSTSPAWN.getCounter() < 1) {
                     shouldLoadFirstWildEncounter = true
                 }
-                newCritterNotification = Counter.WILDENCOUNTERREFRESHER.getCounter()
+                newCritterNotification = Counter.RESPAWN.getCounter()
 
 
                 //in case of markers were not loaded successfully, the map activity will completely reload.
-                if(Counter.WILDENCOUNTERREFRESHER.getCounter()<1){
+                if(Counter.RESPAWN.getCounter()<1){
                     numberOfMarkersOnMap = 0
                 }
-                if(numberOfMarkersOnMap < 800 && Counter.WILDENCOUNTERREFRESHER.getCounter()>5&&Counter.WILDENCOUNTERREFRESHER.getCounter()<295){
+
+                //is now working without OpenActivityButton() and could be move out to view model
+                if(numberOfMarkersOnMap < 800 && Counter.RESPAWN.getCounter()>5&&Counter.RESPAWN.getCounter()<295){
                     println("complete map reload")
-                    OpenActivityButton(MapActivity::class.java)
+                    mapMarkerListViewModel.removeMarkersQ(MapSaver.WILDENCOUNTER.getMarker())
+                    mapMarkerListViewModel.addListOfMarkersQ(MapSaver.WILDENCOUNTER.getMarker())
+                    //OpenActivityButton(MapActivity::class.java)
                 }
 
             }
@@ -291,7 +301,7 @@ class MapActivity : ComponentActivity() {
             mutableStateOf(mapCalculations.resizeDrawable(context, R.drawable.arrow, 50.0F))
         }
 
-        var markerList = mapMarkerListViewModel.mapMarkerList.collectAsState()
+        val markerList by mapMarkerListViewModel.mapMarkerList.collectAsState()
 
         // Use camera state and location in your OpenStreetMap Composable
             OpenStreetMap(
@@ -307,8 +317,7 @@ class MapActivity : ComponentActivity() {
                 }
 
                 // Add markers and other map components here s)
-                    markerList.value.markerList.forEach() { marker ->
-                        println("lade marker neu ${markerList.value.markerList.size}")
+                    markerList.markerList.forEach() { marker ->
                     val distance = mapCalculations.haversineDistance(marker.state.latitude, marker.state.longitude, Locations.USERLOCATION.getLocation().latitude, Locations.USERLOCATION.getLocation().longitude)
                     Log.d(
                         LOCATION_TAG,
@@ -364,7 +373,7 @@ class MapActivity : ComponentActivity() {
 
     private var openFartSprayInfo by mutableStateOf(false)
     @Composable
-    fun MenuTaskBar() {
+    fun MenuTaskBar() { //Includes complete graphic gui above the map, not the map and makes themself
         FartSprayInfo()
         Box(
             modifier = Modifier
@@ -415,6 +424,7 @@ class MapActivity : ComponentActivity() {
             val drawableImage = painterResource(id = R.drawable.profile)
             val drawableBinoculars = painterResource(id = R.drawable.binoculars)
             val drawableLocation = painterResource(id = R.drawable.location)
+            val drawableLocationGray = painterResource(id = R.drawable.locationgray)
             val drawableZoomIn = painterResource(id = R.drawable.zoom)
             val drawableZoomOut = painterResource(id = R.drawable.zoomout)
             val fartSpray = painterResource(id = R.drawable.fartspray)
@@ -440,7 +450,7 @@ class MapActivity : ComponentActivity() {
                     }
             )
             Image(
-                painter = drawableLocation,
+                painter = if(MapSettings.MOVINGCAMERA.getMapSetting()){drawableLocation}else{drawableLocationGray},
                 contentDescription = null,
                 modifier = Modifier
                     .size(40.dp)
@@ -450,7 +460,7 @@ class MapActivity : ComponentActivity() {
                         MapSettings.MOVINGCAMERA.setMapSetting(!MapSettings.MOVINGCAMERA.getMapSetting())
                     }
             )
-            if(Counter.FIRSTSPAWN.getCounter()<1&&Counter.WILDENCOUNTERREFRESHER.getCounter()<280&&Counter.WILDENCOUNTERREFRESHER.getCounter()>5) {
+            if(Counter.FIRSTSPAWN.getCounter()<1&&Counter.RESPAWN.getCounter()<280&&Counter.RESPAWN.getCounter()>5) {
                 Image(
                     painter = fartSpray,
                     contentDescription = null,
@@ -586,7 +596,7 @@ class MapActivity : ComponentActivity() {
         }
     }
 
-    fun OpenActivityButton(activity: Class<out Activity> = MenuActivity::class.java) {
+    private fun OpenActivityButton(activity: Class<out Activity> = MenuActivity::class.java) {
                 // Handle the button click to open the new activity here
                 val intent = Intent(this,activity)
                 this.startActivity(intent, null)
@@ -599,7 +609,7 @@ class MapActivity : ComponentActivity() {
     fun LoadFirstWildEncounter(){
         if(shouldLoadFirstWildEncounter) {
             if(alreadyLoaded == false) {
-                Log.d(LOCATION_TAG, "Excecuted first loadwildencounter")
+                Log.d(LOCATION_TAG, "Executed first loadwildencounter")
                      mapMarkerListViewModel.addListOfMarkersQ(MapSaver.WILDENCOUNTER.getMarker())
                 shouldLoadFirstWildEncounter = false
                 if(MapSaver.WILDENCOUNTER.getMarker().isEmpty()){

@@ -5,18 +5,13 @@ import android.content.Context
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.viewModelScope
-import androidx.lifecycle.viewmodel.compose.viewModel
 import com.google.gson.JsonObject
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.update
-import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
-import project.main.uniclash.dataStore
 import project.main.uniclash.datatypes.UserLoginRequest
 import project.main.uniclash.retrofit.UserService
-import project.main.uniclash.userDataManager.CritterListDataManager
-import project.main.uniclash.userDataManager.UserDataManager
+import project.main.uniclash.dataManagers.UserDataManager
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -61,13 +56,9 @@ class LoginViewModel (private val userService: UserService, application: Applica
 
         val call = userService.login(UserLoginRequest(email = email, password = password, fcmtoken = fcmToken!!))
         call.enqueue(object : Callback<JsonObject> {
-            override fun onResponse(
-                call: Call<JsonObject>,
-                response: Response<JsonObject>
-            ) {
+            override fun onResponse(call: Call<JsonObject>, response: Response<JsonObject>) {
                 if (response.isSuccessful) {
                     Log.d(TAG, "Login: success, Token: ${response.body()}")
-                    // Save the JWT token securely
                     val jsonObject = response.body()
                     val jwtToken = jsonObject?.get("token")?.asString
                     if (jwtToken != null) {
@@ -93,9 +84,8 @@ class LoginViewModel (private val userService: UserService, application: Applica
                     Log.d(TAG, "Login failed with code: ${response.code()}")
                     Log.d(TAG, "Error: ${response.message()}")
 
-                    // Invoke the callback with failure
                     callback(UserLoginTokenCallback(false, ""))
-                    text.value = "Something went wrong check your username and password please"
+                    text.value = "Something went wrong check your username and password please. Have you registered yet?"
                 }
             }
 
@@ -103,7 +93,6 @@ class LoginViewModel (private val userService: UserService, application: Applica
                 Log.d(TAG, "Login: FAILED")
                 t.printStackTrace()
 
-                // Invoke the callback with failure
                 callback(UserLoginTokenCallback(false, ""))
                 text.value = "Something went wrong contacting the server, do you have an internet connection?"
             }

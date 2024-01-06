@@ -26,9 +26,6 @@ export class User extends Entity {
   @property({
     type: 'string',
     required: false,
-    index: {
-      unique: true,
-    },
   })
   fcmtoken: string;
 

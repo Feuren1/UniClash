@@ -4,7 +4,6 @@ package project.main.uniclash.viewmodels
 import android.annotation.SuppressLint
 import android.app.Application
 import android.util.Log
-import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
@@ -13,13 +12,10 @@ import project.main.uniclash.retrofit.CritterService
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import project.main.uniclash.battle.BattleLogicView
 import project.main.uniclash.battle.BattleResult
 import project.main.uniclash.datatypes.Attack
 import project.main.uniclash.retrofit.enqueue
-import project.main.uniclash.userDataManager.UserDataManager
-import kotlin.coroutines.resume
-import kotlin.coroutines.suspendCoroutine
+import project.main.uniclash.dataManagers.UserDataManager
 
 public data class playerCritterIdCallback(val success: Boolean, val id: String)
 public data class cpuCritterIdCallback(val success: Boolean, val id: String)

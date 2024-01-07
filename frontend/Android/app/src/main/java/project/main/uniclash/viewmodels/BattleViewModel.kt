@@ -103,10 +103,7 @@ class BattleViewModel(
 
     fun executePlayerAttack() {
         if (playerInput.value.isPlayerAttackSelected) {
-            // Execute the attack logic here
-            // For example, you can apply CPU damage based on the selected attack
             applyDamageToPCpu(playerInput.value.selectedPlayerAttack!!.strength)
-            // Reset the state for the next turn
             viewModelScope.launch() {
                 playerInput.update { currentState ->
                     currentState.copy(
@@ -122,10 +119,7 @@ class BattleViewModel(
 
     fun executeCpuAttack() {
         if (cpuInput.value.isCpuAttackSelected) {
-            // Execute the attack logic here
-            // For example, you can apply CPU damage based on the selected attack
             applyDamageToPlayer(cpuInput.value.selectedCpuAttack!!.strength)
-            // Reset the state for the next turn
             viewModelScope.launch() {
                 cpuInput.update { currentState ->
                     currentState.copy(

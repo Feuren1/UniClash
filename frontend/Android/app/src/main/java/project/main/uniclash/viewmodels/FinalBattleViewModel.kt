@@ -91,15 +91,12 @@ class FinalBattleViewModel(
             if(playerInput.value.selectedPlayerAttack!!.attackType==AttackType.DAMAGE_DEALER){
                 applyDamageToPCpu(playerInput.value.selectedPlayerAttack!!.strength)
             }
-            // Reset the state for the next turn
-            viewModelScope.launch() {
                 playerInput.update { currentState ->
                     currentState.copy(
                         isPlayerAttackSelected = false,
                         selectedPlayerAttack = null,
                     )
                 }
-            }
         }
         isPlayerTurn.value = false
     }
@@ -118,14 +115,12 @@ class FinalBattleViewModel(
                 applyDamageToPlayer(cpuInput.value.selectedCpuAttack!!.strength)
             }
             // Reset the state for the next turn
-            viewModelScope.launch() {
                 cpuInput.update { currentState ->
                     currentState.copy(
                         isCpuAttackSelected = false,
                         selectedCpuAttack = null,
                     )
                 }
-            }
         }
         isPlayerTurn.value = true
     }
@@ -146,7 +141,6 @@ class FinalBattleViewModel(
         val cpuCritter = cpuCritter.value.cpuCritter
         cpuCritter?.attacks?.random()
         val selectedAttack = cpuCritter?.attacks?.random()
-            viewModelScope.launch() {
                 cpuInput.update { currentState ->
                     currentState.copy(
                         isCpuAttackSelected = true,
@@ -155,7 +149,6 @@ class FinalBattleViewModel(
                 }
 
                 _battleText.value = "${cpuCritter!!.name} attacks with ${selectedAttack!!.name}!"
-            }
         }
 
 
@@ -227,7 +220,6 @@ class FinalBattleViewModel(
     private fun applyDebuffToPlayer(attack: Attack) {
         var newAtk = 0
         var newDef = 0
-        viewModelScope.launch {
             playerCritter.update { currentState ->
                 val currentAtk = currentState.playerCritter?.atk ?: 0
                 val currentDef = currentState.playerCritter?.def ?: 0
@@ -257,13 +249,11 @@ class FinalBattleViewModel(
                     "${playerCritter.value.playerCritter!!.name}'s Defence fell to $newDef!"
                 else -> ""
             }
-        }
     }
 
     private fun applyDebuffToCpu(attack: Attack) {
         var newAtk = 0
         var newDef = 0
-        viewModelScope.launch {
             cpuCritter.update { currentState ->
                 val currentAtk = currentState.cpuCritter?.atk ?: 0
                 val currentDef = currentState.cpuCritter?.def ?: 0
@@ -295,12 +285,11 @@ class FinalBattleViewModel(
                     "${cpuCritter.value.cpuCritter!!.name}'s Defence fell to $newDef"
                 else -> ""
             }
-        }
+
     }
 
     private fun applyBuffToCpu(attack: Attack) {
         if (attack.attackType == AttackType.ATK_BUFF) {
-            viewModelScope.launch() {
                 val newAtk = (cpuCritter.value.cpuCritter!!.atk + attack.strength).coerceAtMost(180)
                 val increased = newAtk > cpuCritter.value.cpuCritter!!.atk
                 cpuCritter.update { currentState ->
@@ -315,10 +304,8 @@ class FinalBattleViewModel(
                 } else {
                     "${cpuCritter.value.cpuCritter!!.name}'s Attack is already at maximum!"
                 }
-            }
         }
         if (attack.attackType == AttackType.DEF_BUFF) {
-            viewModelScope.launch() {
                 val newDef = (cpuCritter.value.cpuCritter!!.def + attack.strength).coerceAtMost(180)
                 val increased = newDef > cpuCritter.value.cpuCritter!!.def
                 cpuCritter.update { currentState ->
@@ -333,13 +320,11 @@ class FinalBattleViewModel(
                 } else {
                     "${cpuCritter.value.cpuCritter!!.name}'s Defense is already at maximum!"
                 }
-            }
         }
     }
 
     private fun applyDamageToPlayer(damage: Int) {
         var damageAfterCalculation = calculatePlayerDamage(damage)
-        viewModelScope.launch() {
             playerCritter.update { currentState ->
                 currentState.copy(
                     playerCritter = currentState.playerCritter?.copy(
@@ -347,7 +332,7 @@ class FinalBattleViewModel(
                     ),
                 )
             }
-        }
+
         val result = checkResult()
         _battleText.value = when (result) {
             BattleResult.PLAYER_WINS -> "Player wins!"
@@ -357,7 +342,6 @@ class FinalBattleViewModel(
     }
     private fun applyDamageToPCpu(damage: Int) {
         var damageAfterCalculation = calculateCpuDamage(damage)
-        viewModelScope.launch() {
             cpuCritter.update { currentState ->
                 currentState.copy(
                     cpuCritter = currentState.cpuCritter?.copy(
@@ -365,7 +349,6 @@ class FinalBattleViewModel(
                     ),
                 )
             }
-        }
         val result = checkResult()
         _battleText.value = when (result) {
             BattleResult.PLAYER_WINS -> "Player wins!"

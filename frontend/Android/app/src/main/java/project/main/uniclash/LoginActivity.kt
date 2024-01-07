@@ -62,7 +62,6 @@ class LoginActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         setContent {
             UniClashTheme {
-                // A surface container using the 'background' color from the theme
                 Surface(
                     modifier = Modifier
                         .fillMaxSize()
@@ -85,8 +84,6 @@ class LoginActivity : ComponentActivity() {
                         modifier = Modifier
                             .fillMaxSize()
                             .padding(16.dp),
-                        //horizontalAlignment = Alignment.CenterHorizontally,
-                        //verticalArrangement = Arrangement.Bottom
                     ) {
                         if (message.isNotEmpty()) {
                             Text(
@@ -129,7 +126,6 @@ class LoginActivity : ComponentActivity() {
         var email by remember { mutableStateOf("") }
         var password by remember { mutableStateOf("") }
         val context = LocalContext.current
-        val keyboardController = LocalSoftwareKeyboardController.current
 
         Column(
             modifier = Modifier
@@ -187,13 +183,7 @@ class LoginActivity : ComponentActivity() {
 
             Button(
                 onClick = {
-                    loginViewModel.login(email, password, context) { callback ->
-                        if (callback.success) {
-                            val intent = Intent(context, ProfileActivity::class.java)
-                            context.startActivity(intent)
-                            finish()
-                        }
-                    }
+                    loginViewModel.login(email, password, context)
                 },
                 modifier = Modifier
                     .fillMaxWidth()

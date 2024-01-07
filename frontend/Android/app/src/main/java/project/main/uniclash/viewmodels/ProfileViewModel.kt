@@ -111,18 +111,11 @@ class ProfileViewModel (private val userService: UserService, application: Appli
                 userId = userId,
             )
             try{
-                val call = userService.createStudent(studentRegisterRequest)
-                call.enqueue(object: Callback<Student>{
-                    override fun onResponse(
-                        call: Call<Student>,
-                        response: Response<Student>
-                    ) {
+                val response = userService.createStudent(studentRegisterRequest).enqueue()
                         if (response.isSuccessful) {
-                            // Parse the response body to get user information
                             val studentResponse = response.body()
                             Log.d(TAG, response.body().toString())
                             if (studentResponse != null) {
-                                // Extract the user details
                                 response.body().let {
                                     user.update { state ->
                                         state.copy(user = state.user!!.copy(student = it!!), isLoading = false)
@@ -137,21 +130,8 @@ class ProfileViewModel (private val userService: UserService, application: Appli
                         } else{
                             Log.d(TAG, "Creating Student has failed!" + response.code())
                         }
-                    }
 
-                    override fun onFailure(
-                        call: Call<Student>,
-                        t: Throwable
-                    ) {
-                        Log.d(TAG, "Creating Student: FAILED")
-                        t.printStackTrace()
-                        // Invoke the callback with failure
-                        text.value = "Error during Creating student request"
-                    }
-
-                })
             }catch (e: Exception) {
-                // Handle exception
                 Log.e(TAG, "Error while trying to create Student", e)
                 text.value = "Error while trying to create Student"
             }
@@ -160,23 +140,14 @@ class ProfileViewModel (private val userService: UserService, application: Appli
 
     fun whoAmI(token: String?,
                context: Context,
-               callback: (UserCallback) -> Unit = {}
     ) {
         viewModelScope.launch {
             try {
-                val call = userService.whoAmI()
-                call.enqueue(object : Callback<User> {
-                    override fun onResponse(
-                        call: Call<User>,
-                        response: Response<User>
-                    ) {
+                val response = userService.whoAmI().enqueue()
                         if (response.isSuccessful) {
-                            // Parse the response body to get user information
                             val userResponse = response.body()
                             Log.d(TAG, response.body().toString())
-                            // Assuming UserResponse is the data type returned by /whoAmI
                             if (userResponse != null) {
-                                // Extract the user details
                                 response.body().let {
                                     user.update { state ->
                                         state.copy(user = it, isLoading = false)
@@ -187,23 +158,12 @@ class ProfileViewModel (private val userService: UserService, application: Appli
                             runBlocking {
                                 userDataManager.storeUserId(user.value.user!!.id)
                             }
-                            callback(UserCallback(true, response.body()))
                             text.value = "You are logged in!"
                         } else{
+                            text.value = "Could not reach server do you have an internet connection?"
                             Log.d(TAG, "Who Am I: FAILED" + response.message())
                         }
-                    }
-                    override fun onFailure(call: Call<User>, t: Throwable) {
-                        Log.d(TAG, "Who Am I: FAILED")
-                        t.printStackTrace()
-                        // Invoke the callback with failure
-                        callback(UserCallback(false, null))
-                        text.value = "Error during whoAmI request"
-                    }
-                })
-
-            } catch (e: Exception) {
-                // Handle exception
+                    } catch (e: Exception) {
                 Log.e(TAG, "Error during whoAmI request", e)
                 text.value = "Error during whoAmI request"
             }
@@ -215,13 +175,9 @@ class ProfileViewModel (private val userService: UserService, application: Appli
             try {
                 val response = userService.refresh().execute()
                 if (response.isSuccessful) {
-                    // Update _userData with the response
-                    // Handle the response body if needed
                 } else {
-                    // Handle error
                 }
             } catch (e: Exception) {
-                // Handle exception
             }
         }
     }
@@ -231,13 +187,9 @@ class ProfileViewModel (private val userService: UserService, application: Appli
             try {
                 val response = userService.refreshLogin().execute()
                 if (response.isSuccessful) {
-                    // Update _userData with the response
-                    // Handle the response body if needed
                 } else {
-                    // Handle error
                 }
             } catch (e: Exception) {
-                // Handle exception
             }
         }
     }

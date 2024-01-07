@@ -29,10 +29,7 @@ class Retrofit {
         fun getRetrofitInstance(context: Context): Retrofit {
             if (retrofit == null) {
                 val contentType = "application/json".toMediaType()
-                val gson = GsonBuilder().registerTypeAdapter(
-                    Instant::class.java,
-                    InstantTypeAdapter()
-                ).create()
+                val gson = GsonBuilder().create()
                 retrofit = Retrofit.Builder().baseUrl(BASE_URL)
                     .addConverterFactory(GsonConverterFactory.create(gson))
                     .client(okhttpClient(context))

@@ -34,6 +34,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -53,9 +54,11 @@ import coil.compose.rememberImagePainter
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
 import com.utsman.osmandcompose.CameraState
+import com.utsman.osmandcompose.DefaultMapProperties
 import com.utsman.osmandcompose.Marker
 import com.utsman.osmandcompose.MarkerState
 import com.utsman.osmandcompose.OpenStreetMap
+import com.utsman.osmandcompose.ZoomButtonVisibility
 import com.utsman.osmandcompose.rememberCameraState
 import com.utsman.osmandcompose.rememberMarkerState
 import kotlinx.coroutines.delay
@@ -303,10 +306,21 @@ class MapActivity : ComponentActivity() {
 
         val markerList by mapMarkerListViewModel.mapMarkerList.collectAsState()
 
+        var mapProperties by remember {
+            mutableStateOf(DefaultMapProperties)
+        }
+
+        // setup mapProperties in side effect
+        SideEffect {
+            mapProperties = mapProperties
+                .copy(zoomButtonVisibility = ZoomButtonVisibility.NEVER)
+        }
+
         // Use camera state and location in your OpenStreetMap Composable
             OpenStreetMap(
                 modifier = Modifier.fillMaxSize(),
-                cameraState = cameraState
+                cameraState = cameraState,
+                properties = mapProperties
             ) {
                 if (reloadMap) {
                 var critterVisibility : Int

@@ -41,7 +41,7 @@ class MapCalculations {
         }
     }
 
-    fun haversineDistance(lat1: Double, lon1: Double, lat2: Double, lon2: Double): Double {
+    fun distance(lat1: Double, lon1: Double, lat2: Double, lon2: Double): Double {
         val radius = 6371000 // radius of the earth in meters
 
         val dLat = Math.toRadians(lat2 - lat1)

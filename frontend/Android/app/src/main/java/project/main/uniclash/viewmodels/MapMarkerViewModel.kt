@@ -6,7 +6,6 @@ import android.content.Context
 import android.content.res.Resources
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
-import android.graphics.Picture
 import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.Drawable
 import android.util.Base64
@@ -229,8 +228,9 @@ class MapMarkerViewModel(
         }
     }
 
+    //is not private anymore -> for Unit Test
     @SuppressLint("SuspiciousIndentation")
-    private suspend fun initMarkersArena(){
+    suspend fun initMarkersArena(){
             if(arenas.value.arenas.isNotEmpty()) {
                 this@MapMarkerViewModel.markersArena.update {
                     it.copy(
@@ -394,7 +394,7 @@ class MapMarkerViewModel(
         Counter.FIRSTSPAWN.minusCounter(1)
         Counter.RESPAWN.minusCounter(1)
 
-        var distance = mapCalculations.haversineDistance(Locations.USERLOCATION.getLocation().latitude,Locations.USERLOCATION.getLocation().longitude,Locations.INTERSECTION.getLocation().latitude,Locations.INTERSECTION.getLocation().longitude)
+        var distance = mapCalculations.distance(Locations.USERLOCATION.getLocation().latitude,Locations.USERLOCATION.getLocation().longitude,Locations.INTERSECTION.getLocation().latitude,Locations.INTERSECTION.getLocation().longitude)
         if(distance > 2100){
             Locations.INTERSECTION.setLocation(Locations.USERLOCATION.getLocation()) //otherwise endless loop
             Counter.RESPAWN.setCounter(1)

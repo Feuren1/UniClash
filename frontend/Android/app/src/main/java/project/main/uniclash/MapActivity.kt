@@ -318,7 +318,7 @@ class MapActivity : ComponentActivity() {
 
                 // Add markers and other map components here s)
                     markerList.markerList.forEach() { marker ->
-                    val distance = mapCalculations.haversineDistance(marker.state.latitude, marker.state.longitude, Locations.USERLOCATION.getLocation().latitude, Locations.USERLOCATION.getLocation().longitude)
+                    val distance = mapCalculations.distance(marker.state.latitude, marker.state.longitude, Locations.USERLOCATION.getLocation().latitude, Locations.USERLOCATION.getLocation().longitude)
                     Log.d(
                         LOCATION_TAG,
                         "set marker"
@@ -573,7 +573,7 @@ class MapActivity : ComponentActivity() {
     @Composable
     fun OpenActivityButton(marker : MarkerData) {
         val context = LocalContext.current
-        val distance = mapCalculations.haversineDistance(marker.state.latitude, marker.state.longitude, Locations.USERLOCATION.getLocation().latitude, Locations.USERLOCATION.getLocation().longitude)
+        val distance = mapCalculations.distance(marker.state.latitude, marker.state.longitude, Locations.USERLOCATION.getLocation().latitude, Locations.USERLOCATION.getLocation().longitude)
         if(distance < 76) {
             Button(
                 onClick = {

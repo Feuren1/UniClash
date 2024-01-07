@@ -17,8 +17,7 @@ import project.main.uniclash.datatypes.Attack
 import project.main.uniclash.retrofit.enqueue
 import project.main.uniclash.dataManagers.UserDataManager
 
-public data class playerCritterIdCallback(val success: Boolean, val id: String)
-public data class cpuCritterIdCallback(val success: Boolean, val id: String)
+
 
 
 
@@ -175,7 +174,7 @@ class BattleViewModel(
         }
     }
 
-    fun chooseCpuAttack(): Attack? {
+    private fun chooseCpuAttack(): Attack? {
         val cpuCritter = cpuCritter.value.cpuCritter
         cpuCritter?.let {
             val randomIndex = (0 until it.attacks.size).random()
@@ -194,7 +193,7 @@ class BattleViewModel(
         return BattleResult.NOTOVER
     }
 
-    fun applyDamageToPlayer(damage: Int) {
+    private fun applyDamageToPlayer(damage: Int) {
         var damageAfterCalculation = calculatePlayerDamage(damage)
         viewModelScope.launch() {
             playerCritter.update { currentState ->
@@ -212,7 +211,7 @@ class BattleViewModel(
             else -> "${playerCritter.value.playerCritter!!.name} took $damageAfterCalculation damage!"
         }
     }
-    fun applyDamageToPCpu(damage: Int) {
+    private fun applyDamageToPCpu(damage: Int) {
         var damageAfterCalculation = calculateCpuDamage(damage)
         viewModelScope.launch() {
             cpuCritter.update { currentState ->
@@ -231,14 +230,14 @@ class BattleViewModel(
         }
     }
 
-    fun calculatePlayerDamage(attack: Int): Int {
+    private fun calculatePlayerDamage(attack: Int): Int {
         val def = playerCritter.value.playerCritter!!.def;
         val atk = cpuCritter.value.cpuCritter!!.atk;
         val level = cpuCritter.value.cpuCritter!!.level;
         return (((((2*level)/5)+2)*attack*atk/def)/50)+2
     }
 
-    fun calculateCpuDamage(attack: Int): Int {
+    private fun calculateCpuDamage(attack: Int): Int {
         val def = cpuCritter.value.cpuCritter!!.def;
         val atk = playerCritter.value.playerCritter!!.atk;
         val level = playerCritter.value.playerCritter!!.level;
@@ -288,48 +287,6 @@ class BattleViewModel(
             }
         }
     }
-
-    /* fun startBattle() {
-        viewModelScope.launch {
-            while (true) {
-                startTurn()
-                // Suspend until user selects an attack
-                selectedPlayerAttack = null // Reset for the next turn
-                val playerAttack = getPlayerInput()
-                playerInputCallback?.invoke(playerAttack)
-                // Suspend until CPU selects an attack
-                selectedCpuAttack = null // Reset for the next turn
-                handleCpuTurn()
-            }
-        }
-    }*/
-
-    /*private fun startTurn() {
-        var playerStarts = doesPlayerStart()
-        if (playerStarts) {
-            // Odd turn: CPU's turn
-            handlePlayerTurn()
-        } else {
-            handleCpuTurn()
-        }
-    }*/
-
-    /*private fun handleCpuTurn() {
-        chooseCpuAttack()
-        applyDamageToPlayer(selectedCpuAttack?.strength ?: 0)
-        checkResult()
-        // Repeat the turn
-        startTurn()
-    }
-
-    fun handlePlayerTurn() {
-        // Validate if the player has selected an attack
-        selectedPlayerAttack?.let {
-            applyDamageToPCpu(it.strength)
-            checkResult()
-            handleCpuTurn()
-        }
-    }*/
 
     companion object {
         fun provideFactory(

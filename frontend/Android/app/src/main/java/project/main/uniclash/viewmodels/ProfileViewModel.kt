@@ -112,6 +112,7 @@ class ProfileViewModel (private val userService: UserService, application: Appli
             )
             try{
                 val response = userService.createStudent(studentRegisterRequest).enqueue()
+
                         if (response.isSuccessful) {
                             val studentResponse = response.body()
                             Log.d(TAG, response.body().toString())
@@ -123,9 +124,7 @@ class ProfileViewModel (private val userService: UserService, application: Appli
                                 }
                                 hasStudent.value = true
                             }
-                            runBlocking {
-                                userDataManager.storeStudentId(user.value.user!!.student.id)
-                            }
+                            userDataManager.storeStudentId(user.value.user!!.student.id)
                             text.value = "Student has been created!"
                         } else{
                             Log.d(TAG, "Creating Student has failed!" + response.code())
@@ -138,26 +137,26 @@ class ProfileViewModel (private val userService: UserService, application: Appli
         }
     }
 
-    fun whoAmI(token: String?,
-               context: Context,
-    ) {
+    //This method gets Data from the user by sending a JWT Token in the request. The token is added by the authentication interceptor in the Retrofit class.
+    fun whoAmI(token: String?, context: Context) {
         viewModelScope.launch {
             try {
                 val response = userService.whoAmI().enqueue()
+
                         if (response.isSuccessful) {
                             val userResponse = response.body()
                             Log.d(TAG, response.body().toString())
                             if (userResponse != null) {
+                                //Let : Calls .update with the user itself as a value. Lambda is used to copy the state and change values. it = user
                                 response.body().let {
                                     user.update { state ->
                                         state.copy(user = it, isLoading = false)
                                     }
                                 }
-                                getStudent(response.body()!!.id)
+                                //Get the student for this user.
+                                getStudent(userResponse.id)
                             }
-                            runBlocking {
-                                userDataManager.storeUserId(user.value.user!!.id)
-                            }
+                            userDataManager.storeUserId(user.value.user!!.id)
                             text.value = "You are logged in!"
                         } else{
                             text.value = "Could not reach server do you have an internet connection?"
@@ -169,7 +168,7 @@ class ProfileViewModel (private val userService: UserService, application: Appli
             }
         }
     }
-
+    //not implemented yet
     fun refresh() {
         viewModelScope.launch {
             try {
@@ -181,7 +180,7 @@ class ProfileViewModel (private val userService: UserService, application: Appli
             }
         }
     }
-
+    //not implemented yet
     fun refreshLogin() {
         viewModelScope.launch {
             try {

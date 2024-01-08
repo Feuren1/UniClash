@@ -45,33 +45,28 @@ class LoginViewModel (private val userService: UserService, application: Applica
         )
     )
 
-    fun login(
-        email: String,
-        password: String,
-        context: Context,
-    ) {
+    fun login(email: String, password: String, context: Context) {
         viewModelScope.launch {
+            login.update { state ->
+                state.copy(success = null, isLoading = true)
+            }
             var fcmToken: String?
             runBlocking {
                 fcmToken = userDataManager.getFCMToken()
             }
-
+            //Creates a UserLoginRequest inside the parameter of login. Could also be done before in variable.
             val response = userService.login(
-                UserLoginRequest(
-                    email = email,
-                    password = password,
-                    fcmtoken = fcmToken!!
-                )
-            ).enqueue()
+                UserLoginRequest(email = email, password = password, fcmtoken = fcmToken!!)).enqueue()
             if (response.isSuccessful) {
                 Log.d(TAG, "Login: success, Token: ${response.body()}")
+
                 val jsonObject = response.body()
+                //Method: login of userService returns a jsonObject. Therefore we have to extract the Token manually.
+                //Could possibly be done better but works.
                 val jwtToken = jsonObject?.get("token")?.asString
                 if (jwtToken != null) {
-                    // Save the token to Datastore (userDataManager)
-                    runBlocking {
-                        userDataManager.storeJWTToken(jwtToken)
-                    }
+                    //saves the response body (JWT Token) in datastore (UserDataManager)
+                    userDataManager.storeJWTToken(jwtToken)
                     login.update { state ->
                         state.copy(success = true, isLoading = false)
                     }
@@ -85,8 +80,7 @@ class LoginViewModel (private val userService: UserService, application: Applica
                 // If response was not successful
                 Log.d(TAG, "Login failed with code: ${response.code()}")
                 Log.d(TAG, "Error: ${response.message()}")
-                text.value =
-                    "Something went wrong check your username and password please. Have you registered yet?"
+                text.value = "Something went wrong check your username and password please. Are you registered yet?"
             }
         }
     }

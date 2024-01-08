@@ -56,7 +56,7 @@ import project.main.uniclash.viewmodels.RegisterViewModel
 class RegisterActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         val registerViewModel by viewModels<RegisterViewModel> {
-            RegisterViewModel.provideFactory(UserService.getInstance(this), this.application)
+            RegisterViewModel.provideFactory(UserService.getInstance(this))
         }
         val activityContext = this
 
@@ -131,9 +131,6 @@ class RegisterActivity : ComponentActivity() {
         var email by remember { mutableStateOf("") }
         var username by remember { mutableStateOf("") }
         var password by remember { mutableStateOf("") }
-
-        val context = LocalContext.current
-        val keyboardController = LocalSoftwareKeyboardController.current
 
         Column(
             modifier = Modifier
@@ -211,13 +208,7 @@ class RegisterActivity : ComponentActivity() {
 
             Button(
                 onClick = {
-                    registerViewModel.signup(email, password, username) { callback ->
-                        if (callback.success) {
-                            val intent = Intent(context, LoginActivity::class.java)
-                            context.startActivity(intent)
-                            finish()
-                        }
-                    }
+                    registerViewModel.signup(email, password, username)
                 },
                 modifier = Modifier
                     .fillMaxWidth()

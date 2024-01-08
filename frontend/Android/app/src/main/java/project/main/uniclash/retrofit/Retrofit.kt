@@ -28,7 +28,6 @@ class Retrofit {
 
         fun getRetrofitInstance(context: Context): Retrofit {
             if (retrofit == null) {
-                val contentType = "application/json".toMediaType()
                 val gson = GsonBuilder().create()
                 retrofit = Retrofit.Builder().baseUrl(BASE_URL)
                     .addConverterFactory(GsonConverterFactory.create(gson))
@@ -47,6 +46,7 @@ class Retrofit {
     }
 }
 
+//authentication interceptor adds the JWT token from the userDataManager to every request
 internal class AuthInterceptor(private val context: Context) : Interceptor {
     private val userDataManager: UserDataManager by lazy {
         UserDataManager(context)
@@ -64,9 +64,6 @@ internal class AuthInterceptor(private val context: Context) : Interceptor {
         return chain.proceed(request)
     }
 }
-
-
-// Rest of your code remains unchanged
 
 internal class LoggingInterceptor : Interceptor {
     @Throws(IOException::class)

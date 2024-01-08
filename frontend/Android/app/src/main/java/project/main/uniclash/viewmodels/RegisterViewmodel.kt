@@ -28,11 +28,9 @@ sealed interface UserSignUpUIState {
         val isLoading: Boolean,
     ) : UserSignUpUIState
 }
-class RegisterViewModel (private val userService: UserService, application: Application) : ViewModel() {
+class RegisterViewModel (private val userService: UserService) : ViewModel() {
     private val TAG = RegisterViewModel::class.java.simpleName
-    private val context: Application = application
     val text: MutableStateFlow<String> = MutableStateFlow("")
-    var recievedUserId: String? = null
 
     val registerData = MutableStateFlow(
         RegisterUIState.HasEntries(
@@ -48,12 +46,7 @@ class RegisterViewModel (private val userService: UserService, application: Appl
             isLoading = false,
         )
     )
-    fun signup(
-        email: String,
-        password: String,
-        username: String,
-        callback: (UserIDCallback) -> Unit = {}
-    ) {
+    fun signup(email: String, password: String, username: String) {
         val userSignupRequest = UserSignUpRequest(
             username = username,
             password = password,
@@ -65,38 +58,32 @@ class RegisterViewModel (private val userService: UserService, application: Appl
             text.value = "Trying to register User..."
             try {
                 // Print the request URL before making the request
-                val request = userService.signup(userSignupRequest)
-                Log.d(TAG, "Request URL: ${request.request().url}")
-                // Proceed with the request
-                val response = request.enqueue()
+                val response = userService.signup(userSignupRequest).enqueue()
                 Log.d(TAG, "UserRegister: $response")
                 if (response.isSuccessful) {
                     Log.d(TAG, "Register: success")
                     val userSignupResponse = response.body()!!
                     Log.d(TAG, "Response: $userSignupResponse")
-                    // Invoke the callback with the result
-                    //createStudent("0","0", string)
                     text.value = "Registration successful"
+                } else{
+                    text.value = "Registration failed please check your internet Connection."
                 }
             } catch (e: Exception) {
                 e.printStackTrace()
                 text.value = "Registration failed"
-                // Invoke the callback with the failure
             }
         }
     }
 
     companion object {
         fun provideFactory(
-            userService: UserService,
-            application: Application
+            userService: UserService
         ): ViewModelProvider.Factory =
             object : ViewModelProvider.Factory {
                 @Suppress("UNCHECKED_CAST")
                 override fun <T : ViewModel> create(modelClass: Class<T>): T {
                     return RegisterViewModel(
-                        userService,
-                        application
+                        userService
                     ) as T
                 }
             }

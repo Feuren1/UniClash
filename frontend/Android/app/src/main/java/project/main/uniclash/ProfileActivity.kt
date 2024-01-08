@@ -48,7 +48,6 @@ class ProfileActivity : ComponentActivity() {
             token = userDataManager.getJWTToken()
         }
         profileViewModel.loadProfile(token!!, this)
-
         var exitRequest by mutableStateOf(false)
 
         super.onCreate(savedInstanceState)
@@ -87,7 +86,7 @@ class ProfileActivity : ComponentActivity() {
                         val userUIState by profileViewModel.user.collectAsState()
                         val hasStudent by profileViewModel.hasStudent.collectAsState()
                         val text by profileViewModel.text.collectAsState()
-                        if(userUIState.isLoading){
+                        if (userUIState.isLoading) {
                             Box(
                                 modifier = Modifier
                                     .padding(all = 8.dp)
@@ -114,47 +113,45 @@ class ProfileActivity : ComponentActivity() {
                                     }
                                 }
                             }
-                        }
-                        if(!userUIState.isLoading&&userUIState.user!=null&&hasStudent == true) {
-                            PlayerProfile(profileViewModel)
-                        }
-                        if (hasStudent == false) {
-                            // Display button to go back to the menu
-                            Button(
-                                onClick = {
-                                    profileViewModel.createStudent(userUIState.user!!.id)
-
-                                },
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .clip(MaterialTheme.shapes.medium)
-                            ) {
-                                Text("Start your journey and create your Student")
+                        } else {
+                            if (userUIState.user != null && hasStudent == true) {
+                                PlayerProfile(profileViewModel)
                             }
-                        }
-                        Box(
-                            modifier = Modifier
-                                .padding(all = 8.dp)
-                                .fillMaxWidth() // making box from left to right site
-                                .background(
-                                    Color.LightGray,
-                                    shape = RoundedCornerShape(8.dp)
-                                ) // Hintergrundfarbe und abgeflachte Ecken
+                            if (hasStudent == false) {
+                                Button(
+                                    onClick = {
+                                        profileViewModel.createStudent(userUIState.user!!.id)
 
-                        ) {
-                            Row(modifier = Modifier.padding(all = 8.dp)) {
-                                val context = LocalContext.current
+                                    },
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .clip(MaterialTheme.shapes.medium)
+                                ) {
+                                    Text("Start your journey and create your Student")
+                                }
+                            }
+                            Box(
+                                modifier = Modifier
+                                    .padding(all = 8.dp)
+                                    .fillMaxWidth() // making box from left to right site
+                                    .background(
+                                        Color.LightGray,
+                                        shape = RoundedCornerShape(8.dp)
+                                    ) // Hintergrundfarbe und abgeflachte Ecken
 
-                                Spacer(modifier = Modifier.width(8.dp))
-                                Column {
-                                    Spacer(modifier = Modifier.height(18.dp))
-                                    Text(
-                                        text = text,
-                                        fontSize = 18.sp,
-                                        color = MaterialTheme.colorScheme.secondary,
-                                        style = MaterialTheme.typography.titleSmall
-                                    )
+                            ) {
+                                Row(modifier = Modifier.padding(all = 8.dp)) {
+                                    Spacer(modifier = Modifier.width(8.dp))
+                                    Column {
+                                        Spacer(modifier = Modifier.height(18.dp))
+                                        Text(
+                                            text = text,
+                                            fontSize = 18.sp,
+                                            color = MaterialTheme.colorScheme.secondary,
+                                            style = MaterialTheme.typography.titleSmall
+                                        )
 
+                                    }
                                 }
                             }
                         }
@@ -200,7 +197,6 @@ fun MenuHeader() {
 @Composable
 fun PlayerProfile(profileViewModel: ProfileViewModel) {
     val userUIState by profileViewModel.user.collectAsState()
-
         Box(
             modifier = Modifier
                 .padding(all = 8.dp)
@@ -290,16 +286,13 @@ fun XpBarStudent(
     currentXp: Int,
     barColor: Color
 ) {
-    // Calculate health percentage
     val levelPercentage = (currentXp / 500.toFloat()).coerceIn(0f, 1f)
-
     Box(
         modifier = Modifier
             .fillMaxWidth()
             .height(20.dp)
             .background(Color.Gray.copy(alpha = 0.5f), RoundedCornerShape(10.dp))
     ) {
-        // Apply the shake animation to the health bar
         Box(
             modifier = Modifier
                 .fillMaxWidth(levelPercentage)

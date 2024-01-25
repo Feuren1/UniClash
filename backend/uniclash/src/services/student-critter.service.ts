@@ -3,6 +3,7 @@ import {repository} from '@loopback/repository';
 import {Critter, CritterUsable, Student} from '../models';
 import {AttackRepository, CritterAttackRepository, CritterRepository, CritterTemplateRepository, StudentRepository} from '../repositories';
 import {CritterStatsService} from './critter-stats.service';
+import {CritterListable} from "../models/critter-listable.model";
 
 @injectable()
 export class StudentCritterService {
@@ -34,6 +35,31 @@ export class StudentCritterService {
     }
 
     return critterUsables;
+  }
+
+  async createCritterListableListOnStudentId(studentId: number): Promise<CritterListable[]> {
+    const student: Student = await this.studentRepository.findById(studentId, {
+      include: ['critters'],
+    })
+
+    const critters: Critter[] = student.critters;
+    const critterListables: CritterListable[] = [];
+
+    for (const critterS of critters) {
+
+      const critter = await this.critterRepository.findById(critterS.id);
+      const critterTemplate = await  this.critterTemplateRepository.findById(critterS.critterTemplateId);
+      const critterListable = new CritterListable({
+        level: critter.level,
+        critterId: critter.id,
+        name: critterTemplate.name,
+          });
+
+      critterListables.push(critterListable);
+
+    }
+
+    return critterListables;
   }
 
   async createCritterUsableListOfAll(): Promise<CritterUsable[]> {

@@ -25,6 +25,7 @@ import {StudentRepository} from '../repositories';
 import {CatchCritterService} from "../services/catch-critter.service";
 import {StudentCritterService} from '../services/student-critter.service';
 import {authenticate} from "@loopback/authentication";
+import {CritterListable} from "../models/critter-listable.model";
 
 export class StudentCritterController {
   constructor(
@@ -136,6 +137,25 @@ export class StudentCritterController {
     @param.path.number('id') id: number,
   ): Promise<CritterUsable[]> {
     return this.studentCritterService.createCritterUsableListOnStudentId(id);
+  }
+
+  @authenticate('jwt')
+  @get('/students/{id}/listables', {
+    responses: {
+      '200': {
+        description: 'Returns CritterListables for all critters of a student',
+        content: {
+          'application/json': {
+            schema: getModelSchemaRef(CritterUsable), // Use CritterUsable schema
+          },
+        },
+      },
+    },
+  })
+  async calculateCritterListables(
+      @param.path.number('id') id: number,
+  ): Promise<CritterListable[]> {
+    return this.studentCritterService.createCritterListableListOnStudentId(id);
   }
   @authenticate('jwt')
   @post('/students/{studentId}/critters/{critterId}/catchCritter', {

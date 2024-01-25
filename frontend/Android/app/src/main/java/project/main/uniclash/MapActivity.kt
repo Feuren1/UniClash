@@ -195,7 +195,7 @@ class MapActivity : ComponentActivity() {
                                 .padding(16.dp),
                             horizontalAlignment = Alignment.CenterHorizontally
                         ) {
-                            val drawableImage = painterResource(id = R.drawable.icon)
+                            val drawableImage = painterResource(id = R.drawable.map)
                             Image(
                                 painter = drawableImage,
                                 contentDescription = null,

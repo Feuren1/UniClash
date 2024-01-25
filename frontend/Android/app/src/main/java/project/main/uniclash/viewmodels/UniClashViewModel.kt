@@ -15,6 +15,7 @@ import kotlinx.coroutines.launch
 import project.main.uniclash.retrofit.enqueue
 import project.main.uniclash.dataManagers.CritterListDataManager
 import project.main.uniclash.dataManagers.UserDataManager
+import project.main.uniclash.datatypes.CritterListable
 
 public data class CritterIdCallback(val success: Boolean, val id: String)
 
@@ -148,6 +149,55 @@ class UniClashViewModel(
     }
 
     @SuppressLint("MissingPermission")
+    fun loadCritterListables() {
+        viewModelScope.launch {
+            if (critterListDataManager.checkCritterListIsNotEmpty()) {
+                critterUsables.update { it.copy(critterUsables = critterListDataManager.getCritterList()) }
+            } else {
+
+                critterUsables.update { it.copy(isLoading = true) }
+                try {
+                    val response =
+                        critterService.getCritterListables(userDataManager.getStudentId()!!).enqueue()
+                    Log.d(TAG, "loadCrittersUsable: $response")
+                    if (response.isSuccessful) {
+                        Log.d(TAG, "loadCrittersUsables: success")
+                        val crittersListable = response.body()!!
+                        Log.d(TAG, "loadCrittersUsables: $crittersListable")
+
+                        val crittersUsables: ArrayList<CritterUsable> = ArrayList()
+                        for (critter in crittersListable) {
+                            val myCritter = CritterUsable(
+                                level = critter.level,
+                                name = critter.name,
+                                hp = 0,
+                                atk = 0,
+                                def = 0,
+                                spd = 0,
+                                attacks = emptyList(),
+                                critterId = critter.critterId,
+                                critterTemplateId = 0
+                            )
+                            crittersUsables.add(myCritter)
+                        }
+
+                        critterListDataManager.storeCritterList(crittersUsables)
+
+                        critterUsables.update {
+                            it.copy(
+                                critterUsables = crittersUsables,
+                                isLoading = false
+                            )
+                        }
+                    }
+                } catch (e: Exception) {
+                    e.printStackTrace()
+                }
+            }
+        }
+    }
+
+    @SuppressLint("MissingPermission")
     //loads all critters inside the database
     fun loadCritters() {
         viewModelScope.launch {
@@ -211,7 +261,7 @@ class UniClashViewModel(
     }
 
     init {
-        loadCritterUsables()
+        loadCritterListables()
     }
 
 

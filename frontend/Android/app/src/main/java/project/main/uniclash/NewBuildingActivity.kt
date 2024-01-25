@@ -100,11 +100,7 @@ class NewBuildingActivity : ComponentActivity() {
         }.value
 
         setContent {
-            if(!(title.isNullOrEmpty()) && title.length < 31&&!(description.isNullOrEmpty())&&description.length<61&&lat!=0.0&&long!=0.0&&!(capturedImagePath.isNullOrBlank())&&freebuildings>0){
-                confirmRequest = true
-            } else {
-                confirmRequest = false
-            }
+            confirmRequest = !(title.isEmpty()) && title.length < 31&&!(description.isNullOrEmpty())&&description.length<61&&lat!=0.0&&long!=0.0&&!(capturedImagePath.isNullOrBlank())&&freebuildings>0
 
             newBuildingViewModel.loadStudentFreeBuildingInfo()
 
@@ -151,7 +147,7 @@ class NewBuildingActivity : ComponentActivity() {
                 }
             }
             if (exitRequest) {
-                val intent = Intent(this, ProfileActivity::class.java)
+                val intent = Intent(this, MapActivity::class.java)
                 this.startActivity(intent)
                 exitRequest = false
                 finish()
@@ -463,6 +459,7 @@ class NewBuildingActivity : ComponentActivity() {
                 ) // Hintergrundfarbe und abgeflachte Ecken
                 .clickable {
                     if (confirmRequest) {
+                        confirmRequest = false
                         val originalBitmap = BitmapFactory.decodeFile(capturedImagePath)
                         val targetWidth = originalBitmap.width * 400 / originalBitmap.height + 25
                         val targetHeight = 400

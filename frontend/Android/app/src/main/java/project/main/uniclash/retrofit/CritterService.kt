@@ -6,6 +6,7 @@ import project.main.uniclash.datatypes.ArenaCritterPatch
 import project.main.uniclash.datatypes.ArenaLeaderPatch
 import project.main.uniclash.datatypes.Critter
 import project.main.uniclash.datatypes.CritterForStudent
+import project.main.uniclash.datatypes.CritterListable
 import project.main.uniclash.datatypes.CritterTemplate
 import project.main.uniclash.datatypes.CritterUsable
 import project.main.uniclash.datatypes.PostArenaBattleUpdate
@@ -30,6 +31,9 @@ interface CritterService {
 
     @GET("/critters/{id}/usable")
     fun getCritterUsable(@Path("id") id: Int): Call<CritterUsable>
+
+    @GET("/students/{id}/listables")
+    fun getCritterListables(@Path("id") id: Int): Call<List<CritterListable>>
 
     @GET("/students/{id}/usables")
     fun getCritterUsables(@Path("id") id: Int): Call<List<CritterUsable>>

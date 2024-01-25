@@ -142,6 +142,8 @@ class NewBuildingViewModel(
 
     private fun increasePlacedBuildingFromStudent(){
         viewModelScope.launch {
+            userDataManager.storePlacedBuildings(userDataManager.getPlacedBuildings()!!.plus(1))
+
             returnedStudent.update { it.copy(isLoading = true) }
             try {
                 val response = studentService.increasePlacedBuildingFromStudent(userDataManager.getStudentId()!!,1).enqueue()

@@ -71,57 +71,66 @@ class MenuActivity : ComponentActivity() {
                         .fillMaxSize()
                         .background(Color.White) // Hier wird der Hintergrund weiß gemacht
                 ) {
-                    Box(
-                        modifier = Modifier
-                            .verticalScroll(rememberScrollState())
-                    ) {
-                        Column {
-                            MenuCard(listOf(
-                                Category(
-                                    "Critters List",
-                                    painterResource(R.drawable.prc2duck),
-                                    CritterListActivity::class.java,1
-                                ),Category("Critterdex", painterResource(R.drawable.critterdex), CritterDexActivity::class.java,1)
-                            ))
-                            MenuCard(listOf(
-                                Category(
-                                    "Inventory",
-                                    painterResource(R.drawable.bag),
-                                    InventoryActivity::class.java,1
-                                )
-                            )
-                            )
-                            MenuCard(listOf(Category("Back to map", painterResource(R.drawable.map), MapActivity::class.java,1),
-                                Category(
-                                    if (MapSettings.MOVINGCAMERA.getMapSetting()) {
-                                        "Following location arrow off"
-                                    } else {
-                                        "Following location arrow on"
-                                    }, painterResource(R.drawable.location), MenuActivity::class.java,2
-                                ), Category(
-                                    if (MapSettings.CRITTERBINOCULARS.getMapSetting()) {
-                                        "Deactivate Binoculars"
-                                    } else {
-                                        "Activate Binoculars"
-                                    }, painterResource(R.drawable.binoculars), MenuActivity::class.java,3
-                                )
-                            )
-                            )
-                            MenuCard(listOf(Category("New Building", painterResource(R.drawable.buildings), NewBuildingActivity::class.java,1)))
-                            MenuCard(listOf(Category("Log into other acc", painterResource(R.drawable.profile), LoginActivity::class.java,1),Category("Register new acc", painterResource(R.drawable.profile), RegisterActivity::class.java,1)))
-                            MenuCard(listOf(Category("Student Hub", painterResource(R.drawable.store), StudentHubActivity::class.java,1)))
-                            //MenuCard(listOf(Category("Camera", painterResource(R.drawable.swords), CameraActivity::class.java,1)))
-                            MenuCard(listOf(Category("Poké", painterResource(R.drawable.studentassistance), PokéActivity::class.java,1)))
-                            MenuCard(listOf(Category("Battle Activity", painterResource(R.drawable.arena), Battle::class.java,1)))
-                            MenuCard(listOf(Category("BattleForcedTutorial", painterResource(R.drawable.prc2duck), BattleForcedTutorialActivity::class.java,1),Category("BattleForcedTutorialAdvanced", painterResource(R.drawable.prc2duck), BattleForcedTutorialAdvancedActivity::class.java,1),Category("BattleTutorial", painterResource(R.drawable.prc2duck), BattleTutorialActivity::class.java,1),Category("BattleTutorialAdvanced", painterResource(R.drawable.prc2duck), BattleTutorialAdvancedActivity::class.java,1),Category("Final Battle Challenge", painterResource(R.drawable.prc2duck), FinalBattleActivity::class.java,1)))
-                        }
+                    if(buttonRequest == MainActivity::class.java) {
+                        MenuBars()
                     }
                 }
             }
-            if(buttonRequest != MainActivity::class.java) {
+            if(buttonRequest == MenuActivity::class.java) {
+                buttonRequest = MainActivity::class.java
+            } else if(buttonRequest != MenuActivity::class.java && buttonRequest != MainActivity::class.java) {
                 val intent = Intent(this, buttonRequest)
                 this.startActivity(intent)
                 buttonRequest = MainActivity::class.java
+            }
+        }
+    }
+
+    @Composable
+    fun MenuBars(){
+        Box(
+            modifier = Modifier
+                .verticalScroll(rememberScrollState())
+        ) {
+            Column {
+                MenuCard(listOf(
+                    Category(
+                        "Critters List",
+                        painterResource(R.drawable.prc2duck),
+                        CritterListActivity::class.java,1
+                    ),Category("Critterdex", painterResource(R.drawable.critterdex), CritterDexActivity::class.java,1)
+                ))
+                MenuCard(listOf(
+                    Category(
+                        "Inventory",
+                        painterResource(R.drawable.bag),
+                        InventoryActivity::class.java,1
+                    )
+                )
+                )
+                MenuCard(listOf(Category("Back to map", painterResource(R.drawable.map), MapActivity::class.java,1),
+                    Category(
+                        if (MapSettings.MOVINGCAMERA.getMapSetting()) {
+                            "Following location arrow off"
+                        } else {
+                            "Following location arrow on"
+                        }, painterResource(R.drawable.location), MenuActivity::class.java,2
+                    ), Category(
+                        if (MapSettings.CRITTERBINOCULARS.getMapSetting()) {
+                            "Deactivate Binoculars"
+                        } else {
+                            "Activate Binoculars"
+                        }, painterResource(R.drawable.binoculars), MenuActivity::class.java,3
+                    )
+                )
+                )
+                MenuCard(listOf(Category("New Building", painterResource(R.drawable.buildings), NewBuildingActivity::class.java,1)))
+                MenuCard(listOf(Category("Log into other acc", painterResource(R.drawable.profile), LoginActivity::class.java,1),Category("Register new acc", painterResource(R.drawable.profile), RegisterActivity::class.java,1)))
+                MenuCard(listOf(Category("Student Hub", painterResource(R.drawable.store), StudentHubActivity::class.java,1)))
+                //MenuCard(listOf(Category("Camera", painterResource(R.drawable.swords), CameraActivity::class.java,1)))
+                MenuCard(listOf(Category("Poké", painterResource(R.drawable.studentassistant), PokéActivity::class.java,1)))
+                MenuCard(listOf(Category("Battle Activity", painterResource(R.drawable.arena), Battle::class.java,1)))
+                MenuCard(listOf(Category("BattleForcedTutorial", painterResource(R.drawable.prc2duck), BattleForcedTutorialActivity::class.java,1),Category("BattleForcedTutorialAdvanced", painterResource(R.drawable.prc2duck), BattleForcedTutorialAdvancedActivity::class.java,1),Category("BattleTutorial", painterResource(R.drawable.prc2duck), BattleTutorialActivity::class.java,1),Category("BattleTutorialAdvanced", painterResource(R.drawable.prc2duck), BattleTutorialAdvancedActivity::class.java,1),Category("Final Battle Challenge", painterResource(R.drawable.prc2duck), FinalBattleActivity::class.java,1)))
             }
         }
     }
@@ -164,9 +173,12 @@ class MenuActivity : ComponentActivity() {
         ) {
             Column {
                 for (category in categories) {
-                    Box(modifier = Modifier.clickable {buttonRequest = category.activity
-                        checkBySpecificID(category.id)
-                    }.fillMaxWidth()){
+                    Box(modifier = Modifier
+                        .clickable {
+                            buttonRequest = category.activity
+                            checkBySpecificID(category.id)
+                        }
+                        .fillMaxWidth()){
                         Row(modifier = Modifier.padding(all = 8.dp)) {
                             Image(
                                 painter = category.picture,

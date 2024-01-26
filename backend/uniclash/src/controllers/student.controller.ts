@@ -22,12 +22,15 @@ import {Student} from '../models';
 import {StudentRepository} from '../repositories';
 import {LevelCalcStudentService} from "../services";
 import {authenticate} from "@loopback/authentication";
+import {StudentLocation} from "../models/studentLocation.model";
+import {StudentLocationService} from "../services/student-location.service";
 
 
 export class StudentController {
   constructor(
     @repository(StudentRepository)
     public studentRepository : StudentRepository,
+    @service(StudentLocationService) protected studentLocationService: StudentLocationService,
     @service(LevelCalcStudentService) protected levelCalcStudentService: LevelCalcStudentService,
   ) {}
 
@@ -171,5 +174,18 @@ export class StudentController {
       @requestBody() addedBuildings: number,
   ): Promise<void> {
     await this.levelCalcStudentService.increasePlacedBuildingOfStudent(id, addedBuildings);
+  }
+
+  //@authenticate('jwt')
+  @patch('/students/{id}/{lat}/{lon}/getStudentLocations')
+  @response(204, {
+    description: 'return all location of every active Student',
+  })
+  async getStudentLocation(
+      @param.path.number('id') id: number,
+      @param.path.number('lat') lat: string,
+      @param.path.number('lon') lon: string,
+  ): Promise<StudentLocation[]> {
+    return await this.studentLocationService.setStudentLocation(id,lat,lon);
   }
 }

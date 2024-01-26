@@ -19,14 +19,22 @@ export class Student extends Entity {
   level?: number;
 
   @property({
-    type: 'number',
+    type: 'string',
+    default: "0.0",
   })
-  lat?: number;
+  lat?: string;
+
+  @property({
+    type: 'string',
+    default: "0.0",
+  })
+  lon?: string;
 
   @property({
     type: 'number',
+    default: 0,
   })
-  lon?: number;
+  time?: number;
 
   @property({
     type: 'number',

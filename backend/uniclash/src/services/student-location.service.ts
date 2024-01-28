@@ -1,7 +1,7 @@
 import {inject, injectable} from '@loopback/core';
 import {repository} from '@loopback/repository';
-import {Critter, CritterUsable, Student} from '../models';
-import {AttackRepository, CritterAttackRepository, CritterRepository, CritterTemplateRepository, StudentRepository} from '../repositories';
+import {Critter, CritterUsable, Student, User} from '../models';
+import {AttackRepository, CritterAttackRepository, CritterRepository, CritterTemplateRepository, StudentRepository, UserRepository} from '../repositories';
 import {CritterStatsService} from './critter-stats.service';
 import {CritterListable} from "../models/critter-listable.model";
 import {StudentLocation} from "../models/studentLocation.model";
@@ -10,9 +10,24 @@ import {StudentLocation} from "../models/studentLocation.model";
 export class StudentLocationService {
   constructor(
     @repository(StudentRepository) protected studentRepository: StudentRepository,
+    @repository(UserRepository) protected userRepository: UserRepository,
   ) { }
+  async setStudentLocation(studentId :number, lat : string, lon : string): Promise<StudentLocation[]>{
+    const currentTime: Date = new Date();
+    const hours: number = currentTime.getHours()*60;
+    const minutes: number = currentTime.getMinutes()+hours;
+    const student: Student = await this.studentRepository.findById(studentId);
+    if(student != null){
+      student.lon = lon;
+      student.lat = lat;
+      student.time = minutes;
+      console.log("time" + minutes + "lat " + lat );
+    }
+    await this.studentRepository.update(student);
+    return this.resetLocationsAndFindActiveUsers(studentId);
+  }
 
-  async resetLocationsAndFindActiveUsers(): Promise<StudentLocation[]> {
+  async resetLocationsAndFindActiveUsers(thisStudent : number): Promise<StudentLocation[]> {
     const currentTime: Date = new Date();
     const activeStudents : Student[] = [];
 
@@ -26,7 +41,7 @@ export class StudentLocationService {
         student.lat = "0.0";
         student.time = 0;
         await this.studentRepository.update(student);
-      } else if(student.lon != "0.0"){
+      } else if(student.lon != "0.0" && student.id != thisStudent){
         activeStudents.push(student)
       }
     }
@@ -35,9 +50,18 @@ export class StudentLocationService {
 
   async getListOfActiveStudents(students : Student[]): Promise<StudentLocation[]>{
     const activeStudents : StudentLocation[] = [];
+    const users : User[] = await this.userRepository.find()
     for(const student of students){
+      let studentName = "Noname"
+      for(const user of users){
+        if(user.id.toString() == student.userId.toString()){
+            // @ts-ignore
+          studentName = user.username.toString()
+        }
+      }
+
       const activeStudent = new StudentLocation({
-        name: "MyTestName",
+        name: studentName,
         lat: student.lat,
         lon: student.lon,
         id: student.id,
@@ -47,20 +71,5 @@ export class StudentLocationService {
     }
 
     return activeStudents;
-  }
-
-  async setStudentLocation(studentId :number, lat : string, lon : string): Promise<StudentLocation[]>{
-    const currentTime: Date = new Date();
-    const hours: number = currentTime.getHours()*60;
-    const minutes: number = currentTime.getMinutes()+hours;
-    const student: Student = await this.studentRepository.findById(studentId);
-    if(student != null){
-      student.lon = lon;
-      student.lat = lat;
-      student.time = minutes;
-      console.log("time" + minutes + "lat " + lat );
-    }
-    await this.studentRepository.update(student);
-    return this.resetLocationsAndFindActiveUsers();
   }
 }

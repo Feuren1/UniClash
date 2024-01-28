@@ -2,6 +2,7 @@ package project.main.uniclash.retrofit
 
 import android.content.Context
 import project.main.uniclash.datatypes.Student
+import project.main.uniclash.datatypes.StudentOnMap
 import retrofit2.Call
 import retrofit2.create
 import retrofit2.http.Body
@@ -16,6 +17,9 @@ interface StudentService {
 
     @PATCH("/students/{id}/increaseBuilding")
     fun increasePlacedBuildingFromStudent(@Path("id") id : Int, @Body addedBuildings: Int) : Call<Student>
+
+    @PATCH("/students/{id}/{lat}/{lon}/getStudentLocations")
+    fun getStudentLocations(@Path("id") id : Int,@Path("lat") lat : String, @Path("lon") lon :String) : Call<List<StudentOnMap>>
 
 
 

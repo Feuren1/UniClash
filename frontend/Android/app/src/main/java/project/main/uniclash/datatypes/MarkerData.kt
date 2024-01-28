@@ -61,3 +61,17 @@ data class MarkerArena(
 ) : MarkerData(
     state,icon,visible,title,snippet,pic,button, buttonText
 )
+
+data class MarkerStudent(
+    override var state : GeoPoint,
+    override var icon : Drawable? = null,
+    override var visible : Boolean = true,
+    override var title :String? = "marker",
+    override var snippet : String? = null,
+    override var pic : Drawable? = null,
+    override var button : Class<out Activity> = MainActivity::class.java,
+    override var buttonText : String? = "button",
+    var student : StudentOnMap ? = null
+) : MarkerData(
+    state,icon,visible,title,snippet,pic,button, buttonText
+)

@@ -3,8 +3,8 @@ package project.main.uniclash.datatypes
 data class Student(
     var id: Int,
     var level: Int,
-    var lat: Int,
-    var lon: Int,
+    var lat: String,
+    var lon: String,
     var credits: Int,
     var expToNextLevel: Int,
     var userId: String,

@@ -17,6 +17,7 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import org.osmdroid.util.GeoPoint
 import project.main.uniclash.ArenaActivity
+import project.main.uniclash.MenuActivity
 import project.main.uniclash.R
 import project.main.uniclash.StudentHubActivity
 import project.main.uniclash.WildEncounterActivity
@@ -28,13 +29,16 @@ import project.main.uniclash.datatypes.Locations
 import project.main.uniclash.datatypes.MapSaver
 import project.main.uniclash.datatypes.MarkerArena
 import project.main.uniclash.datatypes.MarkerData
+import project.main.uniclash.datatypes.MarkerStudent
 import project.main.uniclash.datatypes.MarkerStudentHub
 import project.main.uniclash.datatypes.MarkerWildEncounter
 import project.main.uniclash.datatypes.StudentHub
+import project.main.uniclash.datatypes.StudentOnMap
 import project.main.uniclash.map.MapCalculations
 import project.main.uniclash.retrofit.ArenaService
 import project.main.uniclash.retrofit.CritterService
 import project.main.uniclash.retrofit.StudentHubService
+import project.main.uniclash.retrofit.StudentService
 import project.main.uniclash.retrofit.enqueue
 import kotlin.math.cos
 
@@ -59,11 +63,25 @@ sealed interface MarkersArenaUIState {
     ) : MarkersArenaUIState
 }
 
+sealed interface MarkersStudentUIState {
+    data class HasEntries(
+        val makersStudent: ArrayList<MarkerData?>,
+        val isLoading: Boolean,
+    ) : MarkersStudentUIState
+}
+
 sealed interface ArenasForMapUIState {
     data class HasEntries(
         val arenas: List<Arena?>,
         val isLoading: Boolean,
     ) : ArenasForMapUIState
+}
+
+sealed interface StudentsForMapUIState {
+    data class HasEntries(
+        var students: List<StudentOnMap?>,
+        val isLoading: Boolean,
+    ) : StudentsForMapUIState
 }
 
 sealed interface MarkersWildEncounterUIState {
@@ -83,6 +101,7 @@ class MapMarkerViewModel(
     private val critterService: CritterService,
     private val studentHubService : StudentHubService,
     private val arenaService : ArenaService,
+    private val studentService : StudentService,
     private val context : Context,
     private val mapMarkerListViewModel : MapMarkerListViewModel,
 ) : ViewModel() {
@@ -104,6 +123,20 @@ class MapMarkerViewModel(
         StudentHubsForMapUIState.HasEntries(
             emptyList(),
             isLoading = false
+        )
+    )
+
+    val students = MutableStateFlow(
+        StudentsForMapUIState.HasEntries(
+            emptyList(),
+            isLoading = false
+        )
+    )
+
+    val markersStudent = MutableStateFlow(
+        MarkersStudentUIState.HasEntries(
+            isLoading = false,
+            makersStudent =   ArrayList<MarkerData?>()
         )
     )
 
@@ -134,6 +167,74 @@ class MapMarkerViewModel(
             markersWildEncounter = ArrayList<MarkerData?>()
         )
     )
+
+    fun loadStudents() {
+        viewModelScope.launch {
+            studentHubs.update { it.copy(isLoading = true) }
+            try {
+                val response = studentService.getStudentLocations(userDataManager.getStudentId()!!,Locations.USERLOCATION.getLocation().latitude.toString(),Locations.USERLOCATION.getLocation().longitude.toString()).enqueue()
+                if (response.isSuccessful) {
+                    //creates an item list based on the fetched data
+                    val student = response.body()!!
+                    //replaces the critters list inside the UI state with the fetched data
+                    this@MapMarkerViewModel.students.update {
+                        it.copy(
+                            students = student,
+                            isLoading = false
+                        )
+                    }
+                }
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
+        }
+    }
+
+    private fun initMarkersStudent() {
+        if(students.value.students.isNotEmpty()) {
+            this@MapMarkerViewModel.markersStudentHub.update {
+                it.copy(
+                    isLoading = true,
+                )
+            }
+
+            val students = students.value.students
+            var studentMarkerList = ArrayList<MarkerData?>()
+            var i = 0
+            while (i < students.size) {
+                val student = students[i]
+                val geoPoint = GeoPoint(student?.lat!!.toDouble(), student?.lon!!.toDouble())
+
+                val icon: Drawable? =
+                    mapCalculations.resizeDrawable(context, R.drawable.location, 50.0F)
+
+
+                var bitmap: Bitmap =BitmapFactory.decodeResource(context.resources, R.drawable.location)
+                val bitmapDrawable = BitmapDrawable(Resources.getSystem(), bitmap)
+
+                val myMarker = MarkerStudent(
+                    state = geoPoint,
+                    icon = icon,
+                    visible = true,
+                    title = "${student?.name}",
+                    snippet = "Level: ${student.level}",
+                    pic = bitmapDrawable,
+                    button = MenuActivity::class.java,
+                    buttonText = "Invite to fight",
+                    student = student
+                )
+
+                studentMarkerList.add(myMarker)
+                i++
+            }
+            this@MapMarkerViewModel.markersStudent.update {
+                it.copy(
+                    //isLoading = false,
+                    makersStudent = studentMarkerList,
+                )
+            }
+        }
+    }
 
     fun loadStudentHubs() {
         viewModelScope.launch {
@@ -437,6 +538,12 @@ class MapMarkerViewModel(
                 initWildEncounter()
             }
         }
+
+        viewModelScope.launch {
+            students.collect{
+                initMarkersStudent()
+            }
+        }
     }
 
 
@@ -446,6 +553,7 @@ class MapMarkerViewModel(
             critterService: CritterService,
             studentHubService: StudentHubService,
             arenaService : ArenaService,
+            studentService: StudentService,
             context : Context,
             mapMarkerListViewModel : MapMarkerListViewModel
         ): ViewModelProvider.Factory =
@@ -456,6 +564,7 @@ class MapMarkerViewModel(
                         critterService,
                         studentHubService,
                         arenaService,
+                        studentService,
                         context,
                         mapMarkerListViewModel,
                     ) as T

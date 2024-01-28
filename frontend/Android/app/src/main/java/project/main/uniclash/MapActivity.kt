@@ -79,6 +79,7 @@ import project.main.uniclash.retrofit.ArenaService
 import project.main.uniclash.retrofit.CritterService
 import project.main.uniclash.retrofit.InventoryService
 import project.main.uniclash.retrofit.StudentHubService
+import project.main.uniclash.retrofit.StudentService
 import project.main.uniclash.ui.theme.UniClashTheme
 import project.main.uniclash.viewmodels.MapItemViewModel
 import project.main.uniclash.viewmodels.MapLocationViewModel
@@ -100,7 +101,7 @@ class MapActivity : ComponentActivity() {
     })
 
     private val mapMarkerViewModel: MapMarkerViewModel by viewModels(factoryProducer = {
-        MapMarkerViewModel.provideFactory(CritterService.getInstance(this), StudentHubService.getInstance(this), ArenaService.getInstance(this),this,mapMarkerListViewModel)
+        MapMarkerViewModel.provideFactory(CritterService.getInstance(this), StudentHubService.getInstance(this), ArenaService.getInstance(this), StudentService.getInstance(this),this,mapMarkerListViewModel)
     })
 
     private val mapItemViewModel : MapItemViewModel by viewModels(factoryProducer = {
@@ -151,6 +152,16 @@ class MapActivity : ComponentActivity() {
                 MapSaver.STUDENTHUB.setMarker(studentHubMarkers)
             } else{
                 mapMarkerListViewModel.addListOfMarkersQ(MapSaver.STUDENTHUB.getMarker()!!)
+            }
+
+            if(MapSaver.STUDENT.getMarker().isEmpty()) {
+                mapMarkerViewModel.loadStudents()
+                val markersStudentUIState by mapMarkerViewModel.markersStudent.collectAsState()
+                val studentMarkers = markersStudentUIState.makersStudent
+                mapMarkerListViewModel.addListOfMarkersQ(studentMarkers)
+                MapSaver.STUDENT.setMarker(studentMarkers)
+            } else{
+                mapMarkerListViewModel.addListOfMarkersQ(MapSaver.STUDENT.getMarker()!!)
             }
 
             if(MapSaver.ARENA.getMarker().isEmpty()) {
@@ -284,6 +295,16 @@ class MapActivity : ComponentActivity() {
                 //in case of markers were not loaded successfully, the map activity will completely reload.
                 if(Counter.RESPAWN.getCounter()<1){
                     numberOfMarkersOnMap = 0
+                }
+
+                if(Counter.RESPAWN.getCounter() % 20 == 0){
+                    mapMarkerListViewModel.removeMarkersQ(MapSaver.STUDENT.getMarker())
+                    MapSaver.STUDENT.setMarker(ArrayList<MarkerData?>())
+                    mapMarkerViewModel.students.value.students = emptyList()
+                    mapMarkerViewModel.loadStudents()
+
+                    mapMarkerListViewModel.removeMarkersQ(MapSaver.STUDENT.getMarker())
+                    mapMarkerListViewModel.addListOfMarkersQ(MapSaver.STUDENT.getMarker())
                 }
 
                 //is now working without OpenActivityButton() and could be move out to view model

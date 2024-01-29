@@ -37,7 +37,9 @@ export class LevelCalcCritterService {
     if (!critter) {
       throw new Error(`Student with ID ${critter} not found. increase StudentCredits`);
     };
-    critter.expToNextLevel = (critter.expToNextLevel || 0) + expToAdd;
+    if(critter.level<100) {
+      critter.expToNextLevel = (critter.expToNextLevel || 0) + expToAdd;
+    }
 
     await this.critterRepository.update(critter);
     await this.checkForLevelUp(critterId);

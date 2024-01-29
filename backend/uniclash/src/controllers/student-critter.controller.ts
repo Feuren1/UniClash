@@ -26,12 +26,14 @@ import {CatchCritterService} from "../services/catch-critter.service";
 import {StudentCritterService} from '../services/student-critter.service';
 import {authenticate} from "@loopback/authentication";
 import {CritterListable} from "../models/critter-listable.model";
+import {WildEncounterInformationService} from "../services/wildEncounterInformation.service";
 
 export class StudentCritterController {
   constructor(
     @service(StudentCritterService) protected studentCritterService: StudentCritterService,
     @repository(StudentRepository) protected studentRepository: StudentRepository,
     @service(CatchCritterService) protected catchCritterService: CatchCritterService,
+    @service(WildEncounterInformationService) protected wildEncounterInformationService: WildEncounterInformationService,
   ) { }
 
   @authenticate('jwt')
@@ -77,6 +79,7 @@ export class StudentCritterController {
       },
     }) critter: Omit<Critter, 'id'>,
   ): Promise<Critter> {
+
     return this.studentRepository.critters(id).create(critter);
   }
 
@@ -136,6 +139,7 @@ export class StudentCritterController {
   async calculateCritterUsable(
     @param.path.number('id') id: number,
   ): Promise<CritterUsable[]> {
+    await this.wildEncounterInformationService.checkOfWildEncounterShouldReload()
     return this.studentCritterService.createCritterUsableListOnStudentId(id);
   }
 

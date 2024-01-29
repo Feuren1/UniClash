@@ -4,10 +4,15 @@ import {Entity, model, property} from '@loopback/repository';
 export class OnlineFight extends Entity {
   @property({
     type: 'number',
+  })
+  fightConnectionId: number;
+
+  @property({
+    type: 'number',
     id: true,
     generated: true,
   })
-  fightId?: number;
+  fightId: number;
 
   @property({
     type: 'number',
@@ -30,7 +35,13 @@ export class OnlineFight extends Entity {
     type: 'number',
     required: true,
   })
-  time: number;
+  startTime: number;
+
+  @property({
+    type: 'number',
+    required: true,
+  })
+  timer: number;
 
 
   constructor(data?: Partial<OnlineFight>) {

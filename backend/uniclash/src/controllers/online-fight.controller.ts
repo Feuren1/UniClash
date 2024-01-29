@@ -19,6 +19,8 @@ import {
 } from '@loopback/rest';
 import {OnlineFight} from '../models';
 import {OnlineFightRepository} from '../repositories';
+import {service} from "@loopback/core";
+import {OnlineFightService} from "../services/online-fight.service";
 
 export class OnlineFightController {
   constructor(

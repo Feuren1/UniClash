@@ -105,7 +105,6 @@ class ProfileViewModel (private val userService: UserService, application: Appli
                 level = 1,
                 lat = "0.0",
                 lon = "0.0",
-                time = "0",
                 credits = 100,
                 expToNextLevel = 0,
                 placedBuildings = 0,

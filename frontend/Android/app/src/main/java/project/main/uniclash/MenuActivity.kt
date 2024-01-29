@@ -1,10 +1,12 @@
 package project.main.uniclash
 
 import android.app.Activity
+import android.app.Application
 import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.activity.viewModels
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -36,12 +38,24 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import project.main.uniclash.dataManagers.PermissionManager
+import project.main.uniclash.dataManagers.UserDataManager
 import project.main.uniclash.datatypes.MapSettings
+import project.main.uniclash.retrofit.ArenaService
+import project.main.uniclash.retrofit.CritterService
+import project.main.uniclash.retrofit.StudentHubService
+import project.main.uniclash.retrofit.StudentService
+import project.main.uniclash.viewmodels.MapMarkerViewModel
+import project.main.uniclash.viewmodels.MenuViewModel
 
 
 class MenuActivity : ComponentActivity() {
 
     private var buttonRequest: Class<out Activity> by mutableStateOf(MainActivity::class.java)
+
+    private val menuViewModel: MenuViewModel by viewModels(factoryProducer = {
+        MenuViewModel.provideFactory()
+    })
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -121,6 +135,13 @@ class MenuActivity : ComponentActivity() {
                         } else {
                             "Activate Binoculars"
                         }, painterResource(R.drawable.binoculars), MenuActivity::class.java,3
+                    ),
+                    Category(
+                        if (menuViewModel.returnPermission()) {
+                            "Deactivate location sharing"
+                        } else {
+                            "Activate location sharing"
+                        }, painterResource(R.drawable.shareloaction), MenuActivity::class.java,4
                     )
                 )
                 )
@@ -142,9 +163,10 @@ class MenuActivity : ComponentActivity() {
         if(id == 3){
             MapSettings.CRITTERBINOCULARS.setMapSetting(!MapSettings.CRITTERBINOCULARS.getMapSetting())
         }
+        if(id == 4){
+            menuViewModel.setPermission()
+        }
     }
-
-
 
     @Composable
     fun MenuHeader() {

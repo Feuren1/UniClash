@@ -12,3 +12,6 @@ export * from './critter.repository';
 export * from './item-template.repository';
 export * from './item.repository';
 export * from './student.repository';
+export * from './wildencounter-information.repository';
+export * from './online-fight.repository';
+export * from './critter-in-fight.repository';

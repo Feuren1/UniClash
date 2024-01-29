@@ -69,6 +69,7 @@ import project.main.uniclash.datatypes.Locations
 import project.main.uniclash.datatypes.MapSaver
 import project.main.uniclash.datatypes.MapSettings
 import project.main.uniclash.datatypes.MarkerData
+import project.main.uniclash.datatypes.MarkerStudent
 import project.main.uniclash.datatypes.MarkerWildEncounter
 import project.main.uniclash.datatypes.SelectedMarker
 import project.main.uniclash.map.GeoCodingHelper
@@ -302,7 +303,8 @@ class MapActivity : ComponentActivity() {
                     MapSaver.STUDENT.setMarker(ArrayList<MarkerData?>())
                     mapMarkerViewModel.students.value.students = emptyList()
                     mapMarkerViewModel.loadStudents()
-
+                }
+                if(Counter.RESPAWN.getCounter() % 20 == 2){
                     mapMarkerListViewModel.removeMarkersQ(MapSaver.STUDENT.getMarker())
                     mapMarkerListViewModel.addListOfMarkersQ(MapSaver.STUDENT.getMarker())
                 }
@@ -372,7 +374,7 @@ class MapActivity : ComponentActivity() {
                         snippet = marker.snippet,
                         visible = if(marker is MarkerWildEncounter && distance > critterVisibility){false}else{marker.visible},
                     ) {
-                        if (distance < 501) {
+                        if (distance < 501 || marker is MarkerStudent) {
                             Column(
                                 modifier = Modifier
                                     .size(325.dp, 400.dp)

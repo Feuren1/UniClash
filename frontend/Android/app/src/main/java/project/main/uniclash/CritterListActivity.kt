@@ -50,11 +50,13 @@ import androidx.compose.foundation.lazy.items
 
 class CritterListActivity : ComponentActivity() {
     private var exitRequest by mutableStateOf(false)
+
+    val uniClashViewModel: UniClashViewModel by viewModels(factoryProducer = {
+        UniClashViewModel.provideFactory(CritterService.getInstance(this), Application())
+    })
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        val uniClashViewModel: UniClashViewModel by viewModels(factoryProducer = {
-            UniClashViewModel.provideFactory(CritterService.getInstance(this), Application())
-        })
 
 
         setContent {
@@ -144,12 +146,18 @@ class CritterListActivity : ComponentActivity() {
 
     @Composable
     fun CritterDetail(critter: CritterUsable?) {
+        var blockColor : Color = Color.LightGray;
+        var selectedText = ""
+        if(uniClashViewModel.checkIfSelectedCritter(critter!!.critterId)){
+            blockColor = Color.Cyan
+            selectedText = "| SELECTED CRITTER FOR THE FIGHT"
+        }
         Box(
             modifier = Modifier
                 .padding(all = 8.dp)
                 .fillMaxWidth() // making box from left to right site
                 .background(
-                    Color.LightGray,
+                    blockColor,
                     shape = RoundedCornerShape(8.dp)
                 ) // Hintergrundfarbe und abgeflachte Ecken
                 .clickable {
@@ -182,7 +190,7 @@ class CritterListActivity : ComponentActivity() {
                         style = MaterialTheme.typography.titleSmall
                     )
                     Text(
-                        text = "Level: ${critter?.level}",
+                        text = "Level: ${critter?.level} $selectedText",
                         fontSize = 12.sp,
                         color = MaterialTheme.colorScheme.secondary,
                         style = MaterialTheme.typography.titleSmall

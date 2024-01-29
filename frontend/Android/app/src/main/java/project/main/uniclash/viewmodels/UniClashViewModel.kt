@@ -197,6 +197,16 @@ class UniClashViewModel(
         }
     }
 
+    fun checkIfSelectedCritter(id: Int) : Boolean{
+        var isSelected = false
+        viewModelScope.launch {
+            if(userDataManager.getFightingCritterID() == id){
+                isSelected = true
+            }
+        }
+        return isSelected
+    }
+
     @SuppressLint("MissingPermission")
     //loads all critters inside the database
     fun loadCritters() {

@@ -27,3 +27,6 @@ export * from './student.controller';
 export * from './type.controller';
 export * from './user-student.controller';
 export * from './user.controller';
+export * from './wildencounter-informations.controller';
+export * from './online-fight.controller';
+export * from './critter-in-fight.controller';

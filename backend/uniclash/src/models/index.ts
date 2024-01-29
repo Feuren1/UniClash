@@ -17,3 +17,6 @@ export * from './critter-attack.model';
 export * from './type.model';
 export * from './student.model';
 export * from './user.model';
+export * from './wildencounter-information.model';
+export * from './online-fight.model';
+export * from './critter-in-fight.model';

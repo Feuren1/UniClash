@@ -21,6 +21,7 @@ import project.main.uniclash.MenuActivity
 import project.main.uniclash.R
 import project.main.uniclash.StudentHubActivity
 import project.main.uniclash.WildEncounterActivity
+import project.main.uniclash.dataManagers.PermissionManager
 import project.main.uniclash.dataManagers.UserDataManager
 import project.main.uniclash.datatypes.Arena
 import project.main.uniclash.datatypes.Counter
@@ -110,6 +111,10 @@ class MapMarkerViewModel(
         UserDataManager(Application())
     }
 
+    private val permissionManager: PermissionManager by lazy {
+        PermissionManager(Application())
+    }
+
     private var mapCalculations = MapCalculations()
 
     val markersStudentHub = MutableStateFlow(
@@ -170,22 +175,28 @@ class MapMarkerViewModel(
 
     fun loadStudents() {
         viewModelScope.launch {
-            studentHubs.update { it.copy(isLoading = true) }
-            try {
-                val response = studentService.getStudentLocations(userDataManager.getStudentId()!!,Locations.USERLOCATION.getLocation().latitude.toString(),Locations.USERLOCATION.getLocation().longitude.toString()).enqueue()
-                if (response.isSuccessful) {
-                    //creates an item list based on the fetched data
-                    val student = response.body()!!
-                    //replaces the critters list inside the UI state with the fetched data
-                    this@MapMarkerViewModel.students.update {
-                        it.copy(
-                            students = student,
-                            isLoading = false
-                        )
+            if (permissionManager.getPublishLocationPermission() == true) {
+                studentHubs.update { it.copy(isLoading = true) }
+                try {
+                    val response = studentService.getStudentLocations(
+                        userDataManager.getStudentId()!!,
+                        Locations.USERLOCATION.getLocation().latitude.toString(),
+                        Locations.USERLOCATION.getLocation().longitude.toString()
+                    ).enqueue()
+                    if (response.isSuccessful) {
+                        //creates an item list based on the fetched data
+                        val student = response.body()!!
+                        //replaces the critters list inside the UI state with the fetched data
+                        this@MapMarkerViewModel.students.update {
+                            it.copy(
+                                students = student,
+                                isLoading = false
+                            )
+                        }
                     }
+                } catch (e: Exception) {
+                    e.printStackTrace()
                 }
-            } catch (e: Exception) {
-                e.printStackTrace()
             }
         }
     }
@@ -541,7 +552,7 @@ class MapMarkerViewModel(
 
         viewModelScope.launch {
             students.collect{
-                initMarkersStudent()
+                    initMarkersStudent()
             }
         }
     }

@@ -150,6 +150,13 @@
             android:noHistory="true"
             android:theme="@style/Theme.UniClash" />
 
+        <activity
+            android:name=".OnlineFightListActivity"
+            android:exported="false"
+            android:label="OnlineFightListActivity"
+            android:noHistory="true"
+            android:theme="@style/Theme.UniClash" />
+
 
         <activity
             android:name=".MainActivity"

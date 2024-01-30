@@ -21,6 +21,8 @@ import {CritterInFight} from '../models';
 import {CritterInFightRepository, OnlineFightRepository} from '../repositories';
 import {service} from "@loopback/core";
 import {OnlineFightService} from "../services/online-fight.service";
+import {FightInformation} from "../models/fight-information.model";
+import {CritterInFightInformation} from "../models/critter-in-fight-information.model";
 
 export class LiveFightController {
   constructor(
@@ -86,10 +88,32 @@ export class LiveFightController {
     description: 'Checks the current State of the fight',
     content: {'application/json': {schema: CountSchema}},
   })
-  async count(
+  async checkMyState(
       @param.path.number('fightConnectionId') fightConnectionId: number,
       @param.path.number('studentId') studentId: number,
   ): Promise<string> {
     return this.onlineFightService.checkMyState(fightConnectionId,studentId);
+  }
+
+  @get('/fightInformationList/{studentId}')
+  @response(200, {
+    description: 'Readable information of a fight',
+    content: {'application/json': {schema: CountSchema}},
+  })
+  async fightInformationList(
+      @param.path.number('studentId') studentId: number,
+  ): Promise<FightInformation[]> {
+    return this.onlineFightService.fightInformationList(studentId);
+  }
+
+  @get('/getCritterInformation/{critterId}')
+  @response(200, {
+    description: 'Readable information of a fight',
+    content: {'application/json': {schema: CountSchema}},
+  })
+  async getCritterInformation(
+      @param.path.number('critterId') critterId: number,
+  ): Promise<CritterInFightInformation> {
+    return this.onlineFightService.getCritterInformation(critterId);
   }
 }

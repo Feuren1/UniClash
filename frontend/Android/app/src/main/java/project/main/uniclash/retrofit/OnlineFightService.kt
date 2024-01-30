@@ -1,0 +1,45 @@
+package project.main.uniclash.retrofit
+
+import android.content.Context
+import project.main.uniclash.datatypes.CritterInFight
+import project.main.uniclash.datatypes.OnlineFight
+import retrofit2.Call
+import retrofit2.create
+import retrofit2.http.GET
+import retrofit2.http.PUT
+import retrofit2.http.Path
+
+interface OnlineFightService {
+
+    @PUT("/checkIfFightCanStart/{fightConnectionId}")
+    fun checkIfFightCanStart(@Path("fightConnectionId")fightConnectionId : Int)
+
+    @GET("/checkMyState/{fightConnectionId}/{studentId}")
+    fun checkMyState(@Path("fightConnectionId")fightConnectionId : Int, @Path("studentId")studentId : Int): Call<String>
+
+    @PUT("/createFight/{studentId}/{enemyStudentId}")
+    fun createFight(@Path("studentId")studentId : Int, @Path("enemyStudentId")enemyStudentId : Int)
+
+    @PUT("/insertCritter/{fightConnectionId}/{studentId}/{critterId}")
+    fun insertCritter(@Path("fightConnectionId")fightConnectionId : Int, @Path("critterId")critterId : Int)
+
+    @PUT("/makingDamage/{fightConnectionId}/{studentId}/{amountOfDamage}")
+    fun makingDamage(@Path("fightConnectionId")fightConnectionId : Int, @Path("studentId")studentId : Int, @Path("amountOfDamage")amountOfDamage : Int)
+
+    @GET("/online-fights")
+    fun getOnlineFights() : Call <List<OnlineFight>>
+
+    @GET("/critter-in-fights/{id}")
+    fun getCritterInFight(@Path("id")id : Int) : Call <CritterInFight>
+
+
+    companion object {
+        private var onlineFightService: OnlineFightService? = null
+        fun getInstance(context: Context): OnlineFightService {
+            if (onlineFightService == null) {
+                onlineFightService = Retrofit.getRetrofitInstance(context).create<OnlineFightService>()
+            }
+            return onlineFightService!!
+        }
+    }
+}

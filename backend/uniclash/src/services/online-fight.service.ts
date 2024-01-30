@@ -1,24 +1,19 @@
 import {injectable, service} from '@loopback/core';
 import {repository} from "@loopback/repository";
-import {
-  Critter,
-  CritterInFight,
-  CritterRelations,
-  CritterTemplate,
-  CritterUsable,
-  OnlineFight,
-  Student
-} from "../models";
+import {CritterInFight, OnlineFight, User} from "../models";
 import {
   CritterInFightRepository,
   CritterRepository,
   CritterTemplateRepository,
   OnlineFightRepository,
-  StudentRepository
+  StudentRepository,
+  UserRepository
 } from "../repositories";
 import {NotificationService} from "./NotificationService";
 import {LevelCalcStudentService} from "./levelCalc-student.service";
 import {CritterStatsService} from "./critter-stats.service";
+import {FightInformation} from "../models/fight-information.model";
+import {CritterInFightInformation} from "../models/critter-in-fight-information.model";
 
 @injectable()
 export class OnlineFightService {
@@ -30,6 +25,7 @@ export class OnlineFightService {
     @repository(StudentRepository) protected studentRepository: StudentRepository,
     @service(LevelCalcStudentService) protected levelCalcStudentService : LevelCalcStudentService,
     @service(CritterStatsService) protected critterStatsService : CritterStatsService,
+    @repository(UserRepository) protected userRepository: UserRepository,
   ) { }
 
   async createFight(studentId:number, enemyStudentId:number): Promise<void>{
@@ -248,6 +244,51 @@ export class OnlineFightService {
         await this.onlineFightRepository.update(fight)
       }
     }
+  }
+
+  async fightInformationList(studentId: number): Promise<FightInformation[]> {
+    await this.deleteOldFights();
+
+    const fights: OnlineFight[] = await this.onlineFightRepository.find();
+    const listedFights: FightInformation[] = [];
+
+    for (const fight of fights) {
+      let studentName = "noName";
+
+      if (fight.studentId == studentId) {
+        const student = await this.studentRepository.findById(studentId);
+        const users: User[] = await this.userRepository.find();
+
+        for (const user of users) {
+          if (user.id.toString() == student.userId.toString()) {
+            // @ts-ignore
+            studentName = user.username.toString();
+          }
+        }
+
+        const fightOnList = new FightInformation({
+          fightConnectionId: fight.fightConnectionId,
+          studentId: fight.studentId,
+          userName: studentName,
+        });
+        listedFights.push(fightOnList);
+      }
+    }
+    return listedFights;
+  }
+
+  async getCritterInformation(critterId : number):Promise<CritterInFightInformation>{
+    const critterInFight = await this.critterInFightRepository.findById(critterId)
+    const critter = await this.critterRepository.findById(critterId)
+    const critterTemplate = await this.critterTemplateRepository.findById(critter.critterTemplateId)
+
+    return new CritterInFightInformation({
+      critterId: critterInFight.critterId,
+      name: critterTemplate.name,
+      attack: critterInFight.attack,
+      defence: critterInFight.defence,
+      health: critterInFight.health
+    })
   }
 }
 

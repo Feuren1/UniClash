@@ -2,6 +2,7 @@ package project.main.uniclash.viewmodels
 
 import android.annotation.SuppressLint
 import android.app.Application
+import android.content.ContentValues
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
@@ -11,18 +12,23 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import project.main.uniclash.retrofit.enqueue
 import project.main.uniclash.dataManagers.UserDataManager
+import project.main.uniclash.datatypes.Arena
 import project.main.uniclash.datatypes.Critter
+import project.main.uniclash.datatypes.MarkerArena
+import project.main.uniclash.datatypes.MarkerStudent
+import project.main.uniclash.datatypes.NewArena
 import project.main.uniclash.datatypes.OnlineFight
 import project.main.uniclash.datatypes.OnlineFightInformation
+import project.main.uniclash.datatypes.SelectedMarker
 import project.main.uniclash.retrofit.OnlineFightService
 
-sealed interface OnlineFightsUIState {
+sealed interface PostFightUIState {
     data class HasEntries(
-        var onlineFightsInformation: List<OnlineFightInformation>,
         val isLoading: Boolean,
-    ) : OnlineFightsUIState
+    ) : PostFightUIState
 }
-class OnlineFightListViewModel(
+
+class CreateOnlineFightViewModel(
     private val onlineFightService: OnlineFightService,
     private val application: Application
 ) : ViewModel() {
@@ -32,39 +38,50 @@ class OnlineFightListViewModel(
         UserDataManager(application)
     }
 
-    val onlineFights = MutableStateFlow(
-        OnlineFightsUIState.HasEntries(
-            emptyList(),
+    private val markerData = SelectedMarker.SELECTEDMARKER.takeMarker()
+    private val studentMarker = if(markerData is MarkerStudent){markerData} else {null}
+
+    private fun getSelectedStudent(): MarkerStudent?{
+        return studentMarker
+    }
+
+    val postFight = MutableStateFlow(
+        PostFightUIState.HasEntries(
             isLoading = false
         )
     )
 
     @SuppressLint("MissingPermission")
-    fun loadOnlineFights() {
+    fun createOnlineFight2() {
         viewModelScope.launch {
-            onlineFights.update { it.copy(isLoading = true) }
                 try {
-                    val response =
-                        onlineFightService.getFightInformationList(userDataManager.getStudentId()!!).enqueue()
-                    Log.d(TAG, "loadOnlineFightList: $response")
-                    if (response.isSuccessful) {
-                        Log.d(TAG, "loadOnlineFightList: success")
-                        val onlineFightList = response.body()!!
-                        Log.d(TAG, "loadOnlineFightList: $onlineFightList")
-
-                        onlineFights.update {
-                            it.copy(
-                                onlineFightsInformation = onlineFightList,
-                                isLoading = false
-                            )
-                        }
-                    }
-                    //filterFights()
+                    val response = onlineFightService.createFight(userDataManager.getStudentId()!!,getSelectedStudent()!!.student!!.id)
                 } catch (e: Exception) {
                     e.printStackTrace()
                 }
             }
     }
+
+    fun createOnlineFight(){
+        viewModelScope.launch {
+            postFight.update { it.copy(isLoading = true) }
+            try {
+                val response = onlineFightService.createFight(userDataManager.getStudentId()!!,getSelectedStudent()!!.student!!.id).enqueue()
+                Log.d(ContentValues.TAG, "createFight: $response")
+                if (response.isSuccessful) {
+                    Log.d(ContentValues.TAG, "Success: ${response.body()}")
+                    response.body()?.let {
+                        postFight.update { state ->
+                            state.copy(isLoading = false)
+                        }
+                    }
+                }
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
+        }
+    }
+
 
     companion object {
         fun provideFactory(
@@ -74,15 +91,11 @@ class OnlineFightListViewModel(
             object : ViewModelProvider.Factory {
                 @Suppress("UNCHECKED_CAST")
                 override fun <T : ViewModel> create(modelClass: Class<T>): T {
-                    return OnlineFightListViewModel(
+                    return CreateOnlineFightViewModel(
                         onlineFightService,
                         application
                     ) as T
                 }
             }
-    }
-
-    init {
-        loadOnlineFights()
     }
 }

@@ -17,6 +17,7 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import org.osmdroid.util.GeoPoint
 import project.main.uniclash.ArenaActivity
+import project.main.uniclash.CreateOnlineFightActivity
 import project.main.uniclash.MenuActivity
 import project.main.uniclash.R
 import project.main.uniclash.StudentHubActivity
@@ -230,7 +231,7 @@ class MapMarkerViewModel(
                     title = "${student?.name}",
                     snippet = "Level: ${student.level}",
                     pic = bitmapDrawable,
-                    button = MenuActivity::class.java,
+                    button = CreateOnlineFightActivity::class.java,
                     buttonText = "Invite to fight",
                     student = student
                 )

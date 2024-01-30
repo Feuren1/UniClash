@@ -67,13 +67,13 @@ export class OnlineFightService {
 
     for(const fight of fights){
 
-      if(fight.startTime != time && fight.startTime != time+1 && fight.startTime != time+2 && fight.startTime != time+3){
+      if(fight.startTime != time && fight.startTime+1 != time && fight.startTime+2 != time && fight.startTime+3 != time && fight.startTime+4 != time){
         await this.onlineFightRepository.deleteById(fight.fightId)
         if(fight.critterId != null )await this.critterInFightRepository.deleteById(fight.critterId)
       } else if(fight.state == OnlineFightState.Loser || fight.state == OnlineFightState.Winner){
         await this.onlineFightRepository.deleteById(fight.fightId)
         if(fight.critterId != null )await this.critterInFightRepository.deleteById(fight.critterId)
-      } else if(fight.startTime == time+2 || fight.startTime == time+3){
+      } else if(fight.startTime+2 == time || fight.startTime+3 == time || fight.startTime+4 == time){
         if(fight.state == OnlineFightState.Waiting){
           await this.onlineFightRepository.deleteById(fight.fightId)
           if(fight.critterId != null )await this.critterInFightRepository.deleteById(fight.critterId)
@@ -246,35 +246,39 @@ export class OnlineFightService {
     }
   }
 
-  async fightInformationList(studentId: number): Promise<FightInformation[]> {
+  async fightInformationList(studentId : number) : Promise<FightInformation[]>{
     await this.deleteOldFights();
 
     const fights: OnlineFight[] = await this.onlineFightRepository.find();
+    const lookedFights: number[] = []
     const listedFights: FightInformation[] = [];
 
     for (const fight of fights) {
-      let studentName = "noName";
+      if(fight.studentId == studentId) lookedFights.push(fight.fightConnectionId)
+    }
 
-      if (fight.studentId == studentId) {
-        const student = await this.studentRepository.findById(studentId);
-        const users: User[] = await this.userRepository.find();
-
-        for (const user of users) {
-          if (user.id.toString() == student.userId.toString()) {
-            // @ts-ignore
-            studentName = user.username.toString();
+    for (const fight of fights){
+      for(const fightConnectionId of lookedFights){
+        if(fight.fightConnectionId==fightConnectionId&&fight.studentId!=studentId){
+          let userName = "noName";
+          const users: User[] = await this.userRepository.find();
+          const student = await this.studentRepository.findById(studentId);
+          for (const user of users) {
+            if (user.id.toString() == student.userId.toString()) {
+              // @ts-ignore
+              userName = user.username.toString();
+            }
           }
+          const fightOnList = new FightInformation({
+            fightConnectionId: fight.fightConnectionId,
+            studentId: fight.studentId,
+            userName: userName,
+          });
+          listedFights.push(fightOnList);
         }
-
-        const fightOnList = new FightInformation({
-          fightConnectionId: fight.fightConnectionId,
-          studentId: fight.studentId,
-          userName: studentName,
-        });
-        listedFights.push(fightOnList);
       }
     }
-    return listedFights;
+    return listedFights
   }
 
   async getCritterInformation(critterId : number):Promise<CritterInFightInformation>{

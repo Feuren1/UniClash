@@ -148,6 +148,7 @@ class MenuActivity : ComponentActivity() {
                 MenuCard(listOf(Category("Online Fights", painterResource(R.drawable.swords), OnlineFightListActivity::class.java,1)))
                 MenuCard(listOf(Category("New Building", painterResource(R.drawable.buildings), NewBuildingActivity::class.java,1)))
                 MenuCard(listOf(Category("Log into other acc", painterResource(R.drawable.profile), LoginActivity::class.java,1),Category("Register new acc", painterResource(R.drawable.profile), RegisterActivity::class.java,1)))
+                MenuCard(listOf(Category("Online Fight Activity", painterResource(R.drawable.swords), OnlineFightActivity::class.java,1)))
                 MenuCard(listOf(Category("Student Hub", painterResource(R.drawable.store), StudentHubActivity::class.java,1)))
                 //MenuCard(listOf(Category("Camera", painterResource(R.drawable.swords), CameraActivity::class.java,1)))
                 MenuCard(listOf(Category("Poké", painterResource(R.drawable.studentassistant), PokéActivity::class.java,1)))

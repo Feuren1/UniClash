@@ -157,6 +157,20 @@
             android:noHistory="true"
             android:theme="@style/Theme.UniClash" />
 
+        <activity
+            android:name=".CreateOnlineFightActivity"
+            android:exported="false"
+            android:label="CreateOnlineFightActivity"
+            android:noHistory="true"
+            android:theme="@style/Theme.UniClash" />
+
+        <activity
+            android:name=".OnlineFightActivity"
+            android:exported="false"
+            android:label="OnlineFightActivity"
+            android:noHistory="true"
+            android:theme="@style/Theme.UniClash" />
+
 
         <activity
             android:name=".MainActivity"

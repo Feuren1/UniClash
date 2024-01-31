@@ -22,6 +22,12 @@ sealed interface OnlineFightsUIState {
         val isLoading: Boolean,
     ) : OnlineFightsUIState
 }
+
+sealed interface SelectedCritterUIState {
+    data class HasEntries(
+        val isSelected: Boolean,
+    ) : SelectedCritterUIState
+}
 class OnlineFightListViewModel(
     private val onlineFightService: OnlineFightService,
     private val application: Application
@@ -36,6 +42,12 @@ class OnlineFightListViewModel(
         OnlineFightsUIState.HasEntries(
             emptyList(),
             isLoading = false
+        )
+    )
+
+    var selectedCritter = MutableStateFlow(
+        SelectedCritterUIState.HasEntries(
+            isSelected  = false
         )
     )
 
@@ -59,11 +71,18 @@ class OnlineFightListViewModel(
                             )
                         }
                     }
-                    //filterFights()
                 } catch (e: Exception) {
                     e.printStackTrace()
                 }
             }
+    }
+
+    private fun checkSelectedCritter(){
+        viewModelScope.launch {
+            if (userDataManager.getFightingCritterID() != null && userDataManager.getFightingCritterID() != 0) {
+                selectedCritter.update { it.copy(isSelected = true) }
+            }
+        }
     }
 
     companion object {
@@ -84,5 +103,6 @@ class OnlineFightListViewModel(
 
     init {
         loadOnlineFights()
+        checkSelectedCritter()
     }
 }

@@ -61,7 +61,7 @@ export class OnlineFightService {
   }
 
   async deleteOldFights():Promise<void>{
-    const fights: OnlineFight[] = await this.onlineFightRepository.find()
+  /*  const fights: OnlineFight[] = await this.onlineFightRepository.find()
     const currentTime: Date = new Date();
     const time = currentTime.getMinutes()+currentTime.getHours()*60
 
@@ -79,7 +79,7 @@ export class OnlineFightService {
           if(fight.critterId != null )await this.critterInFightRepository.deleteById(fight.critterId)
         }
       }
-    }
+    }*/
   }
 
   async makingDamage(fightConnectionId : number, studentId : number, amountOfDamage : number):Promise<void>{
@@ -262,7 +262,7 @@ export class OnlineFightService {
         if(fight.fightConnectionId==fightConnectionId&&fight.studentId!=studentId){
           let userName = "noName";
           const users: User[] = await this.userRepository.find();
-          const student = await this.studentRepository.findById(studentId);
+          const student = await this.studentRepository.findById(fight.studentId);
           for (const user of users) {
             if (user.id.toString() == student.userId.toString()) {
               // @ts-ignore

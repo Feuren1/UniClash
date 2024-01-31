@@ -46,6 +46,7 @@ class LoginViewModel (private val userService: UserService, application: Applica
     )
 
     fun login(email: String, password: String, context: Context) {
+        clearSelectedCritter()
         viewModelScope.launch {
             login.update { state ->
                 state.copy(success = null, isLoading = true)
@@ -82,6 +83,12 @@ class LoginViewModel (private val userService: UserService, application: Applica
                 Log.d(TAG, "Error: ${response.message()}")
                 text.value = "Something went wrong check your username and password please. Are you registered yet?"
             }
+        }
+    }
+
+    private fun clearSelectedCritter(){
+        viewModelScope.launch {
+            userDataManager.storeFightingCritterID(0)
         }
     }
 

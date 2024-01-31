@@ -60,7 +60,6 @@ class OnlineFightListActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-
         setContent {
             val onlineFightCollection by onlineFightListViewModel.onlineFights.collectAsState()
             var isLoading by rememberSaveable { mutableStateOf(true) }
@@ -152,6 +151,7 @@ class OnlineFightListActivity : ComponentActivity() {
 
     @Composable
     fun FightDetail(onlineFight: OnlineFightInformation?) {
+        val isSelected by onlineFightListViewModel.selectedCritter.collectAsState()
         Box(
             modifier = Modifier
                 .padding(all = 8.dp)
@@ -161,14 +161,15 @@ class OnlineFightListActivity : ComponentActivity() {
                     shape = RoundedCornerShape(8.dp)
                 ) // Hintergrundfarbe und abgeflachte Ecken
                 .clickable {
-                    val intent = Intent(this, CritterProfileActivity::class.java)
-                    val b = Bundle()
-                    b.putInt("critterId", onlineFight!!.fightConnectionId)
-                    intent.putExtras(b)
-                    startActivity(intent)
-                    finish()
+                    if(isSelected.isSelected) {
+                        val intent = Intent(this, OnlineFightActivity::class.java)
+                        val b = Bundle()
+                        b.putInt("fightConnectionId", onlineFight!!.fightConnectionId)
+                        intent.putExtras(b)
+                        startActivity(intent)
+                        finish()
+                    }
                 }
-
         ) {
             Row(modifier = Modifier.padding(all = 8.dp)) {
                 val context = LocalContext.current
@@ -188,12 +189,21 @@ class OnlineFightListActivity : ComponentActivity() {
                         color = MaterialTheme.colorScheme.secondary,
                         style = MaterialTheme.typography.titleSmall
                     )
-                    Text(
-                        text = "Against Trainer: ${onlineFight?.userName}",
-                        fontSize = 12.sp,
-                        color = MaterialTheme.colorScheme.secondary,
-                        style = MaterialTheme.typography.titleSmall
-                    )
+                    if(isSelected.isSelected) {
+                        Text(
+                            text = "Against Trainer: ${onlineFight?.userName}",
+                            fontSize = 12.sp,
+                            color = MaterialTheme.colorScheme.secondary,
+                            style = MaterialTheme.typography.titleSmall
+                        )
+                    } else {
+                        Text(
+                            text = "Against Trainer: ${onlineFight?.userName}\nYou have to select a critter, out of CritterList!",
+                            fontSize = 12.sp,
+                            color = MaterialTheme.colorScheme.secondary,
+                            style = MaterialTheme.typography.titleSmall
+                        )
+                    }
                     Spacer(modifier = Modifier.height(8.dp))
                 }
             }

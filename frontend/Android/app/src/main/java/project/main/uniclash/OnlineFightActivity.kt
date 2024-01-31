@@ -71,11 +71,15 @@ class OnlineFightActivity : ComponentActivity() {
         OnlineFightViewModel.provideFactory(OnlineFightService.getInstance(this))
     }
 
+    var fightConnectionId by mutableStateOf(0)
     var clickedAttack by mutableStateOf("")
     var timerValue by mutableStateOf(10)
     var exitRequest by mutableStateOf(false)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        val b = intent.extras
+        fightConnectionId = b?.getInt("fightConnectionId")!!
 
         setContent {
             UniClashTheme {

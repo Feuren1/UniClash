@@ -3,6 +3,7 @@ package project.main.uniclash.retrofit
 import android.content.Context
 import project.main.uniclash.datatypes.CritterInFight
 import project.main.uniclash.datatypes.CritterInFightInformation
+import project.main.uniclash.datatypes.FightState
 import project.main.uniclash.datatypes.OnlineFight
 import project.main.uniclash.datatypes.OnlineFightInformation
 import retrofit2.Call
@@ -17,7 +18,7 @@ interface OnlineFightService {
     fun checkIfFightCanStart(@Path("fightConnectionId")fightConnectionId : Int):Call<Unit>
 
     @GET("/checkMyState/{fightConnectionId}/{studentId}")
-    fun checkMyState(@Path("fightConnectionId")fightConnectionId : Int, @Path("studentId")studentId : Int): Call<Char>
+    fun checkMyState(@Path("fightConnectionId")fightConnectionId : Int, @Path("studentId")studentId : Int): Call<FightState>
 
     @PUT("/createFight/{studentId}/{enemyStudentId}")
     fun createFight(@Path("studentId")studentId : Int, @Path("enemyStudentId")enemyStudentId : Int):Call<Unit>
@@ -32,7 +33,7 @@ interface OnlineFightService {
     fun getFightInformationList(@Path("studentId")studentId : Int) : Call <List<OnlineFightInformation>>
 
     @GET("/getCritterInformation/{critterId}")
-    fun getCritterInformation(@Path("critterId")critterId : Int) : Call <List<CritterInFightInformation>>
+    fun getCritterInformation(@Path("critterId")critterId : Int) : Call <CritterInFightInformation>
 
     @GET("/online-fights")
     fun getOnlineFights() : Call <List<OnlineFight>>

@@ -11,10 +11,9 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import project.main.uniclash.dataManagers.UserDataManager
+import project.main.uniclash.datatypes.CritterInFightInformation
 import project.main.uniclash.datatypes.OnlineFightState
 import project.main.uniclash.retrofit.OnlineFightService
-import project.main.uniclash.retrofit.StudentHubService
-import project.main.uniclash.retrofit.StudentService
 import project.main.uniclash.retrofit.enqueue
 import retrofit2.Call
 import retrofit2.Callback
@@ -47,6 +46,18 @@ sealed interface FightConnectionIdUIState {
     ) : FightConnectionIdUIState
 }
 
+sealed interface CritterInFightUIState {
+    data class HasEntries(
+        var critterInFightInformation: CritterInFightInformation?,
+    ) : CritterInFightUIState
+}
+
+sealed interface EnemyCritterInFightUIState {
+    data class HasEntries(
+        var critterInFightInformation: CritterInFightInformation?,
+    ) : EnemyCritterInFightUIState
+}
+
 class OnlineFightViewModel (private val onlineFightService: OnlineFightService) : ViewModel() {
     private val userDataManager: UserDataManager by lazy {
         UserDataManager(Application()) }
@@ -61,6 +72,18 @@ class OnlineFightViewModel (private val onlineFightService: OnlineFightService) 
     val state = MutableStateFlow(
         StateUIState.HasEntries(
             state = OnlineFightState.WAITING,
+        )
+    )
+
+    val critterInFight = MutableStateFlow(
+        CritterInFightUIState.HasEntries(
+            critterInFightInformation = null,
+        )
+    )
+
+    val enemyCritterInFight = MutableStateFlow(
+        EnemyCritterInFightUIState.HasEntries(
+            critterInFightInformation = null,
         )
     )
 
@@ -88,25 +111,21 @@ class OnlineFightViewModel (private val onlineFightService: OnlineFightService) 
     @SuppressLint("MissingPermission")
     fun checkMyState() {
         viewModelScope.launch {
-            println("step1")
             try {
-                println("step2")
                 val response =
                     onlineFightService.checkMyState(fightConnectionID.value.fightConnectionId, userDataManager.getStudentId()!!).enqueue()
                 Log.d(TAG, "loadState: $response")
-                println("step3")
                 if (response.isSuccessful) {
-                    println("step4")
                     Log.d(TAG, "loadState: success")
                     val stateRes = response.body()!!
                     Log.d(TAG, "loadState: $stateRes")
 
                     var currentState = OnlineFightState.WAITING
-                    if(stateRes.toString() == "yourTurn") currentState = OnlineFightState.YOURTURN
-                    if(stateRes.toString() == "enemyTurn") currentState = OnlineFightState.ENEMYTURN
-                    if(stateRes.toString() == "waiting") currentState = OnlineFightState.WAITING
-                    if(stateRes.toString() == "winner") currentState = OnlineFightState.WINNER
-                    if(stateRes.toString() == "loser") currentState = OnlineFightState.LOSER
+                    if(stateRes.state == "yourTurn") currentState = OnlineFightState.YOURTURN
+                    if(stateRes.state == "enemyTurn") currentState = OnlineFightState.ENEMYTURN
+                    if(stateRes.state == "waiting") currentState = OnlineFightState.WAITING
+                    if(stateRes.state == "winner") currentState = OnlineFightState.WINNER
+                    if(stateRes.state == "loser") currentState = OnlineFightState.LOSER
 
                     state.update {
                         it.copy(
@@ -116,6 +135,64 @@ class OnlineFightViewModel (private val onlineFightService: OnlineFightService) 
                 }
             } catch (e: Exception) {
                 e.printStackTrace()
+            }
+        }
+    }
+
+    @SuppressLint("MissingPermission")
+    fun getCritterInformation() {
+        if(state.value.state != OnlineFightState.WAITING) {
+        viewModelScope.launch {
+            try {
+                val response =
+                    onlineFightService.getCritterInformation(userDataManager.getFightingCritterID()!!)
+                        .enqueue()
+                Log.d(TAG, "loadCritter: $response")
+                if (response.isSuccessful) {
+                    Log.d(TAG, "loadCritter: success")
+                    val critter = response.body()!!
+                    Log.d(TAG, "loadCritter: $critter")
+
+                    if (critter != null) {
+                        critterInFight.update {
+                            it.copy(
+                                critterInFightInformation = critter,
+                            )
+                        }
+                    }
+                }
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
+        }
+        }
+    }
+
+    @SuppressLint("MissingPermission")
+    fun getEnemyCritterInformation() {
+        if(state.value.state != OnlineFightState.WAITING) {
+            viewModelScope.launch {
+                try {
+                    val response =
+                        onlineFightService.getCritterInformation(userDataManager.getFightingCritterID()!!)
+                            .enqueue()
+                    Log.d(TAG, "loadCritter: $response")
+                    if (response.isSuccessful) {
+                        Log.d(TAG, "loadCritter: success")
+                        val critter = response.body()!!
+                        Log.d(TAG, "loadCritter: $critter")
+
+                        if (critter != null) {
+                            enemyCritterInFight.update {
+                                it.copy(
+                                    critterInFightInformation = critter,
+                                )
+                            }
+                        }
+                    }
+                } catch (e: Exception) {
+                    e.printStackTrace()
+                }
             }
         }
     }

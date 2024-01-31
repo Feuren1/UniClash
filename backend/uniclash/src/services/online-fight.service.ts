@@ -294,6 +294,15 @@ export class OnlineFightService {
       health: critterInFight.health
     })
   }
+
+  async getCritterInformationFromEnemy(fightConnectionId : number, studentId : number):Promise<CritterInFightInformation>{
+    const fights: OnlineFight[] = await this.onlineFightRepository.find();
+    for(const fight of fights){
+      if(fight.fightConnectionId == fightConnectionId && fight.studentId != studentId && fight.critterId != null) return this.getCritterInformation(fight.critterId)
+    }
+
+    return this.getCritterInformation(1)
+  }
 }
 
 enum OnlineFightState {

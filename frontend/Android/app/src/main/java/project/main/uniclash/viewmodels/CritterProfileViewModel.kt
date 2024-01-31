@@ -90,7 +90,7 @@ class CritterProfileViewModel(
 
     fun delCritter(id: Int) {
         viewModelScope.launch {
-
+            userDataManager.storeFightingCritterID(0)
             critterListDataManager.clearCritterList() //to refresh critterList
 
             delCritter.update { it.copy(isLoading = true) }

@@ -63,6 +63,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImagePainter.State.Empty.painter
 import kotlinx.coroutines.delay
+import project.main.uniclash.datatypes.CritterInFightInformation
 import project.main.uniclash.datatypes.OnlineFightState
 import project.main.uniclash.ui.theme.UniClashTheme
 import project.main.uniclash.viewmodels.StateUIState
@@ -73,7 +74,19 @@ class OnlineFightActivity : ComponentActivity() {
         OnlineFightViewModel.provideFactory(OnlineFightService.getInstance(this))
     }
 
+    val sampleCritter = CritterInFightInformation(
+        critterId = 0,
+        health = 0,
+        attack = 0,
+        defence = 0,
+        name = "---"
+    )
+
     private var state by mutableStateOf(OnlineFightState.WAITING)
+    private var myCritter by mutableStateOf(sampleCritter)
+    private var myCritterLoaded by mutableStateOf(false)
+    private var enemyCritter by mutableStateOf(sampleCritter)
+    private var enemyCritterLoaded by mutableStateOf(false)
     private var fightConnectionId by mutableIntStateOf(0)
     private var clickedAttack by mutableStateOf("")
     private var timerValue by mutableIntStateOf(10)
@@ -88,6 +101,14 @@ class OnlineFightActivity : ComponentActivity() {
         setContent {
             val stateUIState by onlineFightViewModel.state.collectAsState()
             state = stateUIState.state
+            val critterInFightUIState by onlineFightViewModel.critterInFight.collectAsState()
+            if(critterInFightUIState.critterInFightInformation != null){
+                myCritter = critterInFightUIState.critterInFightInformation!!
+            }
+            val enemyCritterInFightUIState by onlineFightViewModel.enemyCritterInFight.collectAsState()
+            if(enemyCritterInFightUIState.critterInFightInformation != null){
+                enemyCritter = critterInFightUIState.critterInFightInformation!!
+            }
 
             ScreenRefresher(stateUIState)
             UniClashTheme {
@@ -205,9 +226,12 @@ class OnlineFightActivity : ComponentActivity() {
         LaunchedEffect(Unit) {
             while (true) {
                 delay(3000)
-                if(state==OnlineFightState.WAITING)onlineFightViewModel.checkIfFightCanStart()
+                if(state==OnlineFightState.WAITING) onlineFightViewModel.checkIfFightCanStart()
+                //if(!myCritterLoaded)
+                //if(!enemyCritterLoaded)
                 onlineFightViewModel.checkMyState()
-                state = stateUIState.state
+                onlineFightViewModel.getCritterInformation()
+                onlineFightViewModel.getEnemyCritterInformation()
             }
         }
     }
@@ -265,9 +289,9 @@ class OnlineFightActivity : ComponentActivity() {
                 )
             }
             Spacer(modifier = Modifier.height(16.dp))
-            CritterBox("Snorlax",50,500,300,250,100,Color.Red, false)
+            CritterBox(enemyCritter.name,0,500,enemyCritter.health,myCritter.defence,myCritter.attack,Color.Red, true)
             Spacer(modifier = Modifier.height(16.dp))
-            CritterBox("Vulcanmut",45,400,325,250,130,Color.Green, true)
+            CritterBox(myCritter.name,0,500,myCritter.health,myCritter.defence,myCritter.attack,Color.Green, false)
         }
     }
 

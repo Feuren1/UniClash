@@ -146,10 +146,12 @@ class CritterListActivity : ComponentActivity() {
 
     @Composable
     fun CritterDetail(critter: CritterUsable?) {
-        var blockColor : Color = Color.LightGray;
+        var blockColor : Color = Color.LightGray
+        var textColor : Color = MaterialTheme.colorScheme.secondary
         var selectedText = ""
         if(uniClashViewModel.checkIfSelectedCritter(critter!!.critterId)){
-            blockColor = Color.Cyan
+            blockColor = MaterialTheme.colorScheme.onPrimaryContainer
+            textColor = Color.White
             selectedText = "| SELECTED CRITTER FOR THE FIGHT"
         }
         Box(
@@ -186,13 +188,13 @@ class CritterListActivity : ComponentActivity() {
                     Text(
                         text = critter!!.name,
                         fontSize = 18.sp,
-                        color = MaterialTheme.colorScheme.secondary,
+                        color = textColor,
                         style = MaterialTheme.typography.titleSmall
                     )
                     Text(
                         text = "Level: ${critter?.level} $selectedText",
                         fontSize = 12.sp,
-                        color = MaterialTheme.colorScheme.secondary,
+                        color = textColor,
                         style = MaterialTheme.typography.titleSmall
                     )
                     Spacer(modifier = Modifier.height(8.dp))

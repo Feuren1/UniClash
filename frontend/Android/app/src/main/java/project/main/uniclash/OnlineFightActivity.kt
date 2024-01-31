@@ -63,18 +63,22 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImagePainter.State.Empty.painter
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.collect
 import project.main.uniclash.datatypes.CritterInFightInformation
+import project.main.uniclash.datatypes.CritterUsable
 import project.main.uniclash.datatypes.OnlineFightState
+import project.main.uniclash.retrofit.CritterService
 import project.main.uniclash.ui.theme.UniClashTheme
 import project.main.uniclash.viewmodels.StateUIState
 import java.util.concurrent.TimeUnit
+import kotlin.concurrent.timer
 
 class OnlineFightActivity : ComponentActivity() {
     private val onlineFightViewModel by viewModels<OnlineFightViewModel> {
-        OnlineFightViewModel.provideFactory(OnlineFightService.getInstance(this))
+        OnlineFightViewModel.provideFactory(OnlineFightService.getInstance(this), CritterService.getInstance(this))
     }
 
-    val sampleCritter = CritterInFightInformation(
+    private val sampleCritter = CritterInFightInformation(
         critterId = 0,
         health = 0,
         attack = 0,
@@ -82,14 +86,32 @@ class OnlineFightActivity : ComponentActivity() {
         name = "---"
     )
 
+    private val sampleCritterUsable = CritterUsable(
+        name = "---",
+        critterId = 0,
+        atk = 0,
+        critterTemplateId = 0,
+        attacks = emptyList(),
+        def = 0,
+        hp = 100,
+        level = 0,
+        spd = 0,
+    )
+
     private var state by mutableStateOf(OnlineFightState.WAITING)
     private var myCritter by mutableStateOf(sampleCritter)
+    private var critterUsable by mutableStateOf(sampleCritterUsable)
     private var myCritterLoaded by mutableStateOf(false)
     private var enemyCritter by mutableStateOf(sampleCritter)
+    private var enemyCritterUsable by mutableStateOf(sampleCritterUsable)
     private var enemyCritterLoaded by mutableStateOf(false)
     private var fightConnectionId by mutableIntStateOf(0)
     private var clickedAttack by mutableStateOf("")
     private var timerValue by mutableIntStateOf(10)
+    private var selectedAttack by mutableIntStateOf(0)
+    private var selectedTypOfAttack by mutableStateOf(BattleAction.DAMAGE_DEALER)
+    private var winner by mutableStateOf(false)
+    private var loser by mutableStateOf(false)
     var exitRequest by mutableStateOf(false)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -107,10 +129,24 @@ class OnlineFightActivity : ComponentActivity() {
             }
             val enemyCritterInFightUIState by onlineFightViewModel.enemyCritterInFight.collectAsState()
             if(enemyCritterInFightUIState.critterInFightInformation != null){
-                enemyCritter = critterInFightUIState.critterInFightInformation!!
+                enemyCritter = enemyCritterInFightUIState.critterInFightInformation!!
             }
 
-            ScreenRefresher(stateUIState)
+            val critterUsableUIState by onlineFightViewModel.critterUsable.collectAsState()
+            if(critterUsableUIState.critterUsable != null){
+                critterUsable = critterUsableUIState.critterUsable!!
+                myCritterLoaded = true
+            }
+            val enemyCritterUsableUIState by onlineFightViewModel.enemyCritterUsable.collectAsState()
+            if(enemyCritterUsableUIState.critterUsable != null){
+                enemyCritterUsable = enemyCritterUsableUIState.critterUsable!!
+                enemyCritterLoaded = true
+            }
+
+            val timerUIState by onlineFightViewModel.timer.collectAsState()
+            timerValue = timerUIState.timer
+
+            ScreenRefresher()
             UniClashTheme {
                 Surface(
                     modifier = Modifier.fillMaxSize(),
@@ -125,7 +161,7 @@ class OnlineFightActivity : ComponentActivity() {
                             modifier = Modifier.fillMaxSize(),
                             contentScale = ContentScale.Crop
                         )
-                        // Hier wird der "Blaken" mit Text, Exit-Button und Timer hinzugefügt
+                        // Hier wird der "Balken" mit Text, Exit-Button und Timer hinzugefügt
                         Column(
                         ) {
                             BattleInfoOverlay()
@@ -161,35 +197,21 @@ class OnlineFightActivity : ComponentActivity() {
                             ) {
                                 Row(
                                 ) {
-                                    Spacer(modifier = Modifier.width(8.dp))
-                                    AttackBox(
-                                        attackName = "Ember",
-                                        value = 50,
-                                        type = BattleAction.DAMAGE_DEALER,
-                                        selected = clickedAttack == "Ember"
-                                    )
-                                    Spacer(modifier = Modifier.width(8.dp))
-                                    AttackBox(
-                                        attackName = "Growl",
-                                        value = 20,
-                                        type = BattleAction.DAMAGE_DEALER,
-                                        selected = clickedAttack == "Growl"
-                                    )
-                                    Spacer(modifier = Modifier.width(8.dp))
-                                    AttackBox(
-                                        attackName = "Volt Tackle",
-                                        value = 20,
-                                        type = BattleAction.DEF_BUFF,
-                                        selected = clickedAttack == "Volt Tackle"
-                                    )
-                                    Spacer(modifier = Modifier.width(8.dp))
-                                    AttackBox(
-                                        attackName = "Double Shock",
-                                        value = 20,
-                                        type = BattleAction.ATK_BUFF,
-                                        selected = clickedAttack == "Double Shock"
-                                    )
-                                    Spacer(modifier = Modifier.width(8.dp))
+                                    if(critterUsable.attacks.isNotEmpty()) {
+                                        Spacer(modifier = Modifier.width(8.dp))
+                                        for(attack in critterUsable.attacks) {
+                                            var type = BattleAction.DAMAGE_DEALER
+                                            if(attack.attackType.toString().uppercase() == "DEF_BUFF") type = BattleAction.DEF_BUFF
+                                            if(attack.attackType.toString().uppercase() == "ATK_BUFF") type = BattleAction.ATK_BUFF
+                                            AttackBox(
+                                                attackName = attack.name,
+                                                value = attack.strength,
+                                                type = type,
+                                                selected = clickedAttack == attack.name
+                                            )
+                                            Spacer(modifier = Modifier.width(8.dp))
+                                        }
+                                    }
                                 }
                             }
                         Box(
@@ -197,7 +219,7 @@ class OnlineFightActivity : ComponentActivity() {
                             .offset(y = 150.dp)
                         ) {
                             Button(
-                                onClick = { /* TODO: Aktion beim Klicken */ },
+                                onClick = { onlineFightViewModel.makingDamage(selectedAttack, selectedTypOfAttack) },
                                 modifier = Modifier
                                     .fillMaxWidth()
                                     .padding(16.dp),
@@ -218,20 +240,26 @@ class OnlineFightActivity : ComponentActivity() {
                 finish()
                 exitRequest = false
             }
+            if(winner) EndBox(true)
+            if(loser) EndBox(false)
             }
         }
 
     @Composable
-    fun ScreenRefresher(stateUIState: StateUIState.HasEntries){
+    fun ScreenRefresher(){
         LaunchedEffect(Unit) {
             while (true) {
                 delay(3000)
                 if(state==OnlineFightState.WAITING) onlineFightViewModel.checkIfFightCanStart()
-                //if(!myCritterLoaded)
-                //if(!enemyCritterLoaded)
-                onlineFightViewModel.checkMyState()
-                onlineFightViewModel.getCritterInformation()
-                onlineFightViewModel.getEnemyCritterInformation()
+                if(!myCritterLoaded) onlineFightViewModel.getCritterUsable()
+                if(!enemyCritterLoaded) onlineFightViewModel.getEnemyCritterUsable()
+
+                if(state!=OnlineFightState.WINNER && state != OnlineFightState.LOSER)onlineFightViewModel.checkMyState()
+                if(state!=OnlineFightState.WINNER && state != OnlineFightState.LOSER)onlineFightViewModel.getCritterInformation()
+                if(state!=OnlineFightState.WINNER && state != OnlineFightState.LOSER)onlineFightViewModel.getEnemyCritterInformation()
+
+                if(state==OnlineFightState.WINNER) winner = true
+                if(state==OnlineFightState.LOSER) loser = true
             }
         }
     }
@@ -243,7 +271,7 @@ class OnlineFightActivity : ComponentActivity() {
             // Startet den Timer und aktualisiert den Wert jede Sekunde
             while (true) {
                 delay(1000)
-                timerValue--
+                if(timerValue>0)timerValue--
             }
         }
 
@@ -270,7 +298,8 @@ class OnlineFightActivity : ComponentActivity() {
 
                 // Battle Information in der Mitte
                 Text(
-                    text = "Battle Information\n${state.getState()}",
+                    text = "Current state:\n${state}",
+                    fontWeight = FontWeight.Bold,
                     style = MaterialTheme.typography.bodyLarge,
                     color = Color.White,
                     modifier = Modifier.align(alignment = TopCenter)
@@ -289,9 +318,9 @@ class OnlineFightActivity : ComponentActivity() {
                 )
             }
             Spacer(modifier = Modifier.height(16.dp))
-            CritterBox(enemyCritter.name,0,500,enemyCritter.health,myCritter.defence,myCritter.attack,Color.Red, true)
+            CritterBox(enemyCritter.name,enemyCritterUsable.level,enemyCritterUsable.hp,enemyCritter.health,myCritter.defence,myCritter.attack,Color.Red, state == OnlineFightState.ENEMYTURN)
             Spacer(modifier = Modifier.height(16.dp))
-            CritterBox(myCritter.name,0,500,myCritter.health,myCritter.defence,myCritter.attack,Color.Green, false)
+            CritterBox(myCritter.name,critterUsable.level,critterUsable.hp,myCritter.health,myCritter.defence,myCritter.attack,Color.Green, state == OnlineFightState.YOURTURN)
         }
     }
 
@@ -390,6 +419,8 @@ class OnlineFightActivity : ComponentActivity() {
             modifier = Modifier
                 .clickable {
                     clickedAttack = attackName
+                    selectedAttack = value
+                    selectedTypOfAttack = type
                 }
                 //.fillMaxWidth()
                 .height(90.dp)
@@ -458,7 +489,85 @@ class OnlineFightActivity : ComponentActivity() {
             }
         }
     }
-}
+
+    @Composable
+    fun EndBox(winner : Boolean) {
+        Box(
+            modifier = Modifier.fillMaxSize()
+        ) {
+            Box(
+                modifier = Modifier
+                    .offset(y = 275.dp)
+                    .height(150.dp)
+                    .fillMaxWidth()
+                    .background(
+                        MaterialTheme.colorScheme.onPrimaryContainer,
+                        shape = RoundedCornerShape(8.dp),
+                    )
+                    .border(
+                        3.dp,
+                        MaterialTheme.colorScheme.primary,
+                        shape = RoundedCornerShape(8.dp),
+                    )
+                    .wrapContentSize(Alignment.Center),
+                contentAlignment = Alignment.Center,
+            ) {
+                // Foto auf der linken Seite
+                Row(
+                ) {
+                    Spacer(modifier = Modifier.height(8.dp))
+                    Spacer(modifier = Modifier.width(8.dp))
+                    if(winner)GifImage(gifName = "vibe", modifier = Modifier.size(80.dp) )
+                    if(!winner)Image(
+                        painter = painterResource(R.drawable.swords),
+                        contentDescription = null,
+                        modifier = Modifier
+                            .size(80.dp)
+                            .clip(CircleShape)
+                            .background(MaterialTheme.colorScheme.surface)
+                            .padding(8.dp)
+                    )
+                    Spacer(modifier = Modifier.width(16.dp))
+                    Column(
+                    ) {
+                        if(winner) {
+                            Text(
+                                text = "Congratulations",
+                                fontWeight = FontWeight.Bold,
+                                style = MaterialTheme.typography.bodyLarge,
+                                color = Color.White,
+                                modifier = Modifier.padding(bottom = 4.dp)
+                            )
+
+                            Text(
+                                text = "you won!\nYou received 5 credits and 200 ep.",
+                                style = MaterialTheme.typography.bodyMedium,
+                                color = Color.White
+                            )
+                        } else {
+                            Text(
+                                text = "You lose !",
+                                fontWeight = FontWeight.Bold,
+                                style = MaterialTheme.typography.bodyLarge,
+                                color = Color.White,
+                                modifier = Modifier.padding(bottom = 4.dp)
+                            )
+
+                            Text(
+                                text = "...bad luck",
+                                style = MaterialTheme.typography.bodyMedium,
+                                color = Color.White
+                            )
+                        }
+                        Spacer(modifier = Modifier.width(8.dp))
+                        Spacer(modifier = Modifier.height(16.dp))
+                        Spacer(modifier = Modifier.height(8.dp))
+                    }
+                }
+            }
+        }
+    }
+    }
 
 enum class BattleAction {
     DAMAGE_DEALER,

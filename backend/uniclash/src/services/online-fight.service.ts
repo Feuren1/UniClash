@@ -61,7 +61,7 @@ export class OnlineFightService {
   }
 
   async deleteOldFights():Promise<void>{
-  /*  const fights: OnlineFight[] = await this.onlineFightRepository.find()
+    const fights: OnlineFight[] = await this.onlineFightRepository.find()
     const currentTime: Date = new Date();
     const time = currentTime.getMinutes()+currentTime.getHours()*60
 
@@ -79,10 +79,10 @@ export class OnlineFightService {
           if(fight.critterId != null )await this.critterInFightRepository.deleteById(fight.critterId)
         }
       }
-    }*/
+    }
   }
 
-  async makingDamage(fightConnectionId : number, studentId : number, amountOfDamage : number):Promise<void>{
+  async makingDamage(fightConnectionId : number, studentId : number, amountOfDamage : number, kindOfDamage : string):Promise<void>{
     const currentTime: Date = new Date();
     const fights: OnlineFight[] = await this.onlineFightRepository.find()
     const currentFights : OnlineFight[] = []
@@ -95,6 +95,7 @@ export class OnlineFightService {
 
     let allowToMakeDamage = false
     let critterIdFromEnemy = 0
+    let critterIdFromMe = 0
 
     for(const fight of currentFights){
      if(fight.state == OnlineFightState.YourTurn && fight.studentId == studentId){
@@ -102,6 +103,7 @@ export class OnlineFightService {
 
        fight.timer = currentTime.getSeconds()+currentTime.getMinutes()*60
        fight.state = OnlineFightState.EnemyTurn
+       if(fight.critterId != null) critterIdFromMe = fight.critterId
        await  this.onlineFightRepository.update(fight)
      }
      if(fight.state == OnlineFightState.EnemyTurn && fight.studentId != studentId){
@@ -115,10 +117,22 @@ export class OnlineFightService {
     }
 
     //make damage
-    if(allowToMakeDamage && critterIdFromEnemy != 0) {
+    if(allowToMakeDamage && critterIdFromEnemy != 0 && kindOfDamage == "DAMAGE_DEALER") {
       const enemyCritter: CritterInFight = await this.critterInFightRepository.findById(critterIdFromEnemy)
+      const myCritter = await  this.critterStatsService.createCritterUsable(critterIdFromMe)
+      const damage = (((((2*myCritter.level)/5)+2)*amountOfDamage*myCritter.atk/enemyCritter.defence)/50)+2
       enemyCritter.health -= amountOfDamage
       await this.critterInFightRepository.update(enemyCritter)
+    }
+    else if(allowToMakeDamage && critterIdFromMe != 0 && kindOfDamage == "DEF_BUFF"){
+      const critter: CritterInFight = await this.critterInFightRepository.findById(critterIdFromMe)
+      critter.defence += amountOfDamage
+      await this.critterInFightRepository.update(critter)
+    }
+    else if(allowToMakeDamage && critterIdFromMe != 0 && kindOfDamage == "ATK_BUFF"){
+      const critter: CritterInFight = await this.critterInFightRepository.findById(critterIdFromMe)
+      critter.attack += amountOfDamage
+      await this.critterInFightRepository.update(critter)
     }
 
     await this.checkIfWinnerIsDetected(currentFights)
@@ -222,7 +236,10 @@ export class OnlineFightService {
     if(currentFights[0] != null){
     const currentTime: Date = new Date();
     for(const fight of currentFights) {
-      if (currentTime.getSeconds()+currentTime.getMinutes()*60 - fight.timer > 29 && fight.state == OnlineFightState.YourTurn) {
+      if(fight.state == OnlineFightState.Waiting){
+        fight.timer = currentTime.getSeconds()+currentTime.getMinutes()*60
+        await this.onlineFightRepository.update(fight)
+      } else if (currentTime.getSeconds()+currentTime.getMinutes()*60 - fight.timer > 29 && fight.state == OnlineFightState.YourTurn) {
         fight.state = OnlineFightState.EnemyTurn
         fight.timer = currentTime.getSeconds()+currentTime.getMinutes()*60
         await this.onlineFightRepository.update(fight)

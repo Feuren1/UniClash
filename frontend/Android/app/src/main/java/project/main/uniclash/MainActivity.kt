@@ -40,6 +40,7 @@ import project.main.uniclash.dataManagers.UserDataManager
 import project.main.uniclash.viewmodels.ProfileViewModel
 
 val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = "UserData")
+//val Context.permissionsDataStore: DataStore<Preferences> by preferencesDataStore(name = "Permission")
 class MainActivity : ComponentActivity() {
 
 

@@ -10,9 +10,12 @@ import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import project.main.uniclash.BattleAction
 import project.main.uniclash.dataManagers.UserDataManager
 import project.main.uniclash.datatypes.CritterInFightInformation
+import project.main.uniclash.datatypes.CritterUsable
 import project.main.uniclash.datatypes.OnlineFightState
+import project.main.uniclash.retrofit.CritterService
 import project.main.uniclash.retrofit.OnlineFightService
 import project.main.uniclash.retrofit.enqueue
 import retrofit2.Call
@@ -29,7 +32,6 @@ sealed interface TitleUIState{
 sealed interface TimerUIState{
     data class HasEntries(
         val timer: Int,
-        val isLoading: Boolean,
     ): TimerUIState
 }
 
@@ -58,7 +60,21 @@ sealed interface EnemyCritterInFightUIState {
     ) : EnemyCritterInFightUIState
 }
 
-class OnlineFightViewModel (private val onlineFightService: OnlineFightService) : ViewModel() {
+sealed interface CritterUsableFightUIState {
+    data class HasEntries(
+        var critterUsable: CritterUsable?,
+        var loaded : Boolean
+    ) : CritterUsableFightUIState
+}
+
+sealed interface EnemyCritterUsableFightUIState {
+    data class HasEntries(
+        var critterUsable: CritterUsable?,
+        var loaded : Boolean
+    ) : EnemyCritterUsableFightUIState
+}
+
+class OnlineFightViewModel (private val onlineFightService: OnlineFightService, private val critterService: CritterService) : ViewModel() {
     private val userDataManager: UserDataManager by lazy {
         UserDataManager(Application()) }
 
@@ -66,6 +82,12 @@ class OnlineFightViewModel (private val onlineFightService: OnlineFightService) 
         FightConnectionIdUIState.HasEntries(
             fightConnectionId = 0,
             isLoading = false
+        )
+    )
+
+    val timer = MutableStateFlow(
+        TimerUIState.HasEntries(
+            timer = 0,
         )
     )
 
@@ -84,6 +106,20 @@ class OnlineFightViewModel (private val onlineFightService: OnlineFightService) 
     val enemyCritterInFight = MutableStateFlow(
         EnemyCritterInFightUIState.HasEntries(
             critterInFightInformation = null,
+        )
+    )
+
+    val critterUsable = MutableStateFlow(
+        CritterUsableFightUIState.HasEntries(
+            critterUsable = null,
+            loaded = false
+        )
+    )
+
+    val enemyCritterUsable = MutableStateFlow(
+        EnemyCritterUsableFightUIState.HasEntries(
+            critterUsable = null,
+            loaded = false
         )
     )
 
@@ -126,6 +162,20 @@ class OnlineFightViewModel (private val onlineFightService: OnlineFightService) 
                     if(stateRes.state == "waiting") currentState = OnlineFightState.WAITING
                     if(stateRes.state == "winner") currentState = OnlineFightState.WINNER
                     if(stateRes.state == "loser") currentState = OnlineFightState.LOSER
+
+                    if(stateRes.state == "yourTurn" && timer.value.timer < 1){
+                        timer.update {
+                            it.copy(
+                                timer = 27
+                            )
+                        }
+                    } else if(stateRes.state != "yourTurn") {
+                        timer.update {
+                            it.copy(
+                                timer = 0
+                            )
+                        }
+                    }
 
                     state.update {
                         it.copy(
@@ -174,7 +224,7 @@ class OnlineFightViewModel (private val onlineFightService: OnlineFightService) 
             viewModelScope.launch {
                 try {
                     val response =
-                        onlineFightService.getCritterInformation(userDataManager.getFightingCritterID()!!)
+                        onlineFightService.getCritterInformationFromEnemy(fightConnectionID.value.fightConnectionId, userDataManager.getStudentId()!!)
                             .enqueue()
                     Log.d(TAG, "loadCritter: $response")
                     if (response.isSuccessful) {
@@ -197,15 +247,94 @@ class OnlineFightViewModel (private val onlineFightService: OnlineFightService) 
         }
     }
 
+    @SuppressLint("MissingPermission")
+    fun getCritterUsable() {
+        if(!critterUsable.value.loaded){
+            viewModelScope.launch {
+                try {
+                    val response =
+                        critterService.getCritterUsable(userDataManager.getFightingCritterID()!!)
+                            .enqueue()
+                    Log.d(TAG, "loadCritter: $response")
+                    if (response.isSuccessful) {
+                        Log.d(TAG, "loadCritter: success")
+                        val critter = response.body()!!
+                        Log.d(TAG, "loadCritter: $critter")
+
+                        if (critter != null) {
+                            critterUsable.update {
+                                it.copy(
+                                    critterUsable = critter,
+                                    loaded = true
+                                )
+                            }
+                        }
+                    }
+                } catch (e: Exception) {
+                    e.printStackTrace()
+                }
+            }
+        }
+    }
+
+    @SuppressLint("MissingPermission")
+    fun getEnemyCritterUsable() {
+        if(!enemyCritterUsable.value.loaded && enemyCritterInFight.value.critterInFightInformation != null){
+            viewModelScope.launch {
+                try {
+                    val response =
+                        critterService.getCritterUsable(enemyCritterInFight.value.critterInFightInformation!!.critterId)
+                            .enqueue()
+                    Log.d(TAG, "loadCritter: $response")
+                    if (response.isSuccessful) {
+                        Log.d(TAG, "loadCritter: success")
+                        val critter = response.body()!!
+                        Log.d(TAG, "loadCritter: $critter")
+
+                        if (critter != null) {
+                            enemyCritterUsable.update {
+                                it.copy(
+                                    critterUsable = critter,
+                                    loaded = true
+                                )
+                            }
+                        }
+                    }
+                } catch (e: Exception) {
+                    e.printStackTrace()
+                }
+            }
+        }
+    }
+
+    @SuppressLint("MissingPermission")
+    fun makingDamage(amountOfDamage : Int, kindOfDamage : BattleAction) {
+            viewModelScope.launch {
+                try {
+                    val response =
+                        onlineFightService.makingDamage(fightConnectionID.value.fightConnectionId,userDataManager.getStudentId()!!,amountOfDamage, kindOfDamage.toString().uppercase())
+                            .enqueue()
+                    Log.d(TAG, "loadMakingDamage: $response")
+                    if (response.isSuccessful) {
+                        Log.d(TAG, "loadMakingDamage: success")
+                    }
+                } catch (e: Exception) {
+                    e.printStackTrace()
+                }
+            }
+    }
+
     companion object {
         fun provideFactory(
             onlineFightService: OnlineFightService,
+            critterService: CritterService,
         ): ViewModelProvider.Factory =
             object : ViewModelProvider.Factory {
                 @Suppress("UNCHECKED_CAST")
                 override fun <T : ViewModel> create(modelClass: Class<T>): T {
                     return OnlineFightViewModel(
                         onlineFightService,
+                        critterService
                     ) as T
                 }
             }

@@ -26,14 +26,17 @@ interface OnlineFightService {
     @PUT("/insertCritter/{fightConnectionId}/{studentId}/{critterId}")
     fun insertCritter(@Path("fightConnectionId")fightConnectionId : Int, @Path("studentId")studentId : Int, @Path("critterId")critterId : Int):Call<Unit>
 
-    @PUT("/makingDamage/{fightConnectionId}/{studentId}/{amountOfDamage}")
-    fun makingDamage(@Path("fightConnectionId")fightConnectionId : Int, @Path("studentId")studentId : Int, @Path("amountOfDamage")amountOfDamage : Int):Call<Unit>
+    @PUT("/makingDamage/{fightConnectionId}/{studentId}/{amountOfDamage}/{kindOfDamage}")
+    fun makingDamage(@Path("fightConnectionId")fightConnectionId : Int, @Path("studentId")studentId : Int, @Path("amountOfDamage")amountOfDamage : Int, @Path("amountOfDamage")kindOfDamage : String):Call<Unit>
 
     @GET("/fightInformationList/{studentId}")
     fun getFightInformationList(@Path("studentId")studentId : Int) : Call <List<OnlineFightInformation>>
 
     @GET("/getCritterInformation/{critterId}")
     fun getCritterInformation(@Path("critterId")critterId : Int) : Call <CritterInFightInformation>
+
+    @GET("/getCritterInformationFromEnemy/{fightConnectionId}/{studentId}")
+    fun getCritterInformationFromEnemy(@Path("fightConnectionId")fightConnectionId : Int, @Path("studentId")studentId : Int) : Call <CritterInFightInformation>
 
     @GET("/online-fights")
     fun getOnlineFights() : Call <List<OnlineFight>>

@@ -162,6 +162,7 @@ class OnlineFightListActivity : ComponentActivity() {
                 ) // Hintergrundfarbe und abgeflachte Ecken
                 .clickable {
                     if(isSelected.isSelected) {
+                        onlineFightListViewModel.insertCritter(onlineFight!!.fightConnectionId)
                         val intent = Intent(this, OnlineFightActivity::class.java)
                         val b = Bundle()
                         b.putInt("fightConnectionId", onlineFight!!.fightConnectionId)

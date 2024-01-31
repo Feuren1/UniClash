@@ -14,7 +14,7 @@ import retrofit2.http.Path
 interface OnlineFightService {
 
     @PUT("/checkIfFightCanStart/{fightConnectionId}")
-    fun checkIfFightCanStart(@Path("fightConnectionId")fightConnectionId : Int)
+    fun checkIfFightCanStart(@Path("fightConnectionId")fightConnectionId : Int):Call<Unit>
 
     @GET("/checkMyState/{fightConnectionId}/{studentId}")
     fun checkMyState(@Path("fightConnectionId")fightConnectionId : Int, @Path("studentId")studentId : Int): Call<String>
@@ -23,10 +23,10 @@ interface OnlineFightService {
     fun createFight(@Path("studentId")studentId : Int, @Path("enemyStudentId")enemyStudentId : Int):Call<Unit>
 
     @PUT("/insertCritter/{fightConnectionId}/{studentId}/{critterId}")
-    fun insertCritter(@Path("fightConnectionId")fightConnectionId : Int, @Path("critterId")critterId : Int)
+    fun insertCritter(@Path("fightConnectionId")fightConnectionId : Int, @Path("studentId")studentId : Int, @Path("critterId")critterId : Int):Call<Unit>
 
     @PUT("/makingDamage/{fightConnectionId}/{studentId}/{amountOfDamage}")
-    fun makingDamage(@Path("fightConnectionId")fightConnectionId : Int, @Path("studentId")studentId : Int, @Path("amountOfDamage")amountOfDamage : Int)
+    fun makingDamage(@Path("fightConnectionId")fightConnectionId : Int, @Path("studentId")studentId : Int, @Path("amountOfDamage")amountOfDamage : Int):Call<Unit>
 
     @GET("/fightInformationList/{studentId}")
     fun getFightInformationList(@Path("studentId")studentId : Int) : Call <List<OnlineFightInformation>>

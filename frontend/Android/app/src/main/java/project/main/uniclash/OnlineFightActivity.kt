@@ -63,25 +63,33 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImagePainter.State.Empty.painter
 import kotlinx.coroutines.delay
+import project.main.uniclash.datatypes.OnlineFightState
 import project.main.uniclash.ui.theme.UniClashTheme
+import project.main.uniclash.viewmodels.StateUIState
 import java.util.concurrent.TimeUnit
 
 class OnlineFightActivity : ComponentActivity() {
-    private val onlineBattleViewModel by viewModels<OnlineFightViewModel> {
+    private val onlineFightViewModel by viewModels<OnlineFightViewModel> {
         OnlineFightViewModel.provideFactory(OnlineFightService.getInstance(this))
     }
 
-    var fightConnectionId by mutableStateOf(0)
-    var clickedAttack by mutableStateOf("")
-    var timerValue by mutableStateOf(10)
+    private var state by mutableStateOf(OnlineFightState.WAITING)
+    private var fightConnectionId by mutableIntStateOf(0)
+    private var clickedAttack by mutableStateOf("")
+    private var timerValue by mutableIntStateOf(10)
     var exitRequest by mutableStateOf(false)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         val b = intent.extras
         fightConnectionId = b?.getInt("fightConnectionId")!!
+        onlineFightViewModel.fightConnectionID.value.fightConnectionId = fightConnectionId
 
         setContent {
+            val stateUIState by onlineFightViewModel.state.collectAsState()
+            state = stateUIState.state
+
+            ScreenRefresher(stateUIState)
             UniClashTheme {
                 Surface(
                     modifier = Modifier.fillMaxSize(),
@@ -192,11 +200,21 @@ class OnlineFightActivity : ComponentActivity() {
             }
         }
 
+    @Composable
+    fun ScreenRefresher(stateUIState: StateUIState.HasEntries){
+        LaunchedEffect(Unit) {
+            while (true) {
+                delay(3000)
+                if(state==OnlineFightState.WAITING)onlineFightViewModel.checkIfFightCanStart()
+                onlineFightViewModel.checkMyState()
+                state = stateUIState.state
+            }
+        }
+    }
+
 
     @Composable
     fun BattleInfoOverlay() {
-        var isExitRequested by remember { mutableStateOf(false) }
-
         LaunchedEffect(Unit) {
             // Startet den Timer und aktualisiert den Wert jede Sekunde
             while (true) {
@@ -228,7 +246,7 @@ class OnlineFightActivity : ComponentActivity() {
 
                 // Battle Information in der Mitte
                 Text(
-                    text = "Battle Information\nextended information :D",
+                    text = "Battle Information\n${state.getState()}",
                     style = MaterialTheme.typography.bodyLarge,
                     color = Color.White,
                     modifier = Modifier.align(alignment = TopCenter)

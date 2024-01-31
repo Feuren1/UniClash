@@ -77,6 +77,24 @@ class OnlineFightListViewModel(
             }
     }
 
+    @SuppressLint("MissingPermission")
+    fun insertCritter(fightConnectionId : Int) {
+        viewModelScope.launch {
+            try {
+                val response =
+                    onlineFightService.insertCritter(fightConnectionId,userDataManager.getStudentId()!!,userDataManager.getFightingCritterID()!!).enqueue()
+                Log.d(TAG, "loadInsertCritter: $response")
+                if (response.isSuccessful) {
+                    Log.d(TAG, "loadInsertCritter: success")
+                    val insertCritter = response.body()!!
+                    Log.d(TAG, "loadInsertCritter: $insertCritter")
+                }
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
+        }
+    }
+
     private fun checkSelectedCritter(){
         viewModelScope.launch {
             if (userDataManager.getFightingCritterID() != null && userDataManager.getFightingCritterID() != 0) {

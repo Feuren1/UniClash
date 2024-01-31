@@ -257,7 +257,7 @@ class WildEncounterActivity : ComponentActivity() {
         ) {
             Row(modifier = Modifier.padding(all = 8.dp)) {
 
-                var drawableImage = painterResource(id = R.drawable.icon)
+                var drawableImage = painterResource(id = R.drawable.chocolatewaffle)
                 val context = LocalContext.current
                 val name: String = wildEncounter!!.critterUsable!!.name!!.lowercase()
                 val resourceId = context.resources.getIdentifier(name, "drawable", context.packageName)

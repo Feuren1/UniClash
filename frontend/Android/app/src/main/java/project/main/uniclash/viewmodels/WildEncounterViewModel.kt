@@ -158,10 +158,10 @@ class WildEncounterViewModel(
         var chance = (usedItem.value.quantitiy*5).toDouble()
         viewModelScope.launch {
             val userLevel = userDataManager.getLevel()
-            var difference = userLevel?.minus(wildEncounterMarker!!.critterUsable!!.level)
+            var difference = userLevel?.minus(wildEncounterMarker!!.critterUsable!!.level*3.5)
             if (difference != null) {
                 if(difference > 0){
-                    difference = 0
+                    difference = 0.0
                 }
                 chance += (100 -difference*-1).toDouble()
             }

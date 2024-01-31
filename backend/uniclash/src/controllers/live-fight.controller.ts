@@ -55,7 +55,7 @@ export class LiveFightController {
       @param.path.number('fightConnectionId') fightConnectionId: number,
       @param.path.number('studentId') studentId: number,
       @param.path.number('amountOfDamage') amountOfDamage: number,
-      @param.path.number('kindOfDamage') kindOfDamage: string,
+      @param.path.string('kindOfDamage') kindOfDamage: string,
   ): Promise<void> {
     await this.onlineFightService.makingDamage(fightConnectionId,studentId, amountOfDamage, kindOfDamage);
   }

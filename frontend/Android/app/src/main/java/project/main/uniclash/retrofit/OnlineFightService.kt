@@ -17,7 +17,7 @@ interface OnlineFightService {
     fun checkIfFightCanStart(@Path("fightConnectionId")fightConnectionId : Int):Call<Unit>
 
     @GET("/checkMyState/{fightConnectionId}/{studentId}")
-    fun checkMyState(@Path("fightConnectionId")fightConnectionId : Int, @Path("studentId")studentId : Int): Call<String>
+    fun checkMyState(@Path("fightConnectionId")fightConnectionId : Int, @Path("studentId")studentId : Int): Call<Char>
 
     @PUT("/createFight/{studentId}/{enemyStudentId}")
     fun createFight(@Path("studentId")studentId : Int, @Path("enemyStudentId")enemyStudentId : Int):Call<Unit>

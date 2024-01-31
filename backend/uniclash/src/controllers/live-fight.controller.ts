@@ -91,8 +91,9 @@ export class LiveFightController {
   async checkMyState(
       @param.path.number('fightConnectionId') fightConnectionId: number,
       @param.path.number('studentId') studentId: number,
-  ): Promise<String> {
-    return this.onlineFightService.checkMyState(fightConnectionId,studentId);
+  ):  Promise<{ state: string }> {
+    const state = await this.onlineFightService.checkMyState(fightConnectionId, studentId);
+    return { state };
   }
 
   @get('/fightInformationList/{studentId}')

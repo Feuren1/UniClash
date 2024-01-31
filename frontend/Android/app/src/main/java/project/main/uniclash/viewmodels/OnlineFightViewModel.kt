@@ -88,21 +88,25 @@ class OnlineFightViewModel (private val onlineFightService: OnlineFightService) 
     @SuppressLint("MissingPermission")
     fun checkMyState() {
         viewModelScope.launch {
+            println("step1")
             try {
+                println("step2")
                 val response =
                     onlineFightService.checkMyState(fightConnectionID.value.fightConnectionId, userDataManager.getStudentId()!!).enqueue()
                 Log.d(TAG, "loadState: $response")
+                println("step3")
                 if (response.isSuccessful) {
+                    println("step4")
                     Log.d(TAG, "loadState: success")
                     val stateRes = response.body()!!
                     Log.d(TAG, "loadState: $stateRes")
 
                     var currentState = OnlineFightState.WAITING
-                    if(stateRes == "yourTurn") currentState = OnlineFightState.YOURTURN
-                    if(stateRes == "enemyTurn") currentState = OnlineFightState.ENEMYTURN
-                    if(stateRes == "waiting") currentState = OnlineFightState.WAITING
-                    if(stateRes == "winner") currentState = OnlineFightState.WINNER
-                    if(stateRes == "loser") currentState = OnlineFightState.LOSER
+                    if(stateRes.toString() == "yourTurn") currentState = OnlineFightState.YOURTURN
+                    if(stateRes.toString() == "enemyTurn") currentState = OnlineFightState.ENEMYTURN
+                    if(stateRes.toString() == "waiting") currentState = OnlineFightState.WAITING
+                    if(stateRes.toString() == "winner") currentState = OnlineFightState.WINNER
+                    if(stateRes.toString() == "loser") currentState = OnlineFightState.LOSER
 
                     state.update {
                         it.copy(

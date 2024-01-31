@@ -242,6 +242,7 @@ class OnlineFightActivity : ComponentActivity() {
             }
             if(winner) EndBox(true)
             if(loser) EndBox(false)
+            if(state == OnlineFightState.NOTFOUND)TimeOutBox()
             }
         }
 
@@ -318,7 +319,7 @@ class OnlineFightActivity : ComponentActivity() {
                 )
             }
             Spacer(modifier = Modifier.height(16.dp))
-            CritterBox(enemyCritter.name,enemyCritterUsable.level,enemyCritterUsable.hp,enemyCritter.health,myCritter.defence,myCritter.attack,Color.Red, state == OnlineFightState.ENEMYTURN)
+            CritterBox(enemyCritter.name,enemyCritterUsable.level,enemyCritterUsable.hp,enemyCritter.health,enemyCritter.defence,enemyCritter.attack,Color.Red, state == OnlineFightState.ENEMYTURN)
             Spacer(modifier = Modifier.height(16.dp))
             CritterBox(myCritter.name,critterUsable.level,critterUsable.hp,myCritter.health,myCritter.defence,myCritter.attack,Color.Green, state == OnlineFightState.YOURTURN)
         }
@@ -567,6 +568,66 @@ class OnlineFightActivity : ComponentActivity() {
             }
         }
     }
+    @Composable
+    fun TimeOutBox() {
+        Box(
+            modifier = Modifier.fillMaxSize()
+        ) {
+            Box(
+                modifier = Modifier
+                    .offset(y = 275.dp)
+                    .height(150.dp)
+                    .fillMaxWidth()
+                    .background(
+                        MaterialTheme.colorScheme.onPrimaryContainer,
+                        shape = RoundedCornerShape(8.dp),
+                    )
+                    .border(
+                        3.dp,
+                        MaterialTheme.colorScheme.primary,
+                        shape = RoundedCornerShape(8.dp),
+                    )
+                    .wrapContentSize(Alignment.Center),
+                contentAlignment = Alignment.Center,
+            ) {
+                // Foto auf der linken Seite
+                Row(
+                ) {
+                    Spacer(modifier = Modifier.height(8.dp))
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Image(
+                        painter = painterResource(R.drawable.warning),
+                        contentDescription = null,
+                        modifier = Modifier
+                            .size(80.dp)
+                            .clip(CircleShape)
+                            .background(MaterialTheme.colorScheme.surface)
+                            .padding(8.dp)
+                    )
+                    Spacer(modifier = Modifier.width(16.dp))
+                    Column(
+                    ) {
+                            Text(
+                                text = "Timeout",
+                                fontWeight = FontWeight.Bold,
+                                style = MaterialTheme.typography.bodyLarge,
+                                color = Color.White,
+                                modifier = Modifier.padding(bottom = 4.dp)
+                            )
+
+                            Text(
+                                text = "Your fight end because\nof time limitation.",
+                                style = MaterialTheme.typography.bodyLarge,
+                                color = Color.White,
+                                modifier = Modifier.padding(bottom = 4.dp)
+                            )
+                        }
+                        Spacer(modifier = Modifier.width(8.dp))
+                        Spacer(modifier = Modifier.height(16.dp))
+                        Spacer(modifier = Modifier.height(8.dp))
+            }}
+        }
+        }
     }
 
 enum class BattleAction {

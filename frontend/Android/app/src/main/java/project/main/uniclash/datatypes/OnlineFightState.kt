@@ -5,7 +5,8 @@ enum class OnlineFightState(private var state : String) {
     ENEMYTURN("enemyTurn"),
     WAITING("waiting"),
     WINNER("winner"),
-    LOSER("loser");
+    LOSER("loser"),
+    NOTFOUND("404");
 
     fun getState():String{
         return state

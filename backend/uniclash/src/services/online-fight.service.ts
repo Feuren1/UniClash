@@ -119,9 +119,10 @@ export class OnlineFightService {
     //make damage
     if(allowToMakeDamage && critterIdFromEnemy != 0 && kindOfDamage == "DAMAGE_DEALER") {
       const enemyCritter: CritterInFight = await this.critterInFightRepository.findById(critterIdFromEnemy)
-      const myCritter = await  this.critterStatsService.createCritterUsable(critterIdFromMe)
-      const damage = (((((2*myCritter.level)/5)+2)*amountOfDamage*myCritter.atk/enemyCritter.defence)/50)+2
-      enemyCritter.health -= amountOfDamage
+      const myCritterForLevel = await  this.critterStatsService.createCritterUsable(critterIdFromMe)
+      const myCritter = await  this.critterInFightRepository.findById(critterIdFromMe)
+      const damage = (((((2*myCritterForLevel.level)/5)+2)*amountOfDamage*myCritter.attack/enemyCritter.defence)/50)+2
+      enemyCritter.health -= damage
       await this.critterInFightRepository.update(enemyCritter)
     }
     else if(allowToMakeDamage && critterIdFromMe != 0 && kindOfDamage == "DEF_BUFF"){

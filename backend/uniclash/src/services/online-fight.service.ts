@@ -14,6 +14,7 @@ import {LevelCalcStudentService} from "./levelCalc-student.service";
 import {CritterStatsService} from "./critter-stats.service";
 import {FightInformation} from "../models/fight-information.model";
 import {CritterInFightInformation} from "../models/critter-in-fight-information.model";
+import {LevelCalcCritterService} from "./levelCalc-critter.service";
 
 @injectable()
 export class OnlineFightService {
@@ -24,6 +25,7 @@ export class OnlineFightService {
     @repository(CritterInFightRepository) protected critterInFightRepository : CritterInFightRepository,
     @repository(StudentRepository) protected studentRepository: StudentRepository,
     @service(LevelCalcStudentService) protected levelCalcStudentService : LevelCalcStudentService,
+    @service(LevelCalcCritterService) protected levelCalcCritterService : LevelCalcCritterService,
     @service(CritterStatsService) protected critterStatsService : CritterStatsService,
     @repository(UserRepository) protected userRepository: UserRepository,
   ) { }
@@ -174,6 +176,7 @@ export class OnlineFightService {
             fight.state = OnlineFightState.Winner
             await this.onlineFightRepository.update(fight)
             await this.levelCalcStudentService.increaseStudentCredits(fight.studentId, 5, 200)
+            await this.levelCalcCritterService.increaseCritterExp(fight.critterId,200)
           }
         }
       }

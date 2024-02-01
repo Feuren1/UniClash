@@ -48,6 +48,11 @@ export class CritterUsable extends Model {
   })
   critterTemplateId: number;
 
+  @property({
+    type: 'number',
+  })
+  expToNextLevel: number;
+
   @property.array(Attack)
   attacks: Attack[]; // Store Attack model instances directly
 

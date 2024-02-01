@@ -50,6 +50,9 @@ interface CritterService {
     @GET("/critter-templates")
     fun getCrittersTemplates(): Call<List<CritterTemplate>>
 
+    @GET("/critter-templates/{id}")
+    fun getCrittersTemplate(id : Int): Call<CritterTemplate>
+
     @PATCH("/arenas/{id}")
     fun patchArenaLeader(@Path("id") id: Int, @Body arenaLeaderPatch: ArenaLeaderPatch): Call<Arena>
 

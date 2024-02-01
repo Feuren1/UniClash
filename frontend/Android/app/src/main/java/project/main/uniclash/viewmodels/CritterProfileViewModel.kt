@@ -13,6 +13,7 @@ import project.main.uniclash.retrofit.InventoryService
 import project.main.uniclash.retrofit.enqueue
 import project.main.uniclash.dataManagers.CritterListDataManager
 import project.main.uniclash.dataManagers.UserDataManager
+import project.main.uniclash.datatypes.CritterTemplate
 
 
 sealed interface DelCritterUIState {
@@ -25,6 +26,13 @@ sealed interface DelCritterUIState {
 sealed interface UseRedbullUIState {
     data class HasEntries(
         val used: Boolean,
+        val isLoading: Boolean,
+    ) : DelCritterUIState
+}
+
+sealed interface CritterTemplateUIState {
+    data class HasEntries(
+        val critterTemplate: CritterTemplate?,
         val isLoading: Boolean,
     ) : DelCritterUIState
 }
@@ -62,6 +70,13 @@ class CritterProfileViewModel(
         )
     )
 
+    val critterTemplate = MutableStateFlow(
+        CritterTemplateUIState.HasEntries(
+             critterTemplate = CritterTemplate(id = 1, name = "", baseAttack = 1, baseDefence = 1, baseHealth = 1, baseSpeed = 1, evolesAt = 0, evolvesIntoTemplateId = 0),
+            isLoading = false,
+        )
+    )
+
     val redbullUsage = MutableStateFlow(
         UseRedbullUIState.HasEntries(
             used = false,
@@ -82,6 +97,26 @@ class CritterProfileViewModel(
                         }
                     }
                 }
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
+        }
+    }
+
+    fun loadCritterTemplate(templateId: Int) {
+        viewModelScope.launch {
+            critterUsable.update { it.copy(isLoading = true) }
+            try {
+                val response = critterService.getCrittersTemplate(templateId).enqueue()
+                Log.d(TAG, "loadCritterTemplate: $response")
+                if (response.isSuccessful) {
+                    response.body()?.let {
+                        critterTemplate.update { state ->
+                            state.copy(critterTemplate = it, isLoading = false)
+                        }
+                    }
+                }
+                println(critterTemplate.value.critterTemplate.toString())
             } catch (e: Exception) {
                 e.printStackTrace()
             }

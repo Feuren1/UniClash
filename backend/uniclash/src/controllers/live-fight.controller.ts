@@ -130,4 +130,17 @@ export class LiveFightController {
   ): Promise<CritterInFightInformation> {
     return this.onlineFightService.getCritterInformationFromEnemy(fightConnectionId,studentId);
   }
+
+  @put('/sendMessageViaPushNotification/{fightConnectionId}/{studentId}/{message}')
+  @response(200, {
+    description: 'insert a critter for fighting',
+    content: {'application/json': {schema: getModelSchemaRef(CritterInFight)}},
+  })
+  async sendMessageViaPushNotification(
+      @param.path.number('fightConnectionId') fightConnectionId: number,
+      @param.path.number('studentId') studentId: number,
+      @param.path.string('message') message: string,
+  ): Promise<void> {
+    await this.onlineFightService.sendMessageViaPushNotification(fightConnectionId, studentId, message);
+  }
 }

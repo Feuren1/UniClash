@@ -2,6 +2,7 @@ package project.main.uniclash
 
 import android.annotation.SuppressLint
 import android.content.Intent
+import android.media.MediaPlayer
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -113,12 +114,17 @@ class OnlineFightActivity : ComponentActivity() {
     private var winner by mutableStateOf(false)
     private var loser by mutableStateOf(false)
     var exitRequest by mutableStateOf(false)
+    private var mediaPlayer: MediaPlayer? = null
+    private var mediaPlayerStop = false
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         val b = intent.extras
         fightConnectionId = b?.getInt("fightConnectionId")!!
         onlineFightViewModel.fightConnectionID.value.fightConnectionId = fightConnectionId
+
+        mediaPlayer = MediaPlayer.create(this, R.raw.battlesoundtrack1)
+        mediaPlayer?.isLooping = true
 
         setContent {
             val stateUIState by onlineFightViewModel.state.collectAsState()
@@ -145,6 +151,7 @@ class OnlineFightActivity : ComponentActivity() {
 
             val timerUIState by onlineFightViewModel.timer.collectAsState()
             timerValue = timerUIState.timer
+            if(state != OnlineFightState.WAITING && !mediaPlayerStop)mediaPlayer?.start()
 
             ScreenRefresher()
             UniClashTheme {
@@ -235,17 +242,24 @@ class OnlineFightActivity : ComponentActivity() {
                     }
                 }
             if (exitRequest) {
+                onDestroy()
                 val intent = Intent(this, OnlineFightListActivity::class.java)
                 this.startActivity(intent)
                 finish()
                 exitRequest = false
             }
+
             if(winner) EndBox(true)
             if(loser) EndBox(false)
             if(state == OnlineFightState.NOTFOUND)TimeOutBox()
             }
         }
 
+    override fun onDestroy() {
+        mediaPlayerStop = true
+        mediaPlayer?.release()
+        super.onDestroy()
+    }
     @Composable
     fun ScreenRefresher(){
         LaunchedEffect(Unit) {

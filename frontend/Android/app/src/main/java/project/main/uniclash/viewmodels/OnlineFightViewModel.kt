@@ -325,6 +325,23 @@ class OnlineFightViewModel (private val onlineFightService: OnlineFightService, 
             }
     }
 
+    @SuppressLint("MissingPermission")
+    fun sendMessageViaPushNotification(message : String) {
+        viewModelScope.launch {
+            try {
+                val response =
+                    onlineFightService.sendMessageViaPushNotification(fightConnectionID.value.fightConnectionId,userDataManager.getStudentId()!!,message)
+                        .enqueue()
+                Log.d(TAG, "loadSendMessageViaPushNotification: $response")
+                if (response.isSuccessful) {
+                    Log.d(TAG, "loadSendMessageViaPushNotification: success")
+                }
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
+        }
+    }
+
     companion object {
         fun provideFactory(
             onlineFightService: OnlineFightService,

@@ -99,6 +99,8 @@ class OnlineFightActivity : ComponentActivity() {
         spd = 0,
     )
 
+    private val messages: List<String> = listOf("Good game!", "Bad game!", "I hope your Critter has health\ninsurance because it's going to need it!", "Your Critter looks like it\nlost to a mirror in a battle yesterday!", "My Critter are like math geniuses,\nthey add up your defeats!", "Get ready to be defeated\nby my coolness!")
+
     private var state by mutableStateOf(OnlineFightState.WAITING)
     private var myCritter by mutableStateOf(sampleCritter)
     private var critterUsable by mutableStateOf(sampleCritterUsable)
@@ -194,7 +196,6 @@ class OnlineFightActivity : ComponentActivity() {
                                 color = Color.White,
                             )
                         }
-                            Spacer(modifier = Modifier.height(64.dp))
                             Box(
                                 modifier = Modifier
                                     .fillMaxWidth()
@@ -239,6 +240,46 @@ class OnlineFightActivity : ComponentActivity() {
                             }
                         }
                         }
+
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .fillMaxHeight(), // Füllen Sie den gesamten Bildschirm aus
+                        contentAlignment = Alignment.BottomCenter // Zentrieren Sie den Inhalt in der Box
+                    ) {
+                        Box(
+                            modifier = Modifier.fillMaxWidth()
+                                .offset(y = (-150).dp),
+                            contentAlignment = Alignment.BottomCenter // Zentrieren Sie den Inhalt der inneren Box
+                        ) {
+                            Text(
+                                text = "Messages",
+                                style = MaterialTheme.typography.bodyLarge
+                                    .copy(
+                                        fontWeight = FontWeight.Bold,
+                                        fontSize = 24.sp
+                                    ),
+                                color = Color.White,
+                            )
+                        }
+                        Spacer(modifier = Modifier.height(64.dp))
+                        Box(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .offset(y = (-45).dp)
+                                .horizontalScroll(rememberScrollState()),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Row(
+                            ) {
+                                    Spacer(modifier = Modifier.width(8.dp))
+                                    for(message in messages) {
+                                        MessageBox(message)
+                                        Spacer(modifier = Modifier.width(8.dp))
+                                    }
+                                }
+                        }
+                    }
                     }
                 }
             if (exitRequest) {
@@ -555,7 +596,7 @@ class OnlineFightActivity : ComponentActivity() {
                             )
 
                             Text(
-                                text = "you won!\nYou received 5 credits and 200 ep.",
+                                text = "you won!\nYou received 5 credits and\n200 ep for you and your critter.",
                                 style = MaterialTheme.typography.bodyMedium,
                                 color = Color.White
                             )
@@ -642,7 +683,42 @@ class OnlineFightActivity : ComponentActivity() {
             }}
         }
         }
+
+    @SuppressLint("UnrememberedMutableState")
+    @Composable
+    fun MessageBox(message : String){
+        Box(
+            modifier = Modifier
+                .clickable {
+                    onlineFightViewModel.sendMessageViaPushNotification(message)
+                }
+                .height(75.dp)
+                .background(
+                    MaterialTheme.colorScheme.onPrimaryContainer,
+                    shape = RoundedCornerShape(8.dp)
+                )
+                .padding(16.dp)
+        ) {
+            // Foto auf der linken Seite
+            Row(
+            ) {
+                // Text auf der rechten Seite
+                Column(
+                    modifier = Modifier
+                        .padding(start = 10.dp)
+                ) {
+                    Text(
+                        text = "$message",
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = Color.White
+                    )
+                }
+            }
+        }
     }
+    }
+
+
 
 enum class BattleAction {
     DAMAGE_DEALER,

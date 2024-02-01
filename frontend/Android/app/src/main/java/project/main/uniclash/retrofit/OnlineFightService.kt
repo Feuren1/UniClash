@@ -29,6 +29,8 @@ interface OnlineFightService {
     @PUT("/makingDamage/{fightConnectionId}/{studentId}/{amountOfDamage}/{kindOfDamage}")
     fun makingDamage(@Path("fightConnectionId")fightConnectionId : Int, @Path("studentId")studentId : Int, @Path("amountOfDamage")amountOfDamage : Int, @Path("kindOfDamage")kindOfDamage : String):Call<Unit>
 
+    @PUT("/sendMessageViaPushNotification/{fightConnectionId}/{studentId}/{message}")
+    fun sendMessageViaPushNotification(@Path("fightConnectionId")fightConnectionId : Int, @Path("studentId")studentId : Int, @Path("message")message : String):Call<Unit>
     @GET("/fightInformationList/{studentId}")
     fun getFightInformationList(@Path("studentId")studentId : Int) : Call <List<OnlineFightInformation>>
 

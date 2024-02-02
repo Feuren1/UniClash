@@ -32,7 +32,7 @@ export class ArenaLogicService {
     let canFind = false
 
     for(const critter of critters){
-      if(critter.id == arena.critterId || critter.id == 0) canFind = true
+      if(critter.id == arena.critterId || arena.critterId == 0) canFind = true
     }
     if(!canFind){
       arena.critterId = 194

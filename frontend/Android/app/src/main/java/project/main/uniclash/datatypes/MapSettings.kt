@@ -52,6 +52,7 @@ enum class SelectedMarker(private var marker:MarkerData?) {
 
 enum class Locations(private var location : GeoPoint){
     USERLOCATION(GeoPoint(0.0,0.0)),
+    //USERLOCATION(GeoPoint(51.4959177,6.2942797)),
     //saves the userLocation from where the critters were spawn
     //this will be used to calculated the distance between userlocation and the point from where the ritter spawns
     INTERSECTION(GeoPoint(0.0,0.0));

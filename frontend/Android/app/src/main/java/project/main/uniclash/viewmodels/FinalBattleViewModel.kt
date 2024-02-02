@@ -141,11 +141,6 @@ class FinalBattleViewModel(
         val cpuCritter = cpuCritter.value.cpuCritter
         cpuCritter?.attacks?.random()
         val selectedAttack = cpuCritter?.attacks?.random()
-<<<<<<< HEAD
-=======
-
-            viewModelScope.launch() {
->>>>>>> parent of 6f7d23c (Updated Login register and profile plus tests)
                 cpuInput.update { currentState ->
                     currentState.copy(
                         isCpuAttackSelected = true,

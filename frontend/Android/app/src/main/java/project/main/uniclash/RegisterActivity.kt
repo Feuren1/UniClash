@@ -16,6 +16,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Email
+import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -190,21 +191,10 @@ class RegisterActivity : ComponentActivity() {
                     keyboardType = KeyboardType.Password,
                     imeAction = ImeAction.Done
                 ),
-<<<<<<< HEAD
                 leadingIcon = {
                     Icon(Icons.Filled.Lock, contentDescription = "Password")
                 },
                 visualTransformation = PasswordVisualTransformation(),
-=======
-                visualTransformation = if (passwordVisibility) {
-                    PasswordVisualTransformation()
-                } else {
-                    VisualTransformation.None
-                },
-                trailingIcon = {
-
-                },
->>>>>>> parent of 6f7d23c (Updated Login register and profile plus tests)
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(8.dp),
@@ -218,21 +208,7 @@ class RegisterActivity : ComponentActivity() {
 
             Button(
                 onClick = {
-<<<<<<< HEAD
                     registerViewModel.signup(email, password, username)
-=======
-                    registerViewModel.signup(email, password, username) { callback ->
-                        // Handle the registration result here
-                        if (callback.success) {
-                            // Registration successful
-                            // Optionally, you can navigate to the next screen or show a success message
-
-                        } else {
-                            // Registration failed
-                            // Optionally, you can show an error message
-                        }
-                    }
->>>>>>> parent of 6f7d23c (Updated Login register and profile plus tests)
                 },
                 modifier = Modifier
                     .fillMaxWidth()

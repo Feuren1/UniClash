@@ -132,24 +132,37 @@ export class OnlineFightService {
      }
     }
 
+    const enemyCritter: CritterInFight = await this.critterInFightRepository.findById(critterIdFromEnemy)
+    const myCritterForLevel = await  this.critterStatsService.createCritterUsable(critterIdFromMe)
+    const myCritter = await  this.critterInFightRepository.findById(critterIdFromMe)
+    const damage : number = (((((2*myCritterForLevel.level)/5)+2)*amountOfDamage*myCritter.attack/enemyCritter.defence)/50)+2
+
     //make damage
     if(allowToMakeDamage && critterIdFromEnemy != 0 && kindOfDamage == "DAMAGE_DEALER") {
-      const enemyCritter: CritterInFight = await this.critterInFightRepository.findById(critterIdFromEnemy)
-      const myCritterForLevel = await  this.critterStatsService.createCritterUsable(critterIdFromMe)
-      const myCritter = await  this.critterInFightRepository.findById(critterIdFromMe)
-      const damage : number = (((((2*myCritterForLevel.level)/5)+2)*amountOfDamage*myCritter.attack/enemyCritter.defence)/50)+2
       // @ts-ignore
       enemyCritter.health -= damage.toFixed(0)
       await this.critterInFightRepository.update(enemyCritter)
     }
     else if(allowToMakeDamage && critterIdFromMe != 0 && kindOfDamage == "DEF_BUFF"){
       const critter: CritterInFight = await this.critterInFightRepository.findById(critterIdFromMe)
-      critter.defence += amountOfDamage
+      critter.defence += parseInt(damage.toFixed(0))
       await this.critterInFightRepository.update(critter)
     }
     else if(allowToMakeDamage && critterIdFromMe != 0 && kindOfDamage == "ATK_BUFF"){
       const critter: CritterInFight = await this.critterInFightRepository.findById(critterIdFromMe)
-      critter.attack += amountOfDamage
+      critter.attack += parseInt(damage.toFixed(0))
+      await this.critterInFightRepository.update(critter)
+    }
+    else if(allowToMakeDamage && critterIdFromMe != 0 && kindOfDamage == "DEF_DEBUFF"){
+      const critter: CritterInFight = await this.critterInFightRepository.findById(critterIdFromEnemy)
+      critter.defence -= parseInt(damage.toFixed(0))
+      if(critter.defence<10) critter.defence = 10
+      await this.critterInFightRepository.update(critter)
+    }
+    else if(allowToMakeDamage && critterIdFromMe != 0 && kindOfDamage == "ATK_DEBUFF"){
+      const critter: CritterInFight = await this.critterInFightRepository.findById(critterIdFromEnemy)
+      critter.attack -= parseInt(damage.toFixed(0))
+      if(critter.attack<10) critter.attack = 10
       await this.critterInFightRepository.update(critter)
     }
 

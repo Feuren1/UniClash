@@ -30,6 +30,12 @@ sealed interface UseRedbullUIState {
     ) : DelCritterUIState
 }
 
+sealed interface IsSelectedCritterUIState {
+    data class HasEntries(
+        val isSelected: Boolean,
+    ) : IsSelectedCritterUIState
+}
+
 sealed interface CritterTemplateUIState {
     data class HasEntries(
         val critterTemplate: CritterTemplate?,
@@ -77,12 +83,33 @@ class CritterProfileViewModel(
         )
     )
 
+    val critterTemplateEvo = MutableStateFlow(
+        CritterTemplateUIState.HasEntries(
+            critterTemplate = CritterTemplate(id = 1, name = "", baseAttack = 1, baseDefence = 1, baseHealth = 1, baseSpeed = 1, evolesAt = 0, evolvesIntoTemplateId = 0),
+            isLoading = false,
+        )
+    )
+
     val redbullUsage = MutableStateFlow(
         UseRedbullUIState.HasEntries(
             used = false,
             isLoading = false,
         )
     )
+
+    val isSelected = MutableStateFlow(
+        IsSelectedCritterUIState.HasEntries(
+            isSelected = false
+        )
+    )
+
+    fun checkIfCritterIsSelected(critterId : Int){
+        viewModelScope.launch {
+            if (userDataManager.getFightingCritterID() != null && userDataManager.getFightingCritterID() == critterId){
+                isSelected.update { it.copy(isSelected = true) }
+            }
+        }
+    }
 
     fun loadCritterUsable(id: Int) {
         viewModelScope.launch {
@@ -107,11 +134,33 @@ class CritterProfileViewModel(
         viewModelScope.launch {
             critterUsable.update { it.copy(isLoading = true) }
             try {
+                println("step1")
                 val response = critterService.getCrittersTemplate(templateId).enqueue()
+                println("step2")
                 Log.d(TAG, "loadCritterTemplate: $response")
                 if (response.isSuccessful) {
                     response.body()?.let {
                         critterTemplate.update { state ->
+                            state.copy(critterTemplate = it, isLoading = false)
+                        }
+                    }
+                }
+                println(critterTemplate.value.critterTemplate.toString())
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
+        }
+    }
+
+    fun loadCritterTemplateEvo(templateId: Int) {
+        viewModelScope.launch {
+            critterUsable.update { it.copy(isLoading = true) }
+            try {
+                val response = critterService.getCrittersTemplate(templateId).enqueue()
+                Log.d(TAG, "loadCritterTemplate: $response")
+                if (response.isSuccessful) {
+                    response.body()?.let {
+                        critterTemplateEvo.update { state ->
                             state.copy(critterTemplate = it, isLoading = false)
                         }
                     }
@@ -153,6 +202,7 @@ class CritterProfileViewModel(
     fun storeFightingCritter(){
         viewModelScope.launch {
             userDataManager.storeFightingCritterID(critter.value.critter!!.id)
+            checkIfCritterIsSelected(critter.value.critter!!.id)
         }
     }
     fun loadCritter(id: Int) {
@@ -195,17 +245,18 @@ class CritterProfileViewModel(
             } catch (e: Exception) {
                 e.printStackTrace()
             }
+            loadCritterUsable(id)
         }
     }
 
-    fun useRedBull(critterid: Int) {
+    fun useRedBull(critterId: Int) {
         viewModelScope.launch {
 
             critterListDataManager.clearCritterList() //to refresh critterList
 
             redbullUsage.update { it.copy(isLoading = true) }
             try {
-                val response = inventoryService.useRedBull(critterid).enqueue()
+                val response = inventoryService.useRedBull(critterId).enqueue()
                 if (response.isSuccessful) {
                     println(response.body())
                     response.body()?.let {
@@ -217,6 +268,7 @@ class CritterProfileViewModel(
             } catch (e: Exception) {
                 e.printStackTrace()
             }
+            loadCritterUsable(critterId)
         }
     }
     companion object {

@@ -97,6 +97,7 @@ class OnlineFightActivity : ComponentActivity() {
         hp = 100,
         level = 0,
         spd = 0,
+        expToNextLevel = 0,
     )
 
     private val messages: List<String> = listOf("Good game!", "Bad game!", "I hope your Critter has health\ninsurance because it's going to need it!", "Your Critter looks like it\nlost to a mirror in a battle yesterday!", "My Critter are like math geniuses,\nthey add up your defeats!", "Get ready to be defeated\nby my coolness!")
@@ -211,6 +212,8 @@ class OnlineFightActivity : ComponentActivity() {
                                             var type = BattleAction.DAMAGE_DEALER
                                             if(attack.attackType.toString().uppercase() == "DEF_BUFF") type = BattleAction.DEF_BUFF
                                             if(attack.attackType.toString().uppercase() == "ATK_BUFF") type = BattleAction.ATK_BUFF
+                                            if(attack.attackType.toString().uppercase() == "ATK_DEBUFF") type = BattleAction.ATK_DEBUFF
+                                            if(attack.attackType.toString().uppercase() == "DEF_DEBUFF") type = BattleAction.DEF_DEBUFF
                                             AttackBox(
                                                 attackName = attack.name,
                                                 value = attack.strength,
@@ -723,6 +726,8 @@ class OnlineFightActivity : ComponentActivity() {
 enum class BattleAction {
     DAMAGE_DEALER,
     DEF_BUFF,
-    ATK_BUFF
+    DEF_DEBUFF,
+    ATK_BUFF,
+    ATK_DEBUFF
 }
 

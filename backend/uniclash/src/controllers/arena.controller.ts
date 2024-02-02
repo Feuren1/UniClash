@@ -21,6 +21,8 @@ import {Arena} from '../models';
 import {ArenaRepository, StudentRepository, UserRepository} from '../repositories';
 import {authenticate} from "@loopback/authentication";
 import { NotificationService } from '../services/NotificationService';
+import {service} from "@loopback/core";
+import {ArenaLogicService} from "../services/arena-logic.service";
 
 export class ArenaController {
   constructor(
@@ -29,7 +31,9 @@ export class ArenaController {
     @repository(ArenaRepository)
     public arenaRepository : ArenaRepository,
     @repository (StudentRepository)
-    public studentRepository: StudentRepository
+    public studentRepository: StudentRepository,
+    @service(ArenaLogicService)
+  public arenaLogicService : ArenaLogicService,
   ) {}
 
   @post('/arenas')
@@ -119,6 +123,8 @@ export class ArenaController {
     @param.path.number('id') id: number,
     @param.filter(Arena, {exclude: 'where'}) filter?: FilterExcludingWhere<Arena>
   ): Promise<Arena> {
+    await this.arenaLogicService.checkCritterInArenaIsAvailable(id)
+    await this.arenaLogicService.checkIfArenaOwnerHasTimeout(id)
     return this.arenaRepository.findById(id, filter);
   }
 
@@ -140,6 +146,7 @@ export class ArenaController {
   ): Promise<void> {
     const currentArena = this.arenaRepository.findById(id)
     if(arena.studentId != (await currentArena).studentId){
+      await this.arenaLogicService.setInvasionTime(id)
     const user = await this.studentRepository.user((await currentArena).studentId)
     const sendPushNotificationService = new NotificationService();
     sendPushNotificationService.sendPushNotification(user.fcmtoken,"ArenaUpdate","Your arena has been defeated!!!")

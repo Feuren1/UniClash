@@ -10,6 +10,7 @@ data class CritterUsable(
     val attacks: List<Attack>,
     val critterId: Int,
     val critterTemplateId: Int,
+    val expToNextLevel : Int
 ){
     fun reduceHealth(damage: Int) {
     this.hp.minus(damage)
@@ -69,7 +70,8 @@ data class CritterUsable(
                 spd,
                 attacks,
                 critterId,
-                critterTemplateId
+                critterTemplateId,
+                0
             )
         }
     }

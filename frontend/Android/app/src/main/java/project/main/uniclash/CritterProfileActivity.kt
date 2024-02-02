@@ -26,6 +26,7 @@ import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
@@ -63,6 +64,9 @@ import project.main.uniclash.viewmodels.UniClashViewModel
 
 class CritterProfileActivity : ComponentActivity() {
     private var exitRequest by mutableStateOf(false)
+    private var lvlWindow by mutableStateOf(false)
+    private var delWindow by mutableStateOf(false)
+    private var evoWindow by mutableStateOf(false)
     val critterProfileViewModel: CritterProfileViewModel by viewModels(factoryProducer = {
         CritterProfileViewModel.provideFactory(CritterService.getInstance(this), InventoryService.getInstance(this))
     })
@@ -84,6 +88,8 @@ class CritterProfileActivity : ComponentActivity() {
                 ) {
                     val critterUsableUIState by critterProfileViewModel.critterUsable.collectAsState()
                     val critterUIState by critterProfileViewModel.critter.collectAsState()
+                    val critterTemplateUIState by critterProfileViewModel.critterTemplate.collectAsState()
+                    val critterEvoTemplateUIState by critterProfileViewModel.critterTemplateEvo.collectAsState()
                     val critterUsable = critterUsableUIState.critterUsable
                     val critter = critterUIState.critter
                     Box(
@@ -114,13 +120,18 @@ class CritterProfileActivity : ComponentActivity() {
                         }
                         Box {
                             if (critterUsable != null) {
-                                CritterProfile(critterProfileViewModel, LocalContext.current)
+                                critterProfileViewModel.loadCritterTemplate(critterUsable.critterTemplateId)
+                                if(critterTemplateUIState.critterTemplate!!.name.isNotEmpty() && critterTemplateUIState.critterTemplate!!.evolesAt > 0) critterProfileViewModel.loadCritterTemplateEvo(critterTemplateUIState.critterTemplate!!.evolvesIntoTemplateId)
+                                if((critterTemplateUIState.critterTemplate!!.name.isNotEmpty() && critterTemplateUIState.critterTemplate!!.evolesAt == 0)||critterTemplateUIState.critterTemplate!!.name.isNotEmpty()  && critterTemplateUIState.critterTemplate!!.evolesAt > 0 && critterEvoTemplateUIState.critterTemplate != null) CritterProfile(critterProfileViewModel, LocalContext.current)
                             }
                         }
                     }
                 }
 
                 }
+                if(lvlWindow) EpWindow(critterProfileViewModel)
+                if(delWindow) DeletionWindow(critterProfileViewModel)
+                if(evoWindow) EvolutionWindow(critterProfileViewModel, LocalContext.current)
                 if (exitRequest) {
                     val intent = Intent(this, CritterListActivity::class.java)
                     this.startActivity(intent)
@@ -130,14 +141,276 @@ class CritterProfileActivity : ComponentActivity() {
             }
         }
     }
-}
+
+    @Composable
+    fun EpWindow(critterProfileViewModel: CritterProfileViewModel = viewModel()) {
+        val critterUsableUIState by critterProfileViewModel.critterUsable.collectAsState()
+        val critterUIState by critterProfileViewModel.critter.collectAsState()
+        Box(
+            modifier = Modifier.fillMaxSize()
+        ) {
+            Box(
+                modifier = Modifier
+                    .offset(y = 275.dp)
+                    .height(250.dp)
+                    .fillMaxWidth()
+                    .background(
+                        MaterialTheme.colorScheme.onPrimaryContainer,
+                        shape = RoundedCornerShape(8.dp),
+                    )
+                    .border(
+                        3.dp,
+                        MaterialTheme.colorScheme.primary,
+                        shape = RoundedCornerShape(8.dp),
+                    )
+                    .wrapContentSize(Alignment.Center),
+                contentAlignment = Alignment.Center,
+            ) {
+                // Foto auf der linken Seite
+                Row(
+                ) {
+                    Spacer(modifier = Modifier.height(8.dp))
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Image(
+                        painter = painterResource(R.drawable.redbull),
+                        contentDescription = null,
+                        modifier = Modifier
+                            .size(80.dp)
+                            .clip(CircleShape)
+                            .background(MaterialTheme.colorScheme.surface)
+                            .padding(8.dp)
+                    )
+                    Spacer(modifier = Modifier.width(16.dp))
+                    Column(
+                    ) {
+                        Text(
+                            text = "Level - Exp",
+                            fontWeight = FontWeight.Bold,
+                            style = MaterialTheme.typography.bodyLarge,
+                            color = Color.White,
+                            modifier = Modifier.padding(bottom = 4.dp)
+                        )
+
+                        Text(
+                            text = "Level: ${critterUsableUIState.critterUsable!!.level}\nEP: ${critterUsableUIState.critterUsable!!.expToNextLevel} / ${Math.floor(50 * Math.pow((1.025), (critterUsableUIState.critterUsable!!.level + 1).toDouble()))}",
+                            style = MaterialTheme.typography.bodyLarge,
+                            color = Color.White,
+                            modifier = Modifier.padding(bottom = 4.dp)
+                        )
+                        Button(
+                            onClick = {
+                                critterProfileViewModel.useRedBull(critterUsableUIState.critterUsable!!.critterId)
+                            },
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(8.dp),
+                        ) {
+                            Text(text = "Use Redull (+100EP)")
+                        }
+                        Button(
+                            onClick = { lvlWindow = false },
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(8.dp),
+                            colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.error),
+                        ) {
+                            Text(text = "Close")
+                        }
+                    }
+                }}
+        }
+    }
+
+    @Composable
+    fun DeletionWindow(critterProfileViewModel: CritterProfileViewModel = viewModel()) {
+        val critterUsableUIState by critterProfileViewModel.critterUsable.collectAsState()
+        Box(
+            modifier = Modifier.fillMaxSize()
+        ) {
+            Box(
+                modifier = Modifier
+                    .offset(y = 275.dp)
+                    .height(200.dp)
+                    .fillMaxWidth()
+                    .background(
+                        MaterialTheme.colorScheme.onPrimaryContainer,
+                        shape = RoundedCornerShape(8.dp),
+                    )
+                    .border(
+                        3.dp,
+                        MaterialTheme.colorScheme.primary,
+                        shape = RoundedCornerShape(8.dp),
+                    )
+                    .wrapContentSize(Alignment.Center),
+                contentAlignment = Alignment.Center,
+            ) {
+                // Foto auf der linken Seite
+                Row(
+                ) {
+                    Spacer(modifier = Modifier.height(8.dp))
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Image(
+                        painter = painterResource(R.drawable.cryduck),
+                        contentDescription = null,
+                        modifier = Modifier
+                            .size(80.dp)
+                            .clip(CircleShape)
+                            .background(MaterialTheme.colorScheme.surface)
+                            .padding(8.dp)
+                    )
+                    Spacer(modifier = Modifier.width(16.dp))
+                    Column(
+                    ) {
+                        Text(
+                            text = "Are you sure...?",
+                            fontWeight = FontWeight.Bold,
+                            style = MaterialTheme.typography.bodyLarge,
+                            color = Color.White,
+                            modifier = Modifier.padding(bottom = 4.dp)
+                        )
+                        Button(
+                            onClick = {
+                                critterProfileViewModel.delCritter(critterUsableUIState.critterUsable!!.critterId)
+                                exitRequest = true
+                            },
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(8.dp),
+                            colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.error),
+                        ) {
+                            Text(text = "kill him")
+                        }
+                        Button(
+                            onClick = { delWindow = false },
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(8.dp),
+                        ) {
+                            Text(text = "Close")
+                        }
+                    }
+                }}
+        }
+    }
+
+    @Composable
+    fun EvolutionWindow(critterProfileViewModel: CritterProfileViewModel = viewModel(), context : Context) {
+        val critterUsableUIState by critterProfileViewModel.critterUsable.collectAsState()
+        val critterEvoTemplateUIState by critterProfileViewModel.critterTemplateEvo.collectAsState()
+        Box(
+            modifier = Modifier.fillMaxSize()
+        ) {
+            Box(
+                modifier = Modifier
+                    .offset(y = 275.dp)
+                    .height(200.dp)
+                    .fillMaxWidth()
+                    .background(
+                        MaterialTheme.colorScheme.onPrimaryContainer,
+                        shape = RoundedCornerShape(8.dp),
+                    )
+                    .border(
+                        3.dp,
+                        MaterialTheme.colorScheme.primary,
+                        shape = RoundedCornerShape(8.dp),
+                    )
+                    .wrapContentSize(Alignment.Center),
+                contentAlignment = Alignment.Center,
+            ) {
+                // Foto auf der linken Seite
+                Row(
+                ) {
+                    Spacer(modifier = Modifier.height(8.dp))
+                    Spacer(modifier = Modifier.width(8.dp))
+                    val resourceId = context.resources.getIdentifier(
+                        critterEvoTemplateUIState.critterTemplate!!.name.lowercase(),
+                        "drawable",
+                        context.packageName
+                    )
+                    Image(
+                        painter = painterResource(
+                            if (resourceId > 0) {
+                                resourceId
+                            } else {
+                                R.drawable.icon
+                            }
+                        ),
+                        contentDescription = null,
+                        modifier = Modifier
+                            .size(80.dp)
+                            .clip(CircleShape)
+                            .background(MaterialTheme.colorScheme.surface)
+                            .padding(8.dp)
+                    )
+                    Spacer(modifier = Modifier.width(16.dp))
+                    Column(
+                    ) {
+                        Text(
+                            text = "Start evolution",
+                            fontWeight = FontWeight.Bold,
+                            style = MaterialTheme.typography.bodyLarge,
+                            color = Color.White,
+                            modifier = Modifier.padding(bottom = 4.dp)
+                        )
+                        Button(
+                            onClick = {
+                                critterProfileViewModel.evolve(critterUsableUIState.critterUsable!!.critterId)
+                                evoWindow = false
+                            },
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(8.dp),
+                        ) {
+                            Text(text = "Evolve")
+                        }
+                        Button(
+                            colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.error),
+                            onClick = { evoWindow = false },
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(8.dp),
+                        ) {
+                            Text(text = "Close")
+                        }
+                    }
+                }}
+        }
+    }
+
+    @Composable
+    fun ExpBar(
+        currentValue: Int,
+        level: Int
+    ) {
+        val percentage = (currentValue /  Math.floor(50 * Math.pow((1.025), (level + 1).toDouble())).toFloat()).coerceIn(0f, 1f)
+        Box(
+            modifier = Modifier
+                .width(100.dp)
+                .offset(x = 75.dp)
+                .offset(y = 5.dp)
+                .height(10.dp)
+                .background(Color.Gray.copy(alpha = 0.5f), RoundedCornerShape(10.dp))
+                .clickable { lvlWindow = true }
+        ) {
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth(percentage)
+                    .fillMaxHeight()
+                    .background(Color.Yellow, RoundedCornerShape(10.dp))
+            )
+        }
+    }
 
     @SuppressLint("SuspiciousIndentation")
     @Composable
     fun CritterProfile(critterProfileViewModel: CritterProfileViewModel = viewModel(), context : Context) {
         val critterUsableUIState by critterProfileViewModel.critterUsable.collectAsState()
         val critterUIState by critterProfileViewModel.critter.collectAsState()
-        if (critterUsableUIState.critterUsable != null && critterUIState.critter != null) {
+        val isSelectedUIState by critterProfileViewModel.isSelected.collectAsState()
+        val critterTemplateUIState by critterProfileViewModel.critterTemplate.collectAsState()
+        val critterEvoTemplateUIState by critterProfileViewModel.critterTemplateEvo.collectAsState()
+        if (critterUsableUIState.critterUsable != null && critterUIState.critter != null && critterTemplateUIState.critterTemplate != null) {
+            critterProfileViewModel.checkIfCritterIsSelected(critterUsableUIState.critterUsable!!.critterId)
             Column(
                 modifier = Modifier
                     .padding(16.dp)
@@ -145,11 +418,11 @@ class CritterProfileActivity : ComponentActivity() {
             ) {
                 Box(
                 ){
-                val resourceId = context.resources.getIdentifier(
-                    critterUsableUIState.critterUsable!!.name.lowercase(),
-                    "drawable",
-                    context.packageName
-                )
+                    val resourceId = context.resources.getIdentifier(
+                        critterUsableUIState.critterUsable!!.name.lowercase(),
+                        "drawable",
+                        context.packageName
+                    )
                     Image(
                         painter = painterResource(
                             if (resourceId > 0) {
@@ -164,55 +437,28 @@ class CritterProfileActivity : ComponentActivity() {
                             .padding(8.dp)
                             .align(Alignment.TopCenter)
                     )
-                // Display other critter information as needed
-                Box(
-                    modifier = Modifier//.offset(y = 225.dp)
-                       .verticalScroll(rememberScrollState()),
-                ) {
-                    Column(
-                        modifier = Modifier
-                            .fillMaxWidth()
+                    // Display other critter information as needed
+                    Box(
+                        modifier = Modifier//.offset(y = 225.dp)
+                            .verticalScroll(rememberScrollState()),
                     ) {
-                        Spacer(modifier = Modifier.height(225.dp))
-                        Text(
-                            text = "${critterUsableUIState.critterUsable!!.name}",
-                            color = Color.White,
-                            style = MaterialTheme.typography.bodyLarge
-                                .copy(
-                                    fontWeight = FontWeight.Bold,
-                                    fontSize = 36.sp
-                                ),
-                        )
-                        Box {
+                        Column(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                        ) {
+                            Spacer(modifier = Modifier.height(225.dp))
                             Text(
-                                text = "Level: ${critterUsableUIState.critterUsable!!.level}",
+                                text = "${critterUsableUIState.critterUsable!!.name}",
                                 color = Color.White,
                                 style = MaterialTheme.typography.bodyLarge
                                     .copy(
                                         fontWeight = FontWeight.Bold,
-                                        fontSize = 16.sp
+                                        fontSize = 36.sp
                                     ),
                             )
-                            ExpBar(25, critterUsableUIState.critterUsable!!.level)
-                        }
-                        Spacer(modifier = Modifier.height(16.dp))
-                        Box(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .background(
-                                    MaterialTheme.colorScheme.onPrimaryContainer,
-                                    shape = RoundedCornerShape(8.dp)
-                                )
-                                .border(
-                                    3.dp,
-                                    MaterialTheme.colorScheme.primary,
-                                    shape = RoundedCornerShape(8.dp)
-                                )
-                                .padding(16.dp)
-                        ) {
-                            Column {
+                            Box {
                                 Text(
-                                    text = "Stats:",
+                                    text = "Level: ${critterUsableUIState.critterUsable!!.level}",
                                     color = Color.White,
                                     style = MaterialTheme.typography.bodyLarge
                                         .copy(
@@ -220,228 +466,218 @@ class CritterProfileActivity : ComponentActivity() {
                                             fontSize = 16.sp
                                         ),
                                 )
-                                Spacer(modifier = Modifier.height(8.dp))
-                                Box {
+                                if(critterUsableUIState.critterUsable!!.level < 100) ExpBar(critterUsableUIState.critterUsable!!.expToNextLevel, critterUsableUIState.critterUsable!!.level)
+                            }
+                            Spacer(modifier = Modifier.height(16.dp))
+                            Box(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .background(
+                                        MaterialTheme.colorScheme.onPrimaryContainer,
+                                        shape = RoundedCornerShape(8.dp)
+                                    )
+                                    .border(
+                                        3.dp,
+                                        MaterialTheme.colorScheme.primary,
+                                        shape = RoundedCornerShape(8.dp)
+                                    )
+                                    .padding(16.dp)
+                            ) {
+                                Column {
                                     Text(
-                                        text = "Health: ${critterUsableUIState.critterUsable!!.hp}",
+                                        text = "Stats:",
                                         color = Color.White,
+                                        style = MaterialTheme.typography.bodyLarge
+                                            .copy(
+                                                fontWeight = FontWeight.Bold,
+                                                fontSize = 16.sp
+                                            ),
                                     )
-                                    ProfileBar(
-                                        critterUsableUIState.critterUsable!!.level,
-                                        Color(255, 165, 0)
-                                    )
-                                }
-                                Spacer(modifier = Modifier.height(8.dp))
-                                Box {
-                                    Text(
-                                        text = "Attack: ${critterUsableUIState.critterUsable!!.atk}",
-                                        color = Color.White,
-                                    )
-                                    ProfileBar(
-                                        critterUsableUIState.critterUsable!!.level,
-                                        Color.Red
-                                    )
-                                }
-                                Spacer(modifier = Modifier.height(8.dp))
-                                Box {
-                                    Text(
-                                        text = "Defense: ${critterUsableUIState.critterUsable!!.def}",
-                                        color = Color.White,
-                                    )
-                                    ProfileBar(
-                                        critterUsableUIState.critterUsable!!.level,
-                                        Color.Green
-                                    )
-                                }
-                                Spacer(modifier = Modifier.height(8.dp))
-                                Box {
-                                    Text(
-                                        text = "Speed: ${critterUsableUIState.critterUsable!!.spd}",
-                                        color = Color.White,
-                                    )
-                                    ProfileBar(
-                                        critterUsableUIState.critterUsable!!.level,
-                                        Color.Blue
-                                    )
+                                    Spacer(modifier = Modifier.height(8.dp))
+                                    Box {
+                                        Text(
+                                            text = "Health: ${critterUsableUIState.critterUsable!!.hp}",
+                                            color = Color.White,
+                                        )
+                                        ProfileBar(
+                                            critterUsableUIState.critterUsable!!.level,
+                                            Color(255, 165, 0)
+                                        )
+                                    }
+                                    Spacer(modifier = Modifier.height(8.dp))
+                                    Box {
+                                        Text(
+                                            text = "Attack: ${critterUsableUIState.critterUsable!!.atk}",
+                                            color = Color.White,
+                                        )
+                                        ProfileBar(
+                                            critterUsableUIState.critterUsable!!.level,
+                                            Color.Red
+                                        )
+                                    }
+                                    Spacer(modifier = Modifier.height(8.dp))
+                                    Box {
+                                        Text(
+                                            text = "Defense: ${critterUsableUIState.critterUsable!!.def}",
+                                            color = Color.White,
+                                        )
+                                        ProfileBar(
+                                            critterUsableUIState.critterUsable!!.level,
+                                            Color.Green
+                                        )
+                                    }
+                                    Spacer(modifier = Modifier.height(8.dp))
+                                    Box {
+                                        Text(
+                                            text = "Speed: ${critterUsableUIState.critterUsable!!.spd}",
+                                            color = Color.White,
+                                        )
+                                        ProfileBar(
+                                            critterUsableUIState.critterUsable!!.level,
+                                            Color.Blue
+                                        )
+                                    }
                                 }
                             }
-                        }
-                        Spacer(modifier = Modifier.height(16.dp))
+                            Spacer(modifier = Modifier.height(16.dp))
 
-                        // Display attacks
-                        Box(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .background(
-                                    MaterialTheme.colorScheme.onPrimaryContainer,
-                                    shape = RoundedCornerShape(8.dp)
-                                )
-                                .border(
-                                    3.dp,
-                                    MaterialTheme.colorScheme.primary,
-                                    shape = RoundedCornerShape(8.dp)
-                                )
-                                .padding(16.dp)
-                        ) {
-                            Column {
-                                Text(
-                                    text = "Attacks:", color = Color.White,
-                                    style = MaterialTheme.typography.bodyLarge
-                                        .copy(
-                                            fontWeight = FontWeight.Bold,
-                                            fontSize = 16.sp
-                                        ),
-                                )
-                                Spacer(modifier = Modifier.height(8.dp))
-                                if (!critterUsableUIState.critterUsable!!.attacks.isNullOrEmpty()) {
-                                    critterUsableUIState.critterUsable!!.attacks.forEach { attack ->
-                                        Row {
-                                            Image(
-                                                painter = if(attack.attackType == AttackType.ATK_BUFF){painterResource(R.drawable.attackbuffsymbol)}else if(attack.attackType==AttackType.DEF_BUFF){painterResource(R.drawable.defencebuffsymbol)}else{painterResource(R.drawable.pow)},
-                                                contentDescription = null,
-                                                modifier = Modifier
-                                                    .size(50.dp)
-                                                    .padding(8.dp)
-                                            )
+                            // Display attacks
+                            Box(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .background(
+                                        MaterialTheme.colorScheme.onPrimaryContainer,
+                                        shape = RoundedCornerShape(8.dp)
+                                    )
+                                    .border(
+                                        3.dp,
+                                        MaterialTheme.colorScheme.primary,
+                                        shape = RoundedCornerShape(8.dp)
+                                    )
+                                    .padding(16.dp)
+                            ) {
+                                Column {
+                                    Text(
+                                        text = "Attacks:", color = Color.White,
+                                        style = MaterialTheme.typography.bodyLarge
+                                            .copy(
+                                                fontWeight = FontWeight.Bold,
+                                                fontSize = 16.sp
+                                            ),
+                                    )
+                                    Spacer(modifier = Modifier.height(8.dp))
+                                    if (!critterUsableUIState.critterUsable!!.attacks.isNullOrEmpty()) {
+                                        critterUsableUIState.critterUsable!!.attacks.forEach { attack ->
+                                            Row {
+                                                Image(
+                                                    painter = if(attack.attackType == AttackType.ATK_BUFF){painterResource(R.drawable.attackbuffsymbol)}else if(attack.attackType==AttackType.DEF_BUFF){painterResource(R.drawable.defencebuffsymbol)}else if(attack.attackType==AttackType.DEF_DEBUFF){painterResource(R.drawable.defencedebuffsymbol)}else if(attack.attackType==AttackType.ATK_DEBUFF){painterResource(R.drawable.attackdebuffsymbol)}else{painterResource(R.drawable.pow)},
+                                                    contentDescription = null,
+                                                    modifier = Modifier
+                                                        .size(50.dp)
+                                                        .padding(8.dp)
+                                                )
 
-                                            Text(
-                                                text = "${attack.name}: ${attack.strength}",
-                                                color = Color.White,
-                                                modifier = Modifier
-                                                    .offset(y = (15).dp),
-                                            )
+                                                Text(
+                                                    text = "${attack.name}: ${attack.strength}",
+                                                    color = Color.White,
+                                                    modifier = Modifier
+                                                        .offset(y = (15).dp),
+                                                )
+                                            }
                                         }
                                     }
                                 }
                             }
-                        }
+                            Spacer(modifier = Modifier.height(16.dp))
+                            if(critterTemplateUIState.critterTemplate!!.evolesAt>0) {
+                                Box(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .background(
+                                            MaterialTheme.colorScheme.onPrimaryContainer,
+                                            shape = RoundedCornerShape(8.dp)
+                                        )
+                                        .border(
+                                            3.dp,
+                                            MaterialTheme.colorScheme.primary,
+                                            shape = RoundedCornerShape(8.dp)
+                                        )
+                                        .padding(16.dp)
+                                        .clickable { evoWindow = true }
+                                ) {
+                                    Column {
+                                        Text(
+                                            text = "Evolution:", color = Color.White,
+                                            style = MaterialTheme.typography.bodyLarge
+                                                .copy(
+                                                    fontWeight = FontWeight.Bold,
+                                                    fontSize = 16.sp
+                                                ),
+                                        )
+                                        Spacer(modifier = Modifier.height(8.dp))
+                                        Text(
+                                            text = "Needed level: ${critterTemplateUIState.critterTemplate!!.evolesAt}",
+                                            color = Color.White,
+                                        )
+                                        Spacer(modifier = Modifier.height(8.dp))
+                                        Text(
+                                            text = "Evolves in: ${critterEvoTemplateUIState.critterTemplate!!.name}",
+                                            color = Color.White,
+                                        )
+                                        Spacer(modifier = Modifier.height(8.dp))
+                                    }
+                                }
+                            }
 
-                        Box(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .background(
-                                    MaterialTheme.colorScheme.onPrimaryContainer,
-                                    shape = RoundedCornerShape(8.dp)
-                                )
-                                .border(
-                                    3.dp,
-                                    MaterialTheme.colorScheme.primary,
-                                    shape = RoundedCornerShape(8.dp)
-                                )
-                                .padding(16.dp)
-                        ) {
-                            Column {
-                                Text(
-                                    text = "?:", color = Color.White,
-                                    style = MaterialTheme.typography.bodyLarge
-                                        .copy(
-                                            fontWeight = FontWeight.Bold,
-                                            fontSize = 16.sp
-                                        ),
-                                )
-                                Spacer(modifier = Modifier.height(8.dp))
-                                //TODO
-
+                            Button(
+                                onClick = {
+                                    //critterProfileViewModel.evolve(critterUsableUIState.critterUsable!!.critterId)
+                                    //critterProfileViewModel.loadCritterUsable(critterUIState.critter!!.id)
+                                    critterProfileViewModel.storeFightingCritter()
+                                },
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(8.dp),
+                                colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.onPrimaryContainer),
+                            ) {
+                                Text(text = if(!isSelectedUIState.isSelected){"Select this critter to fight!"} else{"This critter is selected for further fights!"})
+                            }
+                            Button(
+                                onClick = {delWindow = true},
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(8.dp),
+                                colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.error),
+                            ) {
+                                Text(text = "Delete Critter :(")
                             }
                         }
-
-                        Button(
-                            onClick = {
-                                //critterProfileViewModel.evolve(critterUsableUIState.critterUsable!!.critterId)
-                                //critterProfileViewModel.loadCritterUsable(critterUIState.critter!!.id)
-                                critterProfileViewModel.storeFightingCritter()
-                            },
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(8.dp),
-                            colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.onPrimaryContainer),
-                        ) {
-                            Text(text = "Select this critter to fight!")
-                        }
-                        Button(
-                            onClick = {
-                                critterProfileViewModel.loadCritterUsable(critterUIState.critter!!.id)
-                                critterProfileViewModel.evolve(critterUsableUIState.critterUsable!!.critterId)
-                            },
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(8.dp),
-                            colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.onPrimaryContainer),
-                        ) {
-                            Text(text = "Evolve")
-                        }
-                        Button(
-                            onClick = {
-                                critterProfileViewModel.loadCritterUsable(critterUIState.critter!!.id)
-                                critterProfileViewModel.useRedBull(critterUsableUIState.critterUsable!!.critterId)
-                            },
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(8.dp),
-                                    colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.onPrimaryContainer),
-                        ) {
-                            Text(text = "Use Rebull")
-                        }
-                        Button(
-                            onClick = {
-                                critterProfileViewModel.delCritter(critterUsableUIState.critterUsable!!.critterId)
-                            },
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(8.dp),
-                            colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.onPrimaryContainer),
-                        ) {
-                            Text(text = "Delete Critter :(")
-                        }
                     }
-                }
                 }
             }
         }else{
             Text("Critter data not available.",color = Color.White)
         }
     }
-
-@Composable
-fun ProfileBar(
-    currentValue: Int,
-    barColor: Color
-) {
-    val percentage = (currentValue / 100.toFloat()).coerceIn(0f, 1f)
-    Box(
-        modifier = Modifier
-            .width(240.dp)
-            .offset(x = 110.dp)
-            .height(20.dp)
-            .background(Color.Gray.copy(alpha = 0.5f), RoundedCornerShape(10.dp))
+    @Composable
+    fun ProfileBar(
+        currentValue: Int,
+        barColor: Color
     ) {
+        val percentage = (currentValue / 100.toFloat()).coerceIn(0f, 1f)
         Box(
             modifier = Modifier
-                .fillMaxWidth(percentage)
-                .fillMaxHeight()
-                .background(barColor, RoundedCornerShape(10.dp))
-        )
-    }
+                .width(210.dp)
+                .offset(x = 110.dp)
+                .height(20.dp)
+                .background(Color.Gray.copy(alpha = 0.5f), RoundedCornerShape(10.dp))
+        ) {
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth(percentage)
+                    .fillMaxHeight()
+                    .background(barColor, RoundedCornerShape(10.dp))
+            )
+        }
 }
-
-@Composable
-fun ExpBar(
-    currentValue: Int,
-    level: Int
-) {
-    val percentage = (currentValue /  Math.floor(50 * Math.pow((1.025), (level + 1).toDouble())).toFloat()).coerceIn(0f, 1f)
-    Box(
-        modifier = Modifier
-            .width(150.dp)
-            .offset(x = 30.dp)
-            .height(20.dp)
-            .background(Color.Gray.copy(alpha = 0.5f), RoundedCornerShape(10.dp))
-    ) {
-        Box(
-            modifier = Modifier
-                .fillMaxWidth(percentage)
-                .fillMaxHeight()
-                .background(Color.Magenta, RoundedCornerShape(10.dp))
-        )
-    }
 }

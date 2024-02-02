@@ -1,5 +1,7 @@
 package project.main.uniclash.datatypes
 
+import com.google.gson.annotations.SerializedName
+
 data class CritterTemplate(
     val id: Int,
     val name: String,

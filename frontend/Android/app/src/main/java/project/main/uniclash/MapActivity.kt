@@ -298,7 +298,8 @@ class MapActivity : ComponentActivity() {
                     numberOfMarkersOnMap = 0
                 }
 
-                if(Counter.RESPAWN.getCounter() % 20 == 0){
+                //Student Location will not refresh anymore
+                /*if(Counter.RESPAWN.getCounter() % 20 == 0){
                     mapMarkerListViewModel.removeMarkersQ(MapSaver.STUDENT.getMarker())
                     MapSaver.STUDENT.setMarker(ArrayList<MarkerData?>())
                     mapMarkerViewModel.students.value.students = emptyList()
@@ -307,7 +308,7 @@ class MapActivity : ComponentActivity() {
                 if(Counter.RESPAWN.getCounter() % 20 == 2){
                     mapMarkerListViewModel.removeMarkersQ(MapSaver.STUDENT.getMarker())
                     mapMarkerListViewModel.addListOfMarkersQ(MapSaver.STUDENT.getMarker())
-                }
+                }*/
 
                 //is now working without OpenActivityButton() and could be move out to view model
                 if(numberOfMarkersOnMap < 800 && Counter.RESPAWN.getCounter()>5&&Counter.RESPAWN.getCounter()<295){

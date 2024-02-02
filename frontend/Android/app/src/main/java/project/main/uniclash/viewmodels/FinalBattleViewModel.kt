@@ -181,7 +181,7 @@ class FinalBattleViewModel(
     private fun applyBuffToPlayer(attack: Attack) {
         if (attack.attackType == AttackType.ATK_BUFF) {
             viewModelScope.launch() {
-                val newAtk = (playerCritter.value.playerCritter!!.atk + attack.strength).coerceAtMost(180)
+                val newAtk = (playerCritter.value.playerCritter!!.atk + attack.strength).coerceAtMost(500)
                 val increased = newAtk > playerCritter.value.playerCritter!!.atk
                 playerCritter.update { currentState ->
                     currentState.copy(
@@ -199,7 +199,7 @@ class FinalBattleViewModel(
         }
         if (attack.attackType == AttackType.DEF_BUFF) {
             viewModelScope.launch() {
-                val newDef = (playerCritter.value.playerCritter!!.def + attack.strength).coerceAtMost(180)
+                val newDef = (playerCritter.value.playerCritter!!.def + attack.strength).coerceAtMost(500)
                 val increased = newDef > playerCritter.value.playerCritter!!.def
                 playerCritter.update { currentState ->
                     currentState.copy(
@@ -290,7 +290,7 @@ class FinalBattleViewModel(
 
     private fun applyBuffToCpu(attack: Attack) {
         if (attack.attackType == AttackType.ATK_BUFF) {
-                val newAtk = (cpuCritter.value.cpuCritter!!.atk + attack.strength).coerceAtMost(180)
+                val newAtk = (cpuCritter.value.cpuCritter!!.atk + attack.strength).coerceAtMost(500)
                 val increased = newAtk > cpuCritter.value.cpuCritter!!.atk
                 cpuCritter.update { currentState ->
                     currentState.copy(
@@ -306,7 +306,7 @@ class FinalBattleViewModel(
                 }
         }
         if (attack.attackType == AttackType.DEF_BUFF) {
-                val newDef = (cpuCritter.value.cpuCritter!!.def + attack.strength).coerceAtMost(180)
+                val newDef = (cpuCritter.value.cpuCritter!!.def + attack.strength).coerceAtMost(500)
                 val increased = newDef > cpuCritter.value.cpuCritter!!.def
                 cpuCritter.update { currentState ->
                     currentState.copy(

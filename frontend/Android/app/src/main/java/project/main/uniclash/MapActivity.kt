@@ -261,8 +261,8 @@ class MapActivity : ComponentActivity() {
         LaunchedEffect(Unit) {
             while (true) {
                 mapLocationViewModel.getUserLocation(contextForLocation) { location -> //has to checked here too, because in line 120 is in onCreate (only executed once).
-                    mainLatitude = location.latitude
-                    mainLongitude = location.longitude
+                    //mainLatitude = location.latitude
+                    //mainLongitude = location.longitude
                 }
 
                 val tolerance = 0.0001 //0.0001 before
@@ -299,13 +299,13 @@ class MapActivity : ComponentActivity() {
                 }
 
                 //Student Location will not refresh anymore
-                /*if(Counter.RESPAWN.getCounter() % 20 == 0){
-                    mapMarkerListViewModel.removeMarkersQ(MapSaver.STUDENT.getMarker())
-                    MapSaver.STUDENT.setMarker(ArrayList<MarkerData?>())
-                    mapMarkerViewModel.students.value.students = emptyList()
+                if(Counter.RESPAWN.getCounter() % 20 == 0){
+                    //mapMarkerListViewModel.removeMarkersQ(MapSaver.STUDENT.getMarker())
+                    //MapSaver.STUDENT.setMarker(ArrayList<MarkerData?>())
+                    //mapMarkerViewModel.students.value.students = emptyList()
                     mapMarkerViewModel.loadStudents()
                 }
-                if(Counter.RESPAWN.getCounter() % 20 == 2){
+                /*if(Counter.RESPAWN.getCounter() % 20 == 2){
                     mapMarkerListViewModel.removeMarkersQ(MapSaver.STUDENT.getMarker())
                     mapMarkerListViewModel.addListOfMarkersQ(MapSaver.STUDENT.getMarker())
                 }*/

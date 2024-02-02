@@ -35,7 +35,7 @@ export class ArenaLogicService {
       if(critter.id == arena.critterId) canFind = true
     }
     if(!canFind){
-      arena.critterId = 146
+      arena.critterId = 194
       arena.studentId = 1
       await this.arenaRepository.update(arena)
     }
@@ -50,8 +50,8 @@ export class ArenaLogicService {
       await this.arenaRepository.update(arena)
     }
     if(arena.critterId == 0 && arena.studentId != 0){
-      if(arena.invasionTime != time && arena.invasionTime+1 != time){
-        arena.critterId = 146
+      if(arena.invasionTime != time && arena.invasionTime+1 != time && arena.invasionTime+2 != time){
+        arena.critterId = 194
         arena.studentId = 1
         await this.arenaRepository.update(arena)
       }

@@ -20,6 +20,7 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.clipToBounds
@@ -65,6 +66,7 @@ import project.main.uniclash.viewmodels.ArenaViewModel
 import project.main.uniclash.viewmodels.StudentViewModel
 
 class ArenaActivity : ComponentActivity() {
+    private var exitRequest by mutableStateOf(false)
 
     private val arenaViewModel by viewModels<ArenaViewModel> {
         ArenaViewModel.provideFactory(ArenaService.getInstance(this))
@@ -115,6 +117,17 @@ class ArenaActivity : ComponentActivity() {
                         if (arenaViewModel.getselectedArena() != null) {
                             studentViewModel.loadStudent(arenaViewModel.getselectedArena()!!.arena!!.studentId)
                         }
+                                Image(
+                                    painter = painterResource(id = R.drawable.exit),
+                                    contentDescription = null,
+                                    modifier = Modifier
+                                        .size(40.dp)
+                                        .clickable {
+                                            exitRequest = true
+                                        }
+                                        .align(Alignment.TopEnd)
+                                )
+
                             // Check if the arena and arenas are not null before displaying
                             Column(
                                 modifier = Modifier
@@ -157,6 +170,12 @@ class ArenaActivity : ComponentActivity() {
                     }
                 }
             }
+            if (exitRequest) {
+                val intent = Intent(this, MapActivity::class.java)
+                this.startActivity(intent)
+                finish()
+                exitRequest = false
+            }
         }
     }
 
@@ -192,23 +211,42 @@ class ArenaActivity : ComponentActivity() {
 
     @Composable
     fun startBattleButton() {
-        Button(
-            onClick = {
-                val intent = Intent(this, FinalBattleActivity::class.java)
-                // creating a bundle object
-                val bundle = Bundle()
-                // storing the string value in the bundle
-                // which is mapped to key
-                bundle.putInt("CpuCritterId", arenaViewModel.getselectedArena()?.arena?.critterId ?: 0)
-                bundle.putInt("ArenaID", arenaViewModel.getselectedArena()?.arena?.id?.toInt() ?: 0)
-                intent.putExtras(bundle)
-                startActivity(intent)
-            },
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(8.dp)
-        ) {
-            Text("Start Battle", style = MaterialTheme.typography.labelMedium)
+        if(arenaViewModel.checkIfCritterIsSelected()) {
+            Button(
+                onClick = {
+                    val intent = Intent(this, FinalBattleActivity::class.java)
+                    // creating a bundle object
+                    val bundle = Bundle()
+                    // storing the string value in the bundle
+                    // which is mapped to key
+                    bundle.putInt(
+                        "CpuCritterId",
+                        arenaViewModel.getselectedArena()?.arena?.critterId ?: 0
+                    )
+                    bundle.putInt(
+                        "ArenaID",
+                        arenaViewModel.getselectedArena()?.arena?.id?.toInt() ?: 0
+                    )
+                    intent.putExtras(bundle)
+                    startActivity(intent)
+                    finish()
+                },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(8.dp)
+            ) {
+                Text("Start Battle", style = MaterialTheme.typography.labelMedium)
+            }
+        } else {
+            Button(
+                onClick = {
+                },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(8.dp)
+            ) {
+                Text("No Critter to fight selected.", style = MaterialTheme.typography.labelMedium)
+            }
         }
     }
 

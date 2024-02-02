@@ -198,6 +198,7 @@ class FinalBattleActivity : ComponentActivity() {
             if(progressRequest){
                 val intent = Intent(this, MenuActivity::class.java)
                 this.startActivity(intent)
+                finish()
             }
             if (exitRequest) {
                 mediaPlayer?.release()

@@ -401,8 +401,10 @@ class FinalBattleViewModel(
 
     fun updateArenaLeader(){
         viewModelScope.launch {
+            println("ausgeführt1")
             try {
                 val arenaLeaderPatchRequest = ArenaLeaderPatch(0, userDataManager.getStudentId()!!)
+                println("ausgeführt2")
                 val response = critterService.patchArenaLeader(arenaId.value!!, arenaLeaderPatchRequest).enqueue()
                 Log.d(TAG, "Patching Arena Leader: $response")
                 if (response.isSuccessful) {

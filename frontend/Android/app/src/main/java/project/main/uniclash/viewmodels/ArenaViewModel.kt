@@ -1,5 +1,6 @@
 package project.main.uniclash.viewmodels
 
+import android.app.Application
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
@@ -7,6 +8,7 @@ import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import project.main.uniclash.dataManagers.UserDataManager
 import project.main.uniclash.datatypes.Arena
 import project.main.uniclash.datatypes.MarkerArena
 import project.main.uniclash.datatypes.SelectedMarker
@@ -39,6 +41,9 @@ class ArenaViewModel(
     private val markerData = SelectedMarker.SELECTEDMARKER.takeMarker()
     private var arenaMarkerFromMap = if(markerData is MarkerArena){markerData} else {null}
     private var arenaMarker : MarkerArena? = null
+    private val userDataManager: UserDataManager by lazy {
+        UserDataManager(Application())
+    }
     fun getselectedArena(): MarkerArena?{
         return arenaMarker
     }
@@ -93,33 +98,46 @@ class ArenaViewModel(
         }
     }
 
+    fun checkIfCritterIsSelected() : Boolean{
+         var isSelected = false
+        viewModelScope.launch {
+            if(userDataManager.getFightingCritterID() != null && userDataManager.getFightingCritterID() != 0) isSelected = true
+        }
+        return isSelected
+    }
+
 
     fun loadArenaCritter() {
-        viewModelScope.launch {
-            critterUsable.update { it.copy(isLoading = true) }
-            try {
-                val response = arenaService.getCritterUsable(getselectedArena()!!.arena!!.critterId).enqueue()
-                Log.d(TAG, "loadArenaCritter: $response")
-                if (response.isSuccessful) {
-                    Log.d(TAG, "loadArenaCritter: success")
-                    val crittersUsable = response.body()!!
-                    Log.d(TAG, "loadArenaCritter: $crittersUsable")
-                    critterUsable.update {
-                        it.copy(
-                            critterUsable = crittersUsable,
-                            isLoading = false
-                        )
+        if(critterUsable.value.critterUsable == null) {
+            viewModelScope.launch {
+                critterUsable.update { it.copy(isLoading = true) }
+                try {
+                    val response =
+                        arenaService.getCritterUsable(getselectedArena()!!.arena!!.critterId)
+                            .enqueue()
+                    Log.d(TAG, "loadArenaCritter: $response")
+                    if (response.isSuccessful) {
+                        Log.d(TAG, "loadArenaCritter: success")
+                        val crittersUsable = response.body()!!
+                        Log.d(TAG, "loadArenaCritter: $crittersUsable")
+                        critterUsable.update {
+                            it.copy(
+                                critterUsable = crittersUsable,
+                                isLoading = false
+                            )
+                        }
+                        Log.d(TAG, "LoadedCritter: ${critterUsable.value.critterUsable}")
                     }
-                    Log.d(TAG, "LoadedCritter: ${critterUsable.value.critterUsable}")
+                } catch (e: Exception) {
+                    e.printStackTrace()
                 }
-            } catch (e: Exception) {
-                e.printStackTrace()
             }
         }
     }
     fun loadArena(id : Int){
+        if(arena.value.arena == null){
         viewModelScope.launch {
-            arena.update {it.copy(isLoading = true)  }
+            arena.update { it.copy(isLoading = true) }
             try {
                 val response = arenaService.getArenas(id).enqueue()
                 Log.d(TAG, "LoadArena: $response")
@@ -129,12 +147,13 @@ class ArenaViewModel(
                         arena.update { state ->
                             state.copy(arena = it, isLoading = false)
                         }
-                        if(arena.value.arena != null) makeMarkerArena()
+                        if (arena.value.arena != null) makeMarkerArena()
                     }
                 }
             } catch (e: Exception) {
                 e.printStackTrace()
             }
+        }
         }
     }
 

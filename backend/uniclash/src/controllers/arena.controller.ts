@@ -22,6 +22,7 @@ import {ArenaRepository, StudentRepository, UserRepository} from '../repositorie
 import {authenticate} from "@loopback/authentication";
 import { NotificationService } from '../services/NotificationService';
 import {service} from "@loopback/core";
+// @ts-ignore
 import {ArenaLogicService} from "../services/arena-logic.service";
 
 export class ArenaController {

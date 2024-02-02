@@ -508,6 +508,8 @@ class OnlineFightActivity : ComponentActivity() {
             var resourceId = R.drawable.pow
             if(type == BattleAction.DEF_BUFF)resourceId = R.drawable.defencebuffsymbol
             if(type == BattleAction.ATK_BUFF)resourceId = R.drawable.attackbuffsymbol
+            if(type == BattleAction.DEF_DEBUFF)resourceId = R.drawable.defencedebuffsymbol
+            if(type == BattleAction.ATK_DEBUFF)resourceId = R.drawable.attackdebuffsymbol
             Row(
             ) {
                 Image(

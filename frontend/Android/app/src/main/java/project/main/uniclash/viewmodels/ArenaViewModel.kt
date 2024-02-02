@@ -108,7 +108,7 @@ class ArenaViewModel(
 
 
     fun loadArenaCritter() {
-        if(critterUsable.value.critterUsable == null) {
+        if(critterUsable.value.critterUsable == null && getselectedArena()!!.arena!!.critterId != 0) {
             viewModelScope.launch {
                 critterUsable.update { it.copy(isLoading = true) }
                 try {

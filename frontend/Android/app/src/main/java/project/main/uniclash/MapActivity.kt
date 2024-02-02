@@ -612,7 +612,7 @@ class MapActivity : ComponentActivity() {
     fun OpenActivityButton(marker : MarkerData) {
         val context = LocalContext.current
         val distance = mapCalculations.distance(marker.state.latitude, marker.state.longitude, Locations.USERLOCATION.getLocation().latitude, Locations.USERLOCATION.getLocation().longitude)
-        if(distance < 76) {
+        if(distance < 76 ||marker is MarkerStudent) {
             Button(
                 onClick = {
                     // Handle the button click to open the new activity here

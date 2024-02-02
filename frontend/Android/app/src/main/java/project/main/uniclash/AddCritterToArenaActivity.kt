@@ -29,7 +29,9 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
@@ -47,6 +49,8 @@ import project.main.uniclash.ui.theme.UniClashTheme
 import project.main.uniclash.viewmodels.AddCritterToArenaViewModel
 
 class AddCritterToArenaActivity : ComponentActivity() {
+    private var exitRequest by mutableStateOf(false)
+
     override fun onCreate(savedInstanceState: Bundle?) {
         val addCritterToArenaViewModel: AddCritterToArenaViewModel by viewModels(factoryProducer = {
             AddCritterToArenaViewModel.provideFactory(ArenaCritterService.getInstance(this))
@@ -90,6 +94,7 @@ class AddCritterToArenaActivity : ComponentActivity() {
                     Row {
                         Button(onClick = {
                             addCritterToArenaViewModel.patchArenaCritter(arenaId!!)
+                            exitRequest = true
                         }) {
                             Text("Insert Critter")
                         }
@@ -107,6 +112,12 @@ class AddCritterToArenaActivity : ComponentActivity() {
 
             {
                 CritterList(addCritterToArenaViewModel)
+            }
+            if (exitRequest) {
+                val intent = Intent(this, MapActivity::class.java)
+                this.startActivity(intent)
+                finish()
+                exitRequest = false
             }
 
 

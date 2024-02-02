@@ -362,7 +362,7 @@ class MapMarkerViewModel(
 
                     if(arena.studentId == userDataManager.getStudentId()) {
                         icon =  mapCalculations.resizeDrawable(context, R.drawable.arenacapturedm, 50.0F)
-                    } else if (arena.studentId == 0) {
+                    } else if (arena.studentId == 1) {
                         icon = mapCalculations.resizeDrawable(context, R.drawable.arenam, 50.0F)
                     }
 

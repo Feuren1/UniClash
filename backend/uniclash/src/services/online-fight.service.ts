@@ -223,18 +223,34 @@ export class OnlineFightService {
         await this.onlineFightRepository.update(currentFights[1])
 
         //insert Critter to CritterInFight table
-        const critterInFight1 = new CritterInFight({
+        let critterInFight1 = new CritterInFight({
           critterId: critter1.critterId,
           health: critter1.hp,
           attack: critter1.atk,
           defence: critter1.def,
         })
-        const critterInFight2 = new CritterInFight({
+        if(critter1.name == "MOCKITO") {
+          critterInFight1 = new CritterInFight({
+            critterId: critter2.critterId,
+            health: critter2.hp,
+            attack: critter2.atk,
+            defence: critter2.def,
+          })
+        }
+        let critterInFight2 = new CritterInFight({
           critterId: critter2.critterId,
           health: critter2.hp,
           attack: critter2.atk,
           defence: critter2.def,
         })
+        if(critter2.name == "MOCKITO") {
+          critterInFight2 = new CritterInFight({
+            critterId: critter1.critterId,
+            health: critter1.hp,
+            attack: critter1.atk,
+            defence: critter1.def,
+          })
+        }
         await this.critterInFightRepository.create(critterInFight1)
         await this.critterInFightRepository.create(critterInFight2)
       }

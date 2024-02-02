@@ -148,6 +148,7 @@ class ArenaActivity : ComponentActivity() {
                                     addCritterToArenaButton()
                                 }
                                 if (arenaViewModel.getselectedArena()!!.arena!!.critterId != 0) {
+                                    println("kommt hier hin")
                                     if (arenaCritterUIState.critterUsable != null) {
                                         CritterDetail(arenaCritterUIState.critterUsable!!)
                                     }

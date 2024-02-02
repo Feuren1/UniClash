@@ -107,49 +107,52 @@ class ArenaActivity : ComponentActivity() {
 
                         val studentUIState by studentViewModel.student.collectAsState()
                         val arenaUIState by arenaViewModel.arena.collectAsState()
-                        val arenasUIstate by arenaViewModel.arenas.collectAsState()
+                        val arenasUIState by arenaViewModel.arenas.collectAsState()
                         val arenaCritterUIState by arenaViewModel.critterUsable.collectAsState()
 
-
+                        if(arenaUIState.arena != null) {
+                            arenaViewModel.loadArenaCritter()
                         if (arenaViewModel.getselectedArena() != null) {
                             studentViewModel.loadStudent(arenaViewModel.getselectedArena()!!.arena!!.studentId)
                         }
+                            // Check if the arena and arenas are not null before displaying
+                            Column(
+                                modifier = Modifier
+                                    .fillMaxSize()
+                                    .padding(16.dp)
+                                    .verticalScroll(rememberScrollState())
+                            ) {
 
-                        // Check if the arena and arenas are not null before displaying
-                        Column(
-                            modifier = Modifier
-                                .fillMaxSize()
-                                .padding(16.dp)
-                                .verticalScroll(rememberScrollState())
-                        ) {
-
-                            //arenaUIState.arena?.let { arena ->
-                            // ArenaDetails(arena, studentUIState.student)
-                            //}
-                            showArena()
-                            if(studentUIState.student!=null){
-                                StudentDetail(studentUIState.student!!)
-                            }
-
-                            if(arenaViewModel.getselectedArena()!!.arena!!.critterId==0 && arenaViewModel.getselectedArena()!!.arena!!.studentId == studentId) {
-                                addCritterToArenaButton()
-                            }
-                            if(arenaViewModel.getselectedArena()!!.arena!!.critterId !=0) {
-                                if(arenaCritterUIState.critterUsable != null){
-                                    CritterDetail(arenaCritterUIState.critterUsable!!)
+                                //arenaUIState.arena?.let { arena ->
+                                // ArenaDetails(arena, studentUIState.student)
+                                //}
+                                showArena()
+                                if (studentUIState.student != null) {
+                                    StudentDetail(studentUIState.student!!)
                                 }
-                            }
-                            if(arenaViewModel.getselectedArena()!!.arena!!.studentId != studentId){
-                                startBattleButton()
-                            }
-                            else {
-                                Text ("You own this arena!")
-                            }
-                            Row(Modifier.fillMaxSize()){
-                                GifImage(gifName = "pokemonwalking", modifier = Modifier.size(140.dp) )
-                            }
 
-                            // Add a button or other UI elements as needed
+                                if (arenaViewModel.getselectedArena()!!.arena!!.critterId == 0 && arenaViewModel.getselectedArena()!!.arena!!.studentId == studentId) {
+                                    addCritterToArenaButton()
+                                }
+                                if (arenaViewModel.getselectedArena()!!.arena!!.critterId != 0) {
+                                    if (arenaCritterUIState.critterUsable != null) {
+                                        CritterDetail(arenaCritterUIState.critterUsable!!)
+                                    }
+                                }
+                                if (arenaViewModel.getselectedArena()!!.arena!!.studentId != studentId) {
+                                    startBattleButton()
+                                } else {
+                                    Text("You own this arena!")
+                                }
+                                Row(Modifier.fillMaxSize()) {
+                                    GifImage(
+                                        gifName = "pokemonwalking",
+                                        modifier = Modifier.size(140.dp)
+                                    )
+                                }
+
+                                // Add a button or other UI elements as needed
+                            }
                         }
                     }
                 }

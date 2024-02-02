@@ -37,8 +37,8 @@ class ArenaViewModel(
 
 
     private val markerData = SelectedMarker.SELECTEDMARKER.takeMarker()
-    private val arenaMarker = if(markerData is MarkerArena){markerData} else {null}
-
+    private var arenaMarkerFromMap = if(markerData is MarkerArena){markerData} else {null}
+    private var arenaMarker : MarkerArena? = null
     fun getselectedArena(): MarkerArena?{
         return arenaMarker
     }
@@ -68,8 +68,9 @@ class ArenaViewModel(
     )
 
     init {
-    loadArenaCritter()
+        loadArena(arenaMarkerFromMap!!.arena!!.id)
     }
+
     fun loadArenas(){
         viewModelScope.launch {
             arenas.update {it.copy(isLoading = true)  }
@@ -128,13 +129,19 @@ class ArenaViewModel(
                         arena.update { state ->
                             state.copy(arena = it, isLoading = false)
                         }
-
+                        if(arena.value.arena != null) makeMarkerArena()
                     }
                 }
             } catch (e: Exception) {
                 e.printStackTrace()
             }
         }
+    }
+
+    private fun makeMarkerArena(){
+        arenaMarker = arenaMarkerFromMap
+        arenaMarkerFromMap!!.arena!!.studentId = arena.value.arena!!.studentId
+        arenaMarkerFromMap!!.arena!!.critterId = arena.value.arena!!.critterId
     }
     companion object {
         fun provideFactory(

@@ -146,12 +146,13 @@ export class ArenaController {
   ): Promise<void> {
     const currentArena = this.arenaRepository.findById(id)
     if(arena.studentId != (await currentArena).studentId){
-      await this.arenaLogicService.setInvasionTime(id)
     const user = await this.studentRepository.user((await currentArena).studentId)
     const sendPushNotificationService = new NotificationService();
     sendPushNotificationService.sendPushNotification(user.fcmtoken,"ArenaUpdate","Your arena has been defeated!!!")
     }
-    await this.arenaRepository.updateById(id, arena);
+    arena.invasionTime = 0
+    await this.arenaRepository.updateById(id, arena)
+    await this.arenaLogicService.setInvasionTime(id)
   }
 
   @put('/arenas/{id}')

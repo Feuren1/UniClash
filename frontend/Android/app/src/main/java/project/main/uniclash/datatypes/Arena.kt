@@ -6,11 +6,11 @@ data class Arena(
     val description : String,
     val lat : Double,
     val lon : Double,
-    val critterId: Int,
-    val studentId: Int,
+    var critterId: Int,
+    var studentId: Int,
     val picture : String
 ){
     override fun toString(): String {
-        return "Arena(id=$id, name='$name', description='$description', lat=$lat, lon=$lon, studentID=$studentId)"
+        return "Arena(id=$id, name='$name', description='$description', lat=$lat, lon=$lon, critterId=$critterId, studentId=$studentId, picture='$picture')"
     }
 }

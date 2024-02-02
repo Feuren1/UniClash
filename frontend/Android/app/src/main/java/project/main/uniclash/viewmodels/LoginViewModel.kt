@@ -61,6 +61,7 @@ class LoginViewModel (private val userService: UserService, application: Applica
             if (response.isSuccessful) {
                 Log.d(TAG, "Login: success, Token: ${response.body()}")
 
+<<<<<<< HEAD
                 val jsonObject = response.body()
                 //Method: login of userService returns a jsonObject. Therefore we have to extract the Token manually.
                 //Could possibly be done better but works.
@@ -70,12 +71,52 @@ class LoginViewModel (private val userService: UserService, application: Applica
                     userDataManager.storeJWTToken(jwtToken)
                     login.update { state ->
                         state.copy(success = true, isLoading = false)
+=======
+        val call = userService.login(UserLoginRequest(email = email, password = password, fcmtoken = fcmToken!!))
+        call.enqueue(object : Callback<JsonObject> {
+            override fun onResponse(
+                call: Call<JsonObject>,
+                response: Response<JsonObject>
+            ) {
+                if (response.isSuccessful) {
+                    Log.d(TAG, "Login: success, Token: ${response.body()}")
+                    // Save the JWT token securely
+                    val jsonObject = response.body()
+                    val jwtToken = jsonObject?.get("token")?.asString
+                    if (jwtToken != null) {
+                        // Save the token to Datastore
+                        runBlocking {
+                            userDataManager.storeJWTToken(jwtToken)
+                        }
+                        // Update userData with the response if needed
+                        // Invoke the callback with success
+                        callback(UserLoginTokenCallback(true, jwtToken))
+                            login.update { state ->
+                                state.copy(success = true, isLoading = false)
+                            }
+                        text.value = "Login successful!"
+                    } else {
+                        // Handle missing token
+                        Log.e(TAG, "Token not found in the response")
+                        callback(UserLoginTokenCallback(false, ""))
+                        text.value = "Wasn't able to retrieve token, are you registered yet?"
+>>>>>>> parent of 6f7d23c (Updated Login register and profile plus tests)
                     }
                     text.value = "Login successful!"
                 } else {
+<<<<<<< HEAD
                     // if token not found
                     Log.e(TAG, "Token not found in the response")
                     text.value = "Wasn't able to retrieve token, are you registered yet?"
+=======
+                    // Handle non-successful response
+                    Log.d(TAG, "Login failed with code: ${response.code()}")
+                    Log.d(TAG, "Error: ${response.message()}")
+
+                    // Invoke the callback with failure
+                    callback(UserLoginTokenCallback(false, ""))
+                    text.value = "Something went wrong check your username and password please"
+>>>>>>> parent of 6f7d23c (Updated Login register and profile plus tests)
                 }
             } else {
                 // If response was not successful
@@ -86,10 +127,22 @@ class LoginViewModel (private val userService: UserService, application: Applica
         }
     }
 
+<<<<<<< HEAD
     private fun clearSelectedCritter(){
         viewModelScope.launch {
             userDataManager.storeFightingCritterID(0)
         }
+=======
+            override fun onFailure(call: Call<JsonObject>, t: Throwable) {
+                Log.d(TAG, "Login: FAILED")
+                t.printStackTrace()
+
+                // Invoke the callback with failure
+                callback(UserLoginTokenCallback(false, ""))
+                text.value = "Something went wrong contacting the server, do you have an internet connection?"
+            }
+        })
+>>>>>>> parent of 6f7d23c (Updated Login register and profile plus tests)
     }
 
     companion object {

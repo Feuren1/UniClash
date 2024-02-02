@@ -231,7 +231,7 @@ export class OnlineFightService {
         })
         if(critter1.name == "MOCKITO") {
           critterInFight1 = new CritterInFight({
-            critterId: critter2.critterId,
+            critterId: critter1.critterId,
             health: critter2.hp,
             attack: critter2.atk,
             defence: critter2.def,
@@ -245,7 +245,7 @@ export class OnlineFightService {
         })
         if(critter2.name == "MOCKITO") {
           critterInFight2 = new CritterInFight({
-            critterId: critter1.critterId,
+            critterId: critter2.critterId,
             health: critter1.hp,
             attack: critter1.atk,
             defence: critter1.def,

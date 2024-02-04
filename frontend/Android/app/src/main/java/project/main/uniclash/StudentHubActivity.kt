@@ -58,6 +58,7 @@ import androidx.compose.ui.zIndex
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.material3.*
+import androidx.compose.material3.MaterialTheme.colorScheme
 import androidx.compose.material3.MaterialTheme.typography
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.rememberCoroutineScope
@@ -65,6 +66,7 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import project.main.uniclash.datatypes.CustomColor
 
 
 class StudentHubActivity : ComponentActivity() {
@@ -226,6 +228,7 @@ fun ItemRow(
         Spacer(modifier = Modifier.weight(1f))
 
         Button(
+            colors = ButtonDefaults.buttonColors(containerColor = CustomColor.DarkPurple.getColor()),
             modifier = Modifier
                 .width(100.dp)
                 .padding(end = 16.dp),
@@ -236,7 +239,7 @@ fun ItemRow(
             },
             enabled = !isLoading // Enable the button only if not loading
         ) {
-            Text(text = "Buy")
+            Text(text = "Buy", color =Color.White)
         }
     }
 }
@@ -265,13 +268,13 @@ fun ItemImage(itemTemplate: ItemTemplate, modifier: Modifier) {
         Text(
             text = itemTemplate.name,
             fontSize = 18.sp,
-            color = MaterialTheme.colorScheme.secondary,
+            color = Color.DarkGray,
             style = MaterialTheme.typography.titleSmall
         )
         Text(
             text = "Price: ${itemTemplate.cost}",
             fontSize = 12.sp,
-            color = MaterialTheme.colorScheme.secondary,
+            color = Color.DarkGray,
             style = MaterialTheme.typography.titleSmall
         )
         Spacer(modifier = Modifier.height(8.dp))
@@ -291,7 +294,7 @@ fun Credits(modifier: Modifier, credits: Int) {
     Box(
         modifier = Modifier
             .padding(all = 8.dp)
-            .background(MaterialTheme.colorScheme.primary, shape = RoundedCornerShape(8.dp))
+            .background(Color.LightGray, shape = RoundedCornerShape(8.dp))
             .padding(8.dp)
     ) {
 
@@ -311,7 +314,7 @@ fun Credits(modifier: Modifier, credits: Int) {
             Text(
                 text = "$credits",
                 fontSize = 18.sp,
-                color = MaterialTheme.colorScheme.inverseOnSurface,
+                color = Color.DarkGray,
                 style = MaterialTheme.typography.titleSmall
             )
         }

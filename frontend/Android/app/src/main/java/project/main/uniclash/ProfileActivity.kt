@@ -106,7 +106,7 @@ class ProfileActivity : ComponentActivity() {
                                         Text(
                                             text = "Loading profile...",
                                             fontSize = 18.sp,
-                                            color = MaterialTheme.colorScheme.secondary,
+                                            color = Color.DarkGray,
                                             style = MaterialTheme.typography.titleSmall
                                         )
 
@@ -147,7 +147,7 @@ class ProfileActivity : ComponentActivity() {
                                         Text(
                                             text = text,
                                             fontSize = 18.sp,
-                                            color = MaterialTheme.colorScheme.secondary,
+                                            color = Color.DarkGray,
                                             style = MaterialTheme.typography.titleSmall
                                         )
 
@@ -186,6 +186,7 @@ fun MenuHeader() {
     ) {
         Text(
             text = "Profile",
+            color = Color.Black,
             fontSize = 50.sp, // Adjust the font size as needed
             fontWeight = FontWeight.Bold, // Use FontWeight.Bold for bold text
             textAlign = TextAlign.Start,
@@ -216,13 +217,13 @@ fun PlayerProfile(profileViewModel: ProfileViewModel) {
                     Text(
                         text = "Trainer: ${userUIState.user!!.name}",
                         fontSize = 18.sp,
-                        color = MaterialTheme.colorScheme.secondary,
+                        color = Color.DarkGray,
                         style = MaterialTheme.typography.titleSmall
                     )
                     Text(
                         text = "Trainer Level: ${userUIState.user?.student?.level}",
                         fontSize = 18.sp,
-                        color = MaterialTheme.colorScheme.secondary,
+                        color = Color.DarkGray,
                         style = MaterialTheme.typography.titleSmall
                     )
                     Spacer(modifier = Modifier.height(8.dp))
@@ -250,7 +251,7 @@ fun PlayerProfile(profileViewModel: ProfileViewModel) {
                         Text(
                             text = "Current XP: ${userUIState.user?.student?.expToNextLevel}",
                             fontSize = 18.sp,
-                            color = MaterialTheme.colorScheme.secondary,
+                            color = Color.DarkGray,
                             style = MaterialTheme.typography.titleSmall
                         )
                         Spacer(modifier = Modifier.width(2.dp))
@@ -264,13 +265,13 @@ fun PlayerProfile(profileViewModel: ProfileViewModel) {
                     Text(
                         text = "Credits: ${userUIState.user?.student?.credits}",
                         fontSize = 18.sp,
-                        color = MaterialTheme.colorScheme.secondary,
+                        color = Color.DarkGray,
                         style = MaterialTheme.typography.titleSmall
                     )
                     Text(
                         text = "Amount of buildings placed: ${userUIState.user?.student?.placedBuildings}",
                         fontSize = 18.sp,
-                        color = MaterialTheme.colorScheme.secondary,
+                        color = Color.DarkGray,
                         style = MaterialTheme.typography.titleSmall
                     )
 

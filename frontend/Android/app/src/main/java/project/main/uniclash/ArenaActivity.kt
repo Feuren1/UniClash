@@ -62,6 +62,7 @@ import project.main.uniclash.retrofit.ArenaService
 import project.main.uniclash.retrofit.StudentService
 import project.main.uniclash.ui.theme.UniClashTheme
 import project.main.uniclash.dataManagers.UserDataManager
+import project.main.uniclash.datatypes.CustomColor
 import project.main.uniclash.viewmodels.ArenaViewModel
 import project.main.uniclash.viewmodels.StudentViewModel
 
@@ -121,7 +122,7 @@ class ArenaActivity : ComponentActivity() {
                                     painter = painterResource(id = R.drawable.exit),
                                     contentDescription = null,
                                     modifier = Modifier
-                                        .size(40.dp)
+                                        .size(50.dp)
                                         .clickable {
                                             exitRequest = true
                                         }
@@ -214,6 +215,7 @@ class ArenaActivity : ComponentActivity() {
     fun startBattleButton() {
         if(arenaViewModel.checkIfCritterIsSelected()) {
             Button(
+                colors = ButtonDefaults.buttonColors(containerColor = CustomColor.DarkPurple.getColor()),
                 onClick = {
                     val intent = Intent(this, FinalBattleActivity::class.java)
                     // creating a bundle object
@@ -236,17 +238,18 @@ class ArenaActivity : ComponentActivity() {
                     .fillMaxWidth()
                     .padding(8.dp)
             ) {
-                Text("Start Battle", style = MaterialTheme.typography.labelMedium)
+                Text("Start Battle", style = MaterialTheme.typography.labelMedium, color = Color.White)
             }
         } else {
             Button(
+                colors = ButtonDefaults.buttonColors(containerColor = CustomColor.DarkPurple.getColor()),
                 onClick = {
                 },
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(8.dp)
             ) {
-                Text("No Critter to fight selected.", style = MaterialTheme.typography.labelMedium)
+                Text("No Critter to fight selected.", style = MaterialTheme.typography.labelMedium, color = Color.White)
             }
         }
     }
@@ -254,6 +257,7 @@ class ArenaActivity : ComponentActivity() {
     @Composable
     fun addCritterToArenaButton() {
         Button(
+            colors = ButtonDefaults.buttonColors(containerColor = CustomColor.DarkPurple.getColor()),
             onClick = {
                 val intent = Intent(this, AddCritterToArenaActivity::class.java)
                 // creating a bundle object
@@ -268,7 +272,7 @@ class ArenaActivity : ComponentActivity() {
                 .fillMaxWidth()
                 .padding(8.dp)
         ) {
-            Text("Add Critter to Arena", style = MaterialTheme.typography.labelMedium)
+            Text("Add Critter to Arena", style = MaterialTheme.typography.labelMedium, color = Color.White)
         }
     }
     @Composable
@@ -302,20 +306,20 @@ class ArenaActivity : ComponentActivity() {
                     Text(
                         text = critter.name,
                         fontSize = 18.sp,
-                        color = MaterialTheme.colorScheme.secondary,
+                        color = Color.DarkGray,
                         style = MaterialTheme.typography.titleSmall
                     )
                     Row {
                         Text(
                             text = "Level: ${critter.level} ",
                             fontSize = 12.sp,
-                            color = MaterialTheme.colorScheme.secondary,
+                            color = Color.DarkGray,
                             style = MaterialTheme.typography.titleSmall
                         )
                         Text(
                             text = "Stats: HP: ${critter.hp} ATK: ${critter.atk} DEF: ${critter.def} SPD: ${critter.spd}",
                             fontSize = 12.sp,
-                            color = MaterialTheme.colorScheme.secondary,
+                            color = Color.DarkGray,
                             style = MaterialTheme.typography.titleSmall
                         )
                     }
@@ -348,14 +352,14 @@ class ArenaActivity : ComponentActivity() {
                     Text(
                         text = "Owner ID: " + student.id.toString(),
                         fontSize = 18.sp,
-                        color = MaterialTheme.colorScheme.secondary,
+                        color = Color.DarkGray,
                         style = MaterialTheme.typography.titleSmall
                     )
                     Row {
                         Text(
                             text = "Student Level: ${student.level} ",
                             fontSize = 12.sp,
-                            color = MaterialTheme.colorScheme.secondary,
+                            color = Color.DarkGray,
                             style = MaterialTheme.typography.titleSmall
                         )
                     }
@@ -363,7 +367,7 @@ class ArenaActivity : ComponentActivity() {
                         Text(
                             text = "Stats: Amount of Buildings Placed: ${student.placedBuildings} Credits: ${student.credits}",
                             fontSize = 12.sp,
-                            color = MaterialTheme.colorScheme.secondary,
+                            color = Color.DarkGray,
                             style = MaterialTheme.typography.titleSmall
                         )
                     }

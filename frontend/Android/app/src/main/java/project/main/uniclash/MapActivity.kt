@@ -29,6 +29,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -65,6 +66,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import org.osmdroid.util.GeoPoint
 import project.main.uniclash.datatypes.Counter
+import project.main.uniclash.datatypes.CustomColor
 import project.main.uniclash.datatypes.Locations
 import project.main.uniclash.datatypes.MapSaver
 import project.main.uniclash.datatypes.MapSettings
@@ -155,14 +157,11 @@ class MapActivity : ComponentActivity() {
                 mapMarkerListViewModel.addListOfMarkersQ(MapSaver.STUDENTHUB.getMarker()!!)
             }
 
-            if(MapSaver.STUDENT.getMarker().isEmpty()) {
                 mapMarkerViewModel.loadStudents()
                 val markersStudentUIState by mapMarkerViewModel.markersStudent.collectAsState()
+            if(markersStudentUIState.makersStudent != null) {
                 val studentMarkers = markersStudentUIState.makersStudent
                 mapMarkerListViewModel.addListOfMarkersQ(studentMarkers)
-                MapSaver.STUDENT.setMarker(studentMarkers)
-            } else{
-                mapMarkerListViewModel.addListOfMarkersQ(MapSaver.STUDENT.getMarker()!!)
             }
 
             if(MapSaver.ARENA.getMarker().isEmpty()) {
@@ -299,19 +298,19 @@ class MapActivity : ComponentActivity() {
                 }
 
                 //Student Location will not refresh anymore
-                /*if(Counter.RESPAWN.getCounter() % 20 == 0){
-                    mapMarkerListViewModel.removeMarkersQ(MapSaver.STUDENT.getMarker())
-                    MapSaver.STUDENT.setMarker(ArrayList<MarkerData?>())
-                    mapMarkerViewModel.students.value.students = emptyList()
+                if(Counter.RESPAWN.getCounter() % 20 == 0){
+                    //mapMarkerListViewModel.removeMarkersQ(MapSaver.STUDENT.getMarker())
+                    //MapSaver.STUDENT.setMarker(ArrayList<MarkerData?>())
+                    //mapMarkerViewModel.students.value.students = emptyList()
                     mapMarkerViewModel.loadStudents()
                 }
-                if(Counter.RESPAWN.getCounter() % 20 == 2){
+                /*if(Counter.RESPAWN.getCounter() % 20 == 2){
                     mapMarkerListViewModel.removeMarkersQ(MapSaver.STUDENT.getMarker())
                     mapMarkerListViewModel.addListOfMarkersQ(MapSaver.STUDENT.getMarker())
                 }*/
 
                 //is now working without OpenActivityButton() and could be move out to view model
-                if(numberOfMarkersOnMap < 800 && Counter.RESPAWN.getCounter()>5&&Counter.RESPAWN.getCounter()<295){
+                if(numberOfMarkersOnMap < 800 && Counter.RESPAWN.getCounter()>5&&Counter.RESPAWN.getCounter()<298){
                     println("complete map reload")
                     mapMarkerListViewModel.removeMarkersQ(MapSaver.WILDENCOUNTER.getMarker())
                     mapMarkerListViewModel.addListOfMarkersQ(MapSaver.WILDENCOUNTER.getMarker())
@@ -361,44 +360,62 @@ class MapActivity : ComponentActivity() {
                         LOCATION_TAG,
                         "set marker"
                     )
+                            val state = rememberMarkerState(
+                                geoPoint = marker.state
+                            )
 
-                    val state = rememberMarkerState(
-                        geoPoint = marker.state
-                        )
+                            numberOfMarkersOnMap++
 
-                        numberOfMarkersOnMap ++
-
-                    Marker(
-                        state = state,
-                        icon = marker.icon,
-                        title = marker.title,
-                        snippet = marker.snippet,
-                        visible = if(marker is MarkerWildEncounter && distance > critterVisibility){false}else{marker.visible},
-                    ) {
-                        if (distance < 501 || marker is MarkerStudent) {
-                            Column(
-                                modifier = Modifier
-                                    .size(325.dp, 400.dp)
-                                    .background(
-                                        color = Color.Black.copy(alpha = 0.75f),
-                                        shape = RoundedCornerShape(7.dp)
-                                    ),
-                                verticalArrangement = Arrangement.Center,
-                                horizontalAlignment = Alignment.CenterHorizontally
+                            Marker(
+                                state = state,
+                                icon = marker.icon,
+                                title = marker.title,
+                                snippet = marker.snippet,
+                                visible = if (marker is MarkerWildEncounter && distance > critterVisibility) {
+                                    false
+                                } else {
+                                    marker.visible
+                                },
                             ) {
-                                Text(text = marker.title!!, fontSize = 20.sp, color = Color.White)
-                                Text(text = marker.snippet!!, fontSize = 15.sp, color = Color.White)
-                                Text(text = "${geoCodingHelper.getAddressFromLocation(marker.state.latitude,marker.state.longitude)}", fontSize = 15.sp, color = Color.White)
-                                Spacer(modifier = Modifier.height(8.dp))
-                                Image(
-                                    painter = rememberImagePainter(marker.pic),
-                                    contentDescription = null, // Provide a proper content description if needed
-                                    modifier = Modifier.size(235.dp) // Adjust size as needed
-                                )
-                                OpenActivityButton(marker)
+                                if (distance < 251 || !(marker is MarkerWildEncounter)) {
+                                    Column(
+                                        modifier = Modifier
+                                            .size(325.dp, 400.dp)
+                                            .background(
+                                                color = Color.Black.copy(alpha = 0.75f),
+                                                shape = RoundedCornerShape(7.dp)
+                                            ),
+                                        verticalArrangement = Arrangement.Center,
+                                        horizontalAlignment = Alignment.CenterHorizontally
+                                    ) {
+                                        Text(
+                                            text = marker.title!!,
+                                            fontSize = 20.sp,
+                                            color = Color.White
+                                        )
+                                        Text(
+                                            text = marker.snippet!!,
+                                            fontSize = 15.sp,
+                                            color = Color.White
+                                        )
+                                        Text(
+                                            text = "${
+                                                geoCodingHelper.getAddressFromLocation(
+                                                    marker.state.latitude,
+                                                    marker.state.longitude
+                                                )
+                                            }", fontSize = 15.sp, color = Color.White
+                                        )
+                                        Spacer(modifier = Modifier.height(8.dp))
+                                        Image(
+                                            painter = rememberImagePainter(marker.pic),
+                                            contentDescription = null, // Provide a proper content description if needed
+                                            modifier = Modifier.size(235.dp) // Adjust size as needed
+                                        )
+                                        OpenActivityButton(marker)
+                                    }
+                                }
                             }
-                        }
-                    }
                 }
                 Marker(
                     state = gpsLocation,
@@ -498,7 +515,7 @@ class MapActivity : ComponentActivity() {
                         MapSettings.MOVINGCAMERA.setMapSetting(!MapSettings.MOVINGCAMERA.getMapSetting())
                     }
             )
-            if(Counter.FIRSTSPAWN.getCounter()<1&&Counter.RESPAWN.getCounter()<280&&Counter.RESPAWN.getCounter()>5) {
+            if(Counter.FIRSTSPAWN.getCounter()<1&&Counter.RESPAWN.getCounter()<290&&Counter.RESPAWN.getCounter()>5) {
                 Image(
                     painter = fartSpray,
                     contentDescription = null,
@@ -545,7 +562,7 @@ class MapActivity : ComponentActivity() {
     fun FartSprayInfo() {
         val usedItem = mapItemViewModel.useFartSpray.collectAsState()
         if(usedItem.value.canBeUsed == 0){
-            Toast.makeText(baseContext, "No fart spray was used.", Toast.LENGTH_SHORT).show()
+            Toast.makeText(baseContext, "No fart spray was used.\nCheck your inventory.", Toast.LENGTH_SHORT).show()
             mapItemViewModel.resetCanBeUsedValue()
         } else if (usedItem.value.canBeUsed == 1) {
             Toast.makeText(baseContext, "You used a fart spray.", Toast.LENGTH_SHORT).show()
@@ -574,7 +591,7 @@ class MapActivity : ComponentActivity() {
                         Text(
                             text = "Use a fart spray to respawn all critters.",
                             fontSize = 18.sp,
-                            color = MaterialTheme.colorScheme.secondary,
+                            color = Color.DarkGray,
                             style = MaterialTheme.typography.titleSmall
                         )
                     }
@@ -582,6 +599,7 @@ class MapActivity : ComponentActivity() {
                     Spacer(modifier = Modifier.height(16.dp))
 
                     Button(
+                        colors = ButtonDefaults.buttonColors(containerColor = CustomColor.DarkPurple.getColor()),
                         onClick = {
                             mapItemViewModel.useFartSpray()
                             openFartSprayInfo = false
@@ -590,18 +608,19 @@ class MapActivity : ComponentActivity() {
                             .fillMaxWidth()
                             .height(50.dp)
                     ) {
-                        Text(text = "Use spray")
+                        Text(text = "Use spray",color = Color.White, fontWeight = FontWeight.Bold)
                     }
 
                     Spacer(modifier = Modifier.height(8.dp))
 
                     Button(
+                        colors = ButtonDefaults.buttonColors(containerColor = CustomColor.DarkPurple.getColor()),
                         onClick = { openFartSprayInfo = false },
                         modifier = Modifier
                             .fillMaxWidth()
                             .height(50.dp)
                     ) {
-                        Text(text = "No thanks")
+                        Text(text = "No thanks",color = Color.White, fontWeight = FontWeight.Bold)
                     }
                 }
             }
@@ -614,6 +633,7 @@ class MapActivity : ComponentActivity() {
         val distance = mapCalculations.distance(marker.state.latitude, marker.state.longitude, Locations.USERLOCATION.getLocation().latitude, Locations.USERLOCATION.getLocation().longitude)
         if(distance < 76 ||marker is MarkerStudent) {
             Button(
+                colors = ButtonDefaults.buttonColors(containerColor = CustomColor.DarkPurple.getColor()),
                 onClick = {
                     // Handle the button click to open the new activity here
                     SelectedMarker.SELECTEDMARKER.setMarker(marker)
@@ -627,7 +647,7 @@ class MapActivity : ComponentActivity() {
                     .height(50.dp)
 
             ) {
-                Text("${marker.buttonText}")
+                Text("${marker.buttonText}", color = Color.White, fontWeight = FontWeight.Bold)
             }
         } else {
             Text(text ="to far away", color = Color.White, fontWeight = FontWeight.Bold)

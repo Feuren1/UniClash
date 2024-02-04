@@ -26,6 +26,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -46,6 +47,7 @@ import androidx.compose.ui.unit.sp
 import kotlinx.coroutines.flow.collect
 import org.osmdroid.util.GeoPoint
 import project.main.uniclash.datatypes.CritterUsable
+import project.main.uniclash.datatypes.CustomColor
 import project.main.uniclash.datatypes.Locations
 import project.main.uniclash.datatypes.MapSaver
 import project.main.uniclash.datatypes.MarkerWildEncounter
@@ -143,14 +145,16 @@ class WildEncounterActivity : ComponentActivity() {
 
                         // Add a button to request location permissions and start the map
                         Button(
+                            colors = ButtonDefaults.buttonColors(containerColor = CustomColor.DarkPurple.getColor()),
                             modifier = Modifier
                                 .fillMaxWidth(),
                             onClick = {
                                 reCalculate = wildEncounterViewModel.useChocolatewaffle()
                             }) {
-                            Text(text = "feed me!")
+                            Text(text = "feed me!" , color = Color.White, fontWeight = FontWeight.Bold)
                         }
                         Button(
+                            colors = ButtonDefaults.buttonColors(containerColor = CustomColor.DarkPurple.getColor()),
                             modifier = Modifier
                                 .fillMaxWidth(),
                             onClick = {
@@ -159,7 +163,7 @@ class WildEncounterActivity : ComponentActivity() {
                             MapSaver.WILDENCOUNTER.setMarker(wildencounterList)
                             catchCritter = true
                         }) {
-                            Text(text = "catch me!")
+                            Text(text = "catch me!", color = Color.White, fontWeight = FontWeight.Bold)
                         }
                     }
                 }

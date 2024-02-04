@@ -518,7 +518,7 @@ class MapMarkerViewModel(
             MapSaver.WILDENCOUNTER.setMarker(ArrayList<MarkerData?>())
         }
 
-        if(Counter.RESPAWN.getCounter() < -4 && Counter.FIRSTSPAWN.getCounter() < 1){
+        if(Counter.RESPAWN.getCounter() < -1 && Counter.FIRSTSPAWN.getCounter() < 1){
             loadWildEncounter()
             Counter.RESPAWN.setCounter(300)
         }

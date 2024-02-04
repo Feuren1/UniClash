@@ -55,6 +55,7 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import project.main.uniclash.datatypes.AttackType
 import project.main.uniclash.datatypes.CritterUsable
+import project.main.uniclash.datatypes.CustomColor
 import project.main.uniclash.retrofit.CritterService
 import project.main.uniclash.retrofit.InventoryService
 import project.main.uniclash.ui.theme.UniClashTheme
@@ -155,12 +156,12 @@ class CritterProfileActivity : ComponentActivity() {
                     .height(250.dp)
                     .fillMaxWidth()
                     .background(
-                        MaterialTheme.colorScheme.onPrimaryContainer,
+                        CustomColor.DarkPurple.getColor(),
                         shape = RoundedCornerShape(8.dp),
                     )
                     .border(
                         3.dp,
-                        MaterialTheme.colorScheme.primary,
+                        CustomColor.Purple.getColor(),
                         shape = RoundedCornerShape(8.dp),
                     )
                     .wrapContentSize(Alignment.Center),
@@ -212,7 +213,7 @@ class CritterProfileActivity : ComponentActivity() {
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .padding(8.dp),
-                            colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.error),
+                            colors = ButtonDefaults.buttonColors(containerColor = Color.Red),
                         ) {
                             Text(text = "Close")
                         }
@@ -233,12 +234,12 @@ class CritterProfileActivity : ComponentActivity() {
                     .height(200.dp)
                     .fillMaxWidth()
                     .background(
-                        MaterialTheme.colorScheme.onPrimaryContainer,
+                        CustomColor.DarkPurple.getColor(),
                         shape = RoundedCornerShape(8.dp),
                     )
                     .border(
                         3.dp,
-                        MaterialTheme.colorScheme.primary,
+                        CustomColor.Purple.getColor(),
                         shape = RoundedCornerShape(8.dp),
                     )
                     .wrapContentSize(Alignment.Center),
@@ -276,7 +277,7 @@ class CritterProfileActivity : ComponentActivity() {
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .padding(8.dp),
-                            colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.error),
+                            colors = ButtonDefaults.buttonColors(containerColor = Color.Red),
                         ) {
                             Text(text = "kill him")
                         }
@@ -306,12 +307,12 @@ class CritterProfileActivity : ComponentActivity() {
                     .height(200.dp)
                     .fillMaxWidth()
                     .background(
-                        MaterialTheme.colorScheme.onPrimaryContainer,
+                        CustomColor.DarkPurple.getColor(),
                         shape = RoundedCornerShape(8.dp),
                     )
                     .border(
                         3.dp,
-                        MaterialTheme.colorScheme.primary,
+                        CustomColor.Purple.getColor(),
                         shape = RoundedCornerShape(8.dp),
                     )
                     .wrapContentSize(Alignment.Center),
@@ -364,7 +365,7 @@ class CritterProfileActivity : ComponentActivity() {
                             Text(text = "Evolve")
                         }
                         Button(
-                            colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.error),
+                            colors = ButtonDefaults.buttonColors(containerColor = Color.Red),
                             onClick = { evoWindow = false },
                             modifier = Modifier
                                 .fillMaxWidth()
@@ -473,12 +474,12 @@ class CritterProfileActivity : ComponentActivity() {
                                 modifier = Modifier
                                     .fillMaxWidth()
                                     .background(
-                                        MaterialTheme.colorScheme.onPrimaryContainer,
+                                        CustomColor.DarkPurple.getColor(),
                                         shape = RoundedCornerShape(8.dp)
                                     )
                                     .border(
                                         3.dp,
-                                        MaterialTheme.colorScheme.primary,
+                                        CustomColor.Purple.getColor(),
                                         shape = RoundedCornerShape(8.dp)
                                     )
                                     .padding(16.dp)
@@ -546,12 +547,12 @@ class CritterProfileActivity : ComponentActivity() {
                                 modifier = Modifier
                                     .fillMaxWidth()
                                     .background(
-                                        MaterialTheme.colorScheme.onPrimaryContainer,
+                                        CustomColor.DarkPurple.getColor(),
                                         shape = RoundedCornerShape(8.dp)
                                     )
                                     .border(
                                         3.dp,
-                                        MaterialTheme.colorScheme.primary,
+                                        CustomColor.Purple.getColor(),
                                         shape = RoundedCornerShape(8.dp)
                                     )
                                     .padding(16.dp)
@@ -594,12 +595,12 @@ class CritterProfileActivity : ComponentActivity() {
                                     modifier = Modifier
                                         .fillMaxWidth()
                                         .background(
-                                            MaterialTheme.colorScheme.onPrimaryContainer,
+                                            CustomColor.DarkPurple.getColor(),
                                             shape = RoundedCornerShape(8.dp)
                                         )
                                         .border(
                                             3.dp,
-                                            MaterialTheme.colorScheme.primary,
+                                            CustomColor.Purple.getColor(),
                                             shape = RoundedCornerShape(8.dp)
                                         )
                                         .padding(16.dp)
@@ -638,18 +639,18 @@ class CritterProfileActivity : ComponentActivity() {
                                 modifier = Modifier
                                     .fillMaxWidth()
                                     .padding(8.dp),
-                                colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.onPrimaryContainer),
+                                colors = ButtonDefaults.buttonColors(containerColor = CustomColor.DarkPurple.getColor()),
                             ) {
-                                Text(text = if(!isSelectedUIState.isSelected){"Select this critter to fight!"} else{"This critter is selected for further fights!"})
+                                Text(text = if(!isSelectedUIState.isSelected){"Select this critter to fight!"} else{"This critter is selected for further fights!"},color = Color.White)
                             }
                             Button(
                                 onClick = {delWindow = true},
                                 modifier = Modifier
                                     .fillMaxWidth()
                                     .padding(8.dp),
-                                colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.error),
+                                colors = ButtonDefaults.buttonColors(containerColor = Color.Red),
                             ) {
-                                Text(text = "Delete Critter :(")
+                                Text(text = "Delete Critter :(",color = Color.White)
                             }
                         }
                     }

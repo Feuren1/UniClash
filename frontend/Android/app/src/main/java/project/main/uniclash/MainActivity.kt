@@ -20,15 +20,18 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
@@ -37,6 +40,7 @@ import com.google.firebase.messaging.FirebaseMessaging
 import kotlinx.coroutines.runBlocking
 import project.main.uniclash.retrofit.UserService
 import project.main.uniclash.dataManagers.UserDataManager
+import project.main.uniclash.datatypes.CustomColor
 import project.main.uniclash.viewmodels.ProfileViewModel
 
 val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = "UserData")
@@ -119,6 +123,7 @@ class MainActivity : ComponentActivity() {
     fun OpenLoginActivityButton() {
         val context = LocalContext.current
         Button(
+            colors = ButtonDefaults.buttonColors(containerColor = CustomColor.DarkPurple.getColor()),
            onClick = {
         val intent = Intent(context, LoginActivity::class.java)
         this.startActivity(intent)
@@ -130,7 +135,7 @@ class MainActivity : ComponentActivity() {
                .height(50.dp)
 
          ) {
-           Text("Log in")
+           Text("Log in",color = Color.White, fontWeight = FontWeight.Bold)
          }
     }
 
@@ -138,6 +143,7 @@ class MainActivity : ComponentActivity() {
     fun OpenRegisterActivityButton() {
         val context = LocalContext.current
         Button(
+            colors = ButtonDefaults.buttonColors(containerColor = CustomColor.DarkPurple.getColor()),
             onClick = {
                 val intent = Intent(context, RegisterActivity::class.java)
                 this.startActivity(intent)
@@ -149,7 +155,7 @@ class MainActivity : ComponentActivity() {
                 .height(50.dp)
 
         ) {
-            Text("Register")
+            Text("Register",color = Color.White, fontWeight = FontWeight.Bold)
         }
     }
 
@@ -157,6 +163,7 @@ class MainActivity : ComponentActivity() {
     fun OpenProfileActivityButton() {
         val context = LocalContext.current
         Button(
+            colors = ButtonDefaults.buttonColors(containerColor = CustomColor.DarkPurple.getColor()),
             onClick = {
                 val intent = Intent(context, ProfileActivity::class.java)
                 this.startActivity(intent)
@@ -168,7 +175,7 @@ class MainActivity : ComponentActivity() {
                 .height(50.dp)
 
         ) {
-            Text("Go to old session")
+            Text("Go to old session",color = Color.White, fontWeight = FontWeight.Bold)
         }
     }
     // typically you want to retrieve the device token when the user logs in and save

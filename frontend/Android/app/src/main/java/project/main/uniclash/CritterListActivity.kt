@@ -147,7 +147,7 @@ class CritterListActivity : ComponentActivity() {
     @Composable
     fun CritterDetail(critter: CritterUsable?) {
         var blockColor : Color = Color.LightGray
-        var textColor : Color = MaterialTheme.colorScheme.secondary
+        var textColor : Color = Color.DarkGray
         var selectedText = ""
         if(uniClashViewModel.checkIfSelectedCritter(critter!!.critterId)){
             blockColor = MaterialTheme.colorScheme.onPrimaryContainer

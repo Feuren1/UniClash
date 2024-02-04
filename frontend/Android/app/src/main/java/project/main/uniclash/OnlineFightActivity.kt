@@ -67,6 +67,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collect
 import project.main.uniclash.datatypes.CritterInFightInformation
 import project.main.uniclash.datatypes.CritterUsable
+import project.main.uniclash.datatypes.CustomColor
 import project.main.uniclash.datatypes.OnlineFightState
 import project.main.uniclash.retrofit.CritterService
 import project.main.uniclash.ui.theme.UniClashTheme
@@ -234,7 +235,7 @@ class OnlineFightActivity : ComponentActivity() {
                                 modifier = Modifier
                                     .fillMaxWidth()
                                     .padding(16.dp),
-                                colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.onPrimaryContainer),
+                                colors = ButtonDefaults.buttonColors(containerColor = CustomColor.DarkPurple.getColor()),
                             ) {
                                 Text(
                                     text = "Execute attack!",
@@ -391,7 +392,7 @@ class OnlineFightActivity : ComponentActivity() {
                 .height(120.dp)
                 //.background(MaterialTheme.colorScheme.primary)
                 .background(
-                    MaterialTheme.colorScheme.onPrimaryContainer,
+                    CustomColor.DarkPurple.getColor(),
                     shape = RoundedCornerShape(8.dp)
                 )
                 .border(
@@ -401,7 +402,7 @@ class OnlineFightActivity : ComponentActivity() {
                         0.dp // Kein Rahmen, wenn myTurn falsch ist
                     },
                     if (myTurn) {
-                        MaterialTheme.colorScheme.primary // Farbe des Rahmens für myTurn
+                        CustomColor.Purple.getColor() // Farbe des Rahmens für myTurn
                     } else {
                         Color.Transparent // Transparenter Rahmen, wenn myTurn falsch ist
                     },
@@ -483,9 +484,9 @@ class OnlineFightActivity : ComponentActivity() {
                 }
                 //.fillMaxWidth()
                 .height(90.dp)
-                //.background(MaterialTheme.colorScheme.primary)
+                //.background(CustomColor.Purple.getColor())
                 .background(
-                    MaterialTheme.colorScheme.onPrimaryContainer,
+                    CustomColor.DarkPurple.getColor(),
                     shape = RoundedCornerShape(8.dp)
                 )
                 .border(
@@ -495,7 +496,7 @@ class OnlineFightActivity : ComponentActivity() {
                         0.dp
                     },
                     if (selected) {
-                        MaterialTheme.colorScheme.primary
+                        CustomColor.Purple.getColor()
                     } else {
                         Color.Transparent
                     },
@@ -562,12 +563,12 @@ class OnlineFightActivity : ComponentActivity() {
                     .height(150.dp)
                     .fillMaxWidth()
                     .background(
-                        MaterialTheme.colorScheme.onPrimaryContainer,
+                        CustomColor.DarkPurple.getColor(),
                         shape = RoundedCornerShape(8.dp),
                     )
                     .border(
                         3.dp,
-                        MaterialTheme.colorScheme.primary,
+                        CustomColor.Purple.getColor(),
                         shape = RoundedCornerShape(8.dp),
                     )
                     .wrapContentSize(Alignment.Center),
@@ -639,12 +640,12 @@ class OnlineFightActivity : ComponentActivity() {
                     .height(150.dp)
                     .fillMaxWidth()
                     .background(
-                        MaterialTheme.colorScheme.onPrimaryContainer,
+                        CustomColor.DarkPurple.getColor(),
                         shape = RoundedCornerShape(8.dp),
                     )
                     .border(
                         3.dp,
-                        MaterialTheme.colorScheme.primary,
+                        CustomColor.Purple.getColor(),
                         shape = RoundedCornerShape(8.dp),
                     )
                     .wrapContentSize(Alignment.Center),
@@ -699,7 +700,7 @@ class OnlineFightActivity : ComponentActivity() {
                 }
                 .height(75.dp)
                 .background(
-                    MaterialTheme.colorScheme.onPrimaryContainer,
+                    CustomColor.DarkPurple.getColor(),
                     shape = RoundedCornerShape(8.dp)
                 )
                 .padding(16.dp)

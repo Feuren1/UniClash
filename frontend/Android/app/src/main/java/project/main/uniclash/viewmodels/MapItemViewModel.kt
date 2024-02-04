@@ -51,7 +51,7 @@ class MapItemViewModel(private val inventoryService: InventoryService,) : ViewMo
                         Log.d(TAG, "Success: ${response.body()}")
                         response.body()?.let {
                             if (it) {
-                                Counter.RESPAWN.setCounter(5)
+                                Counter.RESPAWN.setCounter(3)
                                 useFartSpray.update { state ->
                                     state.copy(canBeUsed = 1, isLoading = false)
                                 }

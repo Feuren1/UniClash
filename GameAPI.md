@@ -110,5 +110,5 @@ Ep per catch: 25<br>
 Coins per fight Win: 5 <br>
 Ep per fight Win: 200<br>
 Coins per captured Arena: 7<br>
-Ep per captured Arena: 300<br>
+Ep per captured Arena: 350<br>
 Legendary critters can not be set in arenas.<br>

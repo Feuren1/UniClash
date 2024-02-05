@@ -127,6 +127,8 @@ class MapActivity : ComponentActivity() {
 
     private var newCritterNotification by mutableStateOf(11) //time left side at the bottom
 
+    private var studentsLoaded by mutableStateOf(false) //reloads all markers
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
@@ -145,6 +147,8 @@ class MapActivity : ComponentActivity() {
             reloadMap = true
         }
 
+        mapMarkerViewModel.loadStudents()
+
         setContent {
             // todo uistate from viewmodel
             if(MapSaver.STUDENTHUB.getMarker().isEmpty()) {
@@ -157,11 +161,11 @@ class MapActivity : ComponentActivity() {
                 mapMarkerListViewModel.addListOfMarkersQ(MapSaver.STUDENTHUB.getMarker()!!)
             }
 
-                mapMarkerViewModel.loadStudents()
                 val markersStudentUIState by mapMarkerViewModel.markersStudent.collectAsState()
             if(markersStudentUIState.makersStudent != null) {
-                val studentMarkers = markersStudentUIState.makersStudent
-                mapMarkerListViewModel.addListOfMarkersQ(studentMarkers)
+                    val studentMarkers = markersStudentUIState.makersStudent
+                    MapSaver.STUNDENT.setMarker(studentMarkers)
+                    mapMarkerListViewModel.addListOfMarkersQ(studentMarkers)
             }
 
             if(MapSaver.ARENA.getMarker().isEmpty()) {
@@ -303,7 +307,7 @@ class MapActivity : ComponentActivity() {
                     //mapMarkerListViewModel.removeMarkersQ(MapSaver.STUDENT.getMarker())
                     //MapSaver.STUDENT.setMarker(ArrayList<MarkerData?>())
                     //mapMarkerViewModel.students.value.students = emptyList()
-                    mapMarkerViewModel.loadStudents()
+                    mapMarkerViewModel.loadStudentsRefresh()
                 }
                 /*if(Counter.RESPAWN.getCounter() % 20 == 2){
                     mapMarkerListViewModel.removeMarkersQ(MapSaver.STUDENT.getMarker())

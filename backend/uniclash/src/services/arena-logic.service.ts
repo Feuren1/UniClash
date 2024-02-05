@@ -64,5 +64,14 @@ export class ArenaLogicService {
     arena.invasionTime = currentTime.getMinutes()
     await this.arenaRepository.update(arena)
   }
+
+  async addEp(arenaId : number){
+    const arena = await this.arenaRepository.findById(arenaId)
+    if(arena.critterId != null && arena.studentId != null && arena.studentId != 1) {
+      await this.levelCalcCritterService.increaseCritterExp(arena.critterId, 350)
+      await this.levelCalcStudentService.increaseStudentCredits(arena.studentId, 7,350)
+
+    }
+  }
 }
 

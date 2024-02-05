@@ -205,6 +205,27 @@ class MapMarkerViewModel(
         }
     }
 
+    fun loadStudentsRefresh() {
+        viewModelScope.launch {
+            if (permissionManager.getPublishLocationPermission() == true) {
+                try {
+                    val response = studentService.getStudentLocations(
+                        userDataManager.getStudentId()!!,
+                        Locations.USERLOCATION.getLocation().latitude.toString(),
+                        Locations.USERLOCATION.getLocation().longitude.toString()
+                    ).enqueue()
+                    if (response.isSuccessful) {
+                        //creates an item list based on the fetched data
+                        val student = response.body()!!
+                        //replaces the critters list inside the UI state with the fetched data
+                    }
+                } catch (e: Exception) {
+                    e.printStackTrace()
+                }
+            }
+        }
+    }
+
     private fun initMarkersStudent() {
         if(students.value.students.isNotEmpty()) {
             this@MapMarkerViewModel.markersStudentHub.update {

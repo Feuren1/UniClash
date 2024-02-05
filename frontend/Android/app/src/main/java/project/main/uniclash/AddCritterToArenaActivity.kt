@@ -3,6 +3,7 @@ package project.main.uniclash
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
@@ -93,8 +94,10 @@ class AddCritterToArenaActivity : ComponentActivity() {
                     }
                     Row {
                         Button(onClick = {
+                            Toast.makeText(baseContext, "Critters inserted!!\n350EP for you and your critter\n7 Credits", Toast.LENGTH_LONG).show()
                             addCritterToArenaViewModel.patchArenaCritter(arenaId!!)
                             exitRequest = true
+                            finish()
                         }) {
                             Text("Insert Critter")
                         }
@@ -130,7 +133,8 @@ class AddCritterToArenaActivity : ComponentActivity() {
 
         LazyColumn {
             items(critterList) { critter ->
-                CritterDetail(critter = critter,addCritterToArenaViewModel)
+                if(critter!!.critterTemplateId != 21)CritterDetail(critter = critter,addCritterToArenaViewModel)
+                //Legendarys are not allowed :(
             }
         }
     }

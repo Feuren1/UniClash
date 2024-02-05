@@ -50,7 +50,6 @@ import project.main.uniclash.viewmodels.MenuViewModel
 
 
 class MenuActivity : ComponentActivity() {
-
     private var buttonRequest: Class<out Activity> by mutableStateOf(MainActivity::class.java)
 
     private val menuViewModel: MenuViewModel by viewModels(factoryProducer = {

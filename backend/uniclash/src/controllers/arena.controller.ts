@@ -154,6 +154,7 @@ export class ArenaController {
     arena.invasionTime = 0
     await this.arenaRepository.updateById(id, arena)
     await this.arenaLogicService.setInvasionTime(id)
+    await this.arenaLogicService.addEp(id)
   }
 
   @put('/arenas/{id}')

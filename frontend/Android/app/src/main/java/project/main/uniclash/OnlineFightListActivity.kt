@@ -146,6 +146,12 @@ class OnlineFightListActivity : ComponentActivity() {
                 textAlign = TextAlign.Start,
                 modifier = Modifier.padding(vertical = 16.dp) // Add vertical padding
             )
+            Text(
+                text = "Show fight invitations from other players.\nGo to map to invite a student.",
+                fontSize = 12.sp, // Adjust the font size as needed
+                fontWeight = FontWeight.Bold, // Use FontWeight.Bold for bold text
+                textAlign = TextAlign.Start,
+            )
         }
     }
 

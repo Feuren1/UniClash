@@ -175,11 +175,12 @@ class MapActivity : ComponentActivity() {
             }
 
             if(MapSaver.WILDENCOUNTER.getMarker().isEmpty()) {
-                mapMarkerViewModel.loadCritterUsables(1)
+                mapMarkerViewModel.loadCritterUsables()
                 val markersWildEncounterUIState by mapMarkerViewModel.markersWildEncounter.collectAsState()
                 val wildEncounterMarkers = markersWildEncounterUIState.markersWildEncounter
                 //markerList.addListOfMarkersQ(wildEncounterMarkers) //should be set in LoadFirstWildEncounter
                 MapSaver.WILDENCOUNTER.setMarker(wildEncounterMarkers)
+                println("WildEncounter stored")
             } else if (Counter.FIRSTSPAWN.getCounter() < 1){ //to avoid that wildencounter will spawn before time times to zero
                 mapMarkerListViewModel.addListOfMarkersQ(MapSaver.WILDENCOUNTER.getMarker()!!)
             }
@@ -671,7 +672,7 @@ class MapActivity : ComponentActivity() {
                      mapMarkerListViewModel.addListOfMarkersQ(MapSaver.WILDENCOUNTER.getMarker())
                 shouldLoadFirstWildEncounter = false
                 if(MapSaver.WILDENCOUNTER.getMarker().isEmpty()){
-                    mapMarkerViewModel.loadCritterUsables(1)
+                    mapMarkerViewModel.loadCritterUsables()
                     Counter.FIRSTSPAWN.setCounter(5)
                 } else {
                     alreadyLoaded = true

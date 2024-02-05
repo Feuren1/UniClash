@@ -7,14 +7,17 @@ import android.content.Context
 import android.content.Intent
 import android.os.Build
 import android.util.Log
+import android.widget.Toast
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.core.app.NotificationCompat
 import com.google.firebase.Firebase
 import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.firestore
 import com.google.firebase.messaging.FirebaseMessagingService
 import com.google.firebase.messaging.RemoteMessage
-
-
 
 const val channelId = "notification_channel"
 const val channelName = "project.main.uniclash"
@@ -29,6 +32,8 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
     }
     // Generate the notification
     private fun generateNotification(title: String, message: String) {
+        if(title.contains("opponent")) Notification.Message.setMessage(title, message)
+
         val intent = Intent(this, MainActivity::class.java)
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
 
@@ -68,6 +73,4 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
         // TODO: Send the token to your server for storage
 
     }
-
-
 }

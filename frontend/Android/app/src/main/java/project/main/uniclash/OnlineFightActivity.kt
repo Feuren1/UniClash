@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.content.Intent
 import android.media.MediaPlayer
 import android.os.Bundle
+import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
@@ -77,7 +78,10 @@ import kotlin.concurrent.timer
 
 class OnlineFightActivity : ComponentActivity() {
     private val onlineFightViewModel by viewModels<OnlineFightViewModel> {
-        OnlineFightViewModel.provideFactory(OnlineFightService.getInstance(this), CritterService.getInstance(this))
+        OnlineFightViewModel.provideFactory(
+            OnlineFightService.getInstance(this),
+            CritterService.getInstance(this)
+        )
     }
 
     private val sampleCritter = CritterInFightInformation(
@@ -101,7 +105,14 @@ class OnlineFightActivity : ComponentActivity() {
         expToNextLevel = 0,
     )
 
-    private val messages: List<String> = listOf("Good game!", "Bad game!", "I hope your Critter has health\ninsurance because it's going to need it!", "Your Critter looks like it\nlost to a mirror in a battle yesterday!", "My Critter are like math geniuses,\nthey add up your defeats!", "Get ready to be defeated\nby my coolness!")
+    private val messages: List<String> = listOf(
+        "Good game!",
+        "Bad game!",
+        "I hope your Critter has health\ninsurance because it's going to need it!",
+        "Your Critter looks like it\nlost to a mirror in a battle yesterday!",
+        "My Critter are like math geniuses,\nthey add up your defeats!",
+        "Get ready to be defeated\nby my coolness!"
+    )
 
     private var state by mutableStateOf(OnlineFightState.WAITING)
     private var myCritter by mutableStateOf(sampleCritter)
@@ -120,6 +131,7 @@ class OnlineFightActivity : ComponentActivity() {
     var exitRequest by mutableStateOf(false)
     private var mediaPlayer: MediaPlayer? = null
     private var mediaPlayerStop = false
+    private var sendInAppNotification by mutableStateOf(false)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -134,28 +146,30 @@ class OnlineFightActivity : ComponentActivity() {
             val stateUIState by onlineFightViewModel.state.collectAsState()
             state = stateUIState.state
             val critterInFightUIState by onlineFightViewModel.critterInFight.collectAsState()
-            if(critterInFightUIState.critterInFightInformation != null){
+            if (critterInFightUIState.critterInFightInformation != null) {
                 myCritter = critterInFightUIState.critterInFightInformation!!
             }
             val enemyCritterInFightUIState by onlineFightViewModel.enemyCritterInFight.collectAsState()
-            if(enemyCritterInFightUIState.critterInFightInformation != null){
+            if (enemyCritterInFightUIState.critterInFightInformation != null) {
                 enemyCritter = enemyCritterInFightUIState.critterInFightInformation!!
             }
 
             val critterUsableUIState by onlineFightViewModel.critterUsable.collectAsState()
-            if(critterUsableUIState.critterUsable != null){
+            if (critterUsableUIState.critterUsable != null) {
                 critterUsable = critterUsableUIState.critterUsable!!
                 myCritterLoaded = true
             }
             val enemyCritterUsableUIState by onlineFightViewModel.enemyCritterUsable.collectAsState()
-            if(enemyCritterUsableUIState.critterUsable != null){
+            if (enemyCritterUsableUIState.critterUsable != null) {
                 enemyCritterUsable = enemyCritterUsableUIState.critterUsable!!
                 enemyCritterLoaded = true
             }
 
             val timerUIState by onlineFightViewModel.timer.collectAsState()
             timerValue = timerUIState.timer
-            if(state != OnlineFightState.WAITING && !mediaPlayerStop)mediaPlayer?.start()
+            if (state != OnlineFightState.WAITING && !mediaPlayerStop) mediaPlayer?.start()
+
+            if(sendInAppNotification)inAppNotification()
 
             ScreenRefresher()
             UniClashTheme {
@@ -198,40 +212,53 @@ class OnlineFightActivity : ComponentActivity() {
                                 color = Color.White,
                             )
                         }
-                            Box(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .offset(y = 75.dp)
-                                    .horizontalScroll(rememberScrollState()),
-                                contentAlignment = Alignment.Center
+                        Box(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .offset(y = 75.dp)
+                                .horizontalScroll(rememberScrollState()),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Row(
                             ) {
-                                Row(
-                                ) {
-                                    if(critterUsable.attacks.isNotEmpty()) {
+                                if (critterUsable.attacks.isNotEmpty()) {
+                                    Spacer(modifier = Modifier.width(8.dp))
+                                    for (attack in critterUsable.attacks) {
+                                        var type = BattleAction.DAMAGE_DEALER
+                                        if (attack.attackType.toString()
+                                                .uppercase() == "DEF_BUFF"
+                                        ) type = BattleAction.DEF_BUFF
+                                        if (attack.attackType.toString()
+                                                .uppercase() == "ATK_BUFF"
+                                        ) type = BattleAction.ATK_BUFF
+                                        if (attack.attackType.toString()
+                                                .uppercase() == "ATK_DEBUFF"
+                                        ) type = BattleAction.ATK_DEBUFF
+                                        if (attack.attackType.toString()
+                                                .uppercase() == "DEF_DEBUFF"
+                                        ) type = BattleAction.DEF_DEBUFF
+                                        AttackBox(
+                                            attackName = attack.name,
+                                            value = attack.strength,
+                                            type = type,
+                                            selected = clickedAttack == attack.name
+                                        )
                                         Spacer(modifier = Modifier.width(8.dp))
-                                        for(attack in critterUsable.attacks) {
-                                            var type = BattleAction.DAMAGE_DEALER
-                                            if(attack.attackType.toString().uppercase() == "DEF_BUFF") type = BattleAction.DEF_BUFF
-                                            if(attack.attackType.toString().uppercase() == "ATK_BUFF") type = BattleAction.ATK_BUFF
-                                            if(attack.attackType.toString().uppercase() == "ATK_DEBUFF") type = BattleAction.ATK_DEBUFF
-                                            if(attack.attackType.toString().uppercase() == "DEF_DEBUFF") type = BattleAction.DEF_DEBUFF
-                                            AttackBox(
-                                                attackName = attack.name,
-                                                value = attack.strength,
-                                                type = type,
-                                                selected = clickedAttack == attack.name
-                                            )
-                                            Spacer(modifier = Modifier.width(8.dp))
-                                        }
                                     }
                                 }
                             }
+                        }
                         Box(
                             modifier = Modifier
-                            .offset(y = 150.dp)
+                                .offset(y = 150.dp)
                         ) {
                             Button(
-                                onClick = { onlineFightViewModel.makingDamage(selectedAttack, selectedTypOfAttack) },
+                                onClick = {
+                                    onlineFightViewModel.makingDamage(
+                                        selectedAttack,
+                                        selectedTypOfAttack
+                                    )
+                                },
                                 modifier = Modifier
                                     .fillMaxWidth()
                                     .padding(16.dp),
@@ -243,7 +270,7 @@ class OnlineFightActivity : ComponentActivity() {
                                 )
                             }
                         }
-                        }
+                    }
 
                     Box(
                         modifier = Modifier
@@ -252,7 +279,8 @@ class OnlineFightActivity : ComponentActivity() {
                         contentAlignment = Alignment.BottomCenter // Zentrieren Sie den Inhalt in der Box
                     ) {
                         Box(
-                            modifier = Modifier.fillMaxWidth()
+                            modifier = Modifier
+                                .fillMaxWidth()
                                 .offset(y = (-150).dp),
                             contentAlignment = Alignment.BottomCenter // Zentrieren Sie den Inhalt der inneren Box
                         ) {
@@ -276,16 +304,16 @@ class OnlineFightActivity : ComponentActivity() {
                         ) {
                             Row(
                             ) {
+                                Spacer(modifier = Modifier.width(8.dp))
+                                for (message in messages) {
+                                    MessageBox(message)
                                     Spacer(modifier = Modifier.width(8.dp))
-                                    for(message in messages) {
-                                        MessageBox(message)
-                                        Spacer(modifier = Modifier.width(8.dp))
-                                    }
                                 }
+                            }
                         }
                     }
-                    }
                 }
+            }
             if (exitRequest) {
                 onDestroy()
                 val intent = Intent(this, OnlineFightListActivity::class.java)
@@ -294,32 +322,33 @@ class OnlineFightActivity : ComponentActivity() {
                 exitRequest = false
             }
 
-            if(winner) EndBox(true)
-            if(loser) EndBox(false)
-            if(state == OnlineFightState.NOTFOUND)TimeOutBox()
-            }
+            if (winner) EndBox(true)
+            if (loser) EndBox(false)
+            if (state == OnlineFightState.NOTFOUND) TimeOutBox()
         }
+    }
 
     override fun onDestroy() {
         mediaPlayerStop = true
         mediaPlayer?.release()
         super.onDestroy()
     }
+
     @Composable
-    fun ScreenRefresher(){
+    fun ScreenRefresher() {
         LaunchedEffect(Unit) {
             while (true) {
                 delay(3000)
-                if(state==OnlineFightState.WAITING) onlineFightViewModel.checkIfFightCanStart()
-                if(!myCritterLoaded) onlineFightViewModel.getCritterUsable()
-                if(!enemyCritterLoaded) onlineFightViewModel.getEnemyCritterUsable()
+                if (state == OnlineFightState.WAITING) onlineFightViewModel.checkIfFightCanStart()
+                if (!myCritterLoaded) onlineFightViewModel.getCritterUsable()
+                if (!enemyCritterLoaded) onlineFightViewModel.getEnemyCritterUsable()
 
-                if(state!=OnlineFightState.WINNER && state != OnlineFightState.LOSER)onlineFightViewModel.checkMyState()
-                if(state!=OnlineFightState.WINNER && state != OnlineFightState.LOSER)onlineFightViewModel.getCritterInformation()
-                if(state!=OnlineFightState.WINNER && state != OnlineFightState.LOSER)onlineFightViewModel.getEnemyCritterInformation()
+                if (state != OnlineFightState.WINNER && state != OnlineFightState.LOSER) onlineFightViewModel.checkMyState()
+                if (state != OnlineFightState.WINNER && state != OnlineFightState.LOSER) onlineFightViewModel.getCritterInformation()
+                if (state != OnlineFightState.WINNER && state != OnlineFightState.LOSER) onlineFightViewModel.getEnemyCritterInformation()
 
-                if(state==OnlineFightState.WINNER) winner = true
-                if(state==OnlineFightState.LOSER) loser = true
+                if (state == OnlineFightState.WINNER) winner = true
+                if (state == OnlineFightState.LOSER) loser = true
             }
         }
     }
@@ -331,7 +360,8 @@ class OnlineFightActivity : ComponentActivity() {
             // Startet den Timer und aktualisiert den Wert jede Sekunde
             while (true) {
                 delay(1000)
-                if(timerValue>0)timerValue--
+                if (timerValue > 0) timerValue--
+                if(Notification.Message.containsMessage())sendInAppNotification = true
             }
         }
 
@@ -378,14 +408,41 @@ class OnlineFightActivity : ComponentActivity() {
                 )
             }
             Spacer(modifier = Modifier.height(16.dp))
-            CritterBox(enemyCritter.name,enemyCritterUsable.level,enemyCritterUsable.hp,enemyCritter.health,enemyCritter.defence,enemyCritter.attack,Color.Red, state == OnlineFightState.ENEMYTURN)
+            CritterBox(
+                enemyCritter.name,
+                enemyCritterUsable.level,
+                enemyCritterUsable.hp,
+                enemyCritter.health,
+                enemyCritter.defence,
+                enemyCritter.attack,
+                Color.Red,
+                state == OnlineFightState.ENEMYTURN
+            )
             Spacer(modifier = Modifier.height(16.dp))
-            CritterBox(myCritter.name,critterUsable.level,critterUsable.hp,myCritter.health,myCritter.defence,myCritter.attack,Color.Green, state == OnlineFightState.YOURTURN)
+            CritterBox(
+                myCritter.name,
+                critterUsable.level,
+                critterUsable.hp,
+                myCritter.health,
+                myCritter.defence,
+                myCritter.attack,
+                Color.Green,
+                state == OnlineFightState.YOURTURN
+            )
         }
     }
 
     @Composable
-    fun CritterBox(critterName : String,lvl : Int, hp : Int, currentHp: Int, def : Int, ack : Int, color : Color, myTurn : Boolean){
+    fun CritterBox(
+        critterName: String,
+        lvl: Int,
+        hp: Int,
+        currentHp: Int,
+        def: Int,
+        ack: Int,
+        color: Color,
+        myTurn: Boolean
+    ) {
         Box(
             modifier = Modifier
                 .fillMaxWidth()
@@ -412,9 +469,19 @@ class OnlineFightActivity : ComponentActivity() {
         ) {
             // Foto auf der linken Seite
             val context = LocalContext.current
-            val resourceId = context.resources.getIdentifier(critterName.lowercase(), "drawable", context.packageName)
+            val resourceId = context.resources.getIdentifier(
+                critterName.lowercase(),
+                "drawable",
+                context.packageName
+            )
             Image(
-                painter = painterResource(if(resourceId > 0){resourceId}else{R.drawable.icon}),
+                painter = painterResource(
+                    if (resourceId > 0) {
+                        resourceId
+                    } else {
+                        R.drawable.icon
+                    }
+                ),
                 contentDescription = null,
                 modifier = Modifier
                     .size(80.dp)
@@ -445,10 +512,10 @@ class OnlineFightActivity : ComponentActivity() {
                 )
                 Spacer(modifier = Modifier.height(16.dp))
                 // Balken zur Anzeige von Leben
-                    HealthBar(health = hp, currentHealth = currentHp, barColor = color)
-                }
+                HealthBar(health = hp, currentHealth = currentHp, barColor = color)
             }
         }
+    }
 
     @Composable
     fun HealthBar(
@@ -474,7 +541,7 @@ class OnlineFightActivity : ComponentActivity() {
 
     @SuppressLint("UnrememberedMutableState")
     @Composable
-    fun AttackBox(attackName : String, value : Int, type : BattleAction, selected : Boolean){
+    fun AttackBox(attackName: String, value: Int, type: BattleAction, selected: Boolean) {
         Box(
             modifier = Modifier
                 .clickable {
@@ -507,10 +574,10 @@ class OnlineFightActivity : ComponentActivity() {
             // Foto auf der linken Seite
             val context = LocalContext.current
             var resourceId = R.drawable.pow
-            if(type == BattleAction.DEF_BUFF)resourceId = R.drawable.defencebuffsymbol
-            if(type == BattleAction.ATK_BUFF)resourceId = R.drawable.attackbuffsymbol
-            if(type == BattleAction.DEF_DEBUFF)resourceId = R.drawable.defencedebuffsymbol
-            if(type == BattleAction.ATK_DEBUFF)resourceId = R.drawable.attackdebuffsymbol
+            if (type == BattleAction.DEF_BUFF) resourceId = R.drawable.defencebuffsymbol
+            if (type == BattleAction.ATK_BUFF) resourceId = R.drawable.attackbuffsymbol
+            if (type == BattleAction.DEF_DEBUFF) resourceId = R.drawable.defencedebuffsymbol
+            if (type == BattleAction.ATK_DEBUFF) resourceId = R.drawable.attackdebuffsymbol
             Row(
             ) {
                 Image(
@@ -553,7 +620,7 @@ class OnlineFightActivity : ComponentActivity() {
     }
 
     @Composable
-    fun EndBox(winner : Boolean) {
+    fun EndBox(winner: Boolean) {
         Box(
             modifier = Modifier.fillMaxSize()
         ) {
@@ -579,8 +646,8 @@ class OnlineFightActivity : ComponentActivity() {
                 ) {
                     Spacer(modifier = Modifier.height(8.dp))
                     Spacer(modifier = Modifier.width(8.dp))
-                    if(winner)GifImage(gifName = "vibe", modifier = Modifier.size(80.dp) )
-                    if(!winner)Image(
+                    if (winner) GifImage(gifName = "vibe", modifier = Modifier.size(80.dp))
+                    if (!winner) Image(
                         painter = painterResource(R.drawable.swords),
                         contentDescription = null,
                         modifier = Modifier
@@ -592,7 +659,7 @@ class OnlineFightActivity : ComponentActivity() {
                     Spacer(modifier = Modifier.width(16.dp))
                     Column(
                     ) {
-                        if(winner) {
+                        if (winner) {
                             Text(
                                 text = "Congratulations",
                                 fontWeight = FontWeight.Bold,
@@ -629,6 +696,7 @@ class OnlineFightActivity : ComponentActivity() {
             }
         }
     }
+
     @Composable
     fun TimeOutBox() {
         Box(
@@ -668,31 +736,32 @@ class OnlineFightActivity : ComponentActivity() {
                     Spacer(modifier = Modifier.width(16.dp))
                     Column(
                     ) {
-                            Text(
-                                text = "Timeout",
-                                fontWeight = FontWeight.Bold,
-                                style = MaterialTheme.typography.bodyLarge,
-                                color = Color.White,
-                                modifier = Modifier.padding(bottom = 4.dp)
-                            )
+                        Text(
+                            text = "Timeout",
+                            fontWeight = FontWeight.Bold,
+                            style = MaterialTheme.typography.bodyLarge,
+                            color = Color.White,
+                            modifier = Modifier.padding(bottom = 4.dp)
+                        )
 
-                            Text(
-                                text = "Your fight end because\nof time limitation.",
-                                style = MaterialTheme.typography.bodyLarge,
-                                color = Color.White,
-                                modifier = Modifier.padding(bottom = 4.dp)
-                            )
-                        }
-                        Spacer(modifier = Modifier.width(8.dp))
-                        Spacer(modifier = Modifier.height(16.dp))
-                        Spacer(modifier = Modifier.height(8.dp))
-            }}
+                        Text(
+                            text = "Your fight end because\nof time limitation.",
+                            style = MaterialTheme.typography.bodyLarge,
+                            color = Color.White,
+                            modifier = Modifier.padding(bottom = 4.dp)
+                        )
+                    }
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Spacer(modifier = Modifier.height(16.dp))
+                    Spacer(modifier = Modifier.height(8.dp))
+                }
+            }
         }
-        }
+    }
 
     @SuppressLint("UnrememberedMutableState")
     @Composable
-    fun MessageBox(message : String){
+    fun MessageBox(message: String) {
         Box(
             modifier = Modifier
                 .clickable {
@@ -722,7 +791,16 @@ class OnlineFightActivity : ComponentActivity() {
             }
         }
     }
+
+    @Composable
+    fun inAppNotification() {
+        if (sendInAppNotification) {
+            Toast.makeText(baseContext, Notification.Message.takeMessage(), Toast.LENGTH_LONG)
+                .show()
+            sendInAppNotification = false
+        }
     }
+}
 
 
 
@@ -732,5 +810,24 @@ enum class BattleAction {
     DEF_DEBUFF,
     ATK_BUFF,
     ATK_DEBUFF
+}
+
+enum class Notification(private var title : String, private var text : String){
+    Message("","");
+
+    fun containsMessage():Boolean{
+        return title.isNotEmpty()
+    }
+    fun takeMessage():String{
+        var message = "$title:\n$text"
+        this.text = ""
+        this.title = ""
+        return message
+    }
+
+    fun setMessage(title : String, text :String){
+        this.title = title
+        this.text = text
+    }
 }
 

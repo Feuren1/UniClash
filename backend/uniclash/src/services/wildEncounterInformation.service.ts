@@ -25,16 +25,16 @@ export class WildEncounterInformationService {
   @authenticate('jwt')
   async checkOfWildEncounterShouldReload(): Promise<void> {
     const currentTime: Date = new Date();
-    const day: number = currentTime.getDay();
+    const day: number = currentTime.getTime();
     const currentDates : WildencounterInformation[] = await this.wildEncounterInformationRepository.find()
     const currentDate : WildencounterInformation = currentDates[0]
 
 
-    if(parseInt(currentDate.date)<day){
-      await this.wildEncounterInformationRepository.delete(currentDate)
+    if(day - parseInt(currentDate.date) > 3600000){
+      console.log("Day: " + day);
       currentDate.date = day.toString()
       this.refreshWildEncounterStats()
-      await this.wildEncounterInformationRepository.create(currentDate)
+      await this.wildEncounterInformationRepository.update(currentDate)
     }
   }
 

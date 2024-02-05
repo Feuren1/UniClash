@@ -73,6 +73,7 @@ class WildEncounterActivity : ComponentActivity() {
         }.value
 
         var wildEncounter = wildEncounterViewModel.getWildEncounterMarker()
+        wildEncounterViewModel.loadCritterUsable(wildEncounter!!.critterUsable!!.critterId)
         setContent {
             val usedItem = wildEncounterViewModel.usedItem.collectAsState()
             if(!usedItem.value.itemAvail){
@@ -140,8 +141,11 @@ class WildEncounterActivity : ComponentActivity() {
                                 .align(Alignment.CenterHorizontally)
                         )
                         Spacer(modifier = Modifier.height(32.dp))
-                        WildEncounterStats(wildEncounter)
-                        WildEncounterCatchChange(wildEncounter)
+                        val critterUsableUIState by wildEncounterViewModel.critterUsable.collectAsState()
+                        if(critterUsableUIState.critterUsable != null) {
+                            WildEncounterStats(wildEncounter)
+                            WildEncounterCatchChange(wildEncounter)
+                        }
 
                         // Add a button to request location permissions and start the map
                         Button(
@@ -199,6 +203,7 @@ class WildEncounterActivity : ComponentActivity() {
 
     @Composable
     fun WildEncounterStats(wildEncounter : MarkerWildEncounter) {
+        val critterUsableUIState by wildEncounterViewModel.critterUsable.collectAsState()
         Box(
             modifier = Modifier
                 .padding(all = 8.dp)
@@ -236,7 +241,7 @@ class WildEncounterActivity : ComponentActivity() {
                         style = MaterialTheme.typography.titleSmall
                     )
                     Text(
-                        text = "\nName: ${wildEncounter.critterUsable!!.name}\nLevel: ${wildEncounter.critterUsable!!.level}\nHealthpoints: ${wildEncounter.critterUsable!!.hp}\nAttack: ${wildEncounter.critterUsable!!.atk}\nDefence: ${wildEncounter.critterUsable!!.def}\nSpeed: ${wildEncounter.critterUsable!!.spd}\n",
+                        text = "\nName: ${wildEncounter.critterUsable!!.name}\nLevel: ${wildEncounter.critterUsable!!.level}\nHealthpoints: ${critterUsableUIState.critterUsable!!.hp}\nAttack: ${critterUsableUIState.critterUsable!!.atk}\nDefence: ${critterUsableUIState.critterUsable!!.def}\nSpeed: ${critterUsableUIState.critterUsable!!.spd}\n",
                         fontSize = 12.sp,
                         color = MaterialTheme.colorScheme.secondary,
                         style = MaterialTheme.typography.titleSmall

@@ -62,8 +62,15 @@ class WildEncounterViewModel(
         return wildEncounterMarker
     }
 
-    val critters = MutableStateFlow( //TODO: change critterS to critter, is not a list
-        PostCrittersUIState.HasEntries( //TODO: here too
+    val critterUsable = MutableStateFlow(
+        CritterUsableUIState.HasEntries(
+            critterUsable = null,
+            isLoading = false,
+        )
+    )
+
+    val critter = MutableStateFlow(
+        PostCrittersUIState.HasEntries(
             critter = null,
             isLoading = false
         )
@@ -92,13 +99,33 @@ class WildEncounterViewModel(
         return randomValue <= catchChance
     }
 
+    fun loadCritterUsable(id: Int) {
+        viewModelScope.launch {
+            critterUsable.update { it.copy(isLoading = true) }
+            try {
+                val response = critterService.getCritterUsable(id).enqueue()
+                Log.d(TAG, "loadCritter: $response")
+                if (response.isSuccessful) {
+                    println(response.body())
+                    response.body()?.let {
+                        critterUsable.update { state ->
+                            state.copy(critterUsable = it, isLoading = false)
+                        }
+                    }
+                }
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
+        }
+    }
+
      fun addWildEncounterToUser() : String {
         if(isCatchSuccessful()) {
             viewModelScope.launch {
 
                 critterListDataManager.clearCritterList() //to refresh critterList
 
-                critters.update { it.copy(isLoading = true) }
+                critter.update { it.copy(isLoading = true) }
                 try {
                     val response = critterService.postCatchedCritter(
                         userDataManager.getStudentId(),
@@ -108,7 +135,7 @@ class WildEncounterViewModel(
                     if (response.isSuccessful) {
                         Log.d(TAG, "Success: ${response.body()}")
                         response.body()?.let {
-                            critters.update { state ->
+                            critter.update { state ->
                                 state.copy(critter = it,  isLoading = false)
                             }
                         }
@@ -166,9 +193,9 @@ class WildEncounterViewModel(
                 chance += (100 -difference*-1).toDouble()
             }
         }
-        if(chance>90){
-            chance = 90.0
-        }
+        if(chance>90) chance = 90.0
+        if(chance < 10) chance = 10.0
+
         catchChance = chance
         println("new catch Chance $catchChance")
         return chance

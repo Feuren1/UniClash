@@ -215,13 +215,13 @@ fun PlayerProfile(profileViewModel: ProfileViewModel) {
                 Column {
                     Spacer(modifier = Modifier.height(18.dp))
                     Text(
-                        text = "Trainer: ${userUIState.user!!.name}",
+                        text = "Student: ${userUIState.user!!.name}",
                         fontSize = 18.sp,
                         color = Color.DarkGray,
                         style = MaterialTheme.typography.titleSmall
                     )
                     Text(
-                        text = "Trainer Level: ${userUIState.user?.student?.level}",
+                        text = "Student Level: ${userUIState.user?.student?.level}",
                         fontSize = 18.sp,
                         color = Color.DarkGray,
                         style = MaterialTheme.typography.titleSmall

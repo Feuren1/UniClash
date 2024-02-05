@@ -46,10 +46,12 @@ import project.main.uniclash.retrofit.CritterService
 import project.main.uniclash.viewmodels.CritterDexViewModel
 import project.main.uniclash.viewmodels.UniClashViewModel
 import androidx.compose.foundation.lazy.items
+import project.main.uniclash.datatypes.CustomColor
 
 
 class CritterListActivity : ComponentActivity() {
     private var exitRequest by mutableStateOf(false)
+    private var sorter by mutableStateOf(Sort.ID)
 
     val uniClashViewModel: UniClashViewModel by viewModels(factoryProducer = {
         UniClashViewModel.provideFactory(CritterService.getInstance(this), Application())
@@ -90,7 +92,7 @@ class CritterListActivity : ComponentActivity() {
                         .fillMaxSize()
                         .background(Color.White)
                 ) {
-                            UsableList(uniClashViewModel,isLoading)
+                            UsableList(uniClashViewModel,isLoading, sorter)
                     }
                 }
 
@@ -104,18 +106,34 @@ class CritterListActivity : ComponentActivity() {
     }
 
     @Composable
-    fun UsableList(uniClashViewModel: UniClashViewModel, isLoading: Boolean) {
+    fun UsableList(uniClashViewModel: UniClashViewModel, isLoading: Boolean, sorter : Sort) {
         val uniClashUiStateCritterUsables by uniClashViewModel.critterUsables.collectAsState()
+
+        var sortedCritters = uniClashUiStateCritterUsables.critterUsables.sortedWith(compareBy{ it?.critterId })
+        if(sorter == Sort.ID) sortedCritters = uniClashUiStateCritterUsables.critterUsables.sortedWith(compareBy{ it?.critterId })
+        if(sorter == Sort.IDReversed) sortedCritters = uniClashUiStateCritterUsables.critterUsables.sortedWith(compareBy{ it?.critterId }).reversed()
+        if(sorter == Sort.Name) sortedCritters = uniClashUiStateCritterUsables.critterUsables.sortedWith(compareBy({ it?.name }, { it?.critterId }))
+        if(sorter == Sort.Level) sortedCritters = uniClashUiStateCritterUsables.critterUsables.sortedWith(compareBy({ it?.level }, { it?.critterId })).reversed()
+        if(sorter == Sort.LevelReversed) sortedCritters = uniClashUiStateCritterUsables.critterUsables.sortedWith(compareBy({ it?.level }, { it?.critterId }))
+        if(sorter == Sort.Speed) sortedCritters = uniClashUiStateCritterUsables.critterUsables.sortedWith(compareBy({ it?.spd }, { it?.critterId })).reversed()
+        if(sorter == Sort.Atk) sortedCritters = uniClashUiStateCritterUsables.critterUsables.sortedWith(compareBy({ it?.atk }, { it?.critterId })).reversed()
+        if(sorter == Sort.Def) sortedCritters = uniClashUiStateCritterUsables.critterUsables.sortedWith(compareBy({ it?.def }, { it?.critterId })).reversed()
+        if(sorter == Sort.Hp) sortedCritters = uniClashUiStateCritterUsables.critterUsables.sortedWith(compareBy({ it?.hp }, { it?.critterId })).reversed()
+
         if (isLoading) {
             LoadingCircle(Modifier)
-        }else {
+        } else {
             LazyColumn(modifier = Modifier) {
-                items(items = uniClashUiStateCritterUsables.critterUsables, key= { critter -> critter!!.critterId }) { critter ->
+                items(items = sortedCritters, key = { critter -> critter!!.critterId }) { critter ->
                     Box(
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(8.dp)
-                            .background(Color.LightGray, shape = RoundedCornerShape(8.dp))
+                            .background(color = if (!uniClashViewModel.checkIfSelectedCritter(critter!!.critterId)) {
+                                Color.LightGray
+                            } else {
+                                CustomColor.Purple.getColor()
+                            }, shape = RoundedCornerShape(8.dp))
                     ) {
                         CritterDetail(critter)
                     }
@@ -123,6 +141,8 @@ class CritterListActivity : ComponentActivity() {
             }
         }
     }
+
+
 
 
     @Composable
@@ -141,6 +161,66 @@ class CritterListActivity : ComponentActivity() {
                 fontWeight = FontWeight.Bold, // Use FontWeight.Bold for bold text
                 textAlign = TextAlign.Start,
             )
+            Box{
+                Row{
+                    Text(
+                        text = "Sorters: ",
+                        fontSize = 12.sp, // Adjust the font size as needed
+                        fontWeight = FontWeight.Bold, // Use FontWeight.Bold for bold text
+                        textAlign = TextAlign.Start,
+                    )
+                    Text(
+                        text = "ID ",
+                        color = CustomColor.DarkPurple.getColor(),
+                        fontSize = 12.sp, // Adjust the font size as needed
+                        fontWeight = FontWeight.Bold, // Use FontWeight.Bold for bold text
+                        textAlign = TextAlign.Start,
+                        modifier = Modifier.clickable {
+                            sorter = Sort.ID
+                        }
+                    )
+                    Text(
+                        text = "IDReversed ",
+                        color = CustomColor.DarkPurple.getColor(),
+                        fontSize = 12.sp, // Adjust the font size as needed
+                        fontWeight = FontWeight.Bold, // Use FontWeight.Bold for bold text
+                        textAlign = TextAlign.Start,
+                        modifier = Modifier.clickable {
+                            sorter = Sort.IDReversed
+                        }
+                    )
+                    Text(
+                        text = "Name ",
+                        color = CustomColor.DarkPurple.getColor(),
+                        fontSize = 12.sp, // Adjust the font size as needed
+                        fontWeight = FontWeight.Bold, // Use FontWeight.Bold for bold text
+                        textAlign = TextAlign.Start,
+                        modifier = Modifier.clickable {
+                            sorter = Sort.Name
+                        }
+                    )
+                    Text(
+                        text = "Level ",
+                        color = CustomColor.DarkPurple.getColor(),
+                        fontSize = 12.sp, // Adjust the font size as needed
+                        fontWeight = FontWeight.Bold, // Use FontWeight.Bold for bold text
+                        textAlign = TextAlign.Start,
+                        modifier = Modifier.clickable {
+                            sorter = Sort.Level
+                        }
+                    )
+                    Text(
+                        text = "LevelReversed ",
+                        color = CustomColor.DarkPurple.getColor(),
+                        fontSize = 12.sp, // Adjust the font size as needed
+                        fontWeight = FontWeight.Bold, // Use FontWeight.Bold for bold text
+                        textAlign = TextAlign.Start,
+                        modifier = Modifier.clickable {
+                            sorter = Sort.LevelReversed
+                        }
+                    )
+                }
+            }
         }
     }
 
@@ -150,7 +230,7 @@ class CritterListActivity : ComponentActivity() {
         var textColor : Color = Color.DarkGray
         var selectedText = ""
         if(uniClashViewModel.checkIfSelectedCritter(critter!!.critterId)){
-            blockColor = MaterialTheme.colorScheme.onPrimaryContainer
+            blockColor = CustomColor.DarkPurple.getColor()
             textColor = Color.White
             selectedText = "| SELECTED CRITTER FOR THE FIGHT"
         }
@@ -202,4 +282,16 @@ class CritterListActivity : ComponentActivity() {
             }
         }
     }
+}
+
+enum class Sort{
+    ID,
+    IDReversed,
+    Name,
+    Level,
+    LevelReversed,
+    Speed,
+    Hp,
+    Def,
+    Atk,
 }

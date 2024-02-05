@@ -199,6 +199,7 @@ class CritterProfileActivity : ComponentActivity() {
                             modifier = Modifier.padding(bottom = 4.dp)
                         )
                         Button(
+                            colors = ButtonDefaults.buttonColors(containerColor = CustomColor.Purple.getColor()),
                             onClick = {
                                 critterProfileViewModel.useRedBull(critterUsableUIState.critterUsable!!.critterId)
                             },
@@ -206,7 +207,7 @@ class CritterProfileActivity : ComponentActivity() {
                                 .fillMaxWidth()
                                 .padding(8.dp),
                         ) {
-                            Text(text = "Use Redull (+100EP)")
+                            Text(text = "Use Redbull (+100EP)", color = Color.White)
                         }
                         Button(
                             onClick = { lvlWindow = false },
@@ -215,7 +216,7 @@ class CritterProfileActivity : ComponentActivity() {
                                 .padding(8.dp),
                             colors = ButtonDefaults.buttonColors(containerColor = Color.Red),
                         ) {
-                            Text(text = "Close")
+                            Text(text = "Close", color = Color.White)
                         }
                     }
                 }}
@@ -279,15 +280,16 @@ class CritterProfileActivity : ComponentActivity() {
                                 .padding(8.dp),
                             colors = ButtonDefaults.buttonColors(containerColor = Color.Red),
                         ) {
-                            Text(text = "kill him")
+                            Text(text = "kill him", color = Color.White)
                         }
                         Button(
+                            colors = ButtonDefaults.buttonColors(containerColor = CustomColor.Purple.getColor()),
                             onClick = { delWindow = false },
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .padding(8.dp),
                         ) {
-                            Text(text = "Close")
+                            Text(text = "Close", color = Color.White)
                         }
                     }
                 }}
@@ -354,6 +356,7 @@ class CritterProfileActivity : ComponentActivity() {
                             modifier = Modifier.padding(bottom = 4.dp)
                         )
                         Button(
+                            colors = ButtonDefaults.buttonColors(containerColor = CustomColor.DarkPurple.getColor()),
                             onClick = {
                                 critterProfileViewModel.evolve(critterUsableUIState.critterUsable!!.critterId)
                                 evoWindow = false
@@ -362,7 +365,7 @@ class CritterProfileActivity : ComponentActivity() {
                                 .fillMaxWidth()
                                 .padding(8.dp),
                         ) {
-                            Text(text = "Evolve")
+                            Text(text = "Evolve", color = Color.White, )
                         }
                         Button(
                             colors = ButtonDefaults.buttonColors(containerColor = Color.Red),

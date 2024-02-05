@@ -152,7 +152,8 @@ export class ArenaController {
     sendPushNotificationService.sendPushNotification(user.fcmtoken,"ArenaUpdate","Your arena has been defeated!!!")
     }
     arena.invasionTime = 0
-    await this.arenaRepository.updateById(id, arena)
+    // @ts-ignore
+    if(!((await currentArena).critterId > 0 && arena.critterId >0))await this.arenaRepository.updateById(id, arena)
     await this.arenaLogicService.setInvasionTime(id)
     await this.arenaLogicService.addEp(id)
   }

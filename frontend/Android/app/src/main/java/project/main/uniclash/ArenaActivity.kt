@@ -122,7 +122,8 @@ class ArenaActivity : ComponentActivity() {
                                     painter = painterResource(id = R.drawable.exit),
                                     contentDescription = null,
                                     modifier = Modifier
-                                        .size(50.dp)
+                                        .offset(x = (-10).dp, y = 10.dp)
+                                        .size(40.dp)
                                         .clickable {
                                             exitRequest = true
                                         }
@@ -132,6 +133,7 @@ class ArenaActivity : ComponentActivity() {
                             // Check if the arena and arenas are not null before displaying
                             Column(
                                 modifier = Modifier
+                                    .offset(y = 40.dp)
                                     .fillMaxSize()
                                     .padding(16.dp)
                                     .verticalScroll(rememberScrollState())
@@ -154,9 +156,9 @@ class ArenaActivity : ComponentActivity() {
                                         CritterDetail(arenaCritterUIState.critterUsable!!)
                                     }
                                 }
-                                if (arenaViewModel.getselectedArena()!!.arena!!.studentId != studentId) {
+                                if (arenaViewModel.getselectedArena()!!.arena!!.studentId != studentId && arenaViewModel!!.getselectedArena()!!.arena!!.critterId >0) {
                                     startBattleButton()
-                                } else {
+                                } else if(arenaViewModel.getselectedArena()!!.arena!!.studentId == studentId) {
                                     Text("You own this arena!")
                                 }
                                 Row(Modifier.fillMaxSize()) {

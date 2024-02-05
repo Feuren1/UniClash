@@ -29,11 +29,11 @@ export class WildEncounterInformationService {
     const currentDates : WildencounterInformation[] = await this.wildEncounterInformationRepository.find()
     const currentDate : WildencounterInformation = currentDates[0]
 
-
+    console.log("Day: " + day);
     if(day - parseInt(currentDate.date) > 3600000){
       console.log("Day: " + day);
       currentDate.date = day.toString()
-      this.refreshWildEncounterStats()
+      await this.refreshWildEncounterStats()
       await this.wildEncounterInformationRepository.update(currentDate)
     }
   }

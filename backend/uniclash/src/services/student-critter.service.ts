@@ -41,18 +41,23 @@ export class StudentCritterService {
     const student: Student = await this.studentRepository.findById(studentId, {
       include: ['critters'],
     })
+    const critterTemplates = await  this.critterTemplateRepository.find();
 
-    const critters: Critter[] = student.critters;
+    const critters  = student.critters;
     const critterListables: CritterListable[] = [];
 
     for (const critterS of critters) {
-
-      const critter = await this.critterRepository.findById(critterS.id);
-      const critterTemplate = await  this.critterTemplateRepository.findById(critterS.critterTemplateId);
+      let name = ""
+      for(const template of critterTemplates){
+        if(template.id == critterS.critterTemplateId && template.name != null){
+          name = template.name
+              break;
+        }
+      }
       const critterListable = new CritterListable({
-        level: critter.level,
-        critterId: critter.id,
-        name: critterTemplate.name,
+        level: critterS.level,
+        critterId: critterS.id,
+        name: name,
           });
 
       critterListables.push(critterListable);

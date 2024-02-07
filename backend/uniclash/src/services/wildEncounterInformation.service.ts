@@ -26,6 +26,7 @@ import {BlockList} from "net";
 export class WildEncounterInformationService {
   constructor(
     @repository(CritterRepository) protected critterRepository: CritterRepository,
+    @repository(StudentRepository) protected studentRepository: StudentRepository,
     @repository(AttackRepository) protected attackRepository: AttackRepository,
     @repository(CritterAttackRepository) protected critterAttackRepository: CritterAttackRepository,
     @repository(WildencounterInformationRepository) protected wildEncounterInformationRepository: WildencounterInformationRepository,
@@ -48,13 +49,24 @@ export class WildEncounterInformationService {
 
   @authenticate('jwt')
   async refreshWildEncounterStats():Promise<void>{
-    const wildEncounters : Critter[] = await this.critterRepository.find()
+    const student1: Student = await this.studentRepository.findById(1, {
+      include: ['critters'],
+    })
+    const student2: Student = await this.studentRepository.findById(2, {
+      include: ['critters'],
+    })
 
-    for(const wildEncounter of wildEncounters){
-        if(wildEncounter.studentId == 1){
-          wildEncounter.level = Math.floor(Math.random() * 15) + 1
-          await this.critterRepository.update(wildEncounter);
-        }
+    const critter1 : Critter[] = student1.critters
+    const critter2 : Critter[] = student2.critters
+
+
+    for(const wildEncounter of critter1) {
+      if (wildEncounter.studentId == 1) {
+        wildEncounter.level = Math.floor(Math.random() * 15) + 1
+        await this.critterRepository.update(wildEncounter);
+      }
+    }
+    for(const wildEncounter of critter2){
         if(wildEncounter.studentId == 2){
           wildEncounter.level = Math.floor(Math.random() * 25) + 1
           await this.critterRepository.update(wildEncounter);

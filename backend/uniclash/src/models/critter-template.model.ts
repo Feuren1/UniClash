@@ -45,6 +45,11 @@ export class CritterTemplate extends Entity {
   })
   evolesAt: number;
 
+  @property({
+    type: 'string',
+  })
+  type: string;
+
   @hasMany(() => Critter)
   critters: Critter[];
 

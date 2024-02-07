@@ -32,6 +32,9 @@ class StudentViewModel( private val studentService: StudentService): ViewModel()
     init {
 
     }
+    fun loadStudentFromBegin(id : Int){
+        if(student.value.student == null)loadStudent(id)
+    }
     fun loadStudent(id : Int){
         viewModelScope.launch {
             student.update {it.copy(isLoading = true)  }

@@ -19,6 +19,11 @@ export class CritterListable extends Model {
   })
   critterId: number;
 
+  @property({
+    type: 'string',
+  })
+  type: string;
+
   constructor(data?: Partial<CritterListable>) {
     super(data);
   }

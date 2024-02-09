@@ -408,6 +408,7 @@ class OnlineFightActivity : ComponentActivity() {
                 )
             }
             Spacer(modifier = Modifier.height(16.dp))
+            if(enemyCritter.name == "MOCKITO") enemyCritterUsable.hp = critterUsable.hp
             CritterBox(
                 enemyCritter.name,
                 enemyCritterUsable.level,
@@ -419,6 +420,7 @@ class OnlineFightActivity : ComponentActivity() {
                 state == OnlineFightState.ENEMYTURN
             )
             Spacer(modifier = Modifier.height(16.dp))
+            if(myCritter.name == "MOCKITO") critterUsable.hp = enemyCritterUsable.hp
             CritterBox(
                 myCritter.name,
                 critterUsable.level,

@@ -56,6 +56,11 @@ export class CritterUsable extends Model {
   @property.array(Attack)
   attacks: Attack[]; // Store Attack model instances directly
 
+  @property({
+    type: 'string',
+  })
+  type: string;
+
   constructor(data?: Partial<CritterUsable>) {
     super(data);
   }

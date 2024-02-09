@@ -48,9 +48,11 @@ export class StudentCritterService {
 
     for (const critterS of critters) {
       let name = ""
+      let type = ""
       for(const template of critterTemplates){
         if(template.id == critterS.critterTemplateId && template.name != null){
           name = template.name
+          type = template.type
               break;
         }
       }
@@ -58,6 +60,7 @@ export class StudentCritterService {
         level: critterS.level,
         critterId: critterS.id,
         name: name,
+        type: type
           });
 
       critterListables.push(critterListable);

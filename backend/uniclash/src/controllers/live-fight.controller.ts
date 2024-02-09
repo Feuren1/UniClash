@@ -46,7 +46,7 @@ export class LiveFightController {
     await this.onlineFightService.createFight(studentId, enemyStudentId);
   }
 
-  @put('/makingDamage/{fightConnectionId}/{studentId}/{amountOfDamage}/{kindOfDamage}/{effectiveness)')
+  @put('/makingDamage/{fightConnectionId}/{studentId}/{amountOfDamage}/{kindOfDamage}/{effectiveness}')
   @response(200, {
     description: 'execute damage',
     content: {'application/json': {schema: getModelSchemaRef(CritterInFight)}},

@@ -4,5 +4,6 @@ data class CritterListable(
     val level: Int,
     val name: String,
     val critterId: Int,
+    val type : String,
 ){
 }

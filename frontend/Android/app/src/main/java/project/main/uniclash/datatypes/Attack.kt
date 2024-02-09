@@ -5,9 +5,11 @@ data class Attack(
     val name: String,
     val strength: Int,
     val attackType: AttackType,
+    val typeId: String
 ){
-    constructor(id: Int, name: String, strength: Int, attackTypeString: String) :
-            this(id, name, strength, AttackType.valueOf(attackTypeString))
+
+    constructor(id: Int, name: String, strength: Int, attackTypeString: String, type : String) :
+            this(id, name, strength, AttackType.valueOf(attackTypeString), type)
 
     override fun toString(): String {
         return "Attack(id=$id- name='$name'- strength=$strength- attackType=$attackType)"
@@ -23,7 +25,7 @@ data class Attack(
             val strength = parts[2].substringAfter('=').toInt()
             val attackTypeString = parts[3].substringAfter('=')
 
-            return Attack(id, name, strength, AttackType.valueOf(attackTypeString))
+            return Attack(id, name, strength, AttackType.valueOf(attackTypeString), "NORMAL")
         }
     }
 }

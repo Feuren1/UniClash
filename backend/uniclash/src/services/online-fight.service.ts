@@ -98,7 +98,7 @@ export class OnlineFightService {
     }
   }
 
-  async makingDamage(fightConnectionId : number, studentId : number, amountOfDamage : number, kindOfDamage : string):Promise<void>{
+  async makingDamage(fightConnectionId : number, studentId : number, amountOfDamage : number, kindOfDamage : string, effectivity : number):Promise<void>{
     const currentTime: Date = new Date();
     const fights: OnlineFight[] = await this.onlineFightRepository.find()
     const currentFights : OnlineFight[] = []
@@ -135,7 +135,7 @@ export class OnlineFightService {
     const enemyCritter: CritterInFight = await this.critterInFightRepository.findById(critterIdFromEnemy)
     const myCritterForLevel = await  this.critterStatsService.createCritterUsable(critterIdFromMe)
     const myCritter = await  this.critterInFightRepository.findById(critterIdFromMe)
-    const damage : number = (((((2*myCritterForLevel.level)/5)+2)*amountOfDamage*myCritter.attack/enemyCritter.defence)/50)+2
+    const damage : number = ((((((2*myCritterForLevel.level)/5)+2)*amountOfDamage*myCritter.attack/enemyCritter.defence)/50)+2)*effectivity
 
     //make damage
     if(allowToMakeDamage && critterIdFromEnemy != 0 && kindOfDamage == "DAMAGE_DEALER") {
@@ -377,4 +377,6 @@ enum OnlineFightState {
   Winner = "winner",
   Loser = "loser",
 }
+
+
 

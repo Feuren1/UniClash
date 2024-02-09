@@ -78,14 +78,14 @@ class CritterProfileViewModel(
 
     val critterTemplate = MutableStateFlow(
         CritterTemplateUIState.HasEntries(
-             critterTemplate = CritterTemplate(id = 1, name = "", baseAttack = 1, baseDefence = 1, baseHealth = 1, baseSpeed = 1, evolesAt = 0, evolvesIntoTemplateId = 0),
+             critterTemplate = CritterTemplate(id = 1, name = "", baseAttack = 1, baseDefence = 1, baseHealth = 1, baseSpeed = 1, evolesAt = 0, evolvesIntoTemplateId = 0, type = "NORMAL"),
             isLoading = false,
         )
     )
 
     val critterTemplateEvo = MutableStateFlow(
         CritterTemplateUIState.HasEntries(
-            critterTemplate = CritterTemplate(id = 1, name = "", baseAttack = 1, baseDefence = 1, baseHealth = 1, baseSpeed = 1, evolesAt = 0, evolvesIntoTemplateId = 0),
+            critterTemplate = CritterTemplate(id = 1, name = "", baseAttack = 1, baseDefence = 1, baseHealth = 1, baseSpeed = 1, evolesAt = 0, evolvesIntoTemplateId = 0, type = "NORMAL"),
             isLoading = false,
         )
     )

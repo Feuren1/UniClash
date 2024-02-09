@@ -46,7 +46,7 @@ export class LiveFightController {
     await this.onlineFightService.createFight(studentId, enemyStudentId);
   }
 
-  @put('/makingDamage/{fightConnectionId}/{studentId}/{amountOfDamage}/{kindOfDamage}')
+  @put('/makingDamage/{fightConnectionId}/{studentId}/{amountOfDamage}/{kindOfDamage}/{effectiveness)')
   @response(200, {
     description: 'execute damage',
     content: {'application/json': {schema: getModelSchemaRef(CritterInFight)}},
@@ -55,9 +55,10 @@ export class LiveFightController {
       @param.path.number('fightConnectionId') fightConnectionId: number,
       @param.path.number('studentId') studentId: number,
       @param.path.number('amountOfDamage') amountOfDamage: number,
+      @param.path.number('effectiveness') effectiveness: number,
       @param.path.string('kindOfDamage') kindOfDamage: string,
   ): Promise<void> {
-    await this.onlineFightService.makingDamage(fightConnectionId,studentId, amountOfDamage, kindOfDamage);
+    await this.onlineFightService.makingDamage(fightConnectionId,studentId, amountOfDamage, kindOfDamage, effectiveness);
   }
 
   @put('/insertCritter/{fightConnectionId}/{studentId}/{critterId}')

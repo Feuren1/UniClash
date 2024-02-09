@@ -7,5 +7,5 @@ enum class AttackType {
     SPD_BUFF,
     ATK_DEBUFF,
     DEF_DEBUFF,
-    SPD_DEBUFF,
+    SPD_DEBUFF;
 }

@@ -71,6 +71,9 @@ import project.main.uniclash.datatypes.CritterUsable
 import project.main.uniclash.datatypes.CustomColor
 import project.main.uniclash.datatypes.OnlineFightState
 import project.main.uniclash.retrofit.CritterService
+import project.main.uniclash.type.Effectiveness
+import project.main.uniclash.type.Type
+import project.main.uniclash.type.TypeCalculation
 import project.main.uniclash.ui.theme.UniClashTheme
 import project.main.uniclash.viewmodels.StateUIState
 import java.util.concurrent.TimeUnit
@@ -103,6 +106,7 @@ class OnlineFightActivity : ComponentActivity() {
         level = 0,
         spd = 0,
         expToNextLevel = 0,
+        type = "NORMAL"
     )
 
     private val messages: List<String> = listOf(
@@ -132,6 +136,9 @@ class OnlineFightActivity : ComponentActivity() {
     private var mediaPlayer: MediaPlayer? = null
     private var mediaPlayerStop = false
     private var sendInAppNotification by mutableStateOf(false)
+
+    private var enemyType by mutableStateOf("WATER")
+    private var myType by mutableStateOf("WATER")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -224,23 +231,24 @@ class OnlineFightActivity : ComponentActivity() {
                                 if (critterUsable.attacks.isNotEmpty()) {
                                     Spacer(modifier = Modifier.width(8.dp))
                                     for (attack in critterUsable.attacks) {
-                                        var type = BattleAction.DAMAGE_DEALER
+                                        var attackType = BattleAction.DAMAGE_DEALER
                                         if (attack.attackType.toString()
                                                 .uppercase() == "DEF_BUFF"
-                                        ) type = BattleAction.DEF_BUFF
+                                        ) attackType = BattleAction.DEF_BUFF
                                         if (attack.attackType.toString()
                                                 .uppercase() == "ATK_BUFF"
-                                        ) type = BattleAction.ATK_BUFF
+                                        ) attackType = BattleAction.ATK_BUFF
                                         if (attack.attackType.toString()
                                                 .uppercase() == "ATK_DEBUFF"
-                                        ) type = BattleAction.ATK_DEBUFF
+                                        ) attackType = BattleAction.ATK_DEBUFF
                                         if (attack.attackType.toString()
                                                 .uppercase() == "DEF_DEBUFF"
-                                        ) type = BattleAction.DEF_DEBUFF
+                                        ) attackType = BattleAction.DEF_DEBUFF
                                         AttackBox(
                                             attackName = attack.name,
                                             value = attack.strength,
-                                            type = type,
+                                            attackType = attackType,
+                                            type = attack.typeId,
                                             selected = clickedAttack == attack.name
                                         )
                                         Spacer(modifier = Modifier.width(8.dp))
@@ -409,6 +417,7 @@ class OnlineFightActivity : ComponentActivity() {
             }
             Spacer(modifier = Modifier.height(16.dp))
             if(enemyCritter.name == "MOCKITO") enemyCritterUsable.hp = critterUsable.hp
+            enemyType = enemyCritterUsable.type
             CritterBox(
                 enemyCritter.name,
                 enemyCritterUsable.level,
@@ -543,16 +552,19 @@ class OnlineFightActivity : ComponentActivity() {
 
     @SuppressLint("UnrememberedMutableState")
     @Composable
-    fun AttackBox(attackName: String, value: Int, type: BattleAction, selected: Boolean) {
+    fun AttackBox(attackName: String, value: Int, attackType: BattleAction, type : String, selected: Boolean) {
+        val typeCalculation = TypeCalculation()
+
+        var effectiveness : Effectiveness = typeCalculation.howEffective(type.uppercase(),enemyType)
         Box(
             modifier = Modifier
                 .clickable {
                     clickedAttack = attackName
                     selectedAttack = value
-                    selectedTypOfAttack = type
+                    selectedTypOfAttack = attackType
                 }
                 //.fillMaxWidth()
-                .height(90.dp)
+                .height(100.dp)
                 //.background(CustomColor.Purple.getColor())
                 .background(
                     CustomColor.DarkPurple.getColor(),
@@ -576,16 +588,43 @@ class OnlineFightActivity : ComponentActivity() {
             // Foto auf der linken Seite
             val context = LocalContext.current
             var resourceId = R.drawable.pow
-            if (type == BattleAction.DEF_BUFF) resourceId = R.drawable.defencebuffsymbol
-            if (type == BattleAction.ATK_BUFF) resourceId = R.drawable.attackbuffsymbol
-            if (type == BattleAction.DEF_DEBUFF) resourceId = R.drawable.defencedebuffsymbol
-            if (type == BattleAction.ATK_DEBUFF) resourceId = R.drawable.attackdebuffsymbol
+            if (attackType == BattleAction.DEF_BUFF) resourceId = R.drawable.defencebuffsymbol
+            if (attackType == BattleAction.ATK_BUFF) resourceId = R.drawable.attackbuffsymbol
+            if (attackType == BattleAction.DEF_DEBUFF) resourceId = R.drawable.defencedebuffsymbol
+            if (attackType == BattleAction.ATK_DEBUFF) resourceId = R.drawable.attackdebuffsymbol
+
+            var resourceIdType = R.drawable.normal
+            resourceIdType = when (type) {
+                "DRAGON" -> {R.drawable.dragon}
+                "WATER" -> {R.drawable.water}
+                "ELECTRIC" -> {R.drawable.electric}
+                "FIRE" -> {R.drawable.fire}
+                "STONE" -> {R.drawable.stone}
+                "ICE" -> {R.drawable.ice}
+                else -> {R.drawable.normal}
+            }
+
             Row(
             ) {
                 Image(
                     painter = painterResource(
                         if (resourceId > 0) {
                             resourceId
+                        } else {
+                            R.drawable.icon
+                        }
+                    ),
+                    contentDescription = null,
+                    modifier = Modifier
+                        .size(50.dp)
+                        .clip(CircleShape)
+                        .background(MaterialTheme.colorScheme.surface)
+                        .padding(8.dp)
+                )
+                Image(
+                    painter = painterResource(
+                        if (resourceIdType > 0) {
+                            resourceIdType
                         } else {
                             R.drawable.icon
                         }
@@ -613,6 +652,11 @@ class OnlineFightActivity : ComponentActivity() {
 
                     Text(
                         text = "Value: $value",
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = Color.White
+                    )
+                    Text(
+                        text = "$effectiveness",
                         style = MaterialTheme.typography.bodyMedium,
                         color = Color.White
                     )

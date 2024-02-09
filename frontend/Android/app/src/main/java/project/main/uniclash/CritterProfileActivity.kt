@@ -78,6 +78,8 @@ class CritterProfileActivity : ComponentActivity() {
         var critterId = -1 // or other values
 
         if (b != null) critterId = b.getInt("critterId")
+        var type = "NORMAL"
+        if(b !=null) type = b.getString("type").toString()
         critterProfileViewModel.loadCritter(critterId)
         critterProfileViewModel.loadCritterUsable(critterId)
         setContent {
@@ -97,7 +99,16 @@ class CritterProfileActivity : ComponentActivity() {
                         modifier = Modifier.fillMaxSize()
                     ) {
                         Image(
-                            painter = painterResource(id = R.drawable.battlebackround),
+                            painter = painterResource(id = when (type) {
+                                "DRAGON" -> {R.drawable.dragonbackground}
+                                "WATER" -> {R.drawable.waterbackground}
+                                "ELECTRIC" -> {R.drawable.elecbackground}
+                                "FIRE" -> {R.drawable.firebackground}
+                                "STONE" -> {R.drawable.stonebackground}
+                                "ICE" -> {R.drawable.icebackground}
+                                else -> {R.drawable.battlebackround}
+                            }
+                            ),
                             contentDescription = null,
                             modifier = Modifier.fillMaxSize(),
                             contentScale = ContentScale.Crop
@@ -356,7 +367,7 @@ class CritterProfileActivity : ComponentActivity() {
                             modifier = Modifier.padding(bottom = 4.dp)
                         )
                         Button(
-                            colors = ButtonDefaults.buttonColors(containerColor = CustomColor.DarkPurple.getColor()),
+                            colors = ButtonDefaults.buttonColors(containerColor = CustomColor.Purple.getColor()),
                             onClick = {
                                 critterProfileViewModel.evolve(critterUsableUIState.critterUsable!!.critterId)
                                 evoWindow = false
@@ -472,6 +483,15 @@ class CritterProfileActivity : ComponentActivity() {
                                 )
                                 if(critterUsableUIState.critterUsable!!.level < 100) ExpBar(critterUsableUIState.critterUsable!!.expToNextLevel, critterUsableUIState.critterUsable!!.level)
                             }
+                            Text(
+                                text = "Type: ${critterUsableUIState.critterUsable!!.type}",
+                                color = Color.White,
+                                style = MaterialTheme.typography.bodyLarge
+                                    .copy(
+                                        fontWeight = FontWeight.Bold,
+                                        fontSize = 16.sp
+                                    ),
+                            )
                             Spacer(modifier = Modifier.height(16.dp))
                             Box(
                                 modifier = Modifier
@@ -574,7 +594,17 @@ class CritterProfileActivity : ComponentActivity() {
                                         critterUsableUIState.critterUsable!!.attacks.forEach { attack ->
                                             Row {
                                                 Image(
-                                                    painter = if(attack.attackType == AttackType.ATK_BUFF){painterResource(R.drawable.attackbuffsymbol)}else if(attack.attackType==AttackType.DEF_BUFF){painterResource(R.drawable.defencebuffsymbol)}else if(attack.attackType==AttackType.DEF_DEBUFF){painterResource(R.drawable.defencedebuffsymbol)}else if(attack.attackType==AttackType.ATK_DEBUFF){painterResource(R.drawable.attackdebuffsymbol)}else{painterResource(R.drawable.pow)},
+                                                    painter = if (attack.attackType == AttackType.ATK_BUFF) {
+                                                        painterResource(R.drawable.attackbuffsymbol)
+                                                    } else if (attack.attackType == AttackType.DEF_BUFF) {
+                                                        painterResource(R.drawable.defencebuffsymbol)
+                                                    } else if (attack.attackType == AttackType.DEF_DEBUFF) {
+                                                        painterResource(R.drawable.defencedebuffsymbol)
+                                                    } else if (attack.attackType == AttackType.ATK_DEBUFF) {
+                                                        painterResource(R.drawable.attackdebuffsymbol)
+                                                    } else {
+                                                        painterResource(R.drawable.pow)
+                                                    },
                                                     contentDescription = null,
                                                     modifier = Modifier
                                                         .size(50.dp)
@@ -587,6 +617,50 @@ class CritterProfileActivity : ComponentActivity() {
                                                     modifier = Modifier
                                                         .offset(y = (15).dp),
                                                 )
+                                                Box(modifier = Modifier.weight(1f)) {
+                                                    Image(
+                                                        painter = painterResource(
+                                                            id = when (attack.typeId) {
+                                                                "DRAGON" -> {
+                                                                    R.drawable.dragon
+                                                                }
+
+                                                                "WATER" -> {
+                                                                    R.drawable.water
+                                                                }
+
+                                                                "ELECTRIC" -> {
+                                                                    R.drawable.electric
+                                                                }
+
+                                                                "FIRE" -> {
+                                                                    R.drawable.fire
+                                                                }
+
+                                                                "STONE" -> {
+                                                                    R.drawable.stone
+                                                                }
+
+                                                                "ICE" -> {
+                                                                    R.drawable.ice
+                                                                }
+
+                                                                "METAL" -> {
+                                                                    R.drawable.metal
+                                                                }
+
+                                                                else -> {
+                                                                    R.drawable.normal
+                                                                }
+                                                            }
+                                                        ),
+                                                        contentDescription = null,
+                                                        modifier = Modifier
+                                                            .size(50.dp)
+                                                            .padding(8.dp)
+                                                            .align(Alignment.CenterEnd)
+                                                    )
+                                                }
                                             }
                                         }
                                     }

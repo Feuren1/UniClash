@@ -17,6 +17,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -108,6 +109,7 @@ class CritterListActivity : ComponentActivity() {
     @Composable
     fun UsableList(uniClashViewModel: UniClashViewModel, isLoading: Boolean, sorter : Sort) {
         val uniClashUiStateCritterUsables by uniClashViewModel.critterUsables.collectAsState()
+        println(uniClashUiStateCritterUsables.critterUsables.toString())
 
         var sortedCritters = uniClashUiStateCritterUsables.critterUsables.sortedWith(compareBy{ it?.critterId })
         if(sorter == Sort.ID) sortedCritters = uniClashUiStateCritterUsables.critterUsables.sortedWith(compareBy{ it?.critterId })
@@ -129,11 +131,13 @@ class CritterListActivity : ComponentActivity() {
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(8.dp)
-                            .background(color = if (!uniClashViewModel.checkIfSelectedCritter(critter!!.critterId)) {
-                                Color.LightGray
-                            } else {
-                                CustomColor.Purple.getColor()
-                            }, shape = RoundedCornerShape(8.dp))
+                            .background(
+                                color = if (!uniClashViewModel.checkIfSelectedCritter(critter!!.critterId)) {
+                                    Color.LightGray
+                                } else {
+                                    CustomColor.Purple.getColor()
+                                }, shape = RoundedCornerShape(8.dp)
+                            )
                     ) {
                         CritterDetail(critter)
                     }
@@ -246,6 +250,7 @@ class CritterListActivity : ComponentActivity() {
                     val intent = Intent(this, CritterProfileActivity::class.java)
                     val b = Bundle()
                     b.putInt("critterId", critter!!.critterId)
+                    b.putString("type", critter!!.type)
                     intent.putExtras(b)
                     startActivity(intent)
                     finish()
@@ -260,7 +265,7 @@ class CritterListActivity : ComponentActivity() {
                     painter = painterResource(if(resourceId > 0){resourceId}else{R.drawable.icon}),
                     contentDescription = null,
                     modifier = Modifier
-                        .size(60.dp)
+                        .size(70.dp)
                 )
                 Spacer(modifier = Modifier.width(8.dp))
                 Column {
@@ -278,6 +283,50 @@ class CritterListActivity : ComponentActivity() {
                         style = MaterialTheme.typography.titleSmall
                     )
                     Spacer(modifier = Modifier.height(8.dp))
+                }
+                Box(modifier = Modifier.weight(1f)) {
+                    Image(
+                        painter = painterResource(
+                            id = when (critter.type) {
+                                "DRAGON" -> {
+                                    R.drawable.dragon
+                                }
+
+                                "WATER" -> {
+                                    R.drawable.water
+                                }
+
+                                "ELECTRIC" -> {
+                                    R.drawable.electric
+                                }
+
+                                "FIRE" -> {
+                                    R.drawable.fire
+                                }
+
+                                "STONE" -> {
+                                    R.drawable.stone
+                                }
+
+                                "ICE" -> {
+                                    R.drawable.ice
+                                }
+
+                                "METAL" -> {
+                                    R.drawable.metal
+                                }
+
+                                else -> {
+                                    R.drawable.normal
+                                }
+                            }
+                        ),
+                        contentDescription = null,
+                        modifier = Modifier
+                            .size(35.dp)
+                            .offset(y = 15.dp)
+                            .align(Alignment.CenterEnd)
+                    )
                 }
             }
         }

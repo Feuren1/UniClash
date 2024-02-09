@@ -11,9 +11,10 @@ data class CritterTemplate(
     val baseSpeed: Int,
     val evolesAt: Int,
     val evolvesIntoTemplateId: Int,
+    val type: String,
 ){
     override fun toString(): String {
-        return "CritterTemplate(id=$id, name='$name', baseHealth=$baseHealth, baseAttack=$baseAttack, baseDefence=$baseDefence, baseSpeed=$baseSpeed, evolesAt=$evolesAt, evolvesIntoTemplateId=$evolvesIntoTemplateId)"
+        return "CritterTemplate(id=$id, name='$name', baseHealth=$baseHealth, baseAttack=$baseAttack, baseDefence=$baseDefence, baseSpeed=$baseSpeed, evolesAt=$evolesAt, evolvesIntoTemplateId=$evolvesIntoTemplateId, type='$type')"
     }
 
 }

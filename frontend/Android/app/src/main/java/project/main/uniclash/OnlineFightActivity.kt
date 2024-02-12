@@ -546,7 +546,6 @@ class OnlineFightActivity : ComponentActivity() {
                 contentDescription = null,
                 modifier = Modifier
                     .size(40.dp)
-                    .background(MaterialTheme.colorScheme.surface)
                     .padding(8.dp)
                     .align(alignment = TopEnd)
             )

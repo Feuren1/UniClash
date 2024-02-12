@@ -181,7 +181,7 @@ class FinalBattleViewModel(
     private fun applyBuffToPlayer(attack: Attack) {
         if (attack.attackType == AttackType.ATK_BUFF) {
             viewModelScope.launch() {
-                val newAtk = (playerCritter.value.playerCritter!!.atk + attack.strength).coerceAtMost(500)
+                val newAtk = (playerCritter.value.playerCritter!!.atk + calculateCpuDamage(attack.strength)).coerceAtMost(500)
                 val increased = newAtk > playerCritter.value.playerCritter!!.atk
                 playerCritter.update { currentState ->
                     currentState.copy(
@@ -199,7 +199,7 @@ class FinalBattleViewModel(
         }
         if (attack.attackType == AttackType.DEF_BUFF) {
             viewModelScope.launch() {
-                val newDef = (playerCritter.value.playerCritter!!.def + attack.strength).coerceAtMost(500)
+                val newDef = (playerCritter.value.playerCritter!!.def + calculateCpuDamage(attack.strength)).coerceAtMost(500)
                 val increased = newDef > playerCritter.value.playerCritter!!.def
                 playerCritter.update { currentState ->
                     currentState.copy(
@@ -225,10 +225,10 @@ class FinalBattleViewModel(
                 val currentDef = currentState.playerCritter?.def ?: 0
 
                 newAtk = if (attack.attackType == AttackType.ATK_DEBUFF) {
-                    (currentAtk - attack.strength).coerceAtLeast(20)
+                    (currentAtk - calculatePlayerDamage(attack.strength)).coerceAtLeast(20)
                 } else currentAtk
                 newDef = if (attack.attackType == AttackType.DEF_DEBUFF) {
-                    (currentDef - attack.strength).coerceAtLeast(20)
+                    (currentDef - calculatePlayerDamage(attack.strength)).coerceAtLeast(20)
                 } else currentDef
                 currentState.copy(
                     playerCritter = currentState.playerCritter?.copy(
@@ -259,11 +259,11 @@ class FinalBattleViewModel(
                 val currentDef = currentState.cpuCritter?.def ?: 0
 
                 newAtk = if (attack.attackType == AttackType.ATK_DEBUFF) {
-                    (currentAtk - attack.strength).coerceAtLeast(20)
+                    (currentAtk - calculateCpuDamage(attack.strength)).coerceAtLeast(20)
                 } else currentAtk
 
                 newDef = if (attack.attackType == AttackType.DEF_DEBUFF) {
-                    (currentDef - attack.strength).coerceAtLeast(20)
+                    (currentDef - calculateCpuDamage(attack.strength)).coerceAtLeast(20)
                 } else currentDef
 
                 currentState.copy(
@@ -290,7 +290,7 @@ class FinalBattleViewModel(
 
     private fun applyBuffToCpu(attack: Attack) {
         if (attack.attackType == AttackType.ATK_BUFF) {
-                val newAtk = (cpuCritter.value.cpuCritter!!.atk + attack.strength).coerceAtMost(500)
+                val newAtk = (cpuCritter.value.cpuCritter!!.atk + calculatePlayerDamage(attack.strength)).coerceAtMost(500)
                 val increased = newAtk > cpuCritter.value.cpuCritter!!.atk
                 cpuCritter.update { currentState ->
                     currentState.copy(
@@ -306,7 +306,7 @@ class FinalBattleViewModel(
                 }
         }
         if (attack.attackType == AttackType.DEF_BUFF) {
-                val newDef = (cpuCritter.value.cpuCritter!!.def + attack.strength).coerceAtMost(500)
+                val newDef = (cpuCritter.value.cpuCritter!!.def + calculatePlayerDamage(attack.strength)).coerceAtMost(500)
                 val increased = newDef > cpuCritter.value.cpuCritter!!.def
                 cpuCritter.update { currentState ->
                     currentState.copy(

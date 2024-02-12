@@ -26,8 +26,8 @@ interface OnlineFightService {
     @PUT("/insertCritter/{fightConnectionId}/{studentId}/{critterId}")
     fun insertCritter(@Path("fightConnectionId")fightConnectionId : Int, @Path("studentId")studentId : Int, @Path("critterId")critterId : Int):Call<Unit>
 
-    @PUT("/makingDamage/{fightConnectionId}/{studentId}/{amountOfDamage}/{kindOfDamage}/{e")
-    fun makingDamage(@Path("fightConnectionId")fightConnectionId : Int, @Path("studentId")studentId : Int, @Path("amountOfDamage")amountOfDamage : Int, @Path("kindOfDamage")kindOfDamage : String):Call<Unit>
+    @PUT("/makingDamage/{fightConnectionId}/{studentId}/{amountOfDamage}/{kindOfDamage}/{effectiveness}")
+    fun makingDamage(@Path("fightConnectionId")fightConnectionId : Int, @Path("studentId")studentId : Int, @Path("amountOfDamage")amountOfDamage : Int, @Path("kindOfDamage")kindOfDamage : String, @Path("effectiveness")effectiveness : Double):Call<Unit>
 
     @PUT("/sendMessageViaPushNotification/{fightConnectionId}/{studentId}/{message}")
     fun sendMessageViaPushNotification(@Path("fightConnectionId")fightConnectionId : Int, @Path("studentId")studentId : Int, @Path("message")message : String):Call<Unit>

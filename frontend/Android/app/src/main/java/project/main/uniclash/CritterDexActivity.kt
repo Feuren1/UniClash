@@ -15,6 +15,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -167,6 +168,50 @@ class CritterDexActivity : ComponentActivity() {
                                     style = MaterialTheme.typography.titleSmall
                                 )
                                 Spacer(modifier = Modifier.height(8.dp))
+                            }
+                                Box(modifier = Modifier.weight(1f)) {
+                                    Image(
+                                        painter = painterResource(
+                                            id = when (critter.type) {
+                                                "DRAGON" -> {
+                                                    R.drawable.dragon
+                                                }
+
+                                                "WATER" -> {
+                                                    R.drawable.water
+                                                }
+
+                                                "ELECTRIC" -> {
+                                                    R.drawable.electric
+                                                }
+
+                                                "FIRE" -> {
+                                                    R.drawable.fire
+                                                }
+
+                                                "STONE" -> {
+                                                    R.drawable.stone
+                                                }
+
+                                                "ICE" -> {
+                                                    R.drawable.ice
+                                                }
+
+                                                "METAL" -> {
+                                                    R.drawable.metal
+                                                }
+
+                                                else -> {
+                                                    R.drawable.normal
+                                                }
+                                            }
+                                        ),
+                                        contentDescription = null,
+                                        modifier = Modifier
+                                            .size(35.dp)
+                                            .offset(y = 15.dp)
+                                            .align(Alignment.CenterEnd)
+                                    )
                             }
                         }
                     }

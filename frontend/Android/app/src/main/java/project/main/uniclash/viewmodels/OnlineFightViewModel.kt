@@ -18,6 +18,7 @@ import project.main.uniclash.datatypes.OnlineFightState
 import project.main.uniclash.retrofit.CritterService
 import project.main.uniclash.retrofit.OnlineFightService
 import project.main.uniclash.retrofit.enqueue
+import project.main.uniclash.type.Effectiveness
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -308,12 +309,16 @@ class OnlineFightViewModel (private val onlineFightService: OnlineFightService, 
         }
     }
 
-    @SuppressLint("MissingPermission")
-    fun makingDamage(amountOfDamage : Int, kindOfDamage : BattleAction) {
+    @SuppressLint("MissingPermission", "SuspiciousIndentation")
+    fun makingDamage(amountOfDamage : Int, kindOfDamage : BattleAction, effectiveness : Effectiveness) {
+        var effectValue = 1.0
+        if(effectiveness == Effectiveness.WEAK) effectValue = 0.75
+        if(effectiveness == Effectiveness.EFFECTIVE) effectValue = 1.5
+
             viewModelScope.launch {
                 try {
                     val response =
-                        onlineFightService.makingDamage(fightConnectionID.value.fightConnectionId,userDataManager.getStudentId()!!,amountOfDamage, kindOfDamage.toString().uppercase())
+                        onlineFightService.makingDamage(fightConnectionID.value.fightConnectionId,userDataManager.getStudentId()!!,amountOfDamage, kindOfDamage.toString().uppercase() , effectValue)
                             .enqueue()
                     Log.d(TAG, "loadMakingDamage: $response")
                     if (response.isSuccessful) {

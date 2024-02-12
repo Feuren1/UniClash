@@ -52,7 +52,7 @@ import project.main.uniclash.datatypes.CustomColor
 
 class CritterListActivity : ComponentActivity() {
     private var exitRequest by mutableStateOf(false)
-    private var sorter by mutableStateOf(Sort.ID)
+    private var sorter by mutableStateOf(CurrentSort.Sorter.getSort())
 
     val uniClashViewModel: UniClashViewModel by viewModels(factoryProducer = {
         UniClashViewModel.provideFactory(CritterService.getInstance(this), Application())
@@ -181,6 +181,7 @@ class CritterListActivity : ComponentActivity() {
                         textAlign = TextAlign.Start,
                         modifier = Modifier.clickable {
                             sorter = Sort.ID
+                            CurrentSort.Sorter.setSort(Sort.ID)
                         }
                     )
                     Text(
@@ -191,6 +192,7 @@ class CritterListActivity : ComponentActivity() {
                         textAlign = TextAlign.Start,
                         modifier = Modifier.clickable {
                             sorter = Sort.IDReversed
+                            CurrentSort.Sorter.setSort(Sort.IDReversed)
                         }
                     )
                     Text(
@@ -201,6 +203,7 @@ class CritterListActivity : ComponentActivity() {
                         textAlign = TextAlign.Start,
                         modifier = Modifier.clickable {
                             sorter = Sort.Name
+                            CurrentSort.Sorter.setSort(Sort.Name)
                         }
                     )
                     Text(
@@ -211,6 +214,7 @@ class CritterListActivity : ComponentActivity() {
                         textAlign = TextAlign.Start,
                         modifier = Modifier.clickable {
                             sorter = Sort.Level
+                            CurrentSort.Sorter.setSort(Sort.Level)
                         }
                     )
                     Text(
@@ -221,6 +225,7 @@ class CritterListActivity : ComponentActivity() {
                         textAlign = TextAlign.Start,
                         modifier = Modifier.clickable {
                             sorter = Sort.LevelReversed
+                            CurrentSort.Sorter.setSort(Sort.LevelReversed)
                         }
                     )
                 }
@@ -343,4 +348,16 @@ enum class Sort{
     Hp,
     Def,
     Atk,
+}
+
+enum class CurrentSort(private var sorter : Sort){
+    Sorter(Sort.ID);
+
+    fun getSort():Sort{
+        return sorter
+    }
+
+    fun setSort(setSorter : Sort){
+        sorter = setSorter
+    }
 }

@@ -137,8 +137,9 @@ class OnlineFightActivity : ComponentActivity() {
     private var mediaPlayerStop = false
     private var sendInAppNotification by mutableStateOf(false)
 
-    private var enemyType by mutableStateOf("WATER")
-    private var myType by mutableStateOf("WATER")
+    private var effectiveness by mutableStateOf(Effectiveness.NORMAL)
+    private var enemyType by mutableStateOf("NORMAL")
+    private var myType by mutableStateOf("NORMAL")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -264,7 +265,8 @@ class OnlineFightActivity : ComponentActivity() {
                                 onClick = {
                                     onlineFightViewModel.makingDamage(
                                         selectedAttack,
-                                        selectedTypOfAttack
+                                        selectedTypOfAttack,
+                                        effectiveness
                                     )
                                 },
                                 modifier = Modifier
@@ -426,7 +428,9 @@ class OnlineFightActivity : ComponentActivity() {
                 enemyCritter.defence,
                 enemyCritter.attack,
                 Color.Red,
-                state == OnlineFightState.ENEMYTURN
+                state == OnlineFightState.ENEMYTURN,
+                enemyCritterUsable.type
+
             )
             Spacer(modifier = Modifier.height(16.dp))
             if(myCritter.name == "MOCKITO") critterUsable.hp = enemyCritterUsable.hp
@@ -438,7 +442,8 @@ class OnlineFightActivity : ComponentActivity() {
                 myCritter.defence,
                 myCritter.attack,
                 Color.Green,
-                state == OnlineFightState.YOURTURN
+                state == OnlineFightState.YOURTURN,
+                critterUsable.type
             )
         }
     }
@@ -452,7 +457,8 @@ class OnlineFightActivity : ComponentActivity() {
         def: Int,
         ack: Int,
         color: Color,
-        myTurn: Boolean
+        myTurn: Boolean,
+        type : String
     ) {
         Box(
             modifier = Modifier
@@ -517,7 +523,7 @@ class OnlineFightActivity : ComponentActivity() {
                 )
 
                 Text(
-                    text = "Level: $lvl ATK: $ack DEF: $def HP: $hp",
+                    text = "Level: $lvl ATK: $ack\nDEF: $def HP: $hp",
                     style = MaterialTheme.typography.bodyMedium,
                     color = Color.White
                 )
@@ -525,6 +531,25 @@ class OnlineFightActivity : ComponentActivity() {
                 // Balken zur Anzeige von Leben
                 HealthBar(health = hp, currentHealth = currentHp, barColor = color)
             }
+            Image(
+                painter = painterResource(id = when (type) {
+                    "DRAGON" -> {R.drawable.dragon}
+                    "WATER" -> {R.drawable.water}
+                    "ELECTRIC" -> {R.drawable.electric}
+                    "FIRE" -> {R.drawable.fire}
+                    "STONE" -> {R.drawable.stone}
+                    "ICE" -> {R.drawable.ice}
+                    "METAL" -> {R.drawable.metal}
+                    else -> {R.drawable.normal}
+                }
+                ),
+                contentDescription = null,
+                modifier = Modifier
+                    .size(40.dp)
+                    .background(MaterialTheme.colorScheme.surface)
+                    .padding(8.dp)
+                    .align(alignment = TopEnd)
+            )
         }
     }
 
@@ -562,6 +587,7 @@ class OnlineFightActivity : ComponentActivity() {
                     clickedAttack = attackName
                     selectedAttack = value
                     selectedTypOfAttack = attackType
+                    this.effectiveness = effectiveness
                 }
                 //.fillMaxWidth()
                 .height(100.dp)
@@ -621,6 +647,7 @@ class OnlineFightActivity : ComponentActivity() {
                         .background(MaterialTheme.colorScheme.surface)
                         .padding(8.dp)
                 )
+                Spacer(modifier = Modifier.weight(8.0F))
                 Image(
                     painter = painterResource(
                         if (resourceIdType > 0) {
@@ -656,7 +683,7 @@ class OnlineFightActivity : ComponentActivity() {
                         color = Color.White
                     )
                     Text(
-                        text = "$effectiveness",
+                        text = "Effec.: $effectiveness",
                         style = MaterialTheme.typography.bodyMedium,
                         color = Color.White
                     )

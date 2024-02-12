@@ -132,14 +132,13 @@ export class OnlineFightService {
      }
     }
 
-    const enemyCritterBaseStats = await  this.critterStatsService.createCritterUsable(critterIdFromEnemy)
-    const myCritterBaseStats = await  this.critterStatsService.createCritterUsable(critterIdFromMe)
-
-    const damage : number = ((((((2*myCritterBaseStats.level)/5)+2)*amountOfDamage*myCritterBaseStats.atk/enemyCritterBaseStats.def)/50)+2)*effectivity
+    const enemyCritter: CritterInFight = await this.critterInFightRepository.findById(critterIdFromEnemy)
+    const myCritterForLevel = await  this.critterStatsService.createCritterUsable(critterIdFromMe)
+    const myCritter = await  this.critterInFightRepository.findById(critterIdFromMe)
+    const damage : number = ((((((2*myCritterForLevel.level)/5)+2)*amountOfDamage*myCritter.attack/enemyCritter.defence)/50)+2)*effectivity
 
     //make damage
     if(allowToMakeDamage && critterIdFromEnemy != 0 && kindOfDamage == "DAMAGE_DEALER") {
-      const enemyCritter: CritterInFight = await this.critterInFightRepository.findById(critterIdFromEnemy)
       // @ts-ignore
       enemyCritter.health -= damage.toFixed(0)
       await this.critterInFightRepository.update(enemyCritter)

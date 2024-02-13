@@ -172,7 +172,7 @@ class OnlineFightViewModel (private val onlineFightService: OnlineFightService, 
                                 timer = 27
                             )
                         }
-                    } else if(stateRes.state != "yourTurn") {
+                    } else if(stateRes.state != "yourTurn" && stateRes.state != "enemyTurn") {
                         timer.update {
                             it.copy(
                                 timer = 0

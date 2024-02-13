@@ -126,7 +126,7 @@ class OnlineFightViewModel (private val onlineFightService: OnlineFightService, 
 
     @SuppressLint("MissingPermission")
     fun checkIfFightCanStart() {
-        if(state.value.state==OnlineFightState.WAITING) {
+        if(state.value.state==OnlineFightState.WAITING || state.value.state == OnlineFightState.PREPERATION) {
             viewModelScope.launch {
                 try {
                     val response =
@@ -166,7 +166,7 @@ class OnlineFightViewModel (private val onlineFightService: OnlineFightService, 
                     if(stateRes.state == "loser") currentState = OnlineFightState.LOSER
                     if(stateRes.state == "404") currentState = OnlineFightState.NOTFOUND
 
-                    if(stateRes.state == "yourTurn" && timer.value.timer < 1){
+                    if(stateRes.state == "yourTurn" && timer.value.timer < 1 || stateRes.state == "enemyTurn" && timer.value.timer < 1){
                         timer.update {
                             it.copy(
                                 timer = 27

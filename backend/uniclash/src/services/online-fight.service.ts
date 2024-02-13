@@ -265,6 +265,9 @@ export class OnlineFightService {
           // @ts-ignore
           const critter2 = await this.critterStatsService.createCritterUsable(currentFights[1].critterId)
 
+          currentFights[0].timer = currentTime.getSeconds() + currentTime.getMinutes() * 60
+          currentFights[1].timer = currentTime.getSeconds() + currentTime.getMinutes() * 60
+
           if (critter1.spd >= critter2.spd) {
             currentFights[0].state = OnlineFightState.YourTurn
             currentFights[1].state = OnlineFightState.EnemyTurn

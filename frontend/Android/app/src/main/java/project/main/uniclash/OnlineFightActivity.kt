@@ -409,7 +409,7 @@ class OnlineFightActivity : ComponentActivity() {
             ) {
                 // Timer-Anzeige ganz links
                 Text(
-                    text = "time left:\n$timerValue sec.",
+                    text = "turn change:\n$timerValue sec.",
                     style = MaterialTheme.typography.bodyLarge,
                     color = Color.White,
                     modifier = Modifier.align(alignment = TopStart)

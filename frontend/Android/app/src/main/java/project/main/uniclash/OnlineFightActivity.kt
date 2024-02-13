@@ -350,7 +350,7 @@ class OnlineFightActivity : ComponentActivity() {
         LaunchedEffect(Unit) {
             while (true) {
                 delay(3000)
-                if (state == OnlineFightState.WAITING) onlineFightViewModel.checkIfFightCanStart()
+                if (state == OnlineFightState.WAITING || state == OnlineFightState.PREPERATION) onlineFightViewModel.checkIfFightCanStart()
                 if (!myCritterLoaded) onlineFightViewModel.getCritterUsable()
                 if (!enemyCritterLoaded) onlineFightViewModel.getEnemyCritterUsable()
 

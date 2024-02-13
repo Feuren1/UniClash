@@ -208,8 +208,8 @@ export class OnlineFightService {
       }
     }
 
-    if(currentFights[0].state == OnlineFightState.Waiting && currentFights[1].state == OnlineFightState.Waiting){
-      if(currentFights[0].critterId != null && currentFights[0].critterId != 0 && currentFights[1].critterId != null && currentFights[1].critterId != 0) {
+    if(currentFights[0].state == OnlineFightState.Waiting && currentFights[1].state == OnlineFightState.Waiting) {
+      if (currentFights[0].critterId != null && currentFights[0].critterId != 0 && currentFights[1].critterId != null && currentFights[1].critterId != 0) {
         const critter1 = await this.critterStatsService.createCritterUsable(currentFights[0].critterId)
         const critter2 = await this.critterStatsService.createCritterUsable(currentFights[1].critterId)
         //insert Critter to CritterInFight table
@@ -246,14 +246,15 @@ export class OnlineFightService {
 
 
         currentFights[0].state = OnlineFightState.PREPERATION
-        currentFights[0].timer = currentTime.getSeconds()+currentTime.getMinutes()*60
+        currentFights[0].timer = currentTime.getSeconds() + currentTime.getMinutes() * 60
 
         currentFights[0].state = OnlineFightState.PREPERATION
-        currentFights[1].timer = currentTime.getSeconds()+currentTime.getMinutes()*60
+        currentFights[1].timer = currentTime.getSeconds() + currentTime.getMinutes() * 60
 
         await this.onlineFightRepository.update(currentFights[0])
         await this.onlineFightRepository.update(currentFights[1])
       }
+    }
 
       // @ts-ignore
       if(currentFights[0].state == OnlineFightState.PREPERATION  || currentFights[1].state == OnlineFightState.PREPERATION) {
@@ -275,7 +276,6 @@ export class OnlineFightService {
           await this.onlineFightRepository.update(currentFights[1])
         }
       }
-    }
   }
 
   async checkMyState(fightConnectionId : number, studentId : number): Promise<string>{

@@ -252,11 +252,11 @@ class OnlineFightViewModel (private val onlineFightService: OnlineFightService, 
 
     @SuppressLint("MissingPermission")
     fun getCritterUsable() {
-        if(!critterUsable.value.loaded){
+        if(!critterUsable.value.loaded && critterInFight.value.critterInFightInformation != null){
             viewModelScope.launch {
                 try {
                     val response =
-                        critterService.getCritterUsable(userDataManager.getFightingCritterID()!!)
+                        critterService.getCritterUsable(critterInFight.value.critterInFightInformation!!.critterId)
                             .enqueue()
                     Log.d(TAG, "loadCritter: $response")
                     if (response.isSuccessful) {

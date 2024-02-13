@@ -197,6 +197,8 @@ export class OnlineFightService {
   }
 
   async checkIfFightCanStart(fightConnectionId:number){
+    const currentTime: Date = new Date();
+
     const fights: OnlineFight[] = await this.onlineFightRepository.find()
     const currentFights : OnlineFight[] = []
 
@@ -244,28 +246,34 @@ export class OnlineFightService {
 
 
         currentFights[0].state = OnlineFightState.PREPERATION
+        currentFights[0].timer = currentTime.getSeconds()+currentTime.getMinutes()*60
+
         currentFights[0].state = OnlineFightState.PREPERATION
+        currentFights[1].timer = currentTime.getSeconds()+currentTime.getMinutes()*60
+
         await this.onlineFightRepository.update(currentFights[0])
         await this.onlineFightRepository.update(currentFights[1])
       }
 
       // @ts-ignore
-      if(currentFights[0].state == OnlineFightState.PREPERATION  || currentFights[1].state == OnlineFightState.PREPERATION){
-        //Set turns
-        // @ts-ignore
-        const critter1 = await this.critterStatsService.createCritterUsable(currentFights[0].critterId)
-        // @ts-ignore
-        const critter2 = await this.critterStatsService.createCritterUsable(currentFights[1].critterId)
+      if(currentFights[0].state == OnlineFightState.PREPERATION  || currentFights[1].state == OnlineFightState.PREPERATION) {
+        if (currentTime.getSeconds() + currentTime.getMinutes() * 60 - currentFights[0].timer > 10) {
+          //Set turns
+          // @ts-ignore
+          const critter1 = await this.critterStatsService.createCritterUsable(currentFights[0].critterId)
+          // @ts-ignore
+          const critter2 = await this.critterStatsService.createCritterUsable(currentFights[1].critterId)
 
-        if(critter1.spd>=critter2.spd){
-          currentFights[0].state = OnlineFightState.YourTurn
-          currentFights[1].state = OnlineFightState.EnemyTurn
-        } else {
-          currentFights[0].state = OnlineFightState.EnemyTurn
-          currentFights[1].state = OnlineFightState.YourTurn
+          if (critter1.spd >= critter2.spd) {
+            currentFights[0].state = OnlineFightState.YourTurn
+            currentFights[1].state = OnlineFightState.EnemyTurn
+          } else {
+            currentFights[0].state = OnlineFightState.EnemyTurn
+            currentFights[1].state = OnlineFightState.YourTurn
+          }
+          await this.onlineFightRepository.update(currentFights[0])
+          await this.onlineFightRepository.update(currentFights[1])
         }
-        await this.onlineFightRepository.update(currentFights[0])
-        await this.onlineFightRepository.update(currentFights[1])
       }
     }
   }

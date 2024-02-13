@@ -11,6 +11,7 @@ import androidx.activity.compose.setContent
 import androidx.activity.viewModels
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -35,6 +36,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -51,6 +53,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.rememberImagePainter
+import project.main.uniclash.datatypes.CustomColor
 import project.main.uniclash.newBuildingLogic.NewBuildingSingleTon
 import project.main.uniclash.datatypes.Locations
 import project.main.uniclash.datatypes.MapSaver
@@ -111,7 +114,7 @@ class NewBuildingActivity : ComponentActivity() {
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .background(MaterialTheme.colorScheme.background)
+                        .background(Color.Black)
                         .padding(16.dp)
                 ) {
                     MenuHeader()
@@ -129,7 +132,7 @@ class NewBuildingActivity : ComponentActivity() {
                 Box(
                     modifier = Modifier
                         .fillMaxSize()
-                        .background(Color.White) // Hier wird der Hintergrund weiß gemacht
+                        .background(Color.Black) // Hier wird der Hintergrund weiß gemacht
                 ) {
                     Box(
                         modifier = Modifier
@@ -168,6 +171,7 @@ class NewBuildingActivity : ComponentActivity() {
             fontSize = 50.sp, // Adjust the font size as needed
             fontWeight = FontWeight.Bold, // Use FontWeight.Bold for bold text
             textAlign = TextAlign.Start,
+            color = Color.White,
             modifier = Modifier.padding(vertical = 16.dp) // Add vertical padding
         )
     }
@@ -181,7 +185,12 @@ class NewBuildingActivity : ComponentActivity() {
                 .padding(all = 8.dp)
                 .fillMaxWidth() // making box from left to right site
                 .background(
-                    Color.LightGray,
+                    CustomColor.DarkPurple.getColor(),
+                    shape = RoundedCornerShape(8.dp)
+                ) // Hintergrundfarbe und abgeflachte Ecken
+                .border(
+                    3.dp,
+                    CustomColor.Purple.getColor(),
                     shape = RoundedCornerShape(8.dp)
                 ) // Hintergrundfarbe und abgeflachte Ecken
 
@@ -199,13 +208,13 @@ class NewBuildingActivity : ComponentActivity() {
                     Text(
                         text = "Student Level:",
                         fontSize = 18.sp,
-                        color = MaterialTheme.colorScheme.secondary,
+                        color = Color.White,
                         style = MaterialTheme.typography.titleSmall
                     )
                     Text(
                         text = "You can place 2 buildings, by reaching every fifth level.\n Free buildings left: $freebuildings\nAlready placed: ${freeBuildingsInformation.placedBuildings}\nLevel: ${freeBuildingsInformation.level} ",
                         fontSize = 12.sp,
-                        color = MaterialTheme.colorScheme.secondary,
+                        color = Color.White,
                         style = MaterialTheme.typography.titleSmall
                     )
                     Spacer(modifier = Modifier.height(8.dp))
@@ -222,7 +231,12 @@ class NewBuildingActivity : ComponentActivity() {
                 .padding(all = 8.dp)
                 .fillMaxWidth()
                 .background(
-                    Color.LightGray,
+                    CustomColor.DarkPurple.getColor(),
+                    shape = RoundedCornerShape(8.dp)
+                ) // Hintergrundfarbe und abgeflachte Ecken
+                .border(
+                    3.dp,
+                    CustomColor.Purple.getColor(),
                     shape = RoundedCornerShape(8.dp)
                 )
         ) {
@@ -236,7 +250,7 @@ class NewBuildingActivity : ComponentActivity() {
                             Text(
                                 text = "Title:",
                                 fontSize = 18.sp,
-                                color = MaterialTheme.colorScheme.secondary,
+                                color = Color.White,
                                 style = MaterialTheme.typography.titleSmall
                             )
                             Spacer(modifier = Modifier.height(8.dp))
@@ -256,13 +270,19 @@ class NewBuildingActivity : ComponentActivity() {
                                 },
                                 modifier = Modifier
                                     .fillMaxWidth()
-                                    .padding(8.dp)
+                                    .padding(8.dp),
+                                colors = TextFieldDefaults.outlinedTextFieldColors(
+                                    focusedLabelColor = Color.Black,
+                                    focusedBorderColor = Color.Gray,
+                                    unfocusedBorderColor = Color.Black,
+                                    containerColor = Color.White)
+
                             )
                             Spacer(modifier = Modifier.height(8.dp))
                             Text(
                                 text = "Description:",
                                 fontSize = 18.sp,
-                                color = MaterialTheme.colorScheme.secondary,
+                                color = Color.White,
                                 style = MaterialTheme.typography.titleSmall
                             )
                             Spacer(modifier = Modifier.height(8.dp))
@@ -282,7 +302,12 @@ class NewBuildingActivity : ComponentActivity() {
                                 },
                                 modifier = Modifier
                                     .fillMaxWidth()
-                                    .padding(8.dp)
+                                    .padding(8.dp),
+                                colors = TextFieldDefaults.outlinedTextFieldColors(
+                                    focusedLabelColor = Color.Black,
+                                    focusedBorderColor = Color.Gray,
+                                    unfocusedBorderColor = Color.Black,
+                                    containerColor = Color.White)
                             )
                         }
                     }
@@ -298,7 +323,12 @@ class NewBuildingActivity : ComponentActivity() {
                 .padding(all = 8.dp)
                 .fillMaxWidth()
                 .background(
-                    Color.LightGray,
+                    CustomColor.DarkPurple.getColor(),
+                    shape = RoundedCornerShape(8.dp)
+                ) // Hintergrundfarbe und abgeflachte Ecken
+                .border(
+                    3.dp,
+                    CustomColor.Purple.getColor(),
                     shape = RoundedCornerShape(8.dp)
                 )
         ) {
@@ -314,7 +344,7 @@ class NewBuildingActivity : ComponentActivity() {
                             Text(
                                 text = "Building:",
                                 fontSize = 18.sp,
-                                color = MaterialTheme.colorScheme.secondary,
+                                color = Color.White,
                                 style = MaterialTheme.typography.titleSmall
                             )
 
@@ -362,7 +392,12 @@ class NewBuildingActivity : ComponentActivity() {
                 .fillMaxWidth() // making box from left to right site
                 .clickable { startCamera = true }
                 .background(
-                    Color.LightGray,
+                    CustomColor.DarkPurple.getColor(),
+                    shape = RoundedCornerShape(8.dp)
+                ) // Hintergrundfarbe und abgeflachte Ecken
+                .border(
+                    3.dp,
+                    CustomColor.Purple.getColor(),
                     shape = RoundedCornerShape(8.dp)
                 ) // Hintergrundfarbe und abgeflachte Ecken
 
@@ -380,13 +415,13 @@ class NewBuildingActivity : ComponentActivity() {
                     Text(
                         text = "Photo:",
                         fontSize = 18.sp,
-                        color = MaterialTheme.colorScheme.secondary,
+                        color = Color.White,
                         style = MaterialTheme.typography.titleSmall
                     )
                     Text(
                         text = "click to take a photo\n$capturedImagePath",
                         fontSize = 12.sp,
-                        color = MaterialTheme.colorScheme.secondary,
+                        color = Color.White,
                         style = MaterialTheme.typography.titleSmall
                     )
                     Spacer(modifier = Modifier.height(8.dp))
@@ -414,7 +449,12 @@ class NewBuildingActivity : ComponentActivity() {
                 .padding(all = 8.dp)
                 .fillMaxWidth() // making box from left to right site
                 .background(
-                    Color.LightGray,
+                    CustomColor.DarkPurple.getColor(),
+                    shape = RoundedCornerShape(8.dp)
+                ) // Hintergrundfarbe und abgeflachte Ecken
+                .border(
+                    3.dp,
+                    CustomColor.Purple.getColor(),
                     shape = RoundedCornerShape(8.dp)
                 ) // Hintergrundfarbe und abgeflachte Ecken
 
@@ -432,13 +472,13 @@ class NewBuildingActivity : ComponentActivity() {
                     Text(
                         text = "Location of your building",
                         fontSize = 18.sp,
-                        color = MaterialTheme.colorScheme.secondary,
+                        color = Color.White,
                         style = MaterialTheme.typography.titleSmall
                     )
                     Text(
                         text = if(lat!= 0.0 && long != 0.0){"Your building will be placed at:\n$buildingAddress\nWe will use your latest location on the map."} else {"Location is invalid!\nGo to map and load your current location."},
                         fontSize = 12.sp,
-                        color = MaterialTheme.colorScheme.secondary,
+                        color = Color.White,
                         style = MaterialTheme.typography.titleSmall
                     )
                     Spacer(modifier = Modifier.height(8.dp))
@@ -454,9 +494,14 @@ class NewBuildingActivity : ComponentActivity() {
                 .padding(all = 8.dp)
                 .fillMaxWidth() // making box from left to right site
                 .background(
-                    Color.LightGray,
+                    CustomColor.DarkPurple.getColor(),
                     shape = RoundedCornerShape(8.dp)
                 ) // Hintergrundfarbe und abgeflachte Ecken
+                .border(
+                    3.dp,
+                    CustomColor.Purple.getColor(),
+                    shape = RoundedCornerShape(8.dp)
+                )// Hintergrundfarbe und abgeflachte Ecken
                 .clickable {
                     if (confirmRequest) {
                         confirmRequest = false
@@ -517,13 +562,13 @@ class NewBuildingActivity : ComponentActivity() {
                     Text(
                         text = "Confirm new building:",
                         fontSize = 18.sp,
-                        color = MaterialTheme.colorScheme.secondary,
+                        color = Color.White,
                         style = MaterialTheme.typography.titleSmall
                     )
                     Text(
                         text = "Title (max 30char.): $title\nDescription (max 60 char.): $description\nBuilding Type: ${if(building== BuildingType.STUDENTHUB){"Student Hub"} else {"Arena"}}\nLocations: $buildingAddress\nPicture: ${if(capturedImagePath.isNullOrBlank()){"missing"}else{"available"}}\nStudent Level high enough: ${if(freebuildings>0){"yes"}else{"no"}}",
                         fontSize = 12.sp,
-                        color = MaterialTheme.colorScheme.secondary,
+                        color = Color.White,
                         style = MaterialTheme.typography.titleSmall
                     )
                     Spacer(modifier = Modifier.height(8.dp))

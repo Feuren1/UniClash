@@ -109,15 +109,16 @@ export class LiveFightController {
     return this.onlineFightService.fightInformationList(studentId);
   }
 
-  @get('/getCritterInformation/{critterId}')
+  @get('/getCritterInformation/{critterId}/{fightConnectionId}')
   @response(200, {
     description: 'Readable information of a fight',
     content: {'application/json': {schema: CountSchema}},
   })
   async getCritterInformation(
       @param.path.number('critterId') critterId: number,
+      @param.path.number('fightConnectionId') fightConnectionId: number,
   ): Promise<CritterInFightInformation> {
-    return this.onlineFightService.getCritterInformation(critterId);
+    return this.onlineFightService.getCritterInformation(critterId,fightConnectionId);
   }
 
   @get('/getCritterInformationFromEnemy/{fightConnectionId}/{studentId}')

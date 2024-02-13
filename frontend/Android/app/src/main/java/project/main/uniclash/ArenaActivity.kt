@@ -258,6 +258,7 @@ class ArenaActivity : ComponentActivity() {
                 bundle.putInt("ArenaID", arenaViewModel.getselectedArena()?.arena?.id?.toInt() ?: 0)
                 intent.putExtras(bundle)
                 startActivity(intent)
+                finish()
             },
             modifier = Modifier
                 .fillMaxWidth()

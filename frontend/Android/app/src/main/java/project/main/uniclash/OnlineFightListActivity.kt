@@ -9,6 +9,7 @@ import androidx.activity.compose.setContent
 import androidx.activity.viewModels
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -43,6 +44,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.runtime.LaunchedEffect
 import kotlinx.coroutines.delay
 import org.osmdroid.util.GeoPoint
+import project.main.uniclash.datatypes.CustomColor
 import project.main.uniclash.datatypes.MapSettings
 import project.main.uniclash.datatypes.OnlineFightInformation
 import project.main.uniclash.retrofit.OnlineFightService
@@ -68,7 +70,7 @@ class OnlineFightListActivity : ComponentActivity() {
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .background(MaterialTheme.colorScheme.background)
+                        .background(Color.Black)
                         .padding(16.dp)
                 ) {
                     MenuHeader()
@@ -87,7 +89,7 @@ class OnlineFightListActivity : ComponentActivity() {
                 Box(
                     modifier = Modifier
                         .fillMaxSize()
-                        .background(Color.White)
+                        .background(Color.Black)
                 ) {
                             UsableList(onlineFightListViewModel,isLoading)
                     }
@@ -125,8 +127,6 @@ class OnlineFightListActivity : ComponentActivity() {
                     Box(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(8.dp)
-                            .background(Color.LightGray, shape = RoundedCornerShape(8.dp))
                     ) {
                         FightDetail(onlineFight)
                     }
@@ -144,6 +144,7 @@ class OnlineFightListActivity : ComponentActivity() {
                 fontSize = 50.sp, // Adjust the font size as needed
                 fontWeight = FontWeight.Bold, // Use FontWeight.Bold for bold text
                 textAlign = TextAlign.Start,
+                color = Color.White,
                 modifier = Modifier.padding(vertical = 16.dp) // Add vertical padding
             )
             Text(
@@ -151,6 +152,7 @@ class OnlineFightListActivity : ComponentActivity() {
                 fontSize = 12.sp, // Adjust the font size as needed
                 fontWeight = FontWeight.Bold, // Use FontWeight.Bold for bold text
                 textAlign = TextAlign.Start,
+                color = Color.White
             )
         }
     }
@@ -163,7 +165,12 @@ class OnlineFightListActivity : ComponentActivity() {
                 .padding(all = 8.dp)
                 .fillMaxWidth() // making box from left to right site
                 .background(
-                    Color.LightGray,
+                    CustomColor.DarkPurple.getColor(),
+                    shape = RoundedCornerShape(8.dp)
+                ) // Hintergrundfarbe und abgeflachte Ecken
+                .border(
+                    3.dp,
+                    CustomColor.Purple.getColor(),
                     shape = RoundedCornerShape(8.dp)
                 ) // Hintergrundfarbe und abgeflachte Ecken
                 .clickable {
@@ -193,21 +200,21 @@ class OnlineFightListActivity : ComponentActivity() {
                     Text(
                         text = "Fight: ${onlineFight!!.fightConnectionId}",
                         fontSize = 18.sp,
-                        color = MaterialTheme.colorScheme.secondary,
+                        color = Color.White,
                         style = MaterialTheme.typography.titleSmall
                     )
                     if(isSelected.isSelected) {
                         Text(
                             text = "Against Trainer: ${onlineFight?.userName}",
                             fontSize = 12.sp,
-                            color = MaterialTheme.colorScheme.secondary,
+                            color = Color.White,
                             style = MaterialTheme.typography.titleSmall
                         )
                     } else {
                         Text(
                             text = "Against Trainer: ${onlineFight?.userName}\nYou have to select a critter, out of CritterList!",
                             fontSize = 12.sp,
-                            color = MaterialTheme.colorScheme.secondary,
+                            color = Color.White,
                             style = MaterialTheme.typography.titleSmall
                         )
                     }

@@ -9,6 +9,7 @@ import androidx.activity.compose.setContent
 import androidx.activity.viewModels
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -72,7 +73,7 @@ class CritterListActivity : ComponentActivity() {
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .background(MaterialTheme.colorScheme.background)
+                        .background(Color.Black)
                         .padding(16.dp)
                 ) {
                     MenuHeader(myCritters.size)
@@ -91,7 +92,7 @@ class CritterListActivity : ComponentActivity() {
                 Box(
                     modifier = Modifier
                         .fillMaxSize()
-                        .background(Color.White)
+                        .background(Color.Black)
                 ) {
                             UsableList(uniClashViewModel,isLoading, sorter)
                     }
@@ -130,14 +131,6 @@ class CritterListActivity : ComponentActivity() {
                     Box(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(8.dp)
-                            .background(
-                                color = if (!uniClashViewModel.checkIfSelectedCritter(critter!!.critterId)) {
-                                    Color.LightGray
-                                } else {
-                                    CustomColor.Purple.getColor()
-                                }, shape = RoundedCornerShape(8.dp)
-                            )
                     ) {
                         CritterDetail(critter)
                     }
@@ -157,11 +150,13 @@ class CritterListActivity : ComponentActivity() {
                 fontSize = 50.sp, // Adjust the font size as needed
                 fontWeight = FontWeight.Bold, // Use FontWeight.Bold for bold text
                 textAlign = TextAlign.Start,
+                color = Color.White,
                 modifier = Modifier.padding(vertical = 16.dp) // Add vertical padding
             )
             Text(
                 text = "$size/200 Critters${if(size>= 200){"\nYou reached the max amount of critters.\nNew captured critters are not added to your team!!!"}else{""}}",
                 fontSize = 12.sp, // Adjust the font size as needed
+                color = Color.White,
                 fontWeight = FontWeight.Bold, // Use FontWeight.Bold for bold text
                 textAlign = TextAlign.Start,
             )
@@ -172,10 +167,11 @@ class CritterListActivity : ComponentActivity() {
                         fontSize = 12.sp, // Adjust the font size as needed
                         fontWeight = FontWeight.Bold, // Use FontWeight.Bold for bold text
                         textAlign = TextAlign.Start,
+                        color = Color.White,
                     )
                     Text(
                         text = "ID ",
-                        color = CustomColor.DarkPurple.getColor(),
+                        color = Color.LightGray,
                         fontSize = 12.sp, // Adjust the font size as needed
                         fontWeight = FontWeight.Bold, // Use FontWeight.Bold for bold text
                         textAlign = TextAlign.Start,
@@ -186,7 +182,7 @@ class CritterListActivity : ComponentActivity() {
                     )
                     Text(
                         text = "IDReversed ",
-                        color = CustomColor.DarkPurple.getColor(),
+                        color = Color.LightGray,
                         fontSize = 12.sp, // Adjust the font size as needed
                         fontWeight = FontWeight.Bold, // Use FontWeight.Bold for bold text
                         textAlign = TextAlign.Start,
@@ -197,7 +193,7 @@ class CritterListActivity : ComponentActivity() {
                     )
                     Text(
                         text = "Name ",
-                        color = CustomColor.DarkPurple.getColor(),
+                        color = Color.LightGray,
                         fontSize = 12.sp, // Adjust the font size as needed
                         fontWeight = FontWeight.Bold, // Use FontWeight.Bold for bold text
                         textAlign = TextAlign.Start,
@@ -208,7 +204,7 @@ class CritterListActivity : ComponentActivity() {
                     )
                     Text(
                         text = "Level ",
-                        color = CustomColor.DarkPurple.getColor(),
+                        color = Color.LightGray,
                         fontSize = 12.sp, // Adjust the font size as needed
                         fontWeight = FontWeight.Bold, // Use FontWeight.Bold for bold text
                         textAlign = TextAlign.Start,
@@ -219,7 +215,7 @@ class CritterListActivity : ComponentActivity() {
                     )
                     Text(
                         text = "LevelReversed ",
-                        color = CustomColor.DarkPurple.getColor(),
+                        color = Color.LightGray,
                         fontSize = 12.sp, // Adjust the font size as needed
                         fontWeight = FontWeight.Bold, // Use FontWeight.Bold for bold text
                         textAlign = TextAlign.Start,
@@ -235,22 +231,26 @@ class CritterListActivity : ComponentActivity() {
 
     @Composable
     fun CritterDetail(critter: CritterUsable?) {
-        var blockColor : Color = Color.LightGray
-        var textColor : Color = Color.DarkGray
+        var textColor : Color = Color.White
         var selectedText = ""
+        var border = 3.dp
         if(uniClashViewModel.checkIfSelectedCritter(critter!!.critterId)){
-            blockColor = CustomColor.DarkPurple.getColor()
-            textColor = Color.White
             selectedText = "| SELECTED CRITTER FOR THE FIGHT"
+            border = 6.dp
         }
         Box(
             modifier = Modifier
                 .padding(all = 8.dp)
                 .fillMaxWidth() // making box from left to right site
                 .background(
-                    blockColor,
+                    CustomColor.DarkPurple.getColor(),
                     shape = RoundedCornerShape(8.dp)
-                ) // Hintergrundfarbe und abgeflachte Ecken
+                )
+                .border(
+                    border,
+                    CustomColor.Purple.getColor(),
+                    shape = RoundedCornerShape(8.dp)
+                )
                 .clickable {
                     val intent = Intent(this, CritterProfileActivity::class.java)
                     val b = Bundle()

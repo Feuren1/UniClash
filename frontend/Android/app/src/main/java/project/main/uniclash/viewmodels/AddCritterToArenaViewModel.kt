@@ -8,6 +8,7 @@ import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import project.main.uniclash.dataManagers.CritterListDataManager
 import project.main.uniclash.datatypes.ArenaCritterPatch
 import project.main.uniclash.datatypes.CritterUsable
 import project.main.uniclash.retrofit.ArenaCritterService
@@ -24,6 +25,9 @@ class AddCritterToArenaViewModel(
     val text: MutableStateFlow<String> = MutableStateFlow("")
     var selectedCritter : MutableStateFlow<CritterUsable?> = MutableStateFlow(null)
 
+    private val critterListDataManager: CritterListDataManager by lazy {
+        CritterListDataManager(Application())
+    }
 
     val arenasUIState = MutableStateFlow(
         ArenaUIState.HasEntries(
@@ -63,23 +67,29 @@ class AddCritterToArenaViewModel(
     }
     fun loadCritterUsables() {
         viewModelScope.launch {
-            critterUsables.update { it.copy(isLoading = true) }
-            try {
-                val response = arenaCritterService.getCritterUsables(userDataManager.getStudentId()!!).enqueue()
-                Log.d(TAG, "loadCrittersUsable: $response")
-                if (response.isSuccessful) {
-                    Log.d(TAG, "loadCrittersUsables: success")
-                    val crittersUsables = response.body()!!
-                    Log.d(TAG, "loadCrittersUsables: $crittersUsables")
-                    critterUsables.update {
-                        it.copy(
-                            critterUsables = crittersUsables,
-                            isLoading = false
-                        )
+            if (critterListDataManager.checkCritterListIsNotEmpty()) {
+                critterUsables.update { it.copy(critterUsables = critterListDataManager.getCritterList()) }
+            } else {
+                critterUsables.update { it.copy(isLoading = true) }
+                try {
+                    val response =
+                        arenaCritterService.getCritterUsables(userDataManager.getStudentId()!!)
+                            .enqueue()
+                    Log.d(TAG, "loadCrittersUsable: $response")
+                    if (response.isSuccessful) {
+                        Log.d(TAG, "loadCrittersUsables: success")
+                        val crittersUsables = response.body()!!
+                        Log.d(TAG, "loadCrittersUsables: $crittersUsables")
+                        critterUsables.update {
+                            it.copy(
+                                critterUsables = crittersUsables,
+                                isLoading = false
+                            )
+                        }
                     }
+                } catch (e: Exception) {
+                    e.printStackTrace()
                 }
-            } catch (e: Exception) {
-                e.printStackTrace()
             }
         }
     }

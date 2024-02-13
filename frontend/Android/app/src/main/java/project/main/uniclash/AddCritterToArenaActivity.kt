@@ -133,8 +133,7 @@ class AddCritterToArenaActivity : ComponentActivity() {
 
         LazyColumn {
             items(critterList) { critter ->
-                if(critter!!.critterTemplateId != 21)CritterDetail(critter = critter,addCritterToArenaViewModel)
-                //Legendarys are not allowed :(
+                CritterDetail(critter = critter,addCritterToArenaViewModel)
             }
         }
     }

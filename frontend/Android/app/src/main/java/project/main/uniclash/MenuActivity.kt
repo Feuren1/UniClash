@@ -9,6 +9,7 @@ import androidx.activity.compose.setContent
 import androidx.activity.viewModels
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -40,6 +41,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import project.main.uniclash.dataManagers.PermissionManager
 import project.main.uniclash.dataManagers.UserDataManager
+import project.main.uniclash.datatypes.CustomColor
 import project.main.uniclash.datatypes.MapSettings
 import project.main.uniclash.retrofit.ArenaService
 import project.main.uniclash.retrofit.CritterService
@@ -64,7 +66,7 @@ class MenuActivity : ComponentActivity() {
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .background(MaterialTheme.colorScheme.background)
+                        .background(Color.Black)
                         .padding(16.dp)
                 ) {
                     MenuHeader()
@@ -82,7 +84,7 @@ class MenuActivity : ComponentActivity() {
                 Box(
                     modifier = Modifier
                         .fillMaxSize()
-                        .background(Color.White) // Hier wird der Hintergrund weiß gemacht
+                        .background(Color.Black) // Hier wird der Hintergrund weiß gemacht
                 ) {
                     if(buttonRequest == MainActivity::class.java) {
                         MenuBars()
@@ -175,6 +177,7 @@ class MenuActivity : ComponentActivity() {
             fontSize = 50.sp, // Adjust the font size as needed
             fontWeight = FontWeight.Bold, // Use FontWeight.Bold for bold text
             textAlign = TextAlign.Start,
+            color = Color.White,
             modifier = Modifier.padding(vertical = 16.dp) // Add vertical padding
         )
     }
@@ -188,9 +191,14 @@ class MenuActivity : ComponentActivity() {
                 .padding(all = 8.dp)
                 .fillMaxWidth() // making box from left to right site
                 .background(
-                    Color.LightGray,
+                    CustomColor.DarkPurple.getColor(),
                     shape = RoundedCornerShape(8.dp)
                 ) // Hintergrundfarbe und abgeflachte Ecken
+                .border(
+                    3.dp,
+                    CustomColor.Purple.getColor(),
+                    shape = RoundedCornerShape(8.dp)
+                )
             //.clickable {buttonRequest = category.id }
         ) {
             Column {
@@ -214,7 +222,7 @@ class MenuActivity : ComponentActivity() {
                                 Text(
                                     text = category.title,
                                     fontSize = 18.sp,
-                                    color = MaterialTheme.colorScheme.secondary,
+                                    color = Color.White,
                                     style = MaterialTheme.typography.titleSmall
 
                                 )

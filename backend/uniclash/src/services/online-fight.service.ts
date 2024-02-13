@@ -59,7 +59,7 @@ export class OnlineFightService {
     const user = await this.studentRepository.user(studentId)
     const enemyUser = await this.studentRepository.user(enemyStudentId)
     const sendPushNotificationService = new NotificationService();
-    await sendPushNotificationService.sendPushNotification(enemyUser.fcmtoken, "Fight Invitation", user.username + "wants a fight against you!!!")
+    await sendPushNotificationService.sendPushNotification(enemyUser.fcmtoken, "Fight Invitation", user.username + " want to fight against you!!!")
   }
 
   async sendMessageViaPushNotification(fightConnectionId : number,studentId:number, message : string):Promise<void>{
@@ -85,14 +85,14 @@ export class OnlineFightService {
 
       if(fight.startTime != time && fight.startTime+1 != time && fight.startTime+2 != time && fight.startTime+3 != time && fight.startTime+4 != time){
         await this.onlineFightRepository.deleteById(fight.fightId)
-        if(fight.critterId != null )await this.critterInFightRepository.deleteById(fight.critterId)
+        if(fight.critterId != null )await this.critterInFightRepository.deleteById(fight.critterId+fight.fightConnectionId)
       } else if(fight.state == OnlineFightState.Loser || fight.state == OnlineFightState.Winner){
         await this.onlineFightRepository.deleteById(fight.fightId)
-        if(fight.critterId != null )await this.critterInFightRepository.deleteById(fight.critterId)
+        if(fight.critterId != null )await this.critterInFightRepository.deleteById(fight.critterId+fight.fightConnectionId)
       } else if(fight.startTime+2 == time || fight.startTime+3 == time || fight.startTime+4 == time){
         if(fight.state == OnlineFightState.Waiting){
           await this.onlineFightRepository.deleteById(fight.fightId)
-          if(fight.critterId != null )await this.critterInFightRepository.deleteById(fight.critterId)
+          if(fight.critterId != null )await this.critterInFightRepository.deleteById(fight.critterId+fight.fightConnectionId)
         }
       }
     }
@@ -132,9 +132,9 @@ export class OnlineFightService {
      }
     }
 
-    const enemyCritter: CritterInFight = await this.critterInFightRepository.findById(critterIdFromEnemy)
+    const enemyCritter: CritterInFight = await this.critterInFightRepository.findById(critterIdFromEnemy+fightConnectionId)
     const myCritterForLevel = await  this.critterStatsService.createCritterUsable(critterIdFromMe)
-    const myCritter = await  this.critterInFightRepository.findById(critterIdFromMe)
+    const myCritter = await  this.critterInFightRepository.findById(critterIdFromMe+fightConnectionId)
     const damage : number = ((((((2*myCritterForLevel.level)/5)+2)*amountOfDamage*myCritter.attack/enemyCritter.defence)/50)+2)*effectivity
 
     //make damage
@@ -173,7 +173,7 @@ export class OnlineFightService {
     let loserDetected = false
     for (const fight of currentFights) {
       if (fight.critterId != null) {
-        const critter: CritterInFight = await this.critterInFightRepository.findById(fight.critterId)
+        const critter: CritterInFight = await this.critterInFightRepository.findById(fight.critterId+fight.fightConnectionId)
         if (critter.health <= 0) {
           loserDetected = true
           fight.state = OnlineFightState.Loser
@@ -184,7 +184,7 @@ export class OnlineFightService {
     if (loserDetected) {
       for (const fight of currentFights) {
         if (fight.critterId != null) {
-          const critter: CritterInFight = await this.critterInFightRepository.findById(fight.critterId)
+          const critter: CritterInFight = await this.critterInFightRepository.findById(fight.critterId+fight.fightConnectionId)
           if (critter.health > 0) {
             fight.state = OnlineFightState.Winner
             await this.onlineFightRepository.update(fight)
@@ -224,28 +224,28 @@ export class OnlineFightService {
 
         //insert Critter to CritterInFight table
         let critterInFight1 = new CritterInFight({
-          critterId: critter1.critterId,
+          critterId: critter1.critterId+fightConnectionId,
           health: critter1.hp,
           attack: critter1.atk,
           defence: critter1.def,
         })
         if(critter1.name == "MOCKITO") {
           critterInFight1 = new CritterInFight({
-            critterId: critter1.critterId,
+            critterId: critter1.critterId+fightConnectionId,
             health: critter2.hp,
             attack: critter2.atk,
             defence: critter2.def,
           })
         }
         let critterInFight2 = new CritterInFight({
-          critterId: critter2.critterId,
+          critterId: critter2.critterId+fightConnectionId,
           health: critter2.hp,
           attack: critter2.atk,
           defence: critter2.def,
         })
         if(critter2.name == "MOCKITO") {
           critterInFight2 = new CritterInFight({
-            critterId: critter2.critterId,
+            critterId: critter2.critterId+fightConnectionId,
             health: critter1.hp,
             attack: critter1.atk,
             defence: critter1.def,
@@ -346,13 +346,13 @@ export class OnlineFightService {
     return listedFights
   }
 
-  async getCritterInformation(critterId : number):Promise<CritterInFightInformation>{
-    const critterInFight = await this.critterInFightRepository.findById(critterId)
+  async getCritterInformation(critterId : number,fightConnectionId : number):Promise<CritterInFightInformation>{
+    const critterInFight = await this.critterInFightRepository.findById(critterId+fightConnectionId)
     const critter = await this.critterRepository.findById(critterId)
     const critterTemplate = await this.critterTemplateRepository.findById(critter.critterTemplateId)
 
     return new CritterInFightInformation({
-      critterId: critterInFight.critterId,
+      critterId: critterInFight.critterId+fightConnectionId,
       name: critterTemplate.name,
       attack: critterInFight.attack,
       defence: critterInFight.defence,
@@ -363,10 +363,10 @@ export class OnlineFightService {
   async getCritterInformationFromEnemy(fightConnectionId : number, studentId : number):Promise<CritterInFightInformation>{
     const fights: OnlineFight[] = await this.onlineFightRepository.find();
     for(const fight of fights){
-      if(fight.fightConnectionId == fightConnectionId && fight.studentId != studentId && fight.critterId != null) return this.getCritterInformation(fight.critterId)
+      if(fight.fightConnectionId == fightConnectionId && fight.studentId != studentId && fight.critterId != null) return this.getCritterInformation(fight.critterId,fightConnectionId)
     }
 
-    return this.getCritterInformation(1)
+    return this.getCritterInformation(1,1)
   }
 }
 

@@ -11,6 +11,7 @@ import androidx.activity.compose.setContent
 import androidx.activity.viewModels
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -84,7 +85,7 @@ class StudentHubActivity : ComponentActivity() {
 
                 Box(modifier = Modifier.fillMaxSize()) {
 
-                    Surface(modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background) {
+                    Surface(modifier = Modifier.fillMaxSize(), color = Color.Black) {
 
                         val studentState by studentHubViewModel.student.collectAsState()
                         isLoading = studentState.isLoading
@@ -172,11 +173,12 @@ fun LoadingCircle(modifier: Modifier) {
     ) {
         Box(
             modifier = Modifier
-                .background(Color.LightGray) // Change the background color to light gray
+                .background(CustomColor.Purple.getColor()) // Change the background color to light gray
                 .padding(16.dp)
         ) {
             CircularProgressIndicator(
-                modifier = Modifier.size(50.dp)
+                modifier = Modifier.size(50.dp),
+                color = CustomColor.DarkPurple.getColor()
             )
         }
     }
@@ -188,6 +190,7 @@ fun Title(modifier: Modifier) {
         text = "Student Hub",
         fontSize = 35.sp,
         fontWeight = FontWeight.Bold,
+        color = Color.White,
         textAlign = TextAlign.Center,
         modifier = Modifier.padding(vertical = 5.dp)
     )
@@ -207,7 +210,15 @@ fun ItemList(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(8.dp)
-                    .background(Color.LightGray, shape = RoundedCornerShape(8.dp))
+                    .background(
+                        CustomColor.DarkPurple.getColor(),
+                        shape = RoundedCornerShape(8.dp)
+                    )
+                    .border(
+                        3.dp,
+                        CustomColor.Purple.getColor(),
+                        shape = RoundedCornerShape(8.dp)
+                    )
             ) {
                 ItemRow(itemTemplate = item, onButtonClicked = onButtonClicked, isLoading = isLoading)
             }
@@ -228,7 +239,7 @@ fun ItemRow(
         Spacer(modifier = Modifier.weight(1f))
 
         Button(
-            colors = ButtonDefaults.buttonColors(containerColor = CustomColor.DarkPurple.getColor()),
+            colors = ButtonDefaults.buttonColors(containerColor = CustomColor.Purple.getColor()),
             modifier = Modifier
                 .width(100.dp)
                 .padding(end = 16.dp),
@@ -268,13 +279,13 @@ fun ItemImage(itemTemplate: ItemTemplate, modifier: Modifier) {
         Text(
             text = itemTemplate.name,
             fontSize = 18.sp,
-            color = Color.DarkGray,
+            color = Color.White,
             style = MaterialTheme.typography.titleSmall
         )
         Text(
             text = "Price: ${itemTemplate.cost}",
             fontSize = 12.sp,
-            color = Color.DarkGray,
+            color = Color.White,
             style = MaterialTheme.typography.titleSmall
         )
         Spacer(modifier = Modifier.height(8.dp))
@@ -294,7 +305,15 @@ fun Credits(modifier: Modifier, credits: Int) {
     Box(
         modifier = Modifier
             .padding(all = 8.dp)
-            .background(Color.LightGray, shape = RoundedCornerShape(8.dp))
+            .background(
+                CustomColor.DarkPurple.getColor(),
+                shape = RoundedCornerShape(8.dp)
+            ) // Hintergrundfarbe und abgeflachte Ecken
+            .border(
+                3.dp,
+                CustomColor.Purple.getColor(),
+                shape = RoundedCornerShape(8.dp)
+            )
             .padding(8.dp)
     ) {
 
@@ -314,7 +333,7 @@ fun Credits(modifier: Modifier, credits: Int) {
             Text(
                 text = "$credits",
                 fontSize = 18.sp,
-                color = Color.DarkGray,
+                color = Color.White,
                 style = MaterialTheme.typography.titleSmall
             )
         }

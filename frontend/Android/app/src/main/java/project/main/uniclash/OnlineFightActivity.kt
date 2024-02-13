@@ -47,6 +47,7 @@ import androidx.compose.ui.Alignment.Companion.TopStart
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.FocusManager
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.modifier.modifierLocalConsumer
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalUriHandler
@@ -140,6 +141,9 @@ class OnlineFightActivity : ComponentActivity() {
     private var effectiveness by mutableStateOf(Effectiveness.NORMAL)
     private var enemyType by mutableStateOf("NORMAL")
     private var myType by mutableStateOf("NORMAL")
+
+    private var activateCounter by mutableStateOf(false)
+    private var countDownNumber by mutableIntStateOf(9)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -188,7 +192,6 @@ class OnlineFightActivity : ComponentActivity() {
                     Box(
                         modifier = Modifier.fillMaxSize()
                     ) {
-                        if(state == OnlineFightState.PREPERATION) LoadingCircle(Modifier)
                         Image(
                             painter = painterResource(id = R.drawable.battlebackround),
                             contentDescription = null,
@@ -336,6 +339,10 @@ class OnlineFightActivity : ComponentActivity() {
             if (winner) EndBox(true)
             if (loser) EndBox(false)
             if (state == OnlineFightState.NOTFOUND) TimeOutBox()
+            if(state == OnlineFightState.PREPERATION){
+                Counter()
+                CountDown()
+            }
         }
     }
 
@@ -362,6 +369,17 @@ class OnlineFightActivity : ComponentActivity() {
                 if (state == OnlineFightState.LOSER) loser = true
             }
         }
+    }
+
+    @Composable
+    fun Counter(){
+            LaunchedEffect(Unit) {
+                while (true) {
+                    activateCounter = true
+                    delay(1000)
+                    countDownNumber--
+                }
+            }
     }
 
 
@@ -391,7 +409,7 @@ class OnlineFightActivity : ComponentActivity() {
             ) {
                 // Timer-Anzeige ganz links
                 Text(
-                    text = "$timerValue sec.",
+                    text = "time left:\n$timerValue sec.",
                     style = MaterialTheme.typography.bodyLarge,
                     color = Color.White,
                     modifier = Modifier.align(alignment = TopStart)
@@ -828,6 +846,59 @@ class OnlineFightActivity : ComponentActivity() {
                     Spacer(modifier = Modifier.height(16.dp))
                     Spacer(modifier = Modifier.height(8.dp))
                 }
+            }
+        }
+    }
+
+    @Composable
+    fun CountDown() {
+        Box(
+            modifier = Modifier.fillMaxSize()
+        ) {
+            Box(
+                modifier = Modifier
+                    .offset(y = 275.dp)
+                    .height(150.dp)
+                    .fillMaxWidth()
+                    .background(
+                        CustomColor.DarkPurple.getColor(),
+                        shape = RoundedCornerShape(8.dp),
+                    )
+                    .border(
+                        3.dp,
+                        CustomColor.Purple.getColor(),
+                        shape = RoundedCornerShape(8.dp),
+                    )
+                    .wrapContentSize(Alignment.Center),
+                contentAlignment = Alignment.Center,
+            ) {
+                // Foto auf der linken Seite
+                    Spacer(modifier = Modifier.height(8.dp))
+                    Column(
+                    ) {
+                        if(countDownNumber>0) {
+                            Text(
+                                text = "$countDownNumber",
+                                fontWeight = FontWeight.Bold,
+                                style = MaterialTheme.typography.bodyLarge,
+                                color = Color.White,
+                                fontSize = 50.sp,
+                                modifier = Modifier.padding(bottom = 4.dp)
+                            )
+                        } else if (countDownNumber == 0) {
+                            Text(
+                                text = "Go!",
+                                fontWeight = FontWeight.Bold,
+                                style = MaterialTheme.typography.bodyLarge,
+                                color = Color.White,
+                                fontSize = 50.sp,
+                                modifier = Modifier.padding(bottom = 4.dp)
+                            )
+                        } else {
+                            LoadingCircle(Modifier)
+                        }
+                    }
+                    Spacer(modifier = Modifier.height(8.dp))
             }
         }
     }

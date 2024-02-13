@@ -248,7 +248,7 @@ export class OnlineFightService {
         currentFights[0].state = OnlineFightState.PREPERATION
         currentFights[0].timer = currentTime.getSeconds() + currentTime.getMinutes() * 60
 
-        currentFights[0].state = OnlineFightState.PREPERATION
+        currentFights[1].state = OnlineFightState.PREPERATION
         currentFights[1].timer = currentTime.getSeconds() + currentTime.getMinutes() * 60
 
         await this.onlineFightRepository.update(currentFights[0])

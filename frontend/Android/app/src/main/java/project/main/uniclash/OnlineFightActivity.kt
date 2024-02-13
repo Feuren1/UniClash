@@ -188,6 +188,7 @@ class OnlineFightActivity : ComponentActivity() {
                     Box(
                         modifier = Modifier.fillMaxSize()
                     ) {
+                        if(state == OnlineFightState.PREPERATION) LoadingCircle(Modifier)
                         Image(
                             painter = painterResource(id = R.drawable.battlebackround),
                             contentDescription = null,

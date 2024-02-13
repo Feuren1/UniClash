@@ -365,7 +365,7 @@ export class OnlineFightService {
     const critterTemplate = await this.critterTemplateRepository.findById(critter.critterTemplateId)
 
     return new CritterInFightInformation({
-      critterId: critterInFight.critterId,
+      critterId: critterInFight.critterId-fightConnectionId,
       name: critterTemplate.name,
       attack: critterInFight.attack,
       defence: critterInFight.defence,

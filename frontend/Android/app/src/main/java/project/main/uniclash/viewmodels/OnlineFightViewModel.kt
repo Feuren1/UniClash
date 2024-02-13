@@ -161,6 +161,7 @@ class OnlineFightViewModel (private val onlineFightService: OnlineFightService, 
                     if(stateRes.state == "yourTurn") currentState = OnlineFightState.YOURTURN
                     if(stateRes.state == "enemyTurn") currentState = OnlineFightState.ENEMYTURN
                     if(stateRes.state == "waiting") currentState = OnlineFightState.WAITING
+                    if(stateRes.state == "preparation") currentState = OnlineFightState.PREPERATION
                     if(stateRes.state == "winner") currentState = OnlineFightState.WINNER
                     if(stateRes.state == "loser") currentState = OnlineFightState.LOSER
                     if(stateRes.state == "404") currentState = OnlineFightState.NOTFOUND

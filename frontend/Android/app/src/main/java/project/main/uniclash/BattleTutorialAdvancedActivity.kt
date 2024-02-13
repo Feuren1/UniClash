@@ -51,6 +51,7 @@ import project.main.uniclash.datatypes.Attack
 import project.main.uniclash.datatypes.AttackType
 import project.main.uniclash.datatypes.CritterUsable
 import project.main.uniclash.retrofit.CritterService
+import project.main.uniclash.type.TypeCalculation
 import project.main.uniclash.viewmodels.BattleTutorialAdvancedViewModel
 
 class BattleTutorialAdvancedActivity : ComponentActivity() {
@@ -271,6 +272,7 @@ fun CritterBattleAdvancedTutorialIntro(battleTutorialAdvancedViewModel: BattleTu
                             items(2) {
                                 ClickableAttackAdvancedTutorial(
                                     attack = battleViewPlayerUIState.playerCritter!!.attacks[it],
+                                    enemyCritterType = battleViewcpuCritterUIState.cpuCritter!!.type,
                                     onAttackClicked = { selectedAttack ->
                                         battleTutorialAdvancedViewModel.selectPlayerAttack(
                                             selectedAttack
@@ -292,6 +294,7 @@ fun CritterBattleAdvancedTutorialIntro(battleTutorialAdvancedViewModel: BattleTu
                             items(2) {
                                 ClickableAttackAdvancedTutorial(
                                     attack = battleViewPlayerUIState.playerCritter!!.attacks[it + 2],
+                                    enemyCritterType = battleViewcpuCritterUIState.cpuCritter!!.type,
                                     onAttackClicked = { selectedAttack ->
                                         battleTutorialAdvancedViewModel.selectPlayerAttack(
                                             selectedAttack
@@ -312,6 +315,7 @@ fun CritterBattleAdvancedTutorialIntro(battleTutorialAdvancedViewModel: BattleTu
                             items(2) {
                                 ClickableAttackAdvancedTutorial(
                                     attack = battleViewPlayerUIState.playerCritter!!.attacks[it],
+                                    enemyCritterType = battleViewcpuCritterUIState.cpuCritter!!.type,
                                     onAttackClicked = { selectedAttack ->
                                         battleTutorialAdvancedViewModel.selectPlayerAttack(
                                             selectedAttack
@@ -332,6 +336,7 @@ fun CritterBattleAdvancedTutorialIntro(battleTutorialAdvancedViewModel: BattleTu
                             items(2) {
                                 ClickableAttackAdvancedTutorial(
                                     attack = battleViewPlayerUIState.playerCritter!!.attacks[it + 2],
+                                    enemyCritterType = battleViewcpuCritterUIState.cpuCritter!!.type,
                                     onAttackClicked = { selectedAttack ->
                                         battleTutorialAdvancedViewModel.selectPlayerAttack(
                                             selectedAttack
@@ -570,6 +575,7 @@ fun HealthBarAdvancedTutorial(
 @Composable
 fun ClickableAttackAdvancedTutorial(
     attack: Attack,
+    enemyCritterType: String,
     onAttackClicked: (Attack) -> Unit,
     isClickable: Boolean = true // Added a parameter to control clickability
 ) {
@@ -588,11 +594,21 @@ fun ClickableAttackAdvancedTutorial(
         else -> attackDrawable // Handle other cases or leave it null
     }
 
+    var typeResourceId = when (attack.typeId) {
+        "DRAGON" -> {R.drawable.dragon}
+        "WATER" -> {R.drawable.water}
+        "ELECTRIC" -> {R.drawable.electric}
+        "FIRE" -> {R.drawable.fire}
+        "STONE" -> {R.drawable.stone}
+        "ICE" -> {R.drawable.ice}
+        else -> {R.drawable.normal}
+    }
+    var typeCalculation = TypeCalculation()
     Box(
         modifier = Modifier
             .padding(6.dp)
             .fillMaxWidth(0.5f)
-            .height(40.dp)
+            .height(50.dp)
             .background(
                 color = if (isClickable) Color.Blue else Color.Gray,
                 shape = RoundedCornerShape(8.dp)
@@ -609,14 +625,23 @@ fun ClickableAttackAdvancedTutorial(
             horizontalArrangement = Arrangement.Center
         ) {
             if (drawable != null) {
+                Spacer(modifier = Modifier.width(4.dp))
                 Image(
                     painter = painterResource(id = drawable),
                     contentDescription = null,
                     modifier = Modifier.size(24.dp).background(Color.LightGray)
                 )
                 Spacer(modifier = Modifier.width(2.dp))
+
+                Image(
+                    painter = painterResource(id = typeResourceId),
+                    contentDescription = null,
+                    modifier = Modifier.size(24.dp).background(Color.LightGray)
+                )
+                Spacer(modifier = Modifier.width(4.dp))
             }
-            Text(text = "${attack.name}: ${attack.strength}", color = Color.White)
+            Text(text = "${attack.name}: ${attack.strength}\n${typeCalculation.howEffective(attack.typeId,enemyCritterType)}", color = Color.White)
+            Spacer(modifier = Modifier.width(4.dp))
         }
     }
 }

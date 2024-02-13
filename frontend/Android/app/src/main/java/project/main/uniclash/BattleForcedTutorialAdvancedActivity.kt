@@ -432,6 +432,7 @@ fun AttackRowAdvancedTutorial(
                         if(attack.name!="Beak Sharpener"){
                             ClickableAttackAdvancedTutorial(
                                 attack = attack,
+                                enemyCritterType = "NORMAL",
                                 onAttackClicked = { selectedAttack ->
                                     battleForcedAdvancedTutorialViewModel.selectPlayerAttack(selectedAttack)
                                 },
@@ -440,6 +441,7 @@ fun AttackRowAdvancedTutorial(
                         } else {
                             ClickableAttackAdvancedTutorial(
                                 attack = attack,
+                                enemyCritterType = "NORMAL",
                                 onAttackClicked = { selectedAttack ->
                                     battleForcedAdvancedTutorialViewModel.selectPlayerAttack(selectedAttack)
                                 },
@@ -451,6 +453,7 @@ fun AttackRowAdvancedTutorial(
                         if(attack.name!="Defence Break"){
                             ClickableAttackAdvancedTutorial(
                                 attack = attack,
+                                enemyCritterType = "NORMAL",
                                 onAttackClicked = { selectedAttack ->
                                     battleForcedAdvancedTutorialViewModel.selectPlayerAttack(selectedAttack)
                                 },
@@ -459,6 +462,7 @@ fun AttackRowAdvancedTutorial(
                         } else {
                             ClickableAttackAdvancedTutorial(
                                 attack = attack,
+                                enemyCritterType = "NORMAL",
                                 onAttackClicked = { selectedAttack ->
                                     battleForcedAdvancedTutorialViewModel.selectPlayerAttack(selectedAttack)
                                 },
@@ -470,6 +474,7 @@ fun AttackRowAdvancedTutorial(
                         if(attack.name!="HyperBeam"){
                             ClickableAttackAdvancedTutorial(
                                 attack = attack,
+                                enemyCritterType = "NORMAL",
                                 onAttackClicked = { selectedAttack ->
                                     battleForcedAdvancedTutorialViewModel.selectPlayerAttack(selectedAttack)
                                 },
@@ -478,6 +483,7 @@ fun AttackRowAdvancedTutorial(
                         } else {
                             ClickableAttackAdvancedTutorial(
                                 attack = attack,
+                                enemyCritterType = "NORMAL",
                                 onAttackClicked = { selectedAttack ->
                                     battleForcedAdvancedTutorialViewModel.selectPlayerAttack(selectedAttack)
                                 },
@@ -488,6 +494,7 @@ fun AttackRowAdvancedTutorial(
                     else -> {
                         ClickableAttackAdvancedTutorial(
                             attack = attack,
+                            enemyCritterType = "NORMAL",
                             onAttackClicked = { selectedAttack ->
                                 battleForcedAdvancedTutorialViewModel.selectPlayerAttack(selectedAttack)
                             },

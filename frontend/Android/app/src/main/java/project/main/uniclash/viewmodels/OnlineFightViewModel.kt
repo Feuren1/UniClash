@@ -313,7 +313,7 @@ class OnlineFightViewModel (private val onlineFightService: OnlineFightService, 
     fun makingDamage(amountOfDamage : Int, kindOfDamage : BattleAction, effectiveness : Effectiveness) {
         var effectValue = 1.0
         if(effectiveness == Effectiveness.WEAK) effectValue = 0.75
-        if(effectiveness == Effectiveness.EFFECTIVE) effectValue = 1.5
+        if(effectiveness == Effectiveness.EFFECTIVE) effectValue = 1.25
 
             viewModelScope.launch {
                 try {

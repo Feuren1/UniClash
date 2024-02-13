@@ -271,6 +271,7 @@ fun CritterBattleTutorialIntro(battleTutorialViewModel: BattleTutorialViewModel 
                         items(2) {
                             ClickableAttackAdvancedTutorial(
                                 attack = battleViewPlayerUIState.playerCritter!!.attacks[it],
+                                enemyCritterType = "NORMAL",
                                 onAttackClicked = { selectedAttack ->
                                     battleTutorialViewModel.selectPlayerAttack(
                                         selectedAttack
@@ -290,6 +291,7 @@ fun CritterBattleTutorialIntro(battleTutorialViewModel: BattleTutorialViewModel 
                         items(2) {
                             ClickableAttackAdvancedTutorial(
                                 attack = battleViewPlayerUIState.playerCritter!!.attacks[it + 2],
+                                enemyCritterType = "NORMAL",
                                 onAttackClicked = { selectedAttack ->
                                     battleTutorialViewModel.selectPlayerAttack(
                                         selectedAttack
@@ -310,6 +312,7 @@ fun CritterBattleTutorialIntro(battleTutorialViewModel: BattleTutorialViewModel 
                         items(2) {
                             ClickableAttackAdvancedTutorial(
                                 attack = battleViewPlayerUIState.playerCritter!!.attacks[it],
+                                enemyCritterType = "NORMAL",
                                 onAttackClicked = { selectedAttack ->
                                     battleTutorialViewModel.selectPlayerAttack(
                                         selectedAttack
@@ -329,6 +332,7 @@ fun CritterBattleTutorialIntro(battleTutorialViewModel: BattleTutorialViewModel 
                         items(2) {
                             ClickableAttackAdvancedTutorial(
                                 attack = battleViewPlayerUIState.playerCritter!!.attacks[it + 2],
+                                enemyCritterType = "NORMAL",
                                 onAttackClicked = { selectedAttack ->
                                     battleTutorialViewModel.selectPlayerAttack(
                                         selectedAttack

@@ -521,6 +521,7 @@ fun AttackRowTutorial(
 
                     ClickableAttackAdvancedTutorial(
                         attack = attack,
+                        enemyCritterType = "NORMAL",
                         onAttackClicked = { selectedAttack ->
                             battleForcedTutorialViewModel.selectPlayerAttack(selectedAttack)
                         },

@@ -86,10 +86,10 @@ export class CritterStatsService {
     // You can use the critter, its copies, and attacks to compute the actual stats
     // and return them as an array of integers.
     return [
-      critterTemplate.baseHealth * critter.level,
-      critterTemplate.baseAttack * critter.level,
-      critterTemplate.baseDefence * critter.level,
-      critterTemplate.baseSpeed * critter.level,
+      critterTemplate.baseHealth + critter.level,
+      critterTemplate.baseAttack + critter.level,
+      critterTemplate.baseDefence + critter.level,
+      critterTemplate.baseSpeed + critter.level,
       // Additional calculations using 'attacks' if needed
     ];
   }

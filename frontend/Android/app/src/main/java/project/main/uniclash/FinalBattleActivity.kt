@@ -346,6 +346,7 @@ fun FinalBattle(finalBattleViewModel:FinalBattleViewModel = viewModel()) {
                             items(2) {
                                 ClickableAttackAdvancedTutorial(
                                     attack = battleViewPlayerUIState.playerCritter!!.attacks[it],
+                                    enemyCritterType = battleViewcpuCritterUIState.cpuCritter!!.type,
                                     onAttackClicked = { selectedAttack ->
                                         finalBattleViewModel.selectPlayerAttack(
                                             selectedAttack
@@ -365,6 +366,7 @@ fun FinalBattle(finalBattleViewModel:FinalBattleViewModel = viewModel()) {
                             items(2) {
                                 ClickableAttackAdvancedTutorial(
                                     attack = battleViewPlayerUIState.playerCritter!!.attacks[it + 2],
+                                    enemyCritterType = battleViewcpuCritterUIState.cpuCritter!!.type,
                                     onAttackClicked = { selectedAttack ->
                                         finalBattleViewModel.selectPlayerAttack(
                                             selectedAttack
@@ -385,6 +387,7 @@ fun FinalBattle(finalBattleViewModel:FinalBattleViewModel = viewModel()) {
                             items(2) {
                                 ClickableAttackAdvancedTutorial(
                                     attack = battleViewPlayerUIState.playerCritter!!.attacks[it],
+                                    enemyCritterType = battleViewcpuCritterUIState.cpuCritter!!.type,
                                     onAttackClicked = { selectedAttack ->
                                         finalBattleViewModel.selectPlayerAttack(
                                             selectedAttack
@@ -404,6 +407,7 @@ fun FinalBattle(finalBattleViewModel:FinalBattleViewModel = viewModel()) {
                             items(2) {
                                 ClickableAttackAdvancedTutorial(
                                     attack = battleViewPlayerUIState.playerCritter!!.attacks[it + 2],
+                                    enemyCritterType = battleViewcpuCritterUIState.cpuCritter!!.type,
                                     onAttackClicked = { selectedAttack ->
                                         finalBattleViewModel.selectPlayerAttack(
                                             selectedAttack

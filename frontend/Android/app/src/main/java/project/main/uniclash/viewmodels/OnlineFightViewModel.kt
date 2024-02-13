@@ -197,7 +197,7 @@ class OnlineFightViewModel (private val onlineFightService: OnlineFightService, 
         viewModelScope.launch {
             try {
                 val response =
-                    onlineFightService.getCritterInformation(userDataManager.getFightingCritterID()!!)
+                    onlineFightService.getCritterInformation(userDataManager.getFightingCritterID()!!,fightConnectionID.value.fightConnectionId)
                         .enqueue()
                 Log.d(TAG, "loadCritter: $response")
                 if (response.isSuccessful) {

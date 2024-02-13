@@ -34,8 +34,8 @@ interface OnlineFightService {
     @GET("/fightInformationList/{studentId}")
     fun getFightInformationList(@Path("studentId")studentId : Int) : Call <List<OnlineFightInformation>>
 
-    @GET("/getCritterInformation/{critterId}")
-    fun getCritterInformation(@Path("critterId")critterId : Int) : Call <CritterInFightInformation>
+    @GET("/getCritterInformation/{critterId}/{fightConnectionId}")
+    fun getCritterInformation(@Path("critterId")critterId : Int,@Path("fightConnectionId")fightConnectionId : Int) : Call <CritterInFightInformation>
 
     @GET("/getCritterInformationFromEnemy/{fightConnectionId}/{studentId}")
     fun getCritterInformationFromEnemy(@Path("fightConnectionId")fightConnectionId : Int, @Path("studentId")studentId : Int) : Call <CritterInFightInformation>

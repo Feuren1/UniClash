@@ -207,11 +207,56 @@ export class OnlineFightService {
     }
 
     if(currentFights[0].state == OnlineFightState.Waiting && currentFights[1].state == OnlineFightState.Waiting){
-      if(currentFights[0].critterId != null && currentFights[0].critterId != 0 && currentFights[1].critterId != null && currentFights[1].critterId != 0){
+      if(currentFights[0].critterId != null && currentFights[0].critterId != 0 && currentFights[1].critterId != null && currentFights[1].critterId != 0) {
         const critter1 = await this.critterStatsService.createCritterUsable(currentFights[0].critterId)
         const critter2 = await this.critterStatsService.createCritterUsable(currentFights[1].critterId)
+        //insert Critter to CritterInFight table
+        let critterInFight1 = new CritterInFight({
+          critterId: critter1.critterId + fightConnectionId,
+          health: critter1.hp,
+          attack: critter1.atk,
+          defence: critter1.def,
+        })
+        if (critter1.name == "MOCKITO") {
+          critterInFight1 = new CritterInFight({
+            critterId: critter1.critterId + fightConnectionId,
+            health: critter2.hp,
+            attack: critter2.atk,
+            defence: critter2.def,
+          })
+        }
+        let critterInFight2 = new CritterInFight({
+          critterId: critter2.critterId + fightConnectionId,
+          health: critter2.hp,
+          attack: critter2.atk,
+          defence: critter2.def,
+        })
+        if (critter2.name == "MOCKITO") {
+          critterInFight2 = new CritterInFight({
+            critterId: critter2.critterId + fightConnectionId,
+            health: critter1.hp,
+            attack: critter1.atk,
+            defence: critter1.def,
+          })
+        }
+        await this.critterInFightRepository.create(critterInFight1)
+        await this.critterInFightRepository.create(critterInFight2)
 
+
+        currentFights[0].state = OnlineFightState.PREPERATION
+        currentFights[0].state = OnlineFightState.PREPERATION
+        await this.onlineFightRepository.update(currentFights[0])
+        await this.onlineFightRepository.update(currentFights[1])
+      }
+
+      // @ts-ignore
+      if(currentFights[0].state == OnlineFightState.PREPERATION  || currentFights[1].state == OnlineFightState.PREPERATION){
         //Set turns
+        // @ts-ignore
+        const critter1 = await this.critterStatsService.createCritterUsable(currentFights[0].critterId)
+        // @ts-ignore
+        const critter2 = await this.critterStatsService.createCritterUsable(currentFights[1].critterId)
+
         if(critter1.spd>=critter2.spd){
           currentFights[0].state = OnlineFightState.YourTurn
           currentFights[1].state = OnlineFightState.EnemyTurn
@@ -221,38 +266,6 @@ export class OnlineFightService {
         }
         await this.onlineFightRepository.update(currentFights[0])
         await this.onlineFightRepository.update(currentFights[1])
-
-        //insert Critter to CritterInFight table
-        let critterInFight1 = new CritterInFight({
-          critterId: critter1.critterId+fightConnectionId,
-          health: critter1.hp,
-          attack: critter1.atk,
-          defence: critter1.def,
-        })
-        if(critter1.name == "MOCKITO") {
-          critterInFight1 = new CritterInFight({
-            critterId: critter1.critterId+fightConnectionId,
-            health: critter2.hp,
-            attack: critter2.atk,
-            defence: critter2.def,
-          })
-        }
-        let critterInFight2 = new CritterInFight({
-          critterId: critter2.critterId+fightConnectionId,
-          health: critter2.hp,
-          attack: critter2.atk,
-          defence: critter2.def,
-        })
-        if(critter2.name == "MOCKITO") {
-          critterInFight2 = new CritterInFight({
-            critterId: critter2.critterId+fightConnectionId,
-            health: critter1.hp,
-            attack: critter1.atk,
-            defence: critter1.def,
-          })
-        }
-        await this.critterInFightRepository.create(critterInFight1)
-        await this.critterInFightRepository.create(critterInFight2)
       }
     }
   }
@@ -352,7 +365,7 @@ export class OnlineFightService {
     const critterTemplate = await this.critterTemplateRepository.findById(critter.critterTemplateId)
 
     return new CritterInFightInformation({
-      critterId: critterInFight.critterId+fightConnectionId,
+      critterId: critterInFight.critterId,
       name: critterTemplate.name,
       attack: critterInFight.attack,
       defence: critterInFight.defence,
@@ -374,6 +387,7 @@ enum OnlineFightState {
   YourTurn = "yourTurn",
   EnemyTurn = "enemyTurn",
   Waiting = "waiting",
+  PREPERATION = "preparation",
   Winner = "winner",
   Loser = "loser",
 }

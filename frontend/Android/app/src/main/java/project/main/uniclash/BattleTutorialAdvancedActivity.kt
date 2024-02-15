@@ -273,6 +273,7 @@ fun CritterBattleAdvancedTutorialIntro(battleTutorialAdvancedViewModel: BattleTu
                                 ClickableAttackAdvancedTutorial(
                                     attack = battleViewPlayerUIState.playerCritter!!.attacks[it],
                                     enemyCritterType = battleViewcpuCritterUIState.cpuCritter!!.type,
+                                    playerCritterType = battleViewPlayerUIState!!.playerCritter!!.type,
                                     onAttackClicked = { selectedAttack ->
                                         battleTutorialAdvancedViewModel.selectPlayerAttack(
                                             selectedAttack
@@ -295,6 +296,7 @@ fun CritterBattleAdvancedTutorialIntro(battleTutorialAdvancedViewModel: BattleTu
                                 ClickableAttackAdvancedTutorial(
                                     attack = battleViewPlayerUIState.playerCritter!!.attacks[it + 2],
                                     enemyCritterType = battleViewcpuCritterUIState.cpuCritter!!.type,
+                                    playerCritterType = battleViewPlayerUIState!!.playerCritter!!.type,
                                     onAttackClicked = { selectedAttack ->
                                         battleTutorialAdvancedViewModel.selectPlayerAttack(
                                             selectedAttack
@@ -316,6 +318,7 @@ fun CritterBattleAdvancedTutorialIntro(battleTutorialAdvancedViewModel: BattleTu
                                 ClickableAttackAdvancedTutorial(
                                     attack = battleViewPlayerUIState.playerCritter!!.attacks[it],
                                     enemyCritterType = battleViewcpuCritterUIState.cpuCritter!!.type,
+                                    playerCritterType = battleViewPlayerUIState!!.playerCritter!!.type,
                                     onAttackClicked = { selectedAttack ->
                                         battleTutorialAdvancedViewModel.selectPlayerAttack(
                                             selectedAttack
@@ -337,6 +340,7 @@ fun CritterBattleAdvancedTutorialIntro(battleTutorialAdvancedViewModel: BattleTu
                                 ClickableAttackAdvancedTutorial(
                                     attack = battleViewPlayerUIState.playerCritter!!.attacks[it + 2],
                                     enemyCritterType = battleViewcpuCritterUIState.cpuCritter!!.type,
+                                    playerCritterType = battleViewPlayerUIState!!.playerCritter!!.type,
                                     onAttackClicked = { selectedAttack ->
                                         battleTutorialAdvancedViewModel.selectPlayerAttack(
                                             selectedAttack
@@ -576,6 +580,7 @@ fun HealthBarAdvancedTutorial(
 fun ClickableAttackAdvancedTutorial(
     attack: Attack,
     enemyCritterType: String,
+    playerCritterType:String,
     onAttackClicked: (Attack) -> Unit,
     isClickable: Boolean = true // Added a parameter to control clickability
 ) {
@@ -640,7 +645,7 @@ fun ClickableAttackAdvancedTutorial(
                 )
                 Spacer(modifier = Modifier.width(4.dp))
             }
-            Text(text = "${attack.name}: ${attack.strength}\n${typeCalculation.howEffective(attack.typeId,enemyCritterType)}", color = Color.White)
+            Text(text = "${attack.name}: ${attack.strength}\n${typeCalculation.howEffective(attack.typeId,enemyCritterType, playerCritterType == attack.typeId )}", color = Color.White)
             Spacer(modifier = Modifier.width(4.dp))
         }
     }

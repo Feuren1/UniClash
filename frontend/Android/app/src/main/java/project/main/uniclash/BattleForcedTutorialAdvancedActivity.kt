@@ -433,6 +433,7 @@ fun AttackRowAdvancedTutorial(
                             ClickableAttackAdvancedTutorial(
                                 attack = attack,
                                 enemyCritterType = "NORMAL",
+                                playerCritterType = battleViewPlayerUIState!!.playerCritter!!.type,
                                 onAttackClicked = { selectedAttack ->
                                     battleForcedAdvancedTutorialViewModel.selectPlayerAttack(selectedAttack)
                                 },
@@ -442,6 +443,7 @@ fun AttackRowAdvancedTutorial(
                             ClickableAttackAdvancedTutorial(
                                 attack = attack,
                                 enemyCritterType = "NORMAL",
+                                playerCritterType = battleViewPlayerUIState!!.playerCritter!!.type,
                                 onAttackClicked = { selectedAttack ->
                                     battleForcedAdvancedTutorialViewModel.selectPlayerAttack(selectedAttack)
                                 },
@@ -454,6 +456,7 @@ fun AttackRowAdvancedTutorial(
                             ClickableAttackAdvancedTutorial(
                                 attack = attack,
                                 enemyCritterType = "NORMAL",
+                                playerCritterType = battleViewPlayerUIState!!.playerCritter!!.type,
                                 onAttackClicked = { selectedAttack ->
                                     battleForcedAdvancedTutorialViewModel.selectPlayerAttack(selectedAttack)
                                 },
@@ -463,6 +466,7 @@ fun AttackRowAdvancedTutorial(
                             ClickableAttackAdvancedTutorial(
                                 attack = attack,
                                 enemyCritterType = "NORMAL",
+                                playerCritterType = battleViewPlayerUIState!!.playerCritter!!.type,
                                 onAttackClicked = { selectedAttack ->
                                     battleForcedAdvancedTutorialViewModel.selectPlayerAttack(selectedAttack)
                                 },
@@ -475,6 +479,7 @@ fun AttackRowAdvancedTutorial(
                             ClickableAttackAdvancedTutorial(
                                 attack = attack,
                                 enemyCritterType = "NORMAL",
+                                playerCritterType = battleViewPlayerUIState!!.playerCritter!!.type,
                                 onAttackClicked = { selectedAttack ->
                                     battleForcedAdvancedTutorialViewModel.selectPlayerAttack(selectedAttack)
                                 },
@@ -484,6 +489,7 @@ fun AttackRowAdvancedTutorial(
                             ClickableAttackAdvancedTutorial(
                                 attack = attack,
                                 enemyCritterType = "NORMAL",
+                                playerCritterType = battleViewPlayerUIState!!.playerCritter!!.type,
                                 onAttackClicked = { selectedAttack ->
                                     battleForcedAdvancedTutorialViewModel.selectPlayerAttack(selectedAttack)
                                 },
@@ -495,6 +501,7 @@ fun AttackRowAdvancedTutorial(
                         ClickableAttackAdvancedTutorial(
                             attack = attack,
                             enemyCritterType = "NORMAL",
+                            playerCritterType = battleViewPlayerUIState!!.playerCritter!!.type,
                             onAttackClicked = { selectedAttack ->
                                 battleForcedAdvancedTutorialViewModel.selectPlayerAttack(selectedAttack)
                             },

@@ -2,15 +2,15 @@ package project.main.uniclash.type
 
 class TypeCalculation {
 
-    fun howEffective(from: Type, to: Type): Effectiveness {
+    fun howEffective(from: Type, to: Type, sameType: Boolean): Effectiveness {
         val from2 = getTypeStrength(from)
-        return calculateEffectiveness(from2, to)
+        return calculateEffectiveness(from2, to,sameType)
     }
 
-    fun howEffective(from: String, to: String): Effectiveness {
+    fun howEffective(from: String, to: String, sameType: Boolean): Effectiveness {
         val fromType = Type.valueOf(from.toUpperCase())
         val toType = Type.valueOf(to.toUpperCase())
-        return howEffective(fromType, toType)
+        return howEffective(fromType, toType, sameType)
     }
 
     private fun getTypeStrength(type: Type): TypeStrength {
@@ -26,11 +26,14 @@ class TypeCalculation {
         }
     }
 
-    private fun calculateEffectiveness(from: TypeStrength, to: Type): Effectiveness {
+    private fun calculateEffectiveness(from: TypeStrength, to: Type, sameType:Boolean): Effectiveness {
         println("$from and $to")
         return when {
+            from.effective.contains(to) && sameType -> Effectiveness.EFFECTIVESAMETYPE
             from.effective.contains(to) -> Effectiveness.EFFECTIVE
+            from.weak.contains(to) && sameType -> Effectiveness.WEAK
             from.weak.contains(to) -> Effectiveness.WEAK
+            sameType -> Effectiveness.NORMALSAMETYPE
             else -> Effectiveness.NORMAL
         }
     }
@@ -50,7 +53,10 @@ enum class Type{
 
 enum class Effectiveness{
     NORMAL,
+    NORMALSAMETYPE,
     EFFECTIVE,
+    EFFECTIVESAMETYPE,
+    WEAKSAMETYP,
     WEAK
 }
 enum class TypeStrength {

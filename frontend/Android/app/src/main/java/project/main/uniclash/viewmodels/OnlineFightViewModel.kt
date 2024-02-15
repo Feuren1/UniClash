@@ -313,8 +313,11 @@ class OnlineFightViewModel (private val onlineFightService: OnlineFightService, 
     @SuppressLint("MissingPermission", "SuspiciousIndentation")
     fun makingDamage(amountOfDamage : Int, kindOfDamage : BattleAction, effectiveness : Effectiveness) {
         var effectValue = 1.0
+        if(effectiveness == Effectiveness.NORMALSAMETYPE) effectValue = 1.1
         if(effectiveness == Effectiveness.WEAK) effectValue = 0.75
+        if(effectiveness == Effectiveness.WEAKSAMETYP) effectValue = 0.85
         if(effectiveness == Effectiveness.EFFECTIVE) effectValue = 1.25
+        if(effectiveness == Effectiveness.EFFECTIVESAMETYPE) effectValue = 1.35
 
             viewModelScope.launch {
                 try {

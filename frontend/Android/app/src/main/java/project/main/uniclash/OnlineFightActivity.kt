@@ -40,6 +40,7 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Alignment.Companion.Center
+import androidx.compose.ui.Alignment.Companion.CenterHorizontally
 import androidx.compose.ui.Alignment.Companion.CenterVertically
 import androidx.compose.ui.Alignment.Companion.TopCenter
 import androidx.compose.ui.Alignment.Companion.TopEnd
@@ -144,6 +145,7 @@ class OnlineFightActivity : ComponentActivity() {
 
     private var activateCounter by mutableStateOf(false)
     private var countDownNumber by mutableIntStateOf(9)
+    private var countDownSmalNumber by mutableIntStateOf(26)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -254,7 +256,8 @@ class OnlineFightActivity : ComponentActivity() {
                                             value = attack.strength,
                                             attackType = attackType,
                                             type = attack.typeId,
-                                            selected = clickedAttack == attack.name
+                                            selected = clickedAttack == attack.name,
+                                            sameType = critterUsable.type == attack.typeId
                                         )
                                         Spacer(modifier = Modifier.width(8.dp))
                                     }
@@ -376,8 +379,14 @@ class OnlineFightActivity : ComponentActivity() {
             LaunchedEffect(Unit) {
                 while (true) {
                     activateCounter = true
-                    delay(1000)
+                    delay(250)
                     countDownNumber--
+                    countDownSmalNumber--
+                    delay(250)
+                    countDownSmalNumber--
+                    delay(250)
+                    countDownSmalNumber--
+                    delay(250)
                 }
             }
     }
@@ -595,10 +604,10 @@ class OnlineFightActivity : ComponentActivity() {
 
     @SuppressLint("UnrememberedMutableState")
     @Composable
-    fun AttackBox(attackName: String, value: Int, attackType: BattleAction, type : String, selected: Boolean) {
+    fun AttackBox(attackName: String, value: Int, attackType: BattleAction, type : String, selected: Boolean, sameType : Boolean) {
         val typeCalculation = TypeCalculation()
 
-        var effectiveness : Effectiveness = typeCalculation.howEffective(type.uppercase(),enemyType)
+        var effectiveness : Effectiveness = typeCalculation.howEffective(type.uppercase(),enemyType, sameType)
         Box(
             modifier = Modifier
                 .clickable {
@@ -875,6 +884,7 @@ class OnlineFightActivity : ComponentActivity() {
                 // Foto auf der linken Seite
                     Spacer(modifier = Modifier.height(8.dp))
                     Column(
+                        Modifier.padding(4.dp)
                     ) {
                         if(countDownNumber>0) {
                             Text(
@@ -883,8 +893,8 @@ class OnlineFightActivity : ComponentActivity() {
                                 style = MaterialTheme.typography.bodyLarge,
                                 color = Color.White,
                                 fontSize = 50.sp,
-                                modifier = Modifier.padding(bottom = 4.dp)
-                            )
+                                modifier = Modifier.padding(bottom = 4.dp).align(CenterHorizontally)
+                                )
                         } else if (countDownNumber == 0) {
                             Text(
                                 text = "Go!",
@@ -892,11 +902,12 @@ class OnlineFightActivity : ComponentActivity() {
                                 style = MaterialTheme.typography.bodyLarge,
                                 color = Color.White,
                                 fontSize = 50.sp,
-                                modifier = Modifier.padding(bottom = 4.dp)
+                                modifier = Modifier.padding(bottom = 4.dp).align(CenterHorizontally)
                             )
                         } else {
                             LoadingCircle(Modifier)
                         }
+                        HealthBar(health = 26, currentHealth = countDownSmalNumber, barColor = Color.Cyan)
                     }
                     Spacer(modifier = Modifier.height(8.dp))
             }

@@ -113,7 +113,7 @@ class MenuActivity : ComponentActivity() {
                         "Critters List",
                         painterResource(R.drawable.prc2duck),
                         CritterListActivity::class.java,1
-                    ),Category("Critterdex", painterResource(R.drawable.critterdex), CritterDexActivity::class.java,1)
+                    ),Category("Critterdex", painterResource(R.drawable.critterdex), CritterDexActivity::class.java,1),Category("Type List", painterResource(R.drawable.ice), TypeListActivity::class.java,1)
                 ))
                 MenuCard(listOf(
                     Category(

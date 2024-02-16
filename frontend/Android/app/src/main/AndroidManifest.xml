@@ -171,6 +171,13 @@
             android:noHistory="true"
             android:theme="@style/Theme.UniClash" />
 
+        <activity
+            android:name=".TypeListActivity"
+            android:exported="false"
+            android:label="TypeListActivity"
+            android:noHistory="true"
+            android:theme="@style/Theme.UniClash" />
+
 
         <activity
             android:name=".MainActivity"

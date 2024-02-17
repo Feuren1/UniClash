@@ -19,8 +19,8 @@ enum class MapSettings(private var selection : Boolean){
 enum class MapSaver(private var markers: ArrayList<MarkerData?>) {
     WILDENCOUNTER(ArrayList<MarkerData?>()),
     ARENA(ArrayList<MarkerData?>()),
-    STUDENTHUB(ArrayList<MarkerData?>()),
-    STUDENT(ArrayList<MarkerData?>());
+    STUNDENT(ArrayList<MarkerData?>()),
+    STUDENTHUB(ArrayList<MarkerData?>());
 
     fun getMarker(): ArrayList<MarkerData?> {
         return markers

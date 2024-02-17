@@ -1,6 +1,14 @@
 import {injectable, service} from '@loopback/core';
 import {repository} from "@loopback/repository";
-import {Attack, Critter, CritterUsable, Student, WildencounterInformation} from "../models";
+import {
+  Attack,
+  AttackRelations,
+  Critter,
+  CritterAttack,
+  CritterUsable,
+  Student,
+  WildencounterInformation
+} from "../models";
 import {
   AttackRepository,
   CritterAttackRepository,
@@ -18,6 +26,7 @@ import {BlockList} from "net";
 export class WildEncounterInformationService {
   constructor(
     @repository(CritterRepository) protected critterRepository: CritterRepository,
+    @repository(StudentRepository) protected studentRepository: StudentRepository,
     @repository(AttackRepository) protected attackRepository: AttackRepository,
     @repository(CritterAttackRepository) protected critterAttackRepository: CritterAttackRepository,
     @repository(WildencounterInformationRepository) protected wildEncounterInformationRepository: WildencounterInformationRepository,
@@ -25,32 +34,96 @@ export class WildEncounterInformationService {
   @authenticate('jwt')
   async checkOfWildEncounterShouldReload(): Promise<void> {
     const currentTime: Date = new Date();
-    const day: number = currentTime.getDay();
+    const day: number = currentTime.getTime();
     const currentDates : WildencounterInformation[] = await this.wildEncounterInformationRepository.find()
     const currentDate : WildencounterInformation = currentDates[0]
 
-
-    if(parseInt(currentDate.date)<day){
+    if(day - parseInt(currentDate.date) > 21600000){
       await this.wildEncounterInformationRepository.delete(currentDate)
       currentDate.date = day.toString()
-      this.refreshWildEncounterStats()
       await this.wildEncounterInformationRepository.create(currentDate)
+      await this.refreshWildEncounterStats()
+      await this.refreshWildEncounterAttacks()
     }
   }
 
   @authenticate('jwt')
   async refreshWildEncounterStats():Promise<void>{
-    const wildEncounters : Critter[] = await this.critterRepository.find()
+    const student1: Student = await this.studentRepository.findById(1, {
+      include: ['critters'],
+    })
+    const student2: Student = await this.studentRepository.findById(2, {
+      include: ['critters'],
+    })
 
-    for(const wildEncounter of wildEncounters){
-        if(wildEncounter.studentId == 1){
-          wildEncounter.level = Math.floor(Math.random() * 15) + 1
-          await this.critterRepository.update(wildEncounter);
-        }
+    const critter1 : Critter[] = student1.critters
+    const critter2 : Critter[] = student2.critters
+
+
+    for(const wildEncounter of critter1) {
+      if (wildEncounter.studentId == 1) {
+        wildEncounter.level = Math.floor(Math.random() * 15) + 1
+        await this.critterRepository.update(wildEncounter);
+      }
+    }
+    for(const wildEncounter of critter2){
         if(wildEncounter.studentId == 2){
           wildEncounter.level = Math.floor(Math.random() * 25) + 1
           await this.critterRepository.update(wildEncounter);
         }
+    }
+  }
+
+  async refreshWildEncounterAttacks():Promise<void>{
+    const critterIDs : number[] = []
+    const newAttackRelationIDs : number[] = []
+    const allCritter : Critter[] = await this.critterRepository.find()
+    const allAttacks : Attack[] = await this.attackRepository.find()
+    const allAttackRelations : CritterAttack[] = await this.critterAttackRepository.find()
+
+    for(const critter of allCritter)if(critter.studentId == 1 || critter.studentId == 2){ // @ts-ignore
+      critterIDs.push(critter.id)
+    }
+    let randomAttack1: number = 1
+    let randomAttack2: number = 1
+    let randomAttack3: number = 1
+    let randomAttack4: number = 1
+
+    let allCritterIDs = critterIDs.length
+    while(allCritterIDs > 0) {
+      let reload = true
+      while (reload) {
+        reload = false
+        randomAttack1 = Math.floor(Math.random() * allAttacks.length);
+        randomAttack2 = Math.floor(Math.random() * allAttacks.length);
+        if (randomAttack1 == randomAttack2) reload = true
+        randomAttack3 = Math.floor(Math.random() * allAttacks.length);
+        if (randomAttack1 == randomAttack3 || randomAttack2 == randomAttack3) reload = true
+        randomAttack4 = Math.floor(Math.random() * allAttacks.length);
+        if (randomAttack1 == randomAttack4 || randomAttack2 == randomAttack4 || randomAttack3 == randomAttack4) reload = true
+        if (allAttacks[randomAttack1].attackType.toString() != "DAMAGE_DEALER" && allAttacks[randomAttack2].attackType.toString() != "DAMAGE_DEALER" && allAttacks[randomAttack3].attackType.toString() != "DAMAGE_DEALER" && allAttacks[randomAttack4].attackType.toString() != "DAMAGE_DEALER") reload = true
+      }
+      newAttackRelationIDs.push(randomAttack1,randomAttack2,randomAttack3,randomAttack4)
+      allCritterIDs--
+    }
+
+    let index = 0
+    for(const critterId of critterIDs){
+      for(const attackRelation of allAttackRelations){
+        if(critterId == attackRelation.critterId){
+          console.log(critterId + " gets " + newAttackRelationIDs[index])
+          // @ts-ignore
+          if(allAttacks[newAttackRelationIDs[index]].id != null)attackRelation.attackId = allAttacks[newAttackRelationIDs[index]].id
+          index++
+        }
+      }
+    }
+
+
+    for (const attackRelation of allAttackRelations) {
+      let shouldUpload = false
+      for(const critterId of critterIDs) if(critterId == attackRelation.critterId) shouldUpload = true
+      if(shouldUpload)await this.critterAttackRepository.updateById(attackRelation.id, attackRelation);
     }
   }
 }

@@ -46,6 +46,7 @@ import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import project.main.uniclash.datatypes.CustomColor
 import project.main.uniclash.retrofit.UserService
 import project.main.uniclash.ui.theme.UniClashTheme
 import project.main.uniclash.viewmodels.LoginViewModel
@@ -182,6 +183,7 @@ class LoginActivity : ComponentActivity() {
             )
 
             Button(
+                colors = ButtonDefaults.buttonColors(containerColor = CustomColor.DarkPurple.getColor()),
                 onClick = {
                     loginViewModel.login(email, password, context)
                 },
@@ -189,7 +191,7 @@ class LoginActivity : ComponentActivity() {
                     .fillMaxWidth()
                     .padding(8.dp)
             ) {
-                Text(text = "Login")
+                Text(text = "Login",color = Color.White, fontWeight = FontWeight.Bold)
             }
         }
     }
@@ -204,6 +206,7 @@ class LoginActivity : ComponentActivity() {
     @Composable
     fun BackButton(context: Context) {
         Button(
+            colors = ButtonDefaults.buttonColors(containerColor = CustomColor.DarkPurple.getColor()),
             onClick = {
                 val intent = Intent(context, MainActivity::class.java)
                 context.startActivity(intent)
@@ -215,7 +218,7 @@ class LoginActivity : ComponentActivity() {
         ) {
             Text(
                 text = "Back",
-                color = Color.White
+                color = Color.White, fontWeight = FontWeight.Bold
             )
         }
     }

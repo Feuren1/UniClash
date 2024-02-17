@@ -25,6 +25,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -52,7 +53,7 @@ class CreateOnlineFightActivity : ComponentActivity() {
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .background(MaterialTheme.colorScheme.background)
+                        .background(Color.Black)
                         .padding(16.dp)
                 ) {
                     MenuHeader()
@@ -101,6 +102,7 @@ class CreateOnlineFightActivity : ComponentActivity() {
                 fontSize = 50.sp, // Adjust the font size as needed
                 fontWeight = FontWeight.Bold, // Use FontWeight.Bold for bold text
                 textAlign = TextAlign.Start,
+                color = Color.White,
                 modifier = Modifier.padding(vertical = 16.dp) // Add vertical padding
             )
         }

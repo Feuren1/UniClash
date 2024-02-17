@@ -32,7 +32,8 @@ export class CritterStatsService {
         def: actualStats[2], // Set the actual defense
         spd: actualStats[3], // Set the actual speed
         attacks: [], // Set an empty array of attacks
-        expToNextLevel: critter.expToNextLevel
+        expToNextLevel: critter.expToNextLevel,
+        type: critterTemplate.type
       });
       return critterUsable;
     }
@@ -48,7 +49,8 @@ export class CritterStatsService {
       attacks: attacks, // Set the array of Attack instances
       critterId: critter.id,
       critterTemplateId: critter.critterTemplateId,
-      expToNextLevel: critter.expToNextLevel
+      expToNextLevel: critter.expToNextLevel,
+      type : critterTemplate.type
     });
 
     return critterUsable;

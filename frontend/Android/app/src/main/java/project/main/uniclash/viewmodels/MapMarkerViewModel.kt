@@ -42,6 +42,7 @@ import project.main.uniclash.retrofit.CritterService
 import project.main.uniclash.retrofit.StudentHubService
 import project.main.uniclash.retrofit.StudentService
 import project.main.uniclash.retrofit.enqueue
+import java.time.LocalDateTime
 import kotlin.math.cos
 
 sealed interface MarkersStudentHubUIState {
@@ -97,6 +98,7 @@ sealed interface CritterUsablesForMapUIState {
     data class HasEntries(
         val critterUsables: List<CritterUsable?>,
         val isLoading: Boolean,
+        val timer: Int,
     ) : CritterUsablesForMapUIState
 }
 class MapMarkerViewModel(
@@ -163,7 +165,8 @@ class MapMarkerViewModel(
     val critterUsables = MutableStateFlow(
         CritterUsablesForMapUIState.HasEntries(
             emptyList(),
-            isLoading = false
+            isLoading = false,
+            timer = 0,
         )
     )
 
@@ -194,6 +197,27 @@ class MapMarkerViewModel(
                                 isLoading = false
                             )
                         }
+                    }
+                } catch (e: Exception) {
+                    e.printStackTrace()
+                }
+            }
+        }
+    }
+
+    fun loadStudentsRefresh() {
+        viewModelScope.launch {
+            if (permissionManager.getPublishLocationPermission() == true) {
+                try {
+                    val response = studentService.getStudentLocations(
+                        userDataManager.getStudentId()!!,
+                        Locations.USERLOCATION.getLocation().latitude.toString(),
+                        Locations.USERLOCATION.getLocation().longitude.toString()
+                    ).enqueue()
+                    if (response.isSuccessful) {
+                        //creates an item list based on the fetched data
+                        val student = response.body()!!
+                        //replaces the critters list inside the UI state with the fetched data
                     }
                 } catch (e: Exception) {
                     e.printStackTrace()
@@ -362,7 +386,7 @@ class MapMarkerViewModel(
 
                     if(arena.studentId == userDataManager.getStudentId()) {
                         icon =  mapCalculations.resizeDrawable(context, R.drawable.arenacapturedm, 50.0F)
-                    } else if (arena.studentId == 0) {
+                    } else if (arena.studentId == 1) {
                         icon = mapCalculations.resizeDrawable(context, R.drawable.arenam, 50.0F)
                     }
 
@@ -399,23 +423,49 @@ class MapMarkerViewModel(
     }
 
     @SuppressLint("MissingPermission")
-    fun loadCritterUsables(id: Int) {
+    fun loadCritterUsables() {
+        val currentDateTime = LocalDateTime.now()
+        if(!critterUsables.value.isLoading || currentDateTime.minute*60+currentDateTime.second - critterUsables.value.timer > 20){
+        println("load WildEncounter")
+        var id = 1
         viewModelScope.launch {
-            critterUsables.update { it.copy(isLoading = true) }
+            if (userDataManager.getLevel()!! > 14) id = 2
+            critterUsables.update { it.copy(isLoading = true, timer = currentDateTime.minute*60+currentDateTime.second) }
             try {
-                val response = critterService.getCritterUsables(id).enqueue()
+                val response = critterService.getCritterListables(id).enqueue()
                 if (response.isSuccessful) {
-                    val crittersUsables = response.body()!!
+                    val crittersListable = response.body()!!
+
+                    val crittersUsables: ArrayList<CritterUsable> = ArrayList()
+                    for (critter in crittersListable) {
+                        val myCritter = CritterUsable(
+                            level = critter.level,
+                            name = critter.name,
+                            hp = 0,
+                            atk = 0,
+                            def = 0,
+                            spd = 0,
+                            attacks = emptyList(),
+                            critterId = critter.critterId,
+                            critterTemplateId = 0,
+                            expToNextLevel = 0,
+                            type = critter.type
+                        )
+                        crittersUsables.add(myCritter)
+                    }
+
                     critterUsables.update {
                         it.copy(
                             critterUsables = crittersUsables,
                             isLoading = false
                         )
                     }
+                    println("loaded WildEncounter")
                 }
             } catch (e: Exception) {
                 e.printStackTrace()
             }
+        }
         }
     }
 
@@ -518,14 +568,14 @@ class MapMarkerViewModel(
             MapSaver.WILDENCOUNTER.setMarker(ArrayList<MarkerData?>())
         }
 
-        if(Counter.RESPAWN.getCounter() < -4 && Counter.FIRSTSPAWN.getCounter() < 1){
+        if(Counter.RESPAWN.getCounter() < -1 && Counter.FIRSTSPAWN.getCounter() < 1){
             loadWildEncounter()
             Counter.RESPAWN.setCounter(300)
         }
     }
 
     private fun loadWildEncounter(){
-            loadCritterUsables(1)
+            loadCritterUsables()
              mapMarkerListViewModel.addListOfMarkersQ(MapSaver.WILDENCOUNTER.getMarker())
 
             if(MapSaver.WILDENCOUNTER.getMarker().isEmpty()) {

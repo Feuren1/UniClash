@@ -26,16 +26,16 @@ interface OnlineFightService {
     @PUT("/insertCritter/{fightConnectionId}/{studentId}/{critterId}")
     fun insertCritter(@Path("fightConnectionId")fightConnectionId : Int, @Path("studentId")studentId : Int, @Path("critterId")critterId : Int):Call<Unit>
 
-    @PUT("/makingDamage/{fightConnectionId}/{studentId}/{amountOfDamage}/{kindOfDamage}")
-    fun makingDamage(@Path("fightConnectionId")fightConnectionId : Int, @Path("studentId")studentId : Int, @Path("amountOfDamage")amountOfDamage : Int, @Path("kindOfDamage")kindOfDamage : String):Call<Unit>
+    @PUT("/makingDamage/{fightConnectionId}/{studentId}/{amountOfDamage}/{kindOfDamage}/{effectiveness}")
+    fun makingDamage(@Path("fightConnectionId")fightConnectionId : Int, @Path("studentId")studentId : Int, @Path("amountOfDamage")amountOfDamage : Int, @Path("kindOfDamage")kindOfDamage : String, @Path("effectiveness")effectiveness : Double):Call<Unit>
 
     @PUT("/sendMessageViaPushNotification/{fightConnectionId}/{studentId}/{message}")
     fun sendMessageViaPushNotification(@Path("fightConnectionId")fightConnectionId : Int, @Path("studentId")studentId : Int, @Path("message")message : String):Call<Unit>
     @GET("/fightInformationList/{studentId}")
     fun getFightInformationList(@Path("studentId")studentId : Int) : Call <List<OnlineFightInformation>>
 
-    @GET("/getCritterInformation/{critterId}")
-    fun getCritterInformation(@Path("critterId")critterId : Int) : Call <CritterInFightInformation>
+    @GET("/getCritterInformation/{critterId}/{fightConnectionId}")
+    fun getCritterInformation(@Path("critterId")critterId : Int,@Path("fightConnectionId")fightConnectionId : Int) : Call <CritterInFightInformation>
 
     @GET("/getCritterInformationFromEnemy/{fightConnectionId}/{studentId}")
     fun getCritterInformationFromEnemy(@Path("fightConnectionId")fightConnectionId : Int, @Path("studentId")studentId : Int) : Call <CritterInFightInformation>

@@ -35,7 +35,7 @@ export class ArenaLogicService {
       if(critter.id == arena.critterId || arena.critterId == 0) canFind = true
     }
     if(!canFind){
-      arena.critterId = 194
+      arena.critterId = 1157
       arena.studentId = 1
       await this.arenaRepository.update(arena)
     }
@@ -51,7 +51,7 @@ export class ArenaLogicService {
     }
     if(arena.critterId == 0 && arena.studentId != 0){
       if(arena.invasionTime != time && arena.invasionTime+1 != time && arena.invasionTime+2 != time){
-        arena.critterId = 194
+        arena.critterId = 1157
         arena.studentId = 1
         await this.arenaRepository.update(arena)
       }
@@ -63,6 +63,15 @@ export class ArenaLogicService {
     const currentTime: Date = new Date();
     arena.invasionTime = currentTime.getMinutes()
     await this.arenaRepository.update(arena)
+  }
+
+  async addEp(arenaId : number){
+    const arena = await this.arenaRepository.findById(arenaId)
+    if(arena.critterId != null && arena.studentId != null && arena.studentId != 1) {
+      await this.levelCalcCritterService.increaseCritterExp(arena.critterId, 350)
+      await this.levelCalcStudentService.increaseStudentCredits(arena.studentId, 7,350)
+
+    }
   }
 }
 

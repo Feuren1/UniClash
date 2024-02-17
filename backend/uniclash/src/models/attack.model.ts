@@ -9,23 +9,23 @@ export class Attack extends Entity {
     id: true,
     generated: true,
   })
-  id?: number;
+  id: number;
 
   @property({
     type: 'string',
   })
-  name?: string;
+  name: string;
 
   @property({
     type: 'number',
     default: 100,
   })
-  strength?: number;
+  strength: number;
 
   @property({
     type: 'string',
   })
-  attackType?: string;
+  attackType: string;
 
   @hasMany(() => CritterAttack)
   critterAttacks: CritterAttack[];

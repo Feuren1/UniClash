@@ -32,10 +32,12 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.painter.Painter
@@ -196,13 +198,13 @@ class FinalBattleActivity : ComponentActivity() {
 
             }
             if(progressRequest){
-                val intent = Intent(this, MenuActivity::class.java)
+                val intent = Intent(this, MapActivity::class.java)
                 this.startActivity(intent)
                 finish()
             }
             if (exitRequest) {
                 mediaPlayer?.release()
-                val intent = Intent(this, MenuActivity::class.java)
+                val intent = Intent(this, MapActivity::class.java)
                 this.startActivity(intent)
                 exitRequest = false
             }
@@ -257,7 +259,7 @@ fun FinalBattle(finalBattleViewModel:FinalBattleViewModel = viewModel()) {
                         painter = picture,
                         contentDescription = null,
                         modifier = Modifier
-                            .size(80.dp)
+                            .size(85.dp)
                     )
                 } else {
                     Text("Image not found for $name")
@@ -300,7 +302,7 @@ fun FinalBattle(finalBattleViewModel:FinalBattleViewModel = viewModel()) {
                         painter = playerPicture,
                         contentDescription = null,
                         modifier = Modifier
-                            .size(80.dp)
+                            .size(85.dp)
                     )
                 } else {
                     Text("Image not found for $playerName")
@@ -344,6 +346,8 @@ fun FinalBattle(finalBattleViewModel:FinalBattleViewModel = viewModel()) {
                             items(2) {
                                 ClickableAttackAdvancedTutorial(
                                     attack = battleViewPlayerUIState.playerCritter!!.attacks[it],
+                                    enemyCritterType = battleViewcpuCritterUIState.cpuCritter!!.type,
+                                    playerCritterType = battleViewPlayerUIState!!.playerCritter!!.type,
                                     onAttackClicked = { selectedAttack ->
                                         finalBattleViewModel.selectPlayerAttack(
                                             selectedAttack
@@ -363,6 +367,8 @@ fun FinalBattle(finalBattleViewModel:FinalBattleViewModel = viewModel()) {
                             items(2) {
                                 ClickableAttackAdvancedTutorial(
                                     attack = battleViewPlayerUIState.playerCritter!!.attacks[it + 2],
+                                    enemyCritterType = battleViewcpuCritterUIState.cpuCritter!!.type,
+                                    playerCritterType = battleViewPlayerUIState!!.playerCritter!!.type,
                                     onAttackClicked = { selectedAttack ->
                                         finalBattleViewModel.selectPlayerAttack(
                                             selectedAttack
@@ -383,6 +389,8 @@ fun FinalBattle(finalBattleViewModel:FinalBattleViewModel = viewModel()) {
                             items(2) {
                                 ClickableAttackAdvancedTutorial(
                                     attack = battleViewPlayerUIState.playerCritter!!.attacks[it],
+                                    enemyCritterType = battleViewcpuCritterUIState.cpuCritter!!.type,
+                                    playerCritterType = battleViewPlayerUIState!!.playerCritter!!.type,
                                     onAttackClicked = { selectedAttack ->
                                         finalBattleViewModel.selectPlayerAttack(
                                             selectedAttack
@@ -402,6 +410,8 @@ fun FinalBattle(finalBattleViewModel:FinalBattleViewModel = viewModel()) {
                             items(2) {
                                 ClickableAttackAdvancedTutorial(
                                     attack = battleViewPlayerUIState.playerCritter!!.attacks[it + 2],
+                                    enemyCritterType = battleViewcpuCritterUIState.cpuCritter!!.type,
+                                    playerCritterType = battleViewPlayerUIState!!.playerCritter!!.type,
                                     onAttackClicked = { selectedAttack ->
                                         finalBattleViewModel.selectPlayerAttack(
                                             selectedAttack
@@ -502,16 +512,44 @@ fun PlayerCritterFinalBattleInfoText(critter: CritterUsable, finalBattleViewMode
             }
 
 
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                Text(
+                    text = buildAnnotatedString {
+                        withStyle(style = SpanStyle(color = Color.Black)) {
+                            append("ATK: ${critter.atk} DEF: ${critter.def} SPD: ${critter.spd}")
+                        }
+                    },
+                    fontSize = 10.sp,
+                    color = Color.White
+                )
 
-            Text(
-                text = buildAnnotatedString {
-                    withStyle(style = SpanStyle(color = Color.Black)) {
-                        append("ATK: ${critter.atk} DEF: ${critter.def} SPD: ${critter.spd}")
-                    }
-                },
-                fontSize = 10.sp,
-                color = Color.White
-            )
+                var resourceId = R.drawable.normal
+                resourceId = when (critter.type) {
+                    "DRAGON" -> {R.drawable.dragon}
+                    "WATER" -> {R.drawable.water}
+                    "ELECTRIC" -> {R.drawable.electric}
+                    "FIRE" -> {R.drawable.fire}
+                    "STONE" -> {R.drawable.stone}
+                    "ICE" -> {R.drawable.ice}
+                    else -> {R.drawable.normal}
+                }
+
+                Image(
+                    painter = painterResource(
+                        if (resourceId > 0) {
+                            resourceId
+                        } else {
+                            R.drawable.icon
+                        }
+                    ),
+                    contentDescription = null,
+                    modifier = Modifier
+                        .size(20.dp)
+                )
+            }
 
         }
 
@@ -550,16 +588,44 @@ fun CpuCritterFinalBattleInfoText(critter: CritterUsable, finalBattleViewModel: 
                     color = Color.White
                 )
             }
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                Text(
+                    text = buildAnnotatedString {
+                        withStyle(style = SpanStyle(color = Color.Black)) {
+                            append("ATK: ${critter.atk} DEF: ${critter.def} SPD: ${critter.spd}")
+                        }
+                    },
+                    fontSize = 10.sp,
+                    color = Color.White
+                )
 
-            Text(
-                text = buildAnnotatedString {
-                    withStyle(style = SpanStyle(color = Color.Black)) {
-                        append("ATK: ${critter.atk} DEF: ${critter.def} SPD: ${critter.spd}")
-                    }
-                },
-                fontSize = 10.sp,
-                color = Color.White
-            )
+                var resourceId = R.drawable.normal
+                resourceId = when (critter.type) {
+                    "DRAGON" -> {R.drawable.dragon}
+                    "WATER" -> {R.drawable.water}
+                    "ELECTRIC" -> {R.drawable.electric}
+                    "FIRE" -> {R.drawable.fire}
+                    "STONE" -> {R.drawable.stone}
+                    "ICE" -> {R.drawable.ice}
+                    else -> {R.drawable.normal}
+                }
+
+                Image(
+                    painter = painterResource(
+                        if (resourceId > 0) {
+                            resourceId
+                        } else {
+                            R.drawable.icon
+                        }
+                    ),
+                    contentDescription = null,
+                    modifier = Modifier
+                        .size(20.dp)
+                )
+            }
         }
     }
 }

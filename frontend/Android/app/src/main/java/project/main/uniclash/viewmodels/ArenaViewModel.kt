@@ -73,7 +73,7 @@ class ArenaViewModel(
     )
 
     init {
-        loadArena(arenaMarkerFromMap!!.arena!!.id)
+        loadArenaFromBegin(arenaMarkerFromMap!!.arena!!.id)
     }
 
     fun loadArenas(){
@@ -107,8 +107,12 @@ class ArenaViewModel(
     }
 
 
+    fun loadArenaCritterFromBegin(){
+        if(critterUsable.value.critterUsable == null && getselectedArena()!!.arena!!.critterId != 0) {
+            loadArenaCritter()
+        }
+    }
     fun loadArenaCritter() {
-        if(critterUsable.value.critterUsable == null) {
             viewModelScope.launch {
                 critterUsable.update { it.copy(isLoading = true) }
                 try {
@@ -132,10 +136,15 @@ class ArenaViewModel(
                     e.printStackTrace()
                 }
             }
+    }
+
+    fun loadArenaFromBegin(id:Int){
+        if(arena.value.arena == null){
+            loadArena(id)
         }
     }
+
     fun loadArena(id : Int){
-        if(arena.value.arena == null){
         viewModelScope.launch {
             arena.update { it.copy(isLoading = true) }
             try {
@@ -153,7 +162,6 @@ class ArenaViewModel(
             } catch (e: Exception) {
                 e.printStackTrace()
             }
-        }
         }
     }
 

@@ -19,6 +19,7 @@ import androidx.compose.material.icons.filled.Email
 import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -47,6 +48,7 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
+import project.main.uniclash.datatypes.CustomColor
 import project.main.uniclash.retrofit.UserService
 import project.main.uniclash.ui.theme.UniClashTheme
 import project.main.uniclash.viewmodels.LoginViewModel
@@ -109,6 +111,7 @@ class RegisterActivity : ComponentActivity() {
     @Composable
     fun Backbutton(context: Context) {
         Button(
+            colors = ButtonDefaults.buttonColors(containerColor = CustomColor.DarkPurple.getColor()),
             onClick = {
                 val intent = Intent(context, MainActivity::class.java)
                 context.startActivity(intent)
@@ -120,7 +123,7 @@ class RegisterActivity : ComponentActivity() {
         ) {
             Text(
                 text = "Back",
-                color = Color.White
+                color = Color.White, fontWeight = FontWeight.Bold
             )
         }
     }
@@ -207,6 +210,7 @@ class RegisterActivity : ComponentActivity() {
             )
 
             Button(
+                colors = ButtonDefaults.buttonColors(containerColor = CustomColor.DarkPurple.getColor()),
                 onClick = {
                     registerViewModel.signup(email, password, username)
                 },
@@ -214,7 +218,7 @@ class RegisterActivity : ComponentActivity() {
                     .fillMaxWidth()
                     .padding(8.dp)
             ) {
-                Text(text = "Register")
+                Text(text = "Register",color = Color.White, fontWeight = FontWeight.Bold)
             }
         }
     }

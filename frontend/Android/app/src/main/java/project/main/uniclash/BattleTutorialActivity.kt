@@ -271,6 +271,8 @@ fun CritterBattleTutorialIntro(battleTutorialViewModel: BattleTutorialViewModel 
                         items(2) {
                             ClickableAttackAdvancedTutorial(
                                 attack = battleViewPlayerUIState.playerCritter!!.attacks[it],
+                                enemyCritterType = "NORMAL",
+                                playerCritterType = battleViewPlayerUIState!!.playerCritter!!.type,
                                 onAttackClicked = { selectedAttack ->
                                     battleTutorialViewModel.selectPlayerAttack(
                                         selectedAttack
@@ -290,6 +292,8 @@ fun CritterBattleTutorialIntro(battleTutorialViewModel: BattleTutorialViewModel 
                         items(2) {
                             ClickableAttackAdvancedTutorial(
                                 attack = battleViewPlayerUIState.playerCritter!!.attacks[it + 2],
+                                enemyCritterType = "NORMAL",
+                                playerCritterType = battleViewPlayerUIState!!.playerCritter!!.type,
                                 onAttackClicked = { selectedAttack ->
                                     battleTutorialViewModel.selectPlayerAttack(
                                         selectedAttack
@@ -310,6 +314,8 @@ fun CritterBattleTutorialIntro(battleTutorialViewModel: BattleTutorialViewModel 
                         items(2) {
                             ClickableAttackAdvancedTutorial(
                                 attack = battleViewPlayerUIState.playerCritter!!.attacks[it],
+                                enemyCritterType = "NORMAL",
+                                playerCritterType = battleViewPlayerUIState!!.playerCritter!!.type,
                                 onAttackClicked = { selectedAttack ->
                                     battleTutorialViewModel.selectPlayerAttack(
                                         selectedAttack
@@ -329,6 +335,8 @@ fun CritterBattleTutorialIntro(battleTutorialViewModel: BattleTutorialViewModel 
                         items(2) {
                             ClickableAttackAdvancedTutorial(
                                 attack = battleViewPlayerUIState.playerCritter!!.attacks[it + 2],
+                                enemyCritterType = "NORMAL",
+                                playerCritterType = battleViewPlayerUIState!!.playerCritter!!.type,
                                 onAttackClicked = { selectedAttack ->
                                     battleTutorialViewModel.selectPlayerAttack(
                                         selectedAttack

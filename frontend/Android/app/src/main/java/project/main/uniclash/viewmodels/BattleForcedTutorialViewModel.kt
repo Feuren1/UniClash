@@ -94,23 +94,23 @@ class BattleForcedTutorialViewModel(
         viewModelScope.launch {
             Log.d(TAG, "Fetching initial critters data: ")
 
-            val playerAttack1 = Attack(1, "Splash", 50, AttackType.DAMAGE_DEALER)
-            val playerAttack2 = Attack(2, "Tackle", 60, AttackType.DAMAGE_DEALER)
-            val playerAttack3 = Attack(3, "Beak attack", 80, AttackType.DAMAGE_DEALER)
-            val playerAttack4 = Attack(4, "Duck Noises", 75, AttackType.DAMAGE_DEALER)
+            val playerAttack1 = Attack(1, "Splash", 50, AttackType.DAMAGE_DEALER,"NORMAL")
+            val playerAttack2 = Attack(2, "Tackle", 60, AttackType.DAMAGE_DEALER,"NORMAL")
+            val playerAttack3 = Attack(3, "Beak attack", 80, AttackType.DAMAGE_DEALER,"NORMAL")
+            val playerAttack4 = Attack(4, "Duck Noises", 75, AttackType.DAMAGE_DEALER,"NORMAL")
             val listOfPlayerAttacks = listOf(playerAttack1, playerAttack2, playerAttack3, playerAttack4)
-            val playerTutorialCritter = CritterUsable(20, "Coolduck", 100, 50, 50, 50, listOfPlayerAttacks,1, 1,0)
+            val playerTutorialCritter = CritterUsable(20, "Coolduck", 100, 50, 50, 50, listOfPlayerAttacks,1, 1,0,"NORMAL")
 
             playerCritter.update { state ->
                 state.copy(playerCritter = playerTutorialCritter, isLoading = false)
             }
 
-            val cpuAttack1 = Attack(1, "High Pitched Scream", 50, AttackType.DAMAGE_DEALER)
-            val cpuAttack2 = Attack(2, "Tackle", 60, AttackType.DAMAGE_DEALER)
-            val cpuAttack3 = Attack(3, "Splash", 80, AttackType.DAMAGE_DEALER)
-            val cpuAttack4 = Attack(4, "Knife Attack", 75, AttackType.DAMAGE_DEALER)
+            val cpuAttack1 = Attack(1, "High Pitched Scream", 50, AttackType.DAMAGE_DEALER,"NORMAL")
+            val cpuAttack2 = Attack(2, "Tackle", 60, AttackType.DAMAGE_DEALER,"NORMAL")
+            val cpuAttack3 = Attack(3, "Splash", 80, AttackType.DAMAGE_DEALER,"NORMAL")
+            val cpuAttack4 = Attack(4, "Knife Attack", 75, AttackType.DAMAGE_DEALER,"NORMAL")
             val listOfCpuAttacks = listOf(cpuAttack1, cpuAttack2, cpuAttack3, cpuAttack4)
-            val cpuTutorialCritter = CritterUsable(20, "Knifeduck", 100, 50, 50, 50, listOfPlayerAttacks,1, 1,0)
+            val cpuTutorialCritter = CritterUsable(20, "Knifeduck", 100, 50, 50, 50, listOfPlayerAttacks,1, 1,0,"NORMAL")
 
             cpuCritter.update { state ->
                 state.copy(cpuCritter = cpuTutorialCritter, isLoading = false)

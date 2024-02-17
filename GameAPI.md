@@ -107,8 +107,8 @@ Critter Radius 2km -> 800 wild encounter<br>
 ## Other Game Rules<br>
 Coins per catch: 1 <br>
 Ep per catch: 25<br>
-Coins per fight Win: 3 <br>
-Ep per fight Win: 100<br>
-Coins per captured Arena: 3<br>
-Ep per captured Arena: 150<br>
+Coins per fight Win: 5 <br>
+Ep per fight Win: 200<br>
+Coins per captured Arena: 7<br>
+Ep per captured Arena: 350<br>
 Legendary critters can not be set in arenas.<br>

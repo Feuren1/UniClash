@@ -9,6 +9,7 @@ import androidx.activity.compose.setContent
 import androidx.activity.viewModels
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -17,6 +18,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -46,10 +48,12 @@ import project.main.uniclash.retrofit.CritterService
 import project.main.uniclash.viewmodels.CritterDexViewModel
 import project.main.uniclash.viewmodels.UniClashViewModel
 import androidx.compose.foundation.lazy.items
+import project.main.uniclash.datatypes.CustomColor
 
 
 class CritterListActivity : ComponentActivity() {
     private var exitRequest by mutableStateOf(false)
+    private var sorter by mutableStateOf(CurrentSort.Sorter.getSort())
 
     val uniClashViewModel: UniClashViewModel by viewModels(factoryProducer = {
         UniClashViewModel.provideFactory(CritterService.getInstance(this), Application())
@@ -69,7 +73,7 @@ class CritterListActivity : ComponentActivity() {
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .background(MaterialTheme.colorScheme.background)
+                        .background(Color.Black)
                         .padding(16.dp)
                 ) {
                     MenuHeader(myCritters.size)
@@ -88,9 +92,9 @@ class CritterListActivity : ComponentActivity() {
                 Box(
                     modifier = Modifier
                         .fillMaxSize()
-                        .background(Color.White)
+                        .background(Color.Black)
                 ) {
-                            UsableList(uniClashViewModel,isLoading)
+                            UsableList(uniClashViewModel,isLoading, sorter)
                     }
                 }
 
@@ -104,18 +108,29 @@ class CritterListActivity : ComponentActivity() {
     }
 
     @Composable
-    fun UsableList(uniClashViewModel: UniClashViewModel, isLoading: Boolean) {
+    fun UsableList(uniClashViewModel: UniClashViewModel, isLoading: Boolean, sorter : Sort) {
         val uniClashUiStateCritterUsables by uniClashViewModel.critterUsables.collectAsState()
+        println(uniClashUiStateCritterUsables.critterUsables.toString())
+
+        var sortedCritters = uniClashUiStateCritterUsables.critterUsables.sortedWith(compareBy{ it?.critterId })
+        if(sorter == Sort.ID) sortedCritters = uniClashUiStateCritterUsables.critterUsables.sortedWith(compareBy{ it?.critterId })
+        if(sorter == Sort.IDReversed) sortedCritters = uniClashUiStateCritterUsables.critterUsables.sortedWith(compareBy{ it?.critterId }).reversed()
+        if(sorter == Sort.Name) sortedCritters = uniClashUiStateCritterUsables.critterUsables.sortedWith(compareBy({ it?.name }, { it?.critterId }))
+        if(sorter == Sort.Level) sortedCritters = uniClashUiStateCritterUsables.critterUsables.sortedWith(compareBy({ it?.level }, { it?.critterId })).reversed()
+        if(sorter == Sort.LevelReversed) sortedCritters = uniClashUiStateCritterUsables.critterUsables.sortedWith(compareBy({ it?.level }, { it?.critterId }))
+        if(sorter == Sort.Speed) sortedCritters = uniClashUiStateCritterUsables.critterUsables.sortedWith(compareBy({ it?.spd }, { it?.critterId })).reversed()
+        if(sorter == Sort.Atk) sortedCritters = uniClashUiStateCritterUsables.critterUsables.sortedWith(compareBy({ it?.atk }, { it?.critterId })).reversed()
+        if(sorter == Sort.Def) sortedCritters = uniClashUiStateCritterUsables.critterUsables.sortedWith(compareBy({ it?.def }, { it?.critterId })).reversed()
+        if(sorter == Sort.Hp) sortedCritters = uniClashUiStateCritterUsables.critterUsables.sortedWith(compareBy({ it?.hp }, { it?.critterId })).reversed()
+
         if (isLoading) {
             LoadingCircle(Modifier)
-        }else {
+        } else {
             LazyColumn(modifier = Modifier) {
-                items(items = uniClashUiStateCritterUsables.critterUsables, key= { critter -> critter!!.critterId }) { critter ->
+                items(items = sortedCritters, key = { critter -> critter!!.critterId }) { critter ->
                     Box(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(8.dp)
-                            .background(Color.LightGray, shape = RoundedCornerShape(8.dp))
                     ) {
                         CritterDetail(critter)
                     }
@@ -123,6 +138,8 @@ class CritterListActivity : ComponentActivity() {
             }
         }
     }
+
+
 
 
     @Composable
@@ -133,39 +150,112 @@ class CritterListActivity : ComponentActivity() {
                 fontSize = 50.sp, // Adjust the font size as needed
                 fontWeight = FontWeight.Bold, // Use FontWeight.Bold for bold text
                 textAlign = TextAlign.Start,
+                color = Color.White,
                 modifier = Modifier.padding(vertical = 16.dp) // Add vertical padding
             )
             Text(
                 text = "$size/200 Critters${if(size>= 200){"\nYou reached the max amount of critters.\nNew captured critters are not added to your team!!!"}else{""}}",
                 fontSize = 12.sp, // Adjust the font size as needed
+                color = Color.White,
                 fontWeight = FontWeight.Bold, // Use FontWeight.Bold for bold text
                 textAlign = TextAlign.Start,
             )
+            Box{
+                Row{
+                    Text(
+                        text = "Sorters: ",
+                        fontSize = 12.sp, // Adjust the font size as needed
+                        fontWeight = FontWeight.Bold, // Use FontWeight.Bold for bold text
+                        textAlign = TextAlign.Start,
+                        color = Color.White,
+                    )
+                    Text(
+                        text = "ID ",
+                        color = Color.LightGray,
+                        fontSize = 12.sp, // Adjust the font size as needed
+                        fontWeight = FontWeight.Bold, // Use FontWeight.Bold for bold text
+                        textAlign = TextAlign.Start,
+                        modifier = Modifier.clickable {
+                            sorter = Sort.ID
+                            CurrentSort.Sorter.setSort(Sort.ID)
+                        }
+                    )
+                    Text(
+                        text = "IDReversed ",
+                        color = Color.LightGray,
+                        fontSize = 12.sp, // Adjust the font size as needed
+                        fontWeight = FontWeight.Bold, // Use FontWeight.Bold for bold text
+                        textAlign = TextAlign.Start,
+                        modifier = Modifier.clickable {
+                            sorter = Sort.IDReversed
+                            CurrentSort.Sorter.setSort(Sort.IDReversed)
+                        }
+                    )
+                    Text(
+                        text = "Name ",
+                        color = Color.LightGray,
+                        fontSize = 12.sp, // Adjust the font size as needed
+                        fontWeight = FontWeight.Bold, // Use FontWeight.Bold for bold text
+                        textAlign = TextAlign.Start,
+                        modifier = Modifier.clickable {
+                            sorter = Sort.Name
+                            CurrentSort.Sorter.setSort(Sort.Name)
+                        }
+                    )
+                    Text(
+                        text = "Level ",
+                        color = Color.LightGray,
+                        fontSize = 12.sp, // Adjust the font size as needed
+                        fontWeight = FontWeight.Bold, // Use FontWeight.Bold for bold text
+                        textAlign = TextAlign.Start,
+                        modifier = Modifier.clickable {
+                            sorter = Sort.Level
+                            CurrentSort.Sorter.setSort(Sort.Level)
+                        }
+                    )
+                    Text(
+                        text = "LevelReversed ",
+                        color = Color.LightGray,
+                        fontSize = 12.sp, // Adjust the font size as needed
+                        fontWeight = FontWeight.Bold, // Use FontWeight.Bold for bold text
+                        textAlign = TextAlign.Start,
+                        modifier = Modifier.clickable {
+                            sorter = Sort.LevelReversed
+                            CurrentSort.Sorter.setSort(Sort.LevelReversed)
+                        }
+                    )
+                }
+            }
         }
     }
 
     @Composable
     fun CritterDetail(critter: CritterUsable?) {
-        var blockColor : Color = Color.LightGray
-        var textColor : Color = MaterialTheme.colorScheme.secondary
+        var textColor : Color = Color.White
         var selectedText = ""
+        var border = 3.dp
         if(uniClashViewModel.checkIfSelectedCritter(critter!!.critterId)){
-            blockColor = MaterialTheme.colorScheme.onPrimaryContainer
-            textColor = Color.White
             selectedText = "| SELECTED CRITTER FOR THE FIGHT"
+            border = 6.dp
         }
         Box(
             modifier = Modifier
                 .padding(all = 8.dp)
                 .fillMaxWidth() // making box from left to right site
                 .background(
-                    blockColor,
+                    CustomColor.DarkPurple.getColor(),
                     shape = RoundedCornerShape(8.dp)
-                ) // Hintergrundfarbe und abgeflachte Ecken
+                )
+                .border(
+                    border,
+                    CustomColor.Purple.getColor(),
+                    shape = RoundedCornerShape(8.dp)
+                )
                 .clickable {
                     val intent = Intent(this, CritterProfileActivity::class.java)
                     val b = Bundle()
                     b.putInt("critterId", critter!!.critterId)
+                    b.putString("type", critter!!.type)
                     intent.putExtras(b)
                     startActivity(intent)
                     finish()
@@ -180,7 +270,7 @@ class CritterListActivity : ComponentActivity() {
                     painter = painterResource(if(resourceId > 0){resourceId}else{R.drawable.icon}),
                     contentDescription = null,
                     modifier = Modifier
-                        .size(60.dp)
+                        .size(70.dp)
                 )
                 Spacer(modifier = Modifier.width(8.dp))
                 Column {
@@ -199,7 +289,75 @@ class CritterListActivity : ComponentActivity() {
                     )
                     Spacer(modifier = Modifier.height(8.dp))
                 }
+                Box(modifier = Modifier.weight(1f)) {
+                    Image(
+                        painter = painterResource(
+                            id = when (critter.type) {
+                                "DRAGON" -> {
+                                    R.drawable.dragon
+                                }
+
+                                "WATER" -> {
+                                    R.drawable.water
+                                }
+
+                                "ELECTRIC" -> {
+                                    R.drawable.electric
+                                }
+
+                                "FIRE" -> {
+                                    R.drawable.fire
+                                }
+
+                                "STONE" -> {
+                                    R.drawable.stone
+                                }
+
+                                "ICE" -> {
+                                    R.drawable.ice
+                                }
+
+                                "METAL" -> {
+                                    R.drawable.metal
+                                }
+
+                                else -> {
+                                    R.drawable.normal
+                                }
+                            }
+                        ),
+                        contentDescription = null,
+                        modifier = Modifier
+                            .size(35.dp)
+                            .offset(y = 15.dp)
+                            .align(Alignment.CenterEnd)
+                    )
+                }
             }
         }
+    }
+}
+
+enum class Sort{
+    ID,
+    IDReversed,
+    Name,
+    Level,
+    LevelReversed,
+    Speed,
+    Hp,
+    Def,
+    Atk,
+}
+
+enum class CurrentSort(private var sorter : Sort){
+    Sorter(Sort.ID);
+
+    fun getSort():Sort{
+        return sorter
+    }
+
+    fun setSort(setSorter : Sort){
+        sorter = setSorter
     }
 }

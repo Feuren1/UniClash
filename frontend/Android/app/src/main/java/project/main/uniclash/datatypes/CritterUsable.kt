@@ -1,22 +1,25 @@
 package project.main.uniclash.datatypes
 
+import java.sql.SQLOutput
+
 data class CritterUsable(
     val level: Int,
     val name: String,
-    val hp: Int,
+    var hp: Int,
     val atk: Int,
     val def: Int,
     val spd: Int,
     val attacks: List<Attack>,
     val critterId: Int,
     val critterTemplateId: Int,
-    val expToNextLevel : Int
+    val expToNextLevel : Int,
+    val type : String
 ){
     fun reduceHealth(damage: Int) {
     this.hp.minus(damage)
 	}
     override fun toString(): String {
-        return "CritterUsable(level=$level, name='$name', hp=$hp, atk=$atk, def=$def, spd=$spd, critterId=$critterId, critterTemplateId=$critterTemplateId,  attacks=${attacks})"
+        return "CritterUsable(level=$level, name='$name', hp=$hp, atk=$atk, def=$def, spd=$spd, critterId=$critterId, critterTemplateId=$critterTemplateId, type=$type attacks=${attacks})"
     }
     companion object {
         fun fromString(stringRepresentation: String): CritterUsable {
@@ -30,14 +33,16 @@ data class CritterUsable(
             val spd = parts[5].substringAfter('=').toInt()
             val critterId = parts[6].substringAfter('=').toInt()
             val critterTemplateId = parts[7].substringAfter('=').toInt()
-
+            val type = parts[8].substringAfter("type=").removeSuffix("'").substringBefore(" attacks")
+            //val rest = parts[9].substringAfter('=').removeSuffix("'")
+            println("$type e")
             // Parse attacks list based on your Attack class structure
             var attacks: List<Attack> = List(4) { index ->
                 when (index) {
-                    0 -> Attack(1, "Tackle", 45, AttackType.DAMAGE_DEALER)
-                    1 -> Attack(1, "Tackle", 45, AttackType.DAMAGE_DEALER)
-                    2 -> Attack(1, "Tackle", 45, AttackType.DAMAGE_DEALER)
-                    3 -> Attack(1, "Tackle", 45, AttackType.DAMAGE_DEALER)
+                    0 -> Attack(1, "Tackle", 45, AttackType.DAMAGE_DEALER, "NORMAL")
+                    1 -> Attack(1, "Tackle", 45, AttackType.DAMAGE_DEALER,"NORMAL")
+                    2 -> Attack(1, "Tackle", 45, AttackType.DAMAGE_DEALER,"NORMAL")
+                    3 -> Attack(1, "Tackle", 45, AttackType.DAMAGE_DEALER,"NORMAL")
                     else -> throw IndexOutOfBoundsException("Invalid index: $index")
                 } //sample data
             }
@@ -71,7 +76,8 @@ data class CritterUsable(
                 attacks,
                 critterId,
                 critterTemplateId,
-                0
+                0,
+                type
             )
         }
     }

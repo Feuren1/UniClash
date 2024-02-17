@@ -56,25 +56,25 @@ class BattleTutorialAdvancedViewModel(
     var advancedTutorialStep by mutableStateOf<AdvancedTutorialStep>(AdvancedTutorialStep.Introduction)
         private set
     private val cpuAttackOrder = listOf(
-        Attack(4, "QuizzQuestion", 55, AttackType.DAMAGE_DEALER),
-        Attack(4, "QuizzQuestion", 55, AttackType.DAMAGE_DEALER),
-        Attack(2, "SuperGuard", 15, AttackType.DEF_BUFF),
-        Attack(3, "AttackBreak", 15, AttackType.ATK_DEBUFF),
-        Attack(1, "Rollout", 70, AttackType.DAMAGE_DEALER),
-        Attack(2, "SuperGuard", 15, AttackType.DEF_BUFF),
-        Attack(3, "AttackBreak", 15, AttackType.ATK_DEBUFF),
-        Attack(4, "QuizzQuestion", 55, AttackType.DAMAGE_DEALER),
-        Attack(2, "SuperGuard", 15, AttackType.DEF_BUFF),
-        Attack(3, "AttackBreak", 15, AttackType.ATK_DEBUFF),
-        Attack(4, "QuizzQuestion", 55, AttackType.DAMAGE_DEALER),
-        Attack(2, "SuperGuard", 15, AttackType.DEF_BUFF),
-        Attack(1, "Rollout", 70, AttackType.DAMAGE_DEALER),
-        Attack(2, "SuperGuard", 15, AttackType.DEF_BUFF),
-        Attack(3, "AttackBreak", 15, AttackType.ATK_DEBUFF),
-        Attack(4, "QuizzQuestion", 55, AttackType.DAMAGE_DEALER),
-        Attack(2, "SuperGuard", 15, AttackType.DEF_BUFF),
-        Attack(3, "AttackBreak", 15, AttackType.ATK_DEBUFF),
-        Attack(4, "QuizzQuestion", 55, AttackType.DAMAGE_DEALER),
+        Attack(4, "QuizzQuestion", 55, AttackType.DAMAGE_DEALER,"NORMAL"),
+        Attack(4, "QuizzQuestion", 55, AttackType.DAMAGE_DEALER,"NORMAL"),
+        Attack(2, "SuperGuard", 15, AttackType.DEF_BUFF,"NORMAL"),
+        Attack(3, "AttackBreak", 15, AttackType.ATK_DEBUFF,"NORMAL"),
+        Attack(1, "Rollout", 70, AttackType.DAMAGE_DEALER,"NORMAL"),
+        Attack(2, "SuperGuard", 15, AttackType.DEF_BUFF,"NORMAL"),
+        Attack(3, "AttackBreak", 15, AttackType.ATK_DEBUFF,"NORMAL"),
+        Attack(4, "QuizzQuestion", 55, AttackType.DAMAGE_DEALER,"NORMAL"),
+        Attack(2, "SuperGuard", 15, AttackType.DEF_BUFF,"NORMAL"),
+        Attack(3, "AttackBreak", 15, AttackType.ATK_DEBUFF,"NORMAL"),
+        Attack(4, "QuizzQuestion", 55, AttackType.DAMAGE_DEALER,"NORMAL"),
+        Attack(2, "SuperGuard", 15, AttackType.DEF_BUFF,"NORMAL"),
+        Attack(1, "Rollout", 70, AttackType.DAMAGE_DEALER,"NORMAL"),
+        Attack(2, "SuperGuard", 15, AttackType.DEF_BUFF,"NORMAL"),
+        Attack(3, "AttackBreak", 15, AttackType.ATK_DEBUFF,"NORMAL"),
+        Attack(4, "QuizzQuestion", 55, AttackType.DAMAGE_DEALER,"NORMAL"),
+        Attack(2, "SuperGuard", 15, AttackType.DEF_BUFF,"NORMAL"),
+        Attack(3, "AttackBreak", 15, AttackType.ATK_DEBUFF,"NORMAL"),
+        Attack(4, "QuizzQuestion", 55, AttackType.DAMAGE_DEALER,"NORMAL"),
     )
     private var cpuAttackIndex = 0
 
@@ -112,23 +112,23 @@ class BattleTutorialAdvancedViewModel(
         viewModelScope.launch {
             Log.d(TAG, "Fetching initial critters data: ")
 
-            val playerAttack1 = Attack(1, "Splash", 60, AttackType.DAMAGE_DEALER)
-            val playerAttack2 = Attack(2, "HyperBeam", 70, AttackType.DAMAGE_DEALER)
-            val playerAttack3 = Attack(3, "Defence Break", 15, AttackType.DEF_DEBUFF)
-            val playerAttack4 = Attack(4, "Beak Sharpener", 25, AttackType.ATK_BUFF)
+            val playerAttack1 = Attack(1, "Splash", 60, AttackType.DAMAGE_DEALER,"NORMAL")
+            val playerAttack2 = Attack(2, "HyperBeam", 70, AttackType.DAMAGE_DEALER,"NORMAL")
+            val playerAttack3 = Attack(3, "Defence Break", 15, AttackType.DEF_DEBUFF,"NORMAL")
+            val playerAttack4 = Attack(4, "Beak Sharpener", 25, AttackType.ATK_BUFF,"NORMAL")
             val listOfPlayerAttacks = listOf(playerAttack1, playerAttack2, playerAttack3, playerAttack4)
-            val playerTutorialCritter = CritterUsable(24, "TerrorFirstEvo", 100, 70, 80, 50, listOfPlayerAttacks,1, 1,0)
+            val playerTutorialCritter = CritterUsable(24, "TerrorFirstEvo", 100, 70, 80, 50, listOfPlayerAttacks,1, 1,0,"NORMAL")
 
             playerCritter.update { state ->
                 state.copy(playerCritter = playerTutorialCritter, isLoading = false)
             }
 
-            val cpuAttack1 = Attack(1, "Rollout", 70, AttackType.DAMAGE_DEALER)
-            val cpuAttack2 = Attack(2, "SuperGuard", 25, AttackType.DEF_BUFF)
-            val cpuAttack3 = Attack(3, "ShieldBreak", 15, AttackType.DEF_DEBUFF)
-            val cpuAttack4 = Attack(4, "SkullCrush", 70, AttackType.DAMAGE_DEALER)
+            val cpuAttack1 = Attack(1, "Rollout", 70, AttackType.DAMAGE_DEALER,"NORMAL")
+            val cpuAttack2 = Attack(2, "SuperGuard", 25, AttackType.DEF_BUFF,"NORMAL")
+            val cpuAttack3 = Attack(3, "ShieldBreak", 15, AttackType.DEF_DEBUFF,"NORMAL")
+            val cpuAttack4 = Attack(4, "SkullCrush", 70, AttackType.DAMAGE_DEALER,"NORMAL")
             val listOfCpuAttacks = listOf(cpuAttack1, cpuAttack2, cpuAttack3, cpuAttack4)
-            val cpuTutorialCritter = CritterUsable(23, "terrorsecondevo", 130, 60, 115, 30, listOfCpuAttacks,1, 1,0)
+            val cpuTutorialCritter = CritterUsable(23, "terrorsecondevo", 130, 60, 115, 30, listOfCpuAttacks,1, 1,0,"NORMAL")
 
             cpuCritter.update { state ->
                 state.copy(cpuCritter = cpuTutorialCritter, isLoading = false)

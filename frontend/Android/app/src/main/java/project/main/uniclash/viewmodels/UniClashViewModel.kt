@@ -177,7 +177,8 @@ class UniClashViewModel(
                                 attacks = emptyList(),
                                 critterId = critter.critterId,
                                 critterTemplateId = 0,
-                                expToNextLevel = 0
+                                expToNextLevel = 0,
+                                type = critter.type
                             )
                             crittersUsables.add(myCritter)
                         }

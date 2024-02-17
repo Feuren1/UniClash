@@ -10,51 +10,26 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text.KeyboardActions
-import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.clipToBounds
-import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.ColorFilter
-import androidx.compose.ui.graphics.ColorMatrix
 
-import androidx.compose.ui.graphics.ImageBitmap
-import androidx.compose.ui.graphics.ShaderBrush
-import androidx.compose.ui.graphics.graphicsLayer
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalDensity
-
-import androidx.compose.ui.platform.LocalSoftwareKeyboardController
-import androidx.compose.ui.platform.LocalTextInputService
-
-import androidx.compose.ui.platform.LocalUriHandler
-
-import androidx.compose.ui.platform.LocalView
 
 
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.res.vectorResource
-import androidx.compose.ui.text.*
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.input.ImeAction
-import androidx.compose.ui.text.input.KeyboardCapitalization
-import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.rememberImagePainter
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.runBlocking
 import project.main.uniclash.datatypes.CritterUsable
 import project.main.uniclash.datatypes.Student
@@ -62,6 +37,7 @@ import project.main.uniclash.retrofit.ArenaService
 import project.main.uniclash.retrofit.StudentService
 import project.main.uniclash.ui.theme.UniClashTheme
 import project.main.uniclash.dataManagers.UserDataManager
+import project.main.uniclash.datatypes.CustomColor
 import project.main.uniclash.viewmodels.ArenaViewModel
 import project.main.uniclash.viewmodels.StudentViewModel
 
@@ -95,7 +71,6 @@ class ArenaActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-
                     Box(
                         modifier = Modifier.fillMaxSize()
                     ) {
@@ -113,14 +88,15 @@ class ArenaActivity : ComponentActivity() {
                         val arenaCritterUIState by arenaViewModel.critterUsable.collectAsState()
 
                         if(arenaUIState.arena != null) {
-                            arenaViewModel.loadArenaCritter()
+                            arenaViewModel.loadArenaCritterFromBegin()
                         if (arenaViewModel.getselectedArena() != null) {
-                            studentViewModel.loadStudent(arenaViewModel.getselectedArena()!!.arena!!.studentId)
+                            studentViewModel.loadStudentFromBegin(arenaViewModel.getselectedArena()!!.arena!!.studentId)
                         }
                                 Image(
                                     painter = painterResource(id = R.drawable.exit),
                                     contentDescription = null,
                                     modifier = Modifier
+                                        .offset(x = (-10).dp, y = 10.dp)
                                         .size(40.dp)
                                         .clickable {
                                             exitRequest = true
@@ -131,6 +107,7 @@ class ArenaActivity : ComponentActivity() {
                             // Check if the arena and arenas are not null before displaying
                             Column(
                                 modifier = Modifier
+                                    .offset(y = 40.dp)
                                     .fillMaxSize()
                                     .padding(16.dp)
                                     .verticalScroll(rememberScrollState())
@@ -148,13 +125,14 @@ class ArenaActivity : ComponentActivity() {
                                     addCritterToArenaButton()
                                 }
                                 if (arenaViewModel.getselectedArena()!!.arena!!.critterId != 0) {
+                                    println("kommt hier hin")
                                     if (arenaCritterUIState.critterUsable != null) {
                                         CritterDetail(arenaCritterUIState.critterUsable!!)
                                     }
                                 }
-                                if (arenaViewModel.getselectedArena()!!.arena!!.studentId != studentId) {
+                                if (arenaViewModel.getselectedArena()!!.arena!!.studentId != studentId && arenaViewModel!!.getselectedArena()!!.arena!!.critterId >0) {
                                     startBattleButton()
-                                } else {
+                                } else if(arenaViewModel.getselectedArena()!!.arena!!.studentId == studentId) {
                                     Text("You own this arena!")
                                 }
                                 Row(Modifier.fillMaxSize()) {
@@ -163,7 +141,7 @@ class ArenaActivity : ComponentActivity() {
                                         modifier = Modifier.size(140.dp)
                                     )
                                 }
-
+                                ArenaReload()
                                 // Add a button or other UI elements as needed
                             }
                         }
@@ -210,9 +188,25 @@ class ArenaActivity : ComponentActivity() {
     }
 
     @Composable
+    fun ArenaReload() {
+        LaunchedEffect(Unit) {
+            var i = 100
+            while (i > 0) {
+                println("reloadArena")
+                delay(5000)
+                arenaViewModel.loadArena(arenaViewModel.getselectedArena()!!.arena!!.id)
+                arenaViewModel.loadArenaCritter()
+                studentViewModel.loadStudent(arenaViewModel.getselectedArena()!!.arena!!.studentId)
+                i--
+            }
+        }
+    }
+
+    @Composable
     fun startBattleButton() {
         if(arenaViewModel.checkIfCritterIsSelected()) {
             Button(
+                colors = ButtonDefaults.buttonColors(containerColor = CustomColor.DarkPurple.getColor()),
                 onClick = {
                     val intent = Intent(this, FinalBattleActivity::class.java)
                     // creating a bundle object
@@ -235,17 +229,18 @@ class ArenaActivity : ComponentActivity() {
                     .fillMaxWidth()
                     .padding(8.dp)
             ) {
-                Text("Start Battle", style = MaterialTheme.typography.labelMedium)
+                Text("Start Battle", style = MaterialTheme.typography.labelMedium, color = Color.White)
             }
         } else {
             Button(
+                colors = ButtonDefaults.buttonColors(containerColor = CustomColor.DarkPurple.getColor()),
                 onClick = {
                 },
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(8.dp)
             ) {
-                Text("No Critter to fight selected.", style = MaterialTheme.typography.labelMedium)
+                Text("No Critter to fight selected.", style = MaterialTheme.typography.labelMedium, color = Color.White)
             }
         }
     }
@@ -253,6 +248,7 @@ class ArenaActivity : ComponentActivity() {
     @Composable
     fun addCritterToArenaButton() {
         Button(
+            colors = ButtonDefaults.buttonColors(containerColor = CustomColor.DarkPurple.getColor()),
             onClick = {
                 val intent = Intent(this, AddCritterToArenaActivity::class.java)
                 // creating a bundle object
@@ -262,12 +258,13 @@ class ArenaActivity : ComponentActivity() {
                 bundle.putInt("ArenaID", arenaViewModel.getselectedArena()?.arena?.id?.toInt() ?: 0)
                 intent.putExtras(bundle)
                 startActivity(intent)
+                finish()
             },
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(8.dp)
         ) {
-            Text("Add Critter to Arena", style = MaterialTheme.typography.labelMedium)
+            Text("Add Critter to Arena", style = MaterialTheme.typography.labelMedium, color = Color.White)
         }
     }
     @Composable
@@ -301,20 +298,20 @@ class ArenaActivity : ComponentActivity() {
                     Text(
                         text = critter.name,
                         fontSize = 18.sp,
-                        color = MaterialTheme.colorScheme.secondary,
+                        color = Color.DarkGray,
                         style = MaterialTheme.typography.titleSmall
                     )
                     Row {
                         Text(
                             text = "Level: ${critter.level} ",
                             fontSize = 12.sp,
-                            color = MaterialTheme.colorScheme.secondary,
+                            color = Color.DarkGray,
                             style = MaterialTheme.typography.titleSmall
                         )
                         Text(
                             text = "Stats: HP: ${critter.hp} ATK: ${critter.atk} DEF: ${critter.def} SPD: ${critter.spd}",
                             fontSize = 12.sp,
-                            color = MaterialTheme.colorScheme.secondary,
+                            color = Color.DarkGray,
                             style = MaterialTheme.typography.titleSmall
                         )
                     }
@@ -347,14 +344,14 @@ class ArenaActivity : ComponentActivity() {
                     Text(
                         text = "Owner ID: " + student.id.toString(),
                         fontSize = 18.sp,
-                        color = MaterialTheme.colorScheme.secondary,
+                        color = Color.DarkGray,
                         style = MaterialTheme.typography.titleSmall
                     )
                     Row {
                         Text(
                             text = "Student Level: ${student.level} ",
                             fontSize = 12.sp,
-                            color = MaterialTheme.colorScheme.secondary,
+                            color = Color.DarkGray,
                             style = MaterialTheme.typography.titleSmall
                         )
                     }
@@ -362,7 +359,7 @@ class ArenaActivity : ComponentActivity() {
                         Text(
                             text = "Stats: Amount of Buildings Placed: ${student.placedBuildings} Credits: ${student.credits}",
                             fontSize = 12.sp,
-                            color = MaterialTheme.colorScheme.secondary,
+                            color = Color.DarkGray,
                             style = MaterialTheme.typography.titleSmall
                         )
                     }

@@ -22,6 +22,7 @@ import {ArenaRepository, StudentRepository, UserRepository} from '../repositorie
 import {authenticate} from "@loopback/authentication";
 import { NotificationService } from '../services/NotificationService';
 import {service} from "@loopback/core";
+// @ts-ignore
 import {ArenaLogicService} from "../services/arena-logic.service";
 
 export class ArenaController {
@@ -151,8 +152,10 @@ export class ArenaController {
     sendPushNotificationService.sendPushNotification(user.fcmtoken,"ArenaUpdate","Your arena has been defeated!!!")
     }
     arena.invasionTime = 0
-    await this.arenaRepository.updateById(id, arena)
+    // @ts-ignore
+    if(!((await currentArena).critterId > 0 && arena.critterId >0))await this.arenaRepository.updateById(id, arena)
     await this.arenaLogicService.setInvasionTime(id)
+    await this.arenaLogicService.addEp(id)
   }
 
   @put('/arenas/{id}')

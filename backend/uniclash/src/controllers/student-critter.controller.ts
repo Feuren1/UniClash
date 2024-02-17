@@ -159,6 +159,7 @@ export class StudentCritterController {
   async calculateCritterListables(
       @param.path.number('id') id: number,
   ): Promise<CritterListable[]> {
+    await this.wildEncounterInformationService.checkOfWildEncounterShouldReload()
     return this.studentCritterService.createCritterListableListOnStudentId(id);
   }
   @authenticate('jwt')

@@ -480,7 +480,7 @@ class MapMarkerViewModel(
             val usableCritters = critterUsables.value.critterUsables
             var mapCalculations = MapCalculations()
             var wildEncounterMax = usableCritters
-            while(wildEncounterMax.size < 801 && wildEncounterMax.isNotEmpty()){
+            while(wildEncounterMax.size < 251 && wildEncounterMax.isNotEmpty()){
                 wildEncounterMax = wildEncounterMax + usableCritters
             }
             val studentLocation : GeoPoint = Locations.USERLOCATION.getLocation()
@@ -488,11 +488,11 @@ class MapMarkerViewModel(
 
 
             if(MapSaver.WILDENCOUNTER.getMarker().isEmpty() &&wildEncounterMax.isNotEmpty()) {
-                var randomLocation = generateRandomGeoPoints(studentLocation, 2.0, 800) //400 per km
+                var randomLocation = generateRandomGeoPoints(studentLocation, 0.5, 250) //400 per km
                 var i = 0
                 val wildEncounter = wildEncounterMax
 
-                while (i < 800) {
+                while (i < 250) {
 
                     val name: String = wildEncounter[i]?.name!!.lowercase()
                     val resourceId = context.resources.getIdentifier(name, "drawable", context.packageName)

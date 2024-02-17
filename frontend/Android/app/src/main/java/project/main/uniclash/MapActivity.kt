@@ -10,8 +10,10 @@ import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -29,6 +31,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -65,6 +68,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import org.osmdroid.util.GeoPoint
 import project.main.uniclash.datatypes.Counter
+import project.main.uniclash.datatypes.CustomColor
 import project.main.uniclash.datatypes.Locations
 import project.main.uniclash.datatypes.MapSaver
 import project.main.uniclash.datatypes.MapSettings
@@ -125,6 +129,8 @@ class MapActivity : ComponentActivity() {
 
     private var newCritterNotification by mutableStateOf(11) //time left side at the bottom
 
+    private var studentsLoaded by mutableStateOf(false) //reloads all markers
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
@@ -132,7 +138,7 @@ class MapActivity : ComponentActivity() {
         //markerList observer and updater
         lifecycleScope.launch {
             mapMarkerListViewModel.mapMarkerList.collect {
-               reloadMap = false
+                reloadMap = false
                 reloadMap = true
             }
         }
@@ -142,6 +148,8 @@ class MapActivity : ComponentActivity() {
             reloadMap = false //reload necessary otherwise critter visibility will not change if user is moving
             reloadMap = true
         }
+
+        mapMarkerViewModel.loadStudents()
 
         setContent {
             // todo uistate from viewmodel
@@ -155,14 +163,11 @@ class MapActivity : ComponentActivity() {
                 mapMarkerListViewModel.addListOfMarkersQ(MapSaver.STUDENTHUB.getMarker()!!)
             }
 
-            if(MapSaver.STUDENT.getMarker().isEmpty()) {
-                mapMarkerViewModel.loadStudents()
-                val markersStudentUIState by mapMarkerViewModel.markersStudent.collectAsState()
+            val markersStudentUIState by mapMarkerViewModel.markersStudent.collectAsState()
+            if(markersStudentUIState.makersStudent != null) {
                 val studentMarkers = markersStudentUIState.makersStudent
+                MapSaver.STUNDENT.setMarker(studentMarkers)
                 mapMarkerListViewModel.addListOfMarkersQ(studentMarkers)
-                MapSaver.STUDENT.setMarker(studentMarkers)
-            } else{
-                mapMarkerListViewModel.addListOfMarkersQ(MapSaver.STUDENT.getMarker()!!)
             }
 
             if(MapSaver.ARENA.getMarker().isEmpty()) {
@@ -176,11 +181,12 @@ class MapActivity : ComponentActivity() {
             }
 
             if(MapSaver.WILDENCOUNTER.getMarker().isEmpty()) {
-                mapMarkerViewModel.loadCritterUsables(1)
+                mapMarkerViewModel.loadCritterUsables()
                 val markersWildEncounterUIState by mapMarkerViewModel.markersWildEncounter.collectAsState()
                 val wildEncounterMarkers = markersWildEncounterUIState.markersWildEncounter
                 //markerList.addListOfMarkersQ(wildEncounterMarkers) //should be set in LoadFirstWildEncounter
                 MapSaver.WILDENCOUNTER.setMarker(wildEncounterMarkers)
+                println("WildEncounter stored")
             } else if (Counter.FIRSTSPAWN.getCounter() < 1){ //to avoid that wildencounter will spawn before time times to zero
                 mapMarkerListViewModel.addListOfMarkersQ(MapSaver.WILDENCOUNTER.getMarker()!!)
             }
@@ -245,8 +251,8 @@ class MapActivity : ComponentActivity() {
     @Composable
     fun SettingUpMap() {
         if(!alreadySetedUpMap)
-         gpsLocation = rememberMarkerState()
-         cameraState = rememberCameraState()
+            gpsLocation = rememberMarkerState()
+        cameraState = rememberCameraState()
         cameraState.zoom = 20.0
         alreadySetedUpMap = true
     }
@@ -303,7 +309,7 @@ class MapActivity : ComponentActivity() {
                     //mapMarkerListViewModel.removeMarkersQ(MapSaver.STUDENT.getMarker())
                     //MapSaver.STUDENT.setMarker(ArrayList<MarkerData?>())
                     //mapMarkerViewModel.students.value.students = emptyList()
-                    mapMarkerViewModel.loadStudents()
+                    mapMarkerViewModel.loadStudentsRefresh()
                 }
                 /*if(Counter.RESPAWN.getCounter() % 20 == 2){
                     mapMarkerListViewModel.removeMarkersQ(MapSaver.STUDENT.getMarker())
@@ -311,7 +317,7 @@ class MapActivity : ComponentActivity() {
                 }*/
 
                 //is now working without OpenActivityButton() and could be move out to view model
-                if(numberOfMarkersOnMap < 800 && Counter.RESPAWN.getCounter()>5&&Counter.RESPAWN.getCounter()<295){
+                if(numberOfMarkersOnMap < 800 && Counter.RESPAWN.getCounter()>5&&Counter.RESPAWN.getCounter()<298){
                     println("complete map reload")
                     mapMarkerListViewModel.removeMarkersQ(MapSaver.WILDENCOUNTER.getMarker())
                     mapMarkerListViewModel.addListOfMarkersQ(MapSaver.WILDENCOUNTER.getMarker())
@@ -341,12 +347,12 @@ class MapActivity : ComponentActivity() {
         }
 
         // Use camera state and location in your OpenStreetMap Composable
-            OpenStreetMap(
-                modifier = Modifier.fillMaxSize(),
-                cameraState = cameraState,
-                properties = mapProperties
-            ) {
-                if (reloadMap) {
+        OpenStreetMap(
+            modifier = Modifier.fillMaxSize(),
+            cameraState = cameraState,
+            properties = mapProperties
+        ) {
+            if (reloadMap) {
                 var critterVisibility : Int
                 if(MapSettings.CRITTERBINOCULARS.getMapSetting()){
                     critterVisibility = 1000
@@ -355,27 +361,30 @@ class MapActivity : ComponentActivity() {
                 }
 
                 // Add markers and other map components here s)
-                    markerList.markerList.forEach() { marker ->
+                markerList.markerList.forEach() { marker ->
                     val distance = mapCalculations.distance(marker.state.latitude, marker.state.longitude, Locations.USERLOCATION.getLocation().latitude, Locations.USERLOCATION.getLocation().longitude)
                     Log.d(
                         LOCATION_TAG,
                         "set marker"
                     )
-
                     val state = rememberMarkerState(
                         geoPoint = marker.state
-                        )
+                    )
 
-                        numberOfMarkersOnMap ++
+                    numberOfMarkersOnMap++
 
                     Marker(
                         state = state,
                         icon = marker.icon,
                         title = marker.title,
                         snippet = marker.snippet,
-                        visible = if(marker is MarkerWildEncounter && distance > critterVisibility){false}else{marker.visible},
+                        visible = if (marker is MarkerWildEncounter && distance > critterVisibility) {
+                            false
+                        } else {
+                            marker.visible
+                        },
                     ) {
-                        if (distance < 501 || marker is MarkerStudent) {
+                        if (distance < 251 || !(marker is MarkerWildEncounter)) {
                             Column(
                                 modifier = Modifier
                                     .size(325.dp, 400.dp)
@@ -386,9 +395,24 @@ class MapActivity : ComponentActivity() {
                                 verticalArrangement = Arrangement.Center,
                                 horizontalAlignment = Alignment.CenterHorizontally
                             ) {
-                                Text(text = marker.title!!, fontSize = 20.sp, color = Color.White)
-                                Text(text = marker.snippet!!, fontSize = 15.sp, color = Color.White)
-                                Text(text = "${geoCodingHelper.getAddressFromLocation(marker.state.latitude,marker.state.longitude)}", fontSize = 15.sp, color = Color.White)
+                                Text(
+                                    text = marker.title!!,
+                                    fontSize = 20.sp,
+                                    color = Color.White
+                                )
+                                Text(
+                                    text = marker.snippet!!,
+                                    fontSize = 15.sp,
+                                    color = Color.White
+                                )
+                                Text(
+                                    text = "${
+                                        geoCodingHelper.getAddressFromLocation(
+                                            marker.state.latitude,
+                                            marker.state.longitude
+                                        )
+                                    }", fontSize = 15.sp, color = Color.White
+                                )
                                 Spacer(modifier = Modifier.height(8.dp))
                                 Image(
                                     painter = rememberImagePainter(marker.pic),
@@ -423,7 +447,12 @@ class MapActivity : ComponentActivity() {
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(50.dp)
-                    .background(Color.LightGray, shape = RoundedCornerShape(8.dp))
+                    .background(CustomColor.DarkPurple.getColor(), shape = RoundedCornerShape(8.dp))
+                    .border(
+                        3.dp,
+                        CustomColor.Purple.getColor(),
+                        shape = RoundedCornerShape(8.dp)
+                    )
             ) {
                 Row(
                     modifier = Modifier
@@ -435,28 +464,28 @@ class MapActivity : ComponentActivity() {
                     Spacer(modifier = Modifier.width(16.dp))
 
                     // Timer
-                        Image(
-                            painter = painterResource(id = R.drawable.hourglass),
-                            contentDescription = null,
-                            modifier = Modifier
-                                .size(40.dp)
-                                .offset(x = 130.dp)
-                        )
-                        var minutes: Int = newCritterNotification / 60 //20
-                        Text(//newCritterNotification *3 = seconds
-                            text = if (newCritterNotification < 60 && newCritterNotification > -1) { //20
-                                "${newCritterNotification * 1} sec" //3
-                            } else if(newCritterNotification <60){
-                                "0 sec"
-                            } else {
-                                "${minutes}:${newCritterNotification * 1 - minutes * 60}min" //3
-                            },
-                            color = Color.White,
-                            fontWeight = FontWeight.Bold,
-                            modifier = Modifier
-                                .padding(end = 24.dp)
-                                .offset(x = (15).dp)
-                        )
+                    Image(
+                        painter = painterResource(id = R.drawable.hourglass),
+                        contentDescription = null,
+                        modifier = Modifier
+                            .size(40.dp)
+                            .offset(x = 130.dp)
+                    )
+                    var minutes: Int = newCritterNotification / 60 //20
+                    Text(//newCritterNotification *3 = seconds
+                        text = if (newCritterNotification < 60 && newCritterNotification > -1) { //20
+                            "${newCritterNotification * 1} sec" //3
+                        } else if(newCritterNotification <60){
+                            "0 sec"
+                        } else {
+                            "${minutes}:${newCritterNotification * 1 - minutes * 60}min" //3
+                        },
+                        color = Color.White,
+                        fontWeight = FontWeight.Bold,
+                        modifier = Modifier
+                            .padding(end = 24.dp)
+                            .offset(x = (15).dp)
+                    )
                 }
             }
             val drawableImage = painterResource(id = R.drawable.profile)
@@ -498,7 +527,7 @@ class MapActivity : ComponentActivity() {
                         MapSettings.MOVINGCAMERA.setMapSetting(!MapSettings.MOVINGCAMERA.getMapSetting())
                     }
             )
-            if(Counter.FIRSTSPAWN.getCounter()<1&&Counter.RESPAWN.getCounter()<280&&Counter.RESPAWN.getCounter()>5) {
+            if(Counter.FIRSTSPAWN.getCounter()<1&&Counter.RESPAWN.getCounter()<290&&Counter.RESPAWN.getCounter()>5) {
                 Image(
                     painter = fartSpray,
                     contentDescription = null,
@@ -545,7 +574,7 @@ class MapActivity : ComponentActivity() {
     fun FartSprayInfo() {
         val usedItem = mapItemViewModel.useFartSpray.collectAsState()
         if(usedItem.value.canBeUsed == 0){
-            Toast.makeText(baseContext, "No fart spray was used.", Toast.LENGTH_SHORT).show()
+            Toast.makeText(baseContext, "No fart spray was used.\nCheck your inventory.", Toast.LENGTH_SHORT).show()
             mapItemViewModel.resetCanBeUsedValue()
         } else if (usedItem.value.canBeUsed == 1) {
             Toast.makeText(baseContext, "You used a fart spray.", Toast.LENGTH_SHORT).show()
@@ -574,7 +603,7 @@ class MapActivity : ComponentActivity() {
                         Text(
                             text = "Use a fart spray to respawn all critters.",
                             fontSize = 18.sp,
-                            color = MaterialTheme.colorScheme.secondary,
+                            color = Color.DarkGray,
                             style = MaterialTheme.typography.titleSmall
                         )
                     }
@@ -582,26 +611,28 @@ class MapActivity : ComponentActivity() {
                     Spacer(modifier = Modifier.height(16.dp))
 
                     Button(
+                        colors = ButtonDefaults.buttonColors(containerColor = CustomColor.DarkPurple.getColor()),
                         onClick = {
                             mapItemViewModel.useFartSpray()
                             openFartSprayInfo = false
-                            },
+                        },
                         modifier = Modifier
                             .fillMaxWidth()
                             .height(50.dp)
                     ) {
-                        Text(text = "Use spray")
+                        Text(text = "Use spray",color = Color.White, fontWeight = FontWeight.Bold)
                     }
 
                     Spacer(modifier = Modifier.height(8.dp))
 
                     Button(
+                        colors = ButtonDefaults.buttonColors(containerColor = CustomColor.DarkPurple.getColor()),
                         onClick = { openFartSprayInfo = false },
                         modifier = Modifier
                             .fillMaxWidth()
                             .height(50.dp)
                     ) {
-                        Text(text = "No thanks")
+                        Text(text = "No thanks",color = Color.White, fontWeight = FontWeight.Bold)
                     }
                 }
             }
@@ -612,8 +643,9 @@ class MapActivity : ComponentActivity() {
     fun OpenActivityButton(marker : MarkerData) {
         val context = LocalContext.current
         val distance = mapCalculations.distance(marker.state.latitude, marker.state.longitude, Locations.USERLOCATION.getLocation().latitude, Locations.USERLOCATION.getLocation().longitude)
-        if(distance < 76) {
+        if(distance < 76 ||marker is MarkerStudent) {
             Button(
+                colors = ButtonDefaults.buttonColors(containerColor = CustomColor.DarkPurple.getColor()),
                 onClick = {
                     // Handle the button click to open the new activity here
                     SelectedMarker.SELECTEDMARKER.setMarker(marker)
@@ -627,7 +659,7 @@ class MapActivity : ComponentActivity() {
                     .height(50.dp)
 
             ) {
-                Text("${marker.buttonText}")
+                Text("${marker.buttonText}", color = Color.White, fontWeight = FontWeight.Bold)
             }
         } else {
             Text(text ="to far away", color = Color.White, fontWeight = FontWeight.Bold)
@@ -635,10 +667,10 @@ class MapActivity : ComponentActivity() {
     }
 
     private fun OpenActivityButton(activity: Class<out Activity> = MenuActivity::class.java) {
-                // Handle the button click to open the new activity here
-                val intent = Intent(this,activity)
-                this.startActivity(intent, null)
-                finish()
+        // Handle the button click to open the new activity here
+        val intent = Intent(this,activity)
+        this.startActivity(intent, null)
+        finish()
     }
 
     var alreadyLoaded = false //for LoadWildEncounter firstLoad
@@ -648,10 +680,10 @@ class MapActivity : ComponentActivity() {
         if(shouldLoadFirstWildEncounter) {
             if(alreadyLoaded == false) {
                 Log.d(LOCATION_TAG, "Executed first loadwildencounter")
-                     mapMarkerListViewModel.addListOfMarkersQ(MapSaver.WILDENCOUNTER.getMarker())
+                mapMarkerListViewModel.addListOfMarkersQ(MapSaver.WILDENCOUNTER.getMarker())
                 shouldLoadFirstWildEncounter = false
                 if(MapSaver.WILDENCOUNTER.getMarker().isEmpty()){
-                    mapMarkerViewModel.loadCritterUsables(1)
+                    mapMarkerViewModel.loadCritterUsables()
                     Counter.FIRSTSPAWN.setCounter(5)
                 } else {
                     alreadyLoaded = true

@@ -62,7 +62,7 @@ class MapLocationViewModel(private val locationPermissions: LocationPermissions)
 
     @SuppressLint("MissingPermission")
     fun locationUpdate() {
-        locationCallback.let {
+        /*locationCallback.let {
             println("locationUpdate tries updating")
             //An encapsulation of various parameters for requesting
             // location through FusedLocationProviderClient.
@@ -79,8 +79,7 @@ class MapLocationViewModel(private val locationPermissions: LocationPermissions)
                 it,
                 Looper.getMainLooper()
             )
-        }
-
+        }*/
     }
 
     fun stopLocationUpdate() {

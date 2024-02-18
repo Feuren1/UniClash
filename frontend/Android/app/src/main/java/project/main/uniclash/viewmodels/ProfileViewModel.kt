@@ -102,10 +102,10 @@ class ProfileViewModel (private val userService: UserService, application: Appli
     fun createStudent(userId: String){
         viewModelScope.launch {
             val studentRegisterRequest = StudentRegisterRequest(
-                level = 1,
+                level = 4,
                 lat = "0.0",
                 lon = "0.0",
-                credits = 100,
+                credits = 200,
                 expToNextLevel = 0,
                 placedBuildings = 0,
                 userId = userId,

@@ -1,13 +1,13 @@
 import {injectable, service} from '@loopback/core';
 import {repository} from "@loopback/repository";
-import {CritterInFight, OnlineFight, User} from "../models";
+import {CritterInFight, OnlineFight, User, WildencounterInformation} from "../models";
 import {
   CritterInFightRepository,
   CritterRepository,
   CritterTemplateRepository,
   OnlineFightRepository,
   StudentRepository,
-  UserRepository
+  UserRepository, WildencounterInformationRepository
 } from "../repositories";
 import {NotificationService} from "./NotificationService";
 import {LevelCalcStudentService} from "./levelCalc-student.service";
@@ -28,38 +28,41 @@ export class OnlineFightService {
     @service(LevelCalcCritterService) protected levelCalcCritterService : LevelCalcCritterService,
     @service(CritterStatsService) protected critterStatsService : CritterStatsService,
     @repository(UserRepository) protected userRepository: UserRepository,
+    @repository(WildencounterInformationRepository) protected wildEncounterInformationRepository: WildencounterInformationRepository,
   ) { }
 
   async createFight(studentId:number, enemyStudentId:number): Promise<void>{
     await this.deleteOldFights()
 
-    const currentTime: Date = new Date();
-    const generator = Math.random();
-    const fightConnectionId = Math.floor(generator * (9999 - 1 + 1)) + 1;
-    const newFight = new OnlineFight({
-      fightConnectionId: fightConnectionId,
-      studentId: studentId,
-      state: OnlineFightState.Waiting,
-      startTime: currentTime.getHours()*60+currentTime.getMinutes(),
-      timer: currentTime.getSeconds()+currentTime.getMinutes()*60
-        })
+    if(await this.checkIfBlocked()) {
+      const currentTime: Date = new Date();
+      const generator = Math.random();
+      const fightConnectionId = Math.floor(generator * (9999 - 1 + 1)) + 1;
+      const newFight = new OnlineFight({
+        fightConnectionId: fightConnectionId,
+        studentId: studentId,
+        state: OnlineFightState.Waiting,
+        startTime: currentTime.getHours() * 60 + currentTime.getMinutes(),
+        timer: currentTime.getSeconds() + currentTime.getMinutes() * 60
+      })
 
-    const newFight2 = new OnlineFight({
-      fightConnectionId: fightConnectionId,
-      studentId: enemyStudentId,
-      state: OnlineFightState.Waiting,
-      startTime: currentTime.getHours()*60+currentTime.getMinutes(),
-      timer: currentTime.getSeconds()+currentTime.getMinutes()*60
-    })
+      const newFight2 = new OnlineFight({
+        fightConnectionId: fightConnectionId,
+        studentId: enemyStudentId,
+        state: OnlineFightState.Waiting,
+        startTime: currentTime.getHours() * 60 + currentTime.getMinutes(),
+        timer: currentTime.getSeconds() + currentTime.getMinutes() * 60
+      })
 
-    await this.onlineFightRepository.create(newFight)
-    await this.onlineFightRepository.create(newFight2)
+      await this.onlineFightRepository.create(newFight)
+      await this.onlineFightRepository.create(newFight2)
 
-    //push Notification
-    const user = await this.studentRepository.user(studentId)
-    const enemyUser = await this.studentRepository.user(enemyStudentId)
-    const sendPushNotificationService = new NotificationService();
-    await sendPushNotificationService.sendPushNotification(enemyUser.fcmtoken, "Fight Invitation", user.username + " want to fight against you!!!")
+      //push Notification
+      const user = await this.studentRepository.user(studentId)
+      const enemyUser = await this.studentRepository.user(enemyStudentId)
+      const sendPushNotificationService = new NotificationService();
+      await sendPushNotificationService.sendPushNotification(enemyUser.fcmtoken, "Fight Invitation", user.username + " want to fight against you!!!")
+    }
   }
 
   async sendMessageViaPushNotification(fightConnectionId : number,studentId:number, message : string):Promise<void>{
@@ -97,6 +100,13 @@ export class OnlineFightService {
       }
     }
   }
+
+  async checkIfBlocked():Promise<boolean>{
+    const currentDates : WildencounterInformation[] = await this.wildEncounterInformationRepository.find()
+    const currentDate : WildencounterInformation = currentDates[0]
+
+    return parseInt(currentDate.date) >= 1;
+    }
 
   async makingDamage(fightConnectionId : number, studentId : number, amountOfDamage : number, kindOfDamage : string, effectivity : number):Promise<void>{
     const currentTime: Date = new Date();

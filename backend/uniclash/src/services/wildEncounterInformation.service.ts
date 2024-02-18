@@ -36,7 +36,7 @@ export class WildEncounterInformationService {
     const currentTime: Date = new Date();
     const day: number = currentTime.getTime();
     const currentDates : WildencounterInformation[] = await this.wildEncounterInformationRepository.find()
-    const currentDate : WildencounterInformation = currentDates[0]
+    const currentDate : WildencounterInformation = currentDates[1]
 
     if(day - parseInt(currentDate.date) > 21600000){
       await this.wildEncounterInformationRepository.delete(currentDate)

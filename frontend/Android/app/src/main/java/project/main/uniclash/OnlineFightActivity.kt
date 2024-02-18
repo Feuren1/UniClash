@@ -121,6 +121,7 @@ class OnlineFightActivity : ComponentActivity() {
     )
 
     private var state by mutableStateOf(OnlineFightState.WAITING)
+    private var stateBefore by mutableStateOf(OnlineFightState.NOTFOUND)
     private var myCritter by mutableStateOf(sampleCritter)
     private var critterUsable by mutableStateOf(sampleCritterUsable)
     private var myCritterLoaded by mutableStateOf(false)
@@ -364,10 +365,14 @@ class OnlineFightActivity : ComponentActivity() {
                 if (!myCritterLoaded) onlineFightViewModel.getCritterUsable()
                 if (!enemyCritterLoaded) onlineFightViewModel.getEnemyCritterUsable()
 
-                if (state != OnlineFightState.WINNER && state != OnlineFightState.LOSER) onlineFightViewModel.checkMyState()
-                if (state != OnlineFightState.WINNER && state != OnlineFightState.LOSER) onlineFightViewModel.getCritterInformation()
-                if (state != OnlineFightState.WINNER && state != OnlineFightState.LOSER) onlineFightViewModel.getEnemyCritterInformation()
-
+                if (state != OnlineFightState.WINNER && state != OnlineFightState.LOSER){
+                    onlineFightViewModel.checkMyState()
+                    if(state != stateBefore){
+                        onlineFightViewModel.getCritterInformation()
+                        onlineFightViewModel.getEnemyCritterInformation()
+                        stateBefore = state
+                    }
+                }
                 if (state == OnlineFightState.WINNER) winner = true
                 if (state == OnlineFightState.LOSER) loser = true
             }

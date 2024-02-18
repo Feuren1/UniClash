@@ -309,11 +309,6 @@ fun Credits(modifier: Modifier, credits: Int) {
                 CustomColor.DarkPurple.getColor(),
                 shape = RoundedCornerShape(8.dp)
             ) // Hintergrundfarbe und abgeflachte Ecken
-            .border(
-                3.dp,
-                CustomColor.Purple.getColor(),
-                shape = RoundedCornerShape(8.dp)
-            )
             .padding(8.dp)
     ) {
 
@@ -347,7 +342,7 @@ fun Exit(modifier: Modifier, context: Context) {
     Box(
         modifier = Modifier
             .fillMaxWidth()
-            .background(MaterialTheme.colorScheme.background)
+            .background(Color.Black)
             .padding(16.dp)
     ) {
         Image(painter = painterResource(id = R.drawable.exit),

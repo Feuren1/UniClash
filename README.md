@@ -1,4 +1,5 @@
-# prj3-phone-native-application
+# Uniclash
+![The Game](/TheGame.JPG)
 
 ## **Rough Sprint Goals**
 1.Gernal Architecture and Design <br>
